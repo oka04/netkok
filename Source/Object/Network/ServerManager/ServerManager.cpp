@@ -73,7 +73,6 @@ bool ServerManager::StartServer(int port, int maxm_clients)
 	m_advertiser->StartAdvertise(discoveryPort, (uint16_t)port, m_serverName, (uint8_t)maxm_clients);
 	m_advertiser->SetAdvertisePlayerCount(0);
 	m_advertiser->SetAdvertiseState(0);
-
 	m_clientCount = 0;
 	BroadcastLobbyUpdate();
 
@@ -126,8 +125,11 @@ void ServerManager::BroadcastLobbyUpdate()
 	enet_host_broadcast(m_pServerHost, 0, packet);
 	enet_host_flush(m_pServerHost);
 
-	// update m_advertiser player count
-	if (m_advertiser) m_advertiser->SetAdvertisePlayerCount(count);
+	if (m_advertiser)
+	{
+		m_advertiser->SetAdvertisePlayerCount(count);
+		m_advertiser->SetAdvertiseState(0);
+	}
 }
 
 void ServerManager::StartGame()

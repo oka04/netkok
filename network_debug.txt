@@ -2,85 +2,104 @@
 Network Debug Log
 ===========================================
 
-[11:34:58] ========================================
-[11:34:58] ClientManager 初期化開始
-[11:34:58] ========================================
-[11:34:58] [ClientManager] ENet初期化成功
-[11:34:58] [ClientManager] Discovery作成
-[11:34:58] [Discovery/Listener] スレッド開始
-[11:34:58] [Discovery/Listener] WSAStartup成功
-[11:34:58] [ClientManager] Discoveryリスナー起動 (ポート:12346)
-[11:34:58] [Discovery/Listener] ソケット作成成功
-[11:34:58] [Discovery/Listener] bind成功 ポート:12346
-[11:34:58] [Discovery/Listener] 受信ループ開始
-[11:34:59] [Discovery/Advertiser] スレッド開始
-[11:34:59] [Discovery/Advertiser] WSAStartup成功
-[11:34:59] [Discovery/Advertiser] ソケット作成成功
-[11:34:59] [ClientManager] ConnectToHost: 127.0.0.1:12956
-[11:34:59] [Discovery/Advertiser] SO_BROADCAST設定成功
-[11:34:59] [Discovery/Advertiser] ブロードキャストループ開始
-[11:34:59] [ClientManager] クライアントホスト作成成功
-[11:34:59] [Discovery/Advertiser] ブロードキャスト送信 #1: AS (0/8) サイズ:21 bytes ポート:12346
-[11:34:59] [ClientManager] 接続要求送信中... (ホスト判定: true)
-[11:34:59] [ClientManager] サーバー接続成功
-[11:34:59] [ClientManager] JOIN送信: Player684
-[11:34:59] [ClientManager] ProcessLobbyUpdate: データ長=12
-[11:34:59] [ClientManager] プレイヤー数: 1
-[11:34:59] [ClientManager] プレイヤー1: Player684
-[11:34:59] [ClientManager] ロビー更新: 0 → 1 人
-[11:34:59] [ClientManager] ProcessLobbyUpdate: データ長=12
-[11:34:59] [ClientManager] プレイヤー数: 1
-[11:34:59] [ClientManager] プレイヤー1: Player684
-[11:34:59] [ClientManager] ロビー更新: 1 → 1 人
-[11:34:59] [Discovery/Listener] パケット受信! サイズ:21 bytes
-[11:34:59] [Discovery/Listener] マジック一致確認
-[11:34:59] [Discovery/Listener] ★サーバー検出★:  @ 172.20.145.6:156 (50/0) state=8
-[11:34:59] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[11:35:03] [Discovery/Listener] 生存確認 ループ:50
-[11:35:04] [Discovery/Advertiser] ブロードキャスト送信 #2: AS (1/8) サイズ:21 bytes ポート:12346
-[11:35:04] [Discovery/Listener] パケット受信! サイズ:21 bytes
-[11:35:04] [Discovery/Listener] マジック一致確認
-[11:35:04] [Discovery/Listener] ★サーバー検出★:  @ 172.20.145.6:156 (50/1) state=8
-[11:35:04] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[11:35:08] [Discovery/Listener] 生存確認 ループ:100
-[11:35:09] [Discovery/Advertiser] ブロードキャスト送信 #3: AS (1/8) サイズ:21 bytes ポート:12346
-[11:35:09] [Discovery/Listener] パケット受信! サイズ:21 bytes
-[11:35:09] [Discovery/Listener] マジック一致確認
-[11:35:09] [Discovery/Listener] ★サーバー検出★:  @ 172.20.145.6:156 (50/1) state=8
-[11:35:09] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[11:35:13] [Discovery/Listener] 生存確認 ループ:150
-[11:35:14] [Discovery/Advertiser] ブロードキャスト送信 #4: AS (1/8) サイズ:21 bytes ポート:12346
-[11:35:14] [Discovery/Listener] パケット受信! サイズ:21 bytes
-[11:35:14] [Discovery/Listener] マジック一致確認
-[11:35:14] [Discovery/Listener] ★サーバー検出★:  @ 172.20.145.6:156 (50/1) state=8
-[11:35:14] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[11:35:18] [Discovery/Listener] 生存確認 ループ:200
-[11:35:19] [Discovery/Advertiser] ブロードキャスト送信 #5: AS (1/8) サイズ:21 bytes ポート:12346
-[11:35:19] [Discovery/Listener] パケット受信! サイズ:21 bytes
-[11:35:19] [Discovery/Listener] マジック一致確認
-[11:35:19] [Discovery/Listener] ★サーバー検出★:  @ 172.20.145.6:156 (50/1) state=8
-[11:35:19] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[11:35:23] [Discovery/Listener] 生存確認 ループ:250
-[11:35:24] [Discovery/Advertiser] ブロードキャスト送信 #6: AS (1/8) サイズ:21 bytes ポート:12346
-[11:35:24] [Discovery/Listener] パケット受信! サイズ:21 bytes
-[11:35:24] [Discovery/Listener] マジック一致確認
-[11:35:24] [Discovery/Listener] ★サーバー検出★:  @ 172.20.145.6:156 (50/1) state=8
-[11:35:24] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[11:35:28] [Discovery/Listener] 生存確認 ループ:300
-[11:35:29] [Discovery/Advertiser] ブロードキャスト送信 #7: AS (1/8) サイズ:21 bytes ポート:12346
-[11:35:29] [Discovery/Listener] パケット受信! サイズ:21 bytes
-[11:35:29] [Discovery/Listener] マジック一致確認
-[11:35:29] [Discovery/Listener] ★サーバー検出★:  @ 172.20.145.6:156 (50/1) state=8
-[11:35:29] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[11:35:33] [Discovery/Listener] 生存確認 ループ:350
-[11:35:34] [Discovery/Advertiser] ブロードキャスト送信 #8: AS (1/8) サイズ:21 bytes ポート:12346
-[11:35:34] [Discovery/Listener] パケット受信! サイズ:21 bytes
-[11:35:34] [Discovery/Listener] マジック一致確認
-[11:35:34] [Discovery/Listener] ★サーバー検出★:  @ 172.20.145.6:156 (50/1) state=8
-[11:35:34] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[11:35:38] [Discovery/Listener] 生存確認 ループ:400
-[11:35:39] [Discovery/Advertiser] ブロードキャスト送信 #9: AS (1/8) サイズ:21 bytes ポート:12346
-[11:35:39] [Discovery/Listener] パケット受信! サイズ:21 bytes
-[11:35:39] [Discovery/Listener] マジック一致確認
-[11:35:39] [Discovery/Listener] ★サーバー検出★:  @ 172.20.145.6:156 (50/1) state=8
-[11:35:39] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:00:26] ========================================
+[12:00:26] ClientManager 初期化開始
+[12:00:26] ========================================
+[12:00:26] [ClientManager] ENet初期化成功
+[12:00:26] [ClientManager] Discovery作成
+[12:00:26] [Discovery/Listener] スレッド開始
+[12:00:26] [Discovery/Listener] WSAStartup成功
+[12:00:26] [ClientManager] Discoveryリスナー起動 (ポート:12346)
+[12:00:26] [Discovery/Listener] ソケット作成成功
+[12:00:26] [Discovery/Listener] bind成功 ポート:12346
+[12:00:26] [Discovery/Listener] 受信ループ開始
+[12:00:30] [Discovery/Advertiser] スレッド開始
+[12:00:30] [Discovery/Advertiser] WSAStartup成功
+[12:00:30] [ClientManager] ConnectToHost: 127.0.0.1:12256
+[12:00:30] [Discovery/Advertiser] ソケット作成成功
+[12:00:30] [Discovery/Advertiser] SO_BROADCAST設定成功
+[12:00:30] [Discovery/Advertiser] ブロードキャストループ開始
+[12:00:30] [ClientManager] クライアントホスト作成成功
+[12:00:30] [Discovery/Advertiser] ブロードキャスト送信 #1: F (0/8) ポート:12256 state:0
+[12:00:30] [ClientManager] 接続要求送信中... (ホスト判定: true)
+[12:00:30] [ClientManager] サーバー接続成功
+[12:00:30] [ClientManager] JOIN送信: Player667
+[12:00:30] [ClientManager] ProcessLobbyUpdate: データ長=12
+[12:00:30] [ClientManager] プレイヤー数: 1
+[12:00:30] [ClientManager] プレイヤー1: Player667
+[12:00:30] [ClientManager] ロビー更新: 0 → 1 人
+[12:00:30] [ClientManager] ProcessLobbyUpdate: データ長=12
+[12:00:30] [ClientManager] プレイヤー数: 1
+[12:00:30] [ClientManager] プレイヤー1: Player667
+[12:00:30] [ClientManager] ロビー更新: 1 → 1 人
+[12:00:30] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[12:00:30] [Discovery/Listener] マジック一致確認
+[12:00:30] [Discovery/Listener] ★サーバー検出★:  @ 172.20.145.6:47 (224/0) state=8
+[12:00:30] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:00:31] [Discovery/Listener] 生存確認 ループ:50
+[12:00:35] [Discovery/Advertiser] ブロードキャスト送信 #2: F (1/8) ポート:12256 state:0
+[12:00:35] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[12:00:35] [Discovery/Listener] マジック一致確認
+[12:00:35] [Discovery/Listener] ★サーバー検出★:  @ 172.20.145.6:47 (224/1) state=8
+[12:00:35] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:00:36] [Discovery/Listener] 生存確認 ループ:100
+[12:00:40] [Discovery/Advertiser] ブロードキャスト送信 #3: F (1/8) ポート:12256 state:0
+[12:00:40] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[12:00:40] [Discovery/Listener] マジック一致確認
+[12:00:40] [Discovery/Listener] ★サーバー検出★:  @ 172.20.145.6:47 (224/1) state=8
+[12:00:40] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:00:41] [Discovery/Listener] 生存確認 ループ:150
+[12:00:45] [Discovery/Advertiser] ブロードキャスト送信 #4: F (1/8) ポート:12256 state:0
+[12:00:45] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[12:00:45] [Discovery/Listener] マジック一致確認
+[12:00:45] [Discovery/Listener] ★サーバー検出★:  @ 172.20.145.6:47 (224/1) state=8
+[12:00:45] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:00:46] [Discovery/Listener] 生存確認 ループ:200
+[12:00:50] [Discovery/Advertiser] ブロードキャスト送信 #5: F (1/8) ポート:12256 state:0
+[12:00:50] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[12:00:50] [Discovery/Listener] マジック一致確認
+[12:00:50] [Discovery/Listener] ★サーバー検出★:  @ 172.20.145.6:47 (224/1) state=8
+[12:00:50] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:00:51] [Discovery/Listener] 生存確認 ループ:250
+[12:00:55] [Discovery/Advertiser] ブロードキャスト送信 #6: F (1/8) ポート:12256 state:0
+[12:00:55] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[12:00:55] [Discovery/Listener] マジック一致確認
+[12:00:55] [Discovery/Listener] ★サーバー検出★:  @ 172.20.145.6:47 (224/1) state=8
+[12:00:55] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:00:56] [Discovery/Listener] 生存確認 ループ:300
+[12:01:00] [Discovery/Advertiser] ブロードキャスト送信 #7: F (1/8) ポート:12256 state:0
+[12:01:00] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[12:01:00] [Discovery/Listener] マジック一致確認
+[12:01:00] [Discovery/Listener] ★サーバー検出★:  @ 172.20.145.6:47 (224/1) state=8
+[12:01:00] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:01:01] [Discovery/Listener] 生存確認 ループ:350
+[12:01:05] [Discovery/Advertiser] ブロードキャスト送信 #8: F (1/8) ポート:12256 state:0
+[12:01:05] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[12:01:05] [Discovery/Listener] マジック一致確認
+[12:01:05] [Discovery/Listener] ★サーバー検出★:  @ 172.20.145.6:47 (224/1) state=8
+[12:01:05] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:01:06] [Discovery/Listener] 生存確認 ループ:400
+[12:01:10] [Discovery/Advertiser] ブロードキャスト送信 #9: F (1/8) ポート:12256 state:0
+[12:01:10] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[12:01:10] [Discovery/Listener] マジック一致確認
+[12:01:10] [Discovery/Listener] ★サーバー検出★:  @ 172.20.145.6:47 (224/1) state=8
+[12:01:10] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:01:11] [Discovery/Listener] 生存確認 ループ:450
+[12:01:15] [Discovery/Advertiser] ブロードキャスト送信 #10: F (1/8) ポート:12256 state:0
+[12:01:15] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[12:01:15] [Discovery/Listener] マジック一致確認
+[12:01:15] [Discovery/Listener] ★サーバー検出★:  @ 172.20.145.6:47 (224/1) state=8
+[12:01:15] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:01:16] [Discovery/Listener] 生存確認 ループ:500
+[12:01:20] [Discovery/Advertiser] ブロードキャスト送信 #11: F (1/8) ポート:12256 state:0
+[12:01:20] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[12:01:20] [Discovery/Listener] マジック一致確認
+[12:01:20] [Discovery/Listener] ★サーバー検出★:  @ 172.20.145.6:47 (224/1) state=8
+[12:01:20] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:01:21] [Discovery/Listener] 生存確認 ループ:550
+[12:01:25] [Discovery/Advertiser] ブロードキャスト送信 #12: F (1/8) ポート:12256 state:0
+[12:01:25] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[12:01:25] [Discovery/Listener] マジック一致確認
+[12:01:25] [Discovery/Listener] ★サーバー検出★:  @ 172.20.145.6:47 (224/1) state=8
+[12:01:25] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:01:26] [Discovery/Listener] 生存確認 ループ:600

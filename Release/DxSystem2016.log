@@ -1,14 +1,13 @@
-﻿  Discovery.cpp
+﻿  ServerManager.cpp
 c:\program files (x86)\microsoft sdks\windows\v7.1a\include\sal_supp.h(57): warning C4005: '__useHeader': マクロが再定義されました。
   C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\sal.h(2866): note: '__useHeader' の以前の定義を確認してください
 c:\program files (x86)\microsoft sdks\windows\v7.1a\include\specstrings_supp.h(77): warning C4005: '__on_failure': マクロが再定義されました。
   C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\sal.h(2876): note: '__on_failure' の以前の定義を確認してください
-Source\Object\Network\Discovery\Discovery.cpp(141): warning C4189: 'protoVer': ローカル変数が初期化されましたが、参照されていません
      ライブラリ d:\users\5231042\Desktop\netkok\Release\DxSystem2016.lib とオブジェクト d:\users\5231042\Desktop\netkok\Release\DxSystem2016.exp を作成中
   コード生成しています。
-  39 of 6180 functions ( 0.6%) were compiled, the rest were copied from previous compilation.
-    38 functions were new in current compilation
-    28 functions had inline decision re-evaluated but remain unchanged
+  6 of 6180 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    26 functions had inline decision re-evaluated but remain unchanged
   コード生成が終了しました。
 enetlib.lib(win32.obj) : warning LNK4099: PDB 'enetlib.pdb' が 'enetlib.lib(win32.obj)' で、または 'd:\users\5231042\Desktop\netkok\Release\enetlib.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
 enetlib.lib(peer.obj) : warning LNK4099: PDB 'enetlib.pdb' が 'enetlib.lib(peer.obj)' で、または 'd:\users\5231042\Desktop\netkok\Release\enetlib.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
