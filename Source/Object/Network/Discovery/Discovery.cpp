@@ -306,7 +306,7 @@ bool Discovery::StartAdvertise(uint16_t discoveryPort, uint16_t enetPort, const 
 			payload.push_back(static_cast<char>((protoVerNet >> 8) & 0xFF));
 			payload.push_back(static_cast<char>(protoVerNet & 0xFF));
 
-			uint16_t portNet = htons(enetPort);
+			uint16_t portNet = enetPort;  
 			payload.push_back(static_cast<char>((portNet >> 8) & 0xFF));
 			payload.push_back(static_cast<char>(portNet & 0xFF));
 
@@ -324,14 +324,14 @@ bool Discovery::StartAdvertise(uint16_t discoveryPort, uint16_t enetPort, const 
 				NET_LOG_F("[Discovery/Advertiser] sendto失敗: %d", WSAGetLastError());
 			}
 			else {
-				NET_LOG_F("[Discovery/Advertiser] ブロードキャスト送信 #%d: %s (%d/%d) サイズ:%d bytes ポート:%d",
-					advertiseCount, name.c_str(), (int)playerCount, (int)maxPlayers, sent, impl->discoveryPort);
+				// デバッグログに実際のポート番号を表示
+				NET_LOG_F("[Discovery/Advertiser] ブロードキャスト送信 #%d: %s (%d/%d) ポート:%d state:%d",
+					advertiseCount, name.c_str(), (int)playerCount, (int)maxPlayers, enetPort, (int)state);
 			}
 
 			for (int i = 0; i < 50 && impl->advertiserRunning; i++)
 				std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
-
 		NET_LOG("[Discovery/Advertiser] ブロードキャストループ終了");
 		closesocket(sock);
 		WSACleanup();
