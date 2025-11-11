@@ -307,7 +307,7 @@ bool SceneSelectHost::CreateServer()
 	if (!started)
 	{
 		MessageBoxA(NULL, "サーバーの起動に失敗しました。\nポート確保に失敗。", "エラー", MB_OK | MB_ICONERROR);
-		return false;
+		return false; 
 	}
 
 	SceneLobby::SetRequestedMode(REQUEST_MODE::HOST);
