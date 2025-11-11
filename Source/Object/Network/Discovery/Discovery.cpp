@@ -7,21 +7,12 @@
 #include <map>
 #include <vector>
 #include <cstring>
-#include <algorithm> // for std::min
+#include <algorithm>
 #include <cstddef>
 #include "Discovery.h"
+#include "..\\NetworkLogger.h"
 
 #pragma comment(lib, "ws2_32.lib")
-
-			// Payload format (binary):
-			// [0..9] magic "SILENT_DISC" (10 bytes)
-			// [10..11] protocolVersion (uint16_t, network byte order)
-			// [12..13] enetPort (uint16_t, network byte order)
-			// [14] playerCount (uint8_t)
-			// [15] maxPlayers (uint8_t)
-			// [16] state (uint8_t) // 0=lobby,1=in-game
-			// [17] nameLen (uint8_t)
-			// [18..] name (nameLen bytes, UTF-8)
 
 struct Discovery::Impl
 {
@@ -39,15 +30,13 @@ struct Discovery::Impl
 	uint16_t discoveryPort;
 	int expireSeconds;
 
-	// advertise info (protected by mtx)
 	uint16_t advEnetPort;
 	uint8_t advPlayerCount;
 	uint8_t advMaxPlayers;
-	uint8_t advState; // 0 lobby, 1 in-game
+	uint8_t advState;
 	std::string advName;
 
 	std::mutex mtx;
-	// key = ip:port string
 	std::map<std::string, ServerInfo> servers;
 };
 
@@ -65,22 +54,37 @@ Discovery::~Discovery()
 
 bool Discovery::StartListener(uint16_t discoveryPort)
 {
-	if (impl->listenerRunning) return true;
+	if (impl->listenerRunning) {
+		NET_LOG("[Discovery/Listener] 既に起動済み");
+		return true;
+	}
+
 	impl->discoveryPort = discoveryPort;
 	impl->listenerRunning = true;
 
 	impl->listenerThread = std::thread([this]() {
+		NET_LOG("[Discovery/Listener] スレッド開始");
+
 		WSADATA wsa;
 		if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
+			NET_LOG_F("[Discovery/Listener] WSAStartup失敗: %d", WSAGetLastError());
 			impl->listenerRunning = false;
 			return;
 		}
+		NET_LOG("[Discovery/Listener] WSAStartup成功");
 
 		SOCKET sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 		if (sock == INVALID_SOCKET) {
+			NET_LOG_F("[Discovery/Listener] socket作成失敗: %d", WSAGetLastError());
 			impl->listenerRunning = false;
 			WSACleanup();
 			return;
+		}
+		NET_LOG("[Discovery/Listener] ソケット作成成功");
+
+		BOOL reuse = TRUE;
+		if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (const char*)&reuse, sizeof(reuse)) == SOCKET_ERROR) {
+			NET_LOG("[Discovery/Listener] SO_REUSEADDR設定失敗（続行）");
 		}
 
 		sockaddr_in local;
@@ -89,13 +93,14 @@ bool Discovery::StartListener(uint16_t discoveryPort)
 		local.sin_port = htons((u_short)impl->discoveryPort);
 
 		if (bind(sock, (sockaddr*)&local, sizeof(local)) == SOCKET_ERROR) {
+			NET_LOG_F("[Discovery/Listener] bind失敗 ポート:%d エラー:%d", impl->discoveryPort, WSAGetLastError());
 			closesocket(sock);
 			impl->listenerRunning = false;
 			WSACleanup();
 			return;
 		}
+		NET_LOG_F("[Discovery/Listener] bind成功 ポート:%d", impl->discoveryPort);
 
-		// non-blocking
 		u_long mode = 1;
 		ioctlsocket(sock, FIONBIO, &mode);
 
@@ -106,31 +111,62 @@ bool Discovery::StartListener(uint16_t discoveryPort)
 		const char magic[] = "SILENT_DISC";
 		const int magicLen = 10;
 
+		NET_LOG("[Discovery/Listener] 受信ループ開始");
+		int loopCount = 0;
+
 		while (impl->listenerRunning) {
+			loopCount++;
+			if (loopCount % 50 == 0) {
+				NET_LOG_F("[Discovery/Listener] 生存確認 ループ:%d", loopCount);
+			}
+
 			int recvLen = recvfrom(sock, buf, sizeof(buf), 0, (sockaddr*)&from, &fromlen);
+
 			if (recvLen > 0) {
-				if (recvLen < 18) continue; // minimal size
-				if (memcmp(buf, magic, magicLen) != 0) continue;
+				NET_LOG_F("[Discovery/Listener] パケット受信! サイズ:%d bytes", recvLen);
+
+				if (recvLen < 18) {
+					NET_LOG("[Discovery/Listener] パケットサイズ不足 (最小18bytes必要)");
+					continue;
+				}
+
+				if (memcmp(buf, magic, magicLen) != 0) {
+					NET_LOG("[Discovery/Listener] マジック不一致");
+					continue;
+				}
+				NET_LOG("[Discovery/Listener] マジック一致確認");
 
 				int idx = magicLen;
 				if (idx + 2 > recvLen) continue;
 				uint16_t protoVer = ntohs(*(uint16_t*)(buf + idx)); idx += 2;
+
 				if (idx + 2 > recvLen) continue;
 				uint16_t enetPort = ntohs(*(uint16_t*)(buf + idx)); idx += 2;
+
 				if (idx + 1 > recvLen) continue;
 				uint8_t playerCount = *(uint8_t*)(buf + idx); idx += 1;
+
 				if (idx + 1 > recvLen) continue;
 				uint8_t maxPlayers = *(uint8_t*)(buf + idx); idx += 1;
+
 				if (idx + 1 > recvLen) continue;
 				uint8_t state = *(uint8_t*)(buf + idx); idx += 1;
+
 				if (idx + 1 > recvLen) continue;
 				uint8_t nameLen = *(uint8_t*)(buf + idx); idx += 1;
-				if (idx + (int)nameLen > recvLen) continue;
+
+				if (idx + (int)nameLen > recvLen) {
+					NET_LOG("[Discovery/Listener] 名前長さ不正");
+					continue;
+				}
 				std::string name(buf + idx, nameLen);
 
 				char ipstr[INET_ADDRSTRLEN] = { 0 };
 				inet_ntop(AF_INET, &from.sin_addr, ipstr, sizeof(ipstr));
 				std::string key = std::string(ipstr) + ":" + std::to_string(enetPort);
+
+				NET_LOG_F("[Discovery/Listener] ★サーバー検出★: %s @ %s:%d (%d/%d) state=%d",
+					name.c_str(), ipstr, enetPort, (int)playerCount, (int)maxPlayers, (int)state);
 
 				ServerInfo si;
 				si.ip = from.sin_addr.s_addr;
@@ -144,25 +180,36 @@ bool Discovery::StartListener(uint16_t discoveryPort)
 				{
 					std::lock_guard<std::mutex> lk(impl->mtx);
 					impl->servers[key] = si;
+					NET_LOG_F("[Discovery/Listener] サーバーリストに追加 (合計:%d)", (int)impl->servers.size());
 				}
 			}
-			else {
-				std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			else if (recvLen == SOCKET_ERROR) {
+				int error = WSAGetLastError();
+				if (error != WSAEWOULDBLOCK && loopCount % 100 == 0) {
+					NET_LOG_F("[Discovery/Listener] recvfrom エラー:%d", error);
+				}
 			}
 
-			// expire old entries
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
 			{
 				std::lock_guard<std::mutex> lk(impl->mtx);
 				auto now = std::chrono::steady_clock::now();
 				std::vector<std::string> eraseKeys;
 				for (auto &kv : impl->servers) {
 					auto diff = std::chrono::duration_cast<std::chrono::seconds>(now - kv.second.lastSeen).count();
-					if (diff > impl->expireSeconds) eraseKeys.push_back(kv.first);
+					if (diff > impl->expireSeconds) {
+						eraseKeys.push_back(kv.first);
+					}
 				}
-				for (auto &k : eraseKeys) impl->servers.erase(k);
+				for (auto &k : eraseKeys) {
+					NET_LOG_F("[Discovery/Listener] タイムアウト削除: %s", k.c_str());
+					impl->servers.erase(k);
+				}
 			}
 		}
 
+		NET_LOG("[Discovery/Listener] 受信ループ終了");
 		closesocket(sock);
 		WSACleanup();
 	});
@@ -173,13 +220,19 @@ bool Discovery::StartListener(uint16_t discoveryPort)
 void Discovery::StopListener()
 {
 	if (!impl->listenerRunning) return;
+	NET_LOG("[Discovery/Listener] 停止中...");
 	impl->listenerRunning = false;
 	if (impl->listenerThread.joinable()) impl->listenerThread.join();
+	NET_LOG("[Discovery/Listener] 停止完了");
 }
 
 bool Discovery::StartAdvertise(uint16_t discoveryPort, uint16_t enetPort, const std::string& serverName, uint8_t maxPlayers)
 {
-	if (impl->advertiserRunning) return true;
+	if (impl->advertiserRunning) {
+		NET_LOG("[Discovery/Advertiser] 既に起動済み");
+		return true;
+	}
+
 	impl->discoveryPort = discoveryPort;
 	{
 		std::lock_guard<std::mutex> lk(impl->mtx);
@@ -192,21 +245,32 @@ bool Discovery::StartAdvertise(uint16_t discoveryPort, uint16_t enetPort, const 
 	impl->advertiserRunning = true;
 
 	impl->advertiserThread = std::thread([this]() {
+		NET_LOG("[Discovery/Advertiser] スレッド開始");
+
 		WSADATA wsa;
 		if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
+			NET_LOG_F("[Discovery/Advertiser] WSAStartup失敗: %d", WSAGetLastError());
 			impl->advertiserRunning = false;
 			return;
 		}
+		NET_LOG("[Discovery/Advertiser] WSAStartup成功");
 
 		SOCKET sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 		if (sock == INVALID_SOCKET) {
+			NET_LOG_F("[Discovery/Advertiser] socket作成失敗: %d", WSAGetLastError());
 			impl->advertiserRunning = false;
 			WSACleanup();
 			return;
 		}
+		NET_LOG("[Discovery/Advertiser] ソケット作成成功");
 
 		BOOL opt = TRUE;
-		setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (const char*)&opt, sizeof(opt));
+		if (setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (const char*)&opt, sizeof(opt)) == SOCKET_ERROR) {
+			NET_LOG_F("[Discovery/Advertiser] SO_BROADCAST設定失敗: %d", WSAGetLastError());
+		}
+		else {
+			NET_LOG("[Discovery/Advertiser] SO_BROADCAST設定成功");
+		}
 
 		sockaddr_in addr;
 		addr.sin_family = AF_INET;
@@ -214,9 +278,13 @@ bool Discovery::StartAdvertise(uint16_t discoveryPort, uint16_t enetPort, const 
 		addr.sin_addr.s_addr = inet_addr("255.255.255.255");
 
 		const char magic[] = "SILENT_DISC";
+		int advertiseCount = 0;
+
+		NET_LOG("[Discovery/Advertiser] ブロードキャストループ開始");
 
 		while (impl->advertiserRunning) {
-			// read advertise info under lock
+			advertiseCount++;
+
 			uint16_t enetPort;
 			uint8_t playerCount;
 			uint8_t maxPlayers;
@@ -250,12 +318,21 @@ bool Discovery::StartAdvertise(uint16_t discoveryPort, uint16_t enetPort, const 
 			payload.push_back(static_cast<char>(nameLen));
 			payload.insert(payload.end(), name.begin(), name.begin() + nameLen);
 
-			sendto(sock, payload.data(), (int)payload.size(), 0, (sockaddr*)&addr, sizeof(addr));
+			int sent = sendto(sock, payload.data(), (int)payload.size(), 0, (sockaddr*)&addr, sizeof(addr));
 
-			// advertise every 5 seconds (check flag more frequently)
-			for (int i = 0; i<50 && impl->advertiserRunning; i++) std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			if (sent == SOCKET_ERROR) {
+				NET_LOG_F("[Discovery/Advertiser] sendto失敗: %d", WSAGetLastError());
+			}
+			else {
+				NET_LOG_F("[Discovery/Advertiser] ブロードキャスト送信 #%d: %s (%d/%d) サイズ:%d bytes ポート:%d",
+					advertiseCount, name.c_str(), (int)playerCount, (int)maxPlayers, sent, impl->discoveryPort);
+			}
+
+			for (int i = 0; i < 50 && impl->advertiserRunning; i++)
+				std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
 
+		NET_LOG("[Discovery/Advertiser] ブロードキャストループ終了");
 		closesocket(sock);
 		WSACleanup();
 	});
@@ -266,8 +343,10 @@ bool Discovery::StartAdvertise(uint16_t discoveryPort, uint16_t enetPort, const 
 void Discovery::StopAdvertise()
 {
 	if (!impl->advertiserRunning) return;
+	NET_LOG("[Discovery/Advertiser] 停止中...");
 	impl->advertiserRunning = false;
 	if (impl->advertiserThread.joinable()) impl->advertiserThread.join();
+	NET_LOG("[Discovery/Advertiser] 停止完了");
 }
 
 std::vector<ServerInfo> Discovery::GetServers()
@@ -276,6 +355,8 @@ std::vector<ServerInfo> Discovery::GetServers()
 	std::lock_guard<std::mutex> lk(impl->mtx);
 	out.reserve(impl->servers.size());
 	for (auto &kv : impl->servers) out.push_back(kv.second);
+
+	NET_LOG_F("[Discovery] GetServers呼び出し: %d サーバー返却", (int)out.size());
 	return out;
 }
 

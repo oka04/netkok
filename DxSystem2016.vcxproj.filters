@@ -632,6 +632,9 @@
     <ClInclude Include="Source\Scene\SceneSelectHost\SceneSelectHost.h">
       <Filter>Scene\SceneSelectHost</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Object\Network\NetworkLogger.h">
+      <Filter>Object\Network</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Source\Effect\Effects.rc">

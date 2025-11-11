@@ -1,0 +1,15 @@
+===========================================
+Network Debug Log
+===========================================
+
+[11:28:23] ========================================
+[11:28:23] ClientManager 初期化開始
+[11:28:23] ========================================
+[11:28:23] [ClientManager] ENet初期化成功
+[11:28:23] [ClientManager] Discovery作成
+[11:28:23] [Discovery/Listener] スレッド開始
+[11:28:23] [Discovery/Listener] WSAStartup成功
+[11:28:23] [ClientManager] Discoveryリスナー起動 (ポート:12346)
+[11:28:23] [Discovery/Listener] ソケット作成成功
+[11:28:23] [Discovery/Listener] bind成功 ポート:12346
+[11:28:23] [Discovery/Listener] 受信ループ開始

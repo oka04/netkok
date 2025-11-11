@@ -4,6 +4,7 @@
 #include <windows.h>
 #include <iostream>
 #include <algorithm>
+#include "..\\NetworkLogger.h"
 
 #pragma warning(disable:4996)
 #pragma warning(disable:26812)
@@ -37,13 +38,27 @@ ClientManager::ClientManager()
 	, m_bHost(false)
 	, m_previousLobbyCount(0)
 {
+	// ネットワークログ初期化（ファイルを空にする）
+	NetworkLogger::GetInstance().Initialize("network_debug.txt");
+	NET_LOG("========================================");
+	NET_LOG("ClientManager 初期化開始");
+	NET_LOG("========================================");
+
 	if (enet_initialize() != 0)
 	{
+		NET_LOG("[ClientManager] ENetの初期化に失敗しました");
 		MessageBoxA(NULL, "ENetの初期化に失敗しました。", "エラー", MB_OK);
+	}
+	else
+	{
+		NET_LOG("[ClientManager] ENet初期化成功");
 	}
 
 	m_pDiscovery = std::make_unique<Discovery>();
+	NET_LOG("[ClientManager] Discovery作成");
+
 	m_pDiscovery->StartListener(12346);
+	NET_LOG("[ClientManager] Discoveryリスナー起動 (ポート:12346)");
 }
 
 ClientManager::~ClientManager()
@@ -57,33 +72,6 @@ ClientManager::~ClientManager()
 	enet_deinitialize();
 
 	if (s_instance == this) s_instance = nullptr;
-}
-
-bool ClientManager::ConnectToServer(const char* ip, int port)
-{
-	m_pClientHost = enet_host_create(nullptr, 1, 1, 0, 0);
-	if (!m_pClientHost)
-	{
-		MessageBoxA(NULL, "クライアント作成失敗", "エラー", MB_OK);
-		return false;
-	}
-
-	ENetAddress address;
-	enet_address_set_host(&address, ip);
-	address.port = (enet_uint16)port;
-
-	m_pServerPeer = enet_host_connect(m_pClientHost, &address, 1, 0);
-	if (!m_pServerPeer)
-	{
-		MessageBoxA(NULL, "サーバー接続要求失敗", "エラー", MB_OK);
-		return false;
-	}
-
-	// mark host flag if connecting to localhost
-	m_bHost = (strcmp(ip, "127.0.0.1") == 0 || strcmp(ip, "localhost") == 0);
-
-	std::cout << "[Client] 接続要求送信中..." << std::endl;
-	return true;
 }
 
 void ClientManager::Disconnect()
@@ -159,8 +147,10 @@ const std::string & ClientManager::GetPlayerName() const
 	return m_playerName;
 }
 
-bool ClientManager::ConnectToHost(const std::string& ip, int port)
+bool ClientManager::ConnectToServer(const std::string& ip, int port)
 {
+	NET_LOG_F("[ClientManager] ConnectToHost: %s:%d", ip.c_str(), port);
+
 	if (m_pClientHost)
 	{
 		enet_host_destroy(m_pClientHost);
@@ -170,9 +160,10 @@ bool ClientManager::ConnectToHost(const std::string& ip, int port)
 	m_pClientHost = enet_host_create(nullptr, 1, 1, 0, 0);
 	if (!m_pClientHost)
 	{
-		MessageBoxA(NULL, "クライアントの作成に失敗しました。", "エラー", MB_OK | MB_ICONERROR);
+		NET_LOG("[ClientManager] クライアント作成失敗");
 		return false;
 	}
+	NET_LOG("[ClientManager] クライアントホスト作成成功");
 
 	ENetAddress address;
 	enet_address_set_host(&address, ip.c_str());
@@ -181,24 +172,48 @@ bool ClientManager::ConnectToHost(const std::string& ip, int port)
 	m_pServerPeer = enet_host_connect(m_pClientHost, &address, 1, 0);
 	if (!m_pServerPeer)
 	{
-		MessageBoxA(NULL, "サーバーへの接続要求に失敗しました。", "エラー", MB_OK | MB_ICONERROR);
+		NET_LOG("[ClientManager] サーバー接続要求失敗");
 		return false;
 	}
 
-	// 自分がホストか判定（127.0.0.1 または localhost の場合）
 	m_bHost = (ip == "127.0.0.1" || ip == "localhost");
+	NET_LOG_F("[ClientManager] 接続要求送信中... (ホスト判定: %s)", m_bHost ? "true" : "false");
 
-	std::cout << "[Client] サーバー (" << ip << ":" << port << ") に接続要求を送信しました。" << std::endl;
 	return true;
 }
 
 void ClientManager::RefreshAvailableServers()
 {
+	NET_LOG("[ClientManager] RefreshAvailableServers 開始");
+
 	m_availableServers.clear();
-	if (!m_pDiscovery) return;
+
+	if (!m_pDiscovery) {
+		NET_LOG("[ClientManager] エラー: m_pDiscovery が nullptr");
+		return;
+	}
+
 	auto servers = m_pDiscovery->GetServers();
+	NET_LOG_F("[ClientManager] Discovery から %d サーバー取得", (int)servers.size());
+
+	int addedCount = 0;
+	int skippedCount = 0;
+
 	for (auto &s : servers) {
-		if (s.state != 0) continue; // only show lobby servers
+		char ipStr[INET_ADDRSTRLEN];
+		struct in_addr addr;
+		addr.s_addr = s.ip;
+		inet_ntop(AF_INET, &addr, ipStr, sizeof(ipStr));
+		 
+		NET_LOG_F("[ClientManager] サーバー情報: %s @ %s:%d (%d/%d) state=%d",
+			s.name.c_str(), ipStr, s.port, (int)s.playerCount, (int)s.maxPlayers, (int)s.state);
+
+		if (s.state != 0) {
+			NET_LOG_F("[ClientManager] スキップ: ゲーム中 (state=%d)", (int)s.state);
+			skippedCount++;
+			continue;
+		}
+
 		ServerInfoNet n;
 		n.ip = s.ip;
 		n.port = s.port;
@@ -207,9 +222,15 @@ void ClientManager::RefreshAvailableServers()
 		n.state = s.state;
 		n.name = s.name;
 		m_availableServers.push_back(n);
+		addedCount++;
+
+		NET_LOG_F("[ClientManager] 追加成功: %s", s.name.c_str());
 	}
-	// swap into cached
+
 	m_cachedServers = m_availableServers;
+
+	NET_LOG_F("[ClientManager] RefreshAvailableServers 完了: 追加=%d スキップ=%d 合計=%d",
+		addedCount, skippedCount, (int)m_cachedServers.size());
 }
 
 void ClientManager::Update()
@@ -238,8 +259,9 @@ void ClientManager::Update()
 
 void ClientManager::OnConnect()
 {
-	std::cout << "[Client] サーバー接続成功" << std::endl;
+	NET_LOG("[ClientManager] サーバー接続成功");
 	SendJoin(m_playerName.empty() ? "Player" : m_playerName);
+	NET_LOG_F("[ClientManager] JOIN送信: %s", m_playerName.c_str());
 }
 
 void ClientManager::OnReceive(const ENetEvent& event)
@@ -268,15 +290,19 @@ void ClientManager::OnReceive(const ENetEvent& event)
 
 void ClientManager::OnDisconnect()
 {
-	std::cout << "[Client] サーバーから切断" << std::endl;
+	NET_LOG("[ClientManager] サーバーから切断");
 }
 
 void ClientManager::ProcessLobbyUpdate(const uint8_t* data, size_t len)
 {
+	NET_LOG_F("[ClientManager] ProcessLobbyUpdate: データ長=%d", (int)len);
+
 	size_t idx = 1;
 	if (idx >= len) return;
 
 	uint8_t count = data[idx++];
+	NET_LOG_F("[ClientManager] プレイヤー数: %d", (int)count);
+
 	std::vector<std::string> newNames;
 	newNames.reserve(count);
 
@@ -285,6 +311,7 @@ void ClientManager::ProcessLobbyUpdate(const uint8_t* data, size_t len)
 		uint8_t nl = data[idx++];
 		if (idx + nl > len) break;
 		newNames.emplace_back(reinterpret_cast<const char*>(data + idx), nl);
+		NET_LOG_F("[ClientManager] プレイヤー%d: %s", i + 1, newNames.back().c_str());
 		idx += nl;
 	}
 
@@ -292,6 +319,8 @@ void ClientManager::ProcessLobbyUpdate(const uint8_t* data, size_t len)
 	int prev = (int)m_lobbyPlayerNames.size();
 	m_lobbyPlayerNames = std::move(newNames);
 	int now = (int)m_lobbyPlayerNames.size();
+
+	NET_LOG_F("[ClientManager] ロビー更新: %d → %d 人", prev, now);
 
 	if (now > prev) {
 		// サウンドを鳴らす

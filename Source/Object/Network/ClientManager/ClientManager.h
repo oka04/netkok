@@ -26,7 +26,7 @@ public:
 	static ClientManager* GetInstance();
 
 	// discovery cached list (only updated when RefreshAvailableServers is called)
-	bool ConnectToServer(const char* ip, int port);
+	bool ConnectToServer(const std::string& ip, int port);
 	void Disconnect();
 	void SendMessage(const char* msg);
 	void Update();
@@ -40,7 +40,6 @@ public:
 	bool IsHost() const;
 	void SetPlayerName(const std::string& name);
 	const std::string& GetPlayerName() const;
-	bool ConnectToHost(const std::string& ip, int port);
 	
 	// manual refresh: copy discovery->GetServers() into cachedServers
 	void RefreshAvailableServers();

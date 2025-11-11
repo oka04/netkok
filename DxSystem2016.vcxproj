@@ -245,6 +245,7 @@
     <ClInclude Include="Source\Object\MenuManager\MenuManager.h" />
     <ClInclude Include="Source\Object\Network\ClientManager\ClientManager.h" />
     <ClInclude Include="Source\Object\Network\Discovery\Discovery.h" />
+    <ClInclude Include="Source\Object\Network\NetworkLogger.h" />
     <ClInclude Include="Source\Object\Network\ServerManager\ServerManager.h" />
     <ClInclude Include="Source\Object\Patroller\Patroller.h" />
     <ClInclude Include="Source\Object\Patroller\PatrollerFileData.h" />

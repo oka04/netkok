@@ -12,7 +12,7 @@ SceneSelectClient::SceneSelectClient(Engine* pEngine)
 {
 	selectedIndex = -1;
 	m_lastRefreshTime = 0;
-	m_refreshInterval = 1000; // 1秒ごとに更新
+	m_refreshInterval = 1000;
 	m_bMouseDownLast = false;
 }
 
@@ -23,33 +23,36 @@ SceneSelectClient::~SceneSelectClient()
 
 void SceneSelectClient::Start()
 {
+	NET_LOG("========================================");
+	NET_LOG("SceneSelectClient 開始");
+	NET_LOG("========================================");
+
 	m_pEngine->AddFont(FONT_GOTHIC60);
 
-	// 初回取得
+	NET_LOG("[SceneSelectClient] 初回サーバー検索開始");
 	ClientManager::GetInstance()->RefreshAvailableServers();
 	m_serverList = ClientManager::GetInstance()->GetCachedServers();
 	m_lastRefreshTime = timeGetTime();
 
-	char buf[256];
-	sprintf_s(buf, sizeof(buf),"[SceeSelectClient] 初期サーバー数:(%d)\n", m_serverList.size());
+	NET_LOG_F("[SceneSelectClient] 初期サーバー数: %d", (int)m_serverList.size());
 }
 
 void SceneSelectClient::Update()
 {
-	// 定期的にサーバーリストを更新
 	DWORD now = timeGetTime();
 	if (now - m_lastRefreshTime > m_refreshInterval)
 	{
+		NET_LOG_F("[SceneSelectClient] サーバーリスト更新 (経過時間: %d ms)", now - m_lastRefreshTime);
+
 		ClientManager::GetInstance()->RefreshAvailableServers();
 		auto newList = ClientManager::GetInstance()->GetCachedServers();
 
-		// リストが変わったらログ出力
 		if (newList.size() != m_serverList.size())
 		{
-			char buf[256];
-			sprintf_s(buf, sizeof(buf), "[SceeSelectClient] サーバー数更新:(%d -> %d)\n", m_serverList.size(), newList.size());
+			NET_LOG_F("[SceneSelectClient] サーバー数変化: %d → %d",
+				(int)m_serverList.size(), (int)newList.size());
 		}
-		 
+
 		m_serverList = newList;
 		m_lastRefreshTime = now;
 	}
@@ -57,7 +60,6 @@ void SceneSelectClient::Update()
 	POINT mp = m_pEngine->GetMousePosition();
 	bool mouseDown = (m_pEngine->GetMouseButtonSync(DIK_LBUTTON) != 0);
 
-	// クリック判定（押した瞬間のみ反応）
 	bool clicked = mouseDown && !m_bMouseDownLast;
 	m_bMouseDownLast = mouseDown;
 
@@ -69,15 +71,14 @@ void SceneSelectClient::Update()
 			selectedIndex = i;
 			auto& info = m_serverList[i];
 
-			// IPアドレスを文字列に変換
 			char ipStr[64];
 			ENetAddress addr;
 			addr.host = info.ip;
 			addr.port = info.port;
 			enet_address_get_host_ip(&addr, ipStr, sizeof(ipStr));
 
-			char buf[256];
-			sprintf_s(buf, sizeof(buf), "[SceneSelectClient] 接続開始");
+			NET_LOG_F("[SceneSelectClient] サーバー選択: %s @ %s:%d",
+				info.name.c_str(), ipStr, info.port);
 
 			ClientManager::GetInstance()->ConnectToServer(ipStr, info.port);
 			SceneLobby::SetRequestedMode(REQUEST_MODE::FIND);
@@ -86,9 +87,9 @@ void SceneSelectClient::Update()
 		}
 	}
 
-	// ESCキーで戻る
 	if (m_pEngine->GetKeyStateSync(DIK_ESCAPE))
 	{
+		NET_LOG("[SceneSelectClient] ESCでタイトルに戻る");
 		m_nowSceneData.Set(Common::SCENE_TITLE, false, nullptr);
 	}
 }
@@ -121,9 +122,11 @@ void SceneSelectClient::Draw()
 		}
 	}
 
-	// デバッグ情報
-	m_pEngine->DrawPrintf(100, WINDOW_HEIGHT - 50, FONT_GOTHIC60, Color::WHITE,
+	m_pEngine->DrawPrintf(100, WINDOW_HEIGHT - 100, FONT_GOTHIC60, Color::WHITE,
 		"見つかったサーバー: %d", (int)m_serverList.size());
+
+	m_pEngine->DrawPrintf(100, WINDOW_HEIGHT - 50, FONT_GOTHIC60, Color::GRAY,
+		"※ログは network_debug.txt に出力されています");
 
 	m_pEngine->SpriteEnd();
 }
@@ -134,6 +137,7 @@ void SceneSelectClient::PostEffect()
 
 void SceneSelectClient::Exit()
 {
+	NET_LOG("[SceneSelectClient] Exit");
 	m_pEngine->ReleaseFont(FONT_GOTHIC60);
 }
 

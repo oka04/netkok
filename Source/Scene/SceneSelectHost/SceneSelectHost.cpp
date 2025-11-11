@@ -314,7 +314,7 @@ bool SceneSelectHost::CreateServer()
 
 	ClientManager* client = ClientManager::GetInstance();
 	// client->SetPlayerName(m_playerName);
-	client->ConnectToHost("127.0.0.1", port);
+	client->ConnectToServer("127.0.0.1", port);
 
 	m_nowSceneData.Set(Common::SCENE_LOBBY, false, nullptr);
 	return true;
