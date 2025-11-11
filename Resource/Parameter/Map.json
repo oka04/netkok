@@ -1,0 +1,20 @@
+{
+  "wallSize": 5.0, 
+  "wallHeight": 30.0, 
+  "groundHeight": 1.0, 
+  "miniMapHeight": 50.0, 
+  "miniMapSaveScale" : 5.0,
+  "miniMapSourHalfSize" : 15.0,
+  "miniMapScreenRadius": 150.0,   
+  "miniMapDiv": 42,
+  "goalPinOffset": 5.0,
+  "cameraWallOffset" : 0.2,
+  "pinSourSize": [50.0, 50.0],
+  "playerPinDestHalfSize": [15.0, 17.0], 
+  "enemyPinDestHalfSize": [10.0, 10.0],   
+  "goalPinDestHalfSize": [25.0, 25.0],   
+  "wallMaterial": [1.0, 1.0, 1.0, 1.0], 
+  "groundMaterial": [0.8, 0.8, 0.8, 1.0],
+  "lineColor": [0.0, 0.0, 0.0, 1.0], 
+  "miniMapPosition": [1600.0, 20.0]
+}	

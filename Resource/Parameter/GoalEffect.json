@@ -1,0 +1,12 @@
+{
+  "generateCount": 15,
+  "positionRandomRange": 2.0,
+  "directionRandomScale": 0.01,
+  "upwardSpeed": 0.5,
+  "moveSpeed": 0.05,
+  "fadeInSpeed": 0.01,
+  "minAlpha": 0.0,
+  "maxAlpha": 0.8,
+  "particleExistTime": 1500,
+  "particleFadeTime": 1000
+}

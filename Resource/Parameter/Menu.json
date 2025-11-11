@@ -1,0 +1,33 @@
+{
+  "buttonSpaceY": 40, 
+  "buttonOffsetY": 300, 
+  "maxAlpha": 200.0,  
+  "minAlpha": 100.0, 
+  "textOffsetY": 20.0,
+  "changeAlphaValue": 1.5,
+  "pauseTextureAlpha": 150,
+  "titleText":  " Silent Mission ",  
+  "clearText":  " Game Clear ",  
+  "gameOverText":  " Game Over ",  
+  "pauseText":  " Pause ",  
+  "timeTextPosition": [200.0, 640.0],
+  "timeValuePosition": [200.0, 710.0],
+  "alertTextPosition": [200.0, 800.0],
+  "alertValuePosition": [200.0, 870.0],
+  "titlePosition": [350.0, 300.0],
+  "clearPosition": [500.0, 300.0],
+  "gameOverPosition": [500.0, 300.0],
+  "pausePosition": [680.0, 300.0],
+  "operationButtonPosition": [850.0, 900.0],
+  "buttonSize": [600.0, 100.0],
+  "buttonTexts": [
+    "     ゲーム開始      ",
+    "    ホストで参加     ",
+    " クライアントで参加  ",
+    "         戻る        ",
+    "    タイトルへ戻る   ",
+    "      リスタート     ",
+    "      操作説明      ",
+    "      ゲーム終了     "
+  ]
+}

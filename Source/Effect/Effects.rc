@@ -1,0 +1,72 @@
+// Microsoft Visual C++ で生成されたリソース スクリプトです。
+//
+
+#define _USING_V110_SDK71_ 1
+
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE 2 リソースから生成されました。
+//
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// 日本語 (日本) リソース
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)
+LANGUAGE 17, 1
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE  
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE  
+BEGIN
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE  
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+#endif    // 日本語 (日本) リソース
+/////////////////////////////////////////////////////////////////////////////
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE 3 リソースから生成されました。
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // APSTUDIO_INVOKED でない場合
+
+//シェーダーリソース
+FXID_BILLBOARD_EFFECT RCDATA DISCARDABLE "Source\\Effect\\Billboard.fx"
+FXID_PARTICLE_EFFECT RCDATA DISCARDABLE "Source\\Effect\\Particle.fx"
+FXID_PRIMITIVE_POS_ONLY_EFFECT RCDATA DISCARDABLE "Source\\Effect\\PrimitivePosOnly.fx"
+FXID_PRIMITIVE_NORMAL_EFFECT RCDATA DISCARDABLE "Source\\Effect\\PrimitiveNormal.fx"
+FXID_PRIMITIVE_TEXTURE_EFFECT RCDATA DISCARDABLE "Source\\Effect\\PrimitiveTexture.fx"
+FXID_XFILE_NOSKIN_EFFECT RCDATA DISCARDABLE "Source\\Effect\\XFileNoSkin.fx"
+FXID_XFILE_SKIN_EFFECT RCDATA DISCARDABLE "Source\\Effect\\XFileSkin.fx"
+FXID_COLLISION_EFFECT RCDATA DISCARDABLE "Source\\Effect\\Collision.fx"
+FXID_LINE3D_EFFECT RCDATA DISCARDABLE "Source\\Effect\\Line3D.fx"
