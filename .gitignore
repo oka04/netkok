@@ -3,9 +3,8 @@
 *.user
 *.userosscache
 *.sln.docstates
-
+DxSystem2016.VC.VC.opendb
 Debug/
-Release/
 x64/
 bin/
 obj/
