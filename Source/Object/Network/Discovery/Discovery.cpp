@@ -125,41 +125,62 @@ bool Discovery::StartListener(uint16_t discoveryPort)
 			if (recvLen > 0) {
 				NET_LOG_F("[Discovery/Listener] パケット受信! サイズ:%d bytes", recvLen);
 
+				// 最小サイズチェック: magic(10) + ver(2) + port(2) + player(1) + max(1) + state(1) + nameLen(1) = 18
 				if (recvLen < 18) {
 					NET_LOG("[Discovery/Listener] パケットサイズ不足 (最小18bytes必要)");
 					continue;
 				}
 
-				if (memcmp(buf, magic, magicLen) != 0) {
+				const char magic[] = "SILENT_DISC";
+				if (memcmp(buf, magic, 10) != 0) {
 					NET_LOG("[Discovery/Listener] マジック不一致");
 					continue;
 				}
 				NET_LOG("[Discovery/Listener] マジック一致確認");
 
-				int idx = magicLen;
+				int idx = 10;
 				if (idx + 2 > recvLen) continue;
-				uint16_t protoVer = ntohs(*(uint16_t*)(buf + idx)); idx += 2;
+				uint16_t protoVer = ntohs(*(uint16_t*)(buf + idx));
+				idx += 2;
+				NET_LOG_F("[Discovery/Listener] プロトコルバージョン: %d", (int)protoVer);
 
+				// ENetポート（ネットワークバイトオーダー）
 				if (idx + 2 > recvLen) continue;
-				uint16_t enetPort = ntohs(*(uint16_t*)(buf + idx)); idx += 2;
+				uint16_t enetPort = ntohs(*(uint16_t*)(buf + idx));
+				idx += 2;
+				NET_LOG_F("[Discovery/Listener] ポート: %d", (int)enetPort);
 
+				// プレイヤー数
 				if (idx + 1 > recvLen) continue;
-				uint8_t playerCount = *(uint8_t*)(buf + idx); idx += 1;
+				uint8_t playerCount = *(uint8_t*)(buf + idx);
+				idx += 1;
+				NET_LOG_F("[Discovery/Listener] プレイヤー数: %d", (int)playerCount);
 
+				// 最大プレイヤー数
 				if (idx + 1 > recvLen) continue;
-				uint8_t maxPlayers = *(uint8_t*)(buf + idx); idx += 1;
+				uint8_t maxPlayers = *(uint8_t*)(buf + idx);
+				idx += 1;
+				NET_LOG_F("[Discovery/Listener] 最大プレイヤー数: %d", (int)maxPlayers);
 
+				// ステート
 				if (idx + 1 > recvLen) continue;
-				uint8_t state = *(uint8_t*)(buf + idx); idx += 1;
+				uint8_t state = *(uint8_t*)(buf + idx);
+				idx += 1;
+				NET_LOG_F("[Discovery/Listener] ステート: %d", (int)state);
 
+				// サーバー名の長さ
 				if (idx + 1 > recvLen) continue;
-				uint8_t nameLen = *(uint8_t*)(buf + idx); idx += 1;
+				uint8_t nameLen = *(uint8_t*)(buf + idx);
+				idx += 1;
+				NET_LOG_F("[Discovery/Listener] 名前の長さ: %d", (int)nameLen);
 
+				// サーバー名
 				if (idx + (int)nameLen > recvLen) {
-					NET_LOG("[Discovery/Listener] 名前長さ不正");
+					NET_LOG_F("[Discovery/Listener] 名前長さ不正: 期待=%d 残り=%d", (int)nameLen, recvLen - idx);
 					continue;
 				}
 				std::string name(buf + idx, nameLen);
+				NET_LOG_F("[Discovery/Listener] サーバー名: '%s'", name.c_str());
 
 				char ipstr[INET_ADDRSTRLEN] = { 0 };
 				inet_ntop(AF_INET, &from.sin_addr, ipstr, sizeof(ipstr));
@@ -299,23 +320,32 @@ bool Discovery::StartAdvertise(uint16_t discoveryPort, uint16_t enetPort, const 
 				name = impl->advName;
 			}
 
+			// デバッグ：送信前の値を確認
+			NET_LOG_F("[Discovery/Advertiser] 送信データ: port=%d player=%d/%d state=%d name='%s'",
+				enetPort, (int)playerCount, (int)maxPlayers, (int)state, name.c_str());
+
 			std::vector<char> payload;
-			payload.insert(payload.end(), magic, magic + sizeof(magic) - 1);
+			const char magic[] = "SILENT_DISC";
+			payload.insert(payload.end(), magic, magic + 10); // マジックは10バイト（null終端含まない）
 
-			uint16_t protoVerNet = htons(1);
-			payload.push_back(static_cast<char>((protoVerNet >> 8) & 0xFF));
-			payload.push_back(static_cast<char>(protoVerNet & 0xFF));
+															  // プロトコルバージョン（ネットワークバイトオーダー）
+			uint16_t protoVer = htons(1);
+			payload.push_back((char)((protoVer >> 8) & 0xFF));
+			payload.push_back((char)(protoVer & 0xFF));
 
-			uint16_t portNet = enetPort;  
-			payload.push_back(static_cast<char>((portNet >> 8) & 0xFF));
-			payload.push_back(static_cast<char>(portNet & 0xFF));
+			// ENetポート（ネットワークバイトオーダー）
+			uint16_t portNet = htons(enetPort);
+			payload.push_back((char)((portNet >> 8) & 0xFF));
+			payload.push_back((char)(portNet & 0xFF));
 
-			payload.push_back(static_cast<char>(playerCount));
-			payload.push_back(static_cast<char>(maxPlayers));
-			payload.push_back(static_cast<char>(state));
+			// プレイヤー数関連（1バイトずつ）
+			payload.push_back((char)playerCount);
+			payload.push_back((char)maxPlayers);
+			payload.push_back((char)state);
 
+			// サーバー名
 			size_t nameLen = std::min<size_t>(255, name.size());
-			payload.push_back(static_cast<char>(nameLen));
+			payload.push_back((char)nameLen);
 			payload.insert(payload.end(), name.begin(), name.begin() + nameLen);
 
 			int sent = sendto(sock, payload.data(), (int)payload.size(), 0, (sockaddr*)&addr, sizeof(addr));
@@ -324,9 +354,7 @@ bool Discovery::StartAdvertise(uint16_t discoveryPort, uint16_t enetPort, const 
 				NET_LOG_F("[Discovery/Advertiser] sendto失敗: %d", WSAGetLastError());
 			}
 			else {
-				// デバッグログに実際のポート番号を表示
-				NET_LOG_F("[Discovery/Advertiser] ブロードキャスト送信 #%d: %s (%d/%d) ポート:%d state:%d",
-					advertiseCount, name.c_str(), (int)playerCount, (int)maxPlayers, enetPort, (int)state);
+				NET_LOG_F("[Discovery/Advertiser] ブロードキャスト送信 #%d: サイズ=%d bytes", advertiseCount, sent);
 			}
 
 			for (int i = 0; i < 50 && impl->advertiserRunning; i++)
