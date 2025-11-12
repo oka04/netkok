@@ -1,7 +1,4 @@
-﻿  Game.cpp
-d:\users\5231042\desktop\netkok\source\scene\scenelobby\..\\..\\Object\\Network\\NetworkLogger.h(47): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\time.h(505): note: 'localtime' の宣言を確認してください
-  ClientManager.cpp
+﻿  ClientManager.cpp
 c:\program files (x86)\microsoft sdks\windows\v7.1a\include\sal_supp.h(57): warning C4005: '__useHeader': マクロが再定義されました。
   C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\sal.h(2866): note: '__useHeader' の以前の定義を確認してください
 c:\program files (x86)\microsoft sdks\windows\v7.1a\include\specstrings_supp.h(77): warning C4005: '__on_failure': マクロが再定義されました。
@@ -11,27 +8,14 @@ c:\program files (x86)\microsoft sdks\windows\v7.1a\include\sal_supp.h(57): warn
   C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\sal.h(2866): note: '__useHeader' の以前の定義を確認してください
 c:\program files (x86)\microsoft sdks\windows\v7.1a\include\specstrings_supp.h(77): warning C4005: '__on_failure': マクロが再定義されました。
   C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\sal.h(2876): note: '__on_failure' の以前の定義を確認してください
-  SceneLobby.cpp
-c:\program files (x86)\microsoft sdks\windows\v7.1a\include\sal_supp.h(57): warning C4005: '__useHeader': マクロが再定義されました。
-  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\sal.h(2866): note: '__useHeader' の以前の定義を確認してください
-c:\program files (x86)\microsoft sdks\windows\v7.1a\include\specstrings_supp.h(77): warning C4005: '__on_failure': マクロが再定義されました。
-  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\sal.h(2876): note: '__on_failure' の以前の定義を確認してください
-d:\users\5231042\desktop\netkok\source\scene\scenelobby\..\\..\\Object\\Network\\NetworkLogger.h(47): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\time.h(505): note: 'localtime' の宣言を確認してください
   SceneSelectClient.cpp
 d:\users\5231042\Desktop\netkok\Source\Object\..\\Object\\Network\\NetworkLogger.h(47): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\time.h(505): note: 'localtime' の宣言を確認してください
-  SceneSelectHost.cpp
-d:\users\5231042\desktop\netkok\source\scene\scenelobby\..\\..\\Object\\Network\\NetworkLogger.h(47): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\time.h(505): note: 'localtime' の宣言を確認してください
-  SceneTitle.cpp
-d:\users\5231042\desktop\netkok\source\scene\scenelobby\..\\..\\Object\\Network\\NetworkLogger.h(47): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\time.h(505): note: 'localtime' の宣言を確認してください
      ライブラリ d:\users\5231042\Desktop\netkok\Release\DxSystem2016.lib とオブジェクト d:\users\5231042\Desktop\netkok\Release\DxSystem2016.exp を作成中
   コード生成しています。
-  38 of 6199 functions ( 0.6%) were compiled, the rest were copied from previous compilation.
-    3 functions were new in current compilation
-    155 functions had inline decision re-evaluated but remain unchanged
+  49 of 6199 functions ( 0.8%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    130 functions had inline decision re-evaluated but remain unchanged
   コード生成が終了しました。
 enetlib.lib(win32.obj) : warning LNK4099: PDB 'enetlib.pdb' が 'enetlib.lib(win32.obj)' で、または 'd:\users\5231042\Desktop\netkok\Release\enetlib.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
 enetlib.lib(peer.obj) : warning LNK4099: PDB 'enetlib.pdb' が 'enetlib.lib(peer.obj)' で、または 'd:\users\5231042\Desktop\netkok\Release\enetlib.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。

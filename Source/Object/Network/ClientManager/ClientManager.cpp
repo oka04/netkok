@@ -209,39 +209,104 @@ const std::string & ClientManager::GetPlayerName() const
 
 bool ClientManager::ConnectToServer(const std::string& ip, int port)
 {
-	NET_LOG_F("[ClientManager] ConnectToHost: %s:%d", ip.c_str(), port);
+	NET_LOG_F("[ClientManager] ConnectToServer開始: %s:%d", ip.c_str(), port);
+
+	// ★★★ 既存の接続をクリーンアップ ★★★
+	if (m_pServerPeer)
+	{
+		NET_LOG("[ClientManager] 既存のピアをリセット");
+		enet_peer_reset(m_pServerPeer);
+		m_pServerPeer = nullptr;
+	}
 
 	if (m_pClientHost)
 	{
+		NET_LOG("[ClientManager] 既存のホストを破棄");
 		enet_host_destroy(m_pClientHost);
 		m_pClientHost = nullptr;
 	}
 
-	m_pClientHost = enet_host_create(nullptr, 1, 1, 0, 0);
+	// ★★★ クライアントホストを作成 ★★★
+	m_pClientHost = enet_host_create(
+		nullptr,  // クライアントなのでnull
+		1,        // 最大接続数
+		2,        // チャンネル数（1→2に変更）
+		0,        // 受信帯域制限なし
+		0         // 送信帯域制限なし
+	);
+
 	if (!m_pClientHost)
 	{
-		NET_LOG("[ClientManager] クライアント作成失敗");
+		NET_LOG("[ClientManager] エラー: クライアントホスト作成失敗");
 		return false;
 	}
 	NET_LOG("[ClientManager] クライアントホスト作成成功");
 
+	// ★★★ アドレス設定 ★★★
 	ENetAddress address;
-	enet_address_set_host(&address, ip.c_str());
+	memset(&address, 0, sizeof(address));
+
+	if (enet_address_set_host(&address, ip.c_str()) != 0)
+	{
+		NET_LOG_F("[ClientManager] エラー: IPアドレス設定失敗: %s", ip.c_str());
+		enet_host_destroy(m_pClientHost);
+		m_pClientHost = nullptr;
+		return false;
+	}
 	address.port = (enet_uint16)port;
 
-	m_pServerPeer = enet_host_connect(m_pClientHost, &address, 1, 0);
+	NET_LOG_F("[ClientManager] アドレス設定成功: %s:%d", ip.c_str(), port);
+
+	// ★★★ 接続開始 ★★★
+	m_pServerPeer = enet_host_connect(m_pClientHost, &address, 2, 0);
 	if (!m_pServerPeer)
 	{
-		NET_LOG("[ClientManager] サーバー接続要求失敗");
+		NET_LOG("[ClientManager] エラー: 接続要求失敗");
+		enet_host_destroy(m_pClientHost);
+		m_pClientHost = nullptr;
 		return false;
 	}
 
+	NET_LOG("[ClientManager] 接続要求送信成功 - 応答待機中...");
+
+	// ★★★ 接続確立を待つ（最大5秒） ★★★
+	ENetEvent event;
+	bool connected = false;
+
+	for (int i = 0; i < 50; i++)  // 5秒間試行
+	{
+		if (enet_host_service(m_pClientHost, &event, 100) > 0)
+		{
+			if (event.type == ENET_EVENT_TYPE_CONNECT)
+			{
+				NET_LOG("[ClientManager] 接続確立!");
+				connected = true;
+				break;
+			}
+			else if (event.type == ENET_EVENT_TYPE_DISCONNECT)
+			{
+				NET_LOG("[ClientManager] 接続拒否されました");
+				m_pServerPeer = nullptr;
+				return false;
+			}
+		}
+	}
+
+	if (!connected)
+	{
+		NET_LOG("[ClientManager] エラー: 接続タイムアウト");
+		enet_peer_reset(m_pServerPeer);
+		m_pServerPeer = nullptr;
+		enet_host_destroy(m_pClientHost);
+		m_pClientHost = nullptr;
+		return false;
+	}
+
+	// ★★★ ホスト判定 ★★★
 	m_bHost = (ip == "127.0.0.1" || ip == "localhost");
 
-	// ★★★ サーバー名を保存（修正版） ★★★
-	m_serverName = "Unknown Server";  // デフォルト値
-
-									  // まずm_allServersから検索
+	// ★★★ サーバー名を保存 ★★★
+	m_serverName = "Unknown Server";
 	for (const auto& server : m_allServers)
 	{
 		char serverIp[64];
@@ -253,33 +318,20 @@ bool ClientManager::ConnectToServer(const std::string& ip, int port)
 		if (std::string(serverIp) == ip && server.port == port)
 		{
 			m_serverName = server.name;
-			NET_LOG_F("[ClientManager] サーバー名を設定: %s", m_serverName.c_str());
+			NET_LOG_F("[ClientManager] サーバー名設定: %s", m_serverName.c_str());
 			break;
 		}
 	}
 
-	// 見つからなかった場合、m_availableServersからも検索
-	if (m_serverName == "Unknown Server")
-	{
-		for (const auto& server : m_availableServers)
-		{
-			char serverIp[64];
-			ENetAddress addr;
-			addr.host = server.ip;
-			addr.port = server.port;
-			enet_address_get_host_ip(&addr, serverIp, sizeof(serverIp));
+	// ★★★ JOIN送信 ★★★
+	std::string nameToSend = m_playerName.empty() ? "Player" : m_playerName;
+	SendJoin(nameToSend);
+	NET_LOG_F("[ClientManager] JOIN送信: %s", nameToSend.c_str());
 
-			if (std::string(serverIp) == ip && server.port == port)
-			{
-				m_serverName = server.name;
-				NET_LOG_F("[ClientManager] サーバー名を設定(available): %s", m_serverName.c_str());
-				break;
-			}
-		}
-	}
+	// JOINの応答を待つ
+	enet_host_flush(m_pClientHost);
 
-	NET_LOG_F("[ClientManager] 接続要求送信中... (ホスト判定: %s)", m_bHost ? "true" : "false");
-
+	NET_LOG("[ClientManager] 接続完了");
 	return true;
 }
 

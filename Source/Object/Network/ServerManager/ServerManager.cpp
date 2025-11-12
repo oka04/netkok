@@ -55,29 +55,30 @@ ServerManager::~ServerManager()
 	if (s_instance == this) s_instance = nullptr;
 }
 
-bool ServerManager::StartServer(int port, int maxm_clients)
+bool ServerManager::StartServer(int port, int maxClients)
 {
 	ENetAddress address;
 	address.host = ENET_HOST_ANY;
 	address.port = (enet_uint16)port;
 
-	m_pServerHost = enet_host_create(&address, maxm_clients, 1, 0, 0);
+	// ★★★ チャンネル数を2に変更 ★★★
+	m_pServerHost = enet_host_create(&address, maxClients, 2, 0, 0);
 	if (m_pServerHost == nullptr)
 	{
+		NET_LOG("[ServerManager] エラー: サーバーホスト作成失敗");
 		MessageBoxA(NULL, "サーバーホスト作成失敗", "エラー", MB_OK);
 		return false;
 	}
 
 	const uint16_t discoveryPort = 12346;
 	m_advertiser = std::make_unique<Discovery>();
-	m_advertiser->StartAdvertise(discoveryPort, (uint16_t)port, m_serverName, (uint8_t)maxm_clients);
+	m_advertiser->StartAdvertise(discoveryPort, (uint16_t)port, m_serverName, (uint8_t)maxClients);
 
-	// ★★★ ホスト分を含めて1人として表示 ★★★
 	m_advertiser->SetAdvertisePlayerCount(1);
 	m_advertiser->SetAdvertiseState(0);
-	m_clientCount = 0;  // 実際の接続数は0
+	m_clientCount = 0;
 
-	NET_LOG_F("[ServerManager] サーバー起動: ポート=%d (表示プレイヤー数: 1)", port);
+	NET_LOG_F("[ServerManager] サーバー起動成功: ポート=%d", port);
 	std::cout << "[Server] 起動: ポート " << port << std::endl;
 	return true;
 }

@@ -98,9 +98,21 @@ void SceneSelectClient::Update()
 				NET_LOG_F("[SceneSelectClient] サーバー選択: %s @ %s:%d",
 					info.name.c_str(), ipStr, info.port);
 
-				ClientManager::GetInstance()->ConnectToServer(ipStr, info.port);
-				SceneLobby::SetRequestedMode(REQUEST_MODE::FIND);
-				m_nowSceneData.Set(Common::SCENE_LOBBY, false, nullptr);
+				// ★★★ 接続前にサーバー情報を最新化 ★★★
+				ClientManager::GetInstance()->RefreshAvailableServers();
+
+				// ★★★ 接続試行 ★★★
+				if (ClientManager::GetInstance()->ConnectToServer(ipStr, info.port))
+				{
+					NET_LOG("[SceneSelectClient] 接続成功 - ロビーへ");
+					SceneLobby::SetRequestedMode(REQUEST_MODE::FIND);
+					m_nowSceneData.Set(Common::SCENE_LOBBY, false, nullptr);
+				}
+				else
+				{
+					NET_LOG("[SceneSelectClient] 接続失敗");
+					// エラーメッセージを表示する処理を追加可能
+				}
 				return;
 			}
 		}
