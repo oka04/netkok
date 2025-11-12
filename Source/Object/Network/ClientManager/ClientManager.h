@@ -44,6 +44,7 @@ public:
 
 	// manual refresh: copy discovery->GetServers() into cachedServers
 	void RefreshAvailableServers();
+	bool IsConnected() const;
 
 private:
 	ENetHost* m_pClientHost;

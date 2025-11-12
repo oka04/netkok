@@ -84,13 +84,55 @@ void ServerManager::StopServer()
 {
 	if (m_pServerHost)
 	{
-		enet_host_destroy(m_pServerHost);
-		m_pServerHost = nullptr;
-		m_clientCount = 0;
-		for (auto &kv : m_clients) {
+		NET_LOG("[ServerManager] サーバー停止処理開始");
+
+		// ★★★ 全クライアントに切断通知を送信 ★★★
+		for (auto &kv : m_clients)
+		{
+			if (kv.first && kv.first->state == ENET_PEER_STATE_CONNECTED)
+			{
+				NET_LOG_F("[ServerManager] クライアント %s に切断通知送信", kv.second->name.c_str());
+				// graceful disconnect with reason code
+				enet_peer_disconnect(kv.first, 0);
+			}
+		}
+
+		// クライアントの切断処理を完了するまで少し待つ
+		ENetEvent event;
+		int maxWait = 30; // 最大3秒待機（100ms × 30）
+		while (maxWait > 0 && !m_clients.empty())
+		{
+			while (enet_host_service(m_pServerHost, &event, 100) > 0)
+			{
+				switch (event.type)
+				{
+				case ENET_EVENT_TYPE_DISCONNECT:
+					OnClientDisconnect(event.peer);
+					break;
+				default:
+					break;
+				}
+			}
+			maxWait--;
+		}
+
+		// 強制切断（まだ接続中のクライアントがいる場合）
+		for (auto &kv : m_clients)
+		{
+			if (kv.first)
+			{
+				NET_LOG_F("[ServerManager] クライアント %s を強制切断", kv.second->name.c_str());
+				enet_peer_reset(kv.first);
+			}
 			delete kv.second;
 		}
 		m_clients.clear();
+
+		enet_host_destroy(m_pServerHost);
+		m_pServerHost = nullptr;
+		m_clientCount = 0;
+
+		NET_LOG("[ServerManager] サーバー停止完了");
 		std::cout << "[Server] 停止" << std::endl;
 	}
 
@@ -109,17 +151,26 @@ void ServerManager::BroadcastLobbyUpdate()
 {
 	if (!m_pServerHost) return;
 
+	NET_LOG_F("[ServerManager] BroadcastLobbyUpdate: %d 人", (int)m_clients.size());
+
 	// format: [MSG_LOBBY_UPDATE][count][nameLen,name...]* (reliable)
 	std::vector<uint8_t> payload;
 	payload.push_back((uint8_t)MSG_LOBBY_UPDATE);
 	uint8_t count = (uint8_t)m_clients.size();
 	payload.push_back(count);
+
+	int playerIndex = 0;
 	for (auto &kv : m_clients) {
-		const std::string &name = kv.second->name; 
+		const std::string &name = kv.second->name;
 		uint8_t nl = (uint8_t)(name.size() > 255 ? 255 : name.size());
 		payload.push_back(nl);
 		payload.insert(payload.end(), name.begin(), name.begin() + nl);
+
+		NET_LOG_F("[ServerManager] プレイヤー%d: '%s' (長さ:%d)",
+			++playerIndex, name.c_str(), (int)nl);
 	}
+
+	NET_LOG_F("[ServerManager] 送信データサイズ: %d bytes", (int)payload.size());
 
 	ENetPacket* packet = enet_packet_create(payload.data(), payload.size(), ENET_PACKET_FLAG_RELIABLE);
 	enet_host_broadcast(m_pServerHost, 0, packet);
@@ -257,17 +308,31 @@ void ServerManager::OnClientDisconnect(ENetPeer* peer)
 
 void ServerManager::ProcessJoin(ENetPeer* peer, const uint8_t* data, size_t len)
 {
+	NET_LOG_F("[ServerManager] ProcessJoin: データ長=%d", (int)len);
+
 	size_t idx = 1;
-	if (idx >= len) return;
+	if (idx >= len) {
+		NET_LOG("[ServerManager] エラー: データ長不足");
+		return;
+	}
 
 	uint8_t nl = data[idx++];
-	if (idx + nl > len) return;
+	NET_LOG_F("[ServerManager] 名前長さ: %d", (int)nl);
+
+	if (idx + nl > len) {
+		NET_LOG_F("[ServerManager] エラー: 名前データ不足 (必要:%d 残り:%d)", (int)nl, (int)(len - idx));
+		return;
+	}
 
 	std::string name(reinterpret_cast<const char*>(data + idx), nl);
+	NET_LOG_F("[ServerManager] 受信した名前: '%s'", name.c_str());
 	idx += nl;
 
 	ClientInfo* ci = static_cast<ClientInfo*>(peer->data);
-	if (ci) ci->name = name;
+	if (ci) {
+		ci->name = name;
+		NET_LOG_F("[ServerManager] クライアントID %d の名前を '%s' に設定", ci->id, name.c_str());
+	}
 
 	BroadcastLobbyUpdate();
 }

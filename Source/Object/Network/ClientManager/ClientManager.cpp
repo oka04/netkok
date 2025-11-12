@@ -177,6 +177,24 @@ bool ClientManager::ConnectToServer(const std::string& ip, int port)
 	}
 
 	m_bHost = (ip == "127.0.0.1" || ip == "localhost");
+
+	// ★★★ サーバー名を保存 ★★★
+	// GetAllServers()から該当するサーバーを探す
+	for (const auto& server : m_allServers)
+	{
+		char serverIp[64];
+		struct in_addr addr;
+		addr.s_addr = server.ip;
+		inet_ntop(AF_INET, &addr, serverIp, sizeof(serverIp));
+
+		if (std::string(serverIp) == ip && server.port == port)
+		{
+			m_serverName = server.name;
+			NET_LOG_F("[ClientManager] サーバー名を設定: %s", m_serverName.c_str());
+			break;
+		}
+	}
+
 	NET_LOG_F("[ClientManager] 接続要求送信中... (ホスト判定: %s)", m_bHost ? "true" : "false");
 
 	return true;
@@ -239,6 +257,11 @@ void ClientManager::RefreshAvailableServers()
 		addedCount, skippedCount, (int)m_cachedServers.size(), (int)m_allServers.size());
 }
 
+bool ClientManager::IsConnected() const
+{
+	return (m_pServerPeer != nullptr && m_pServerPeer->state == ENET_PEER_STATE_CONNECTED);
+}
+
 // 新規メソッド：全サーバー（待機中 + ゲーム中）を取得
 const std::vector<ServerInfoNet>& ClientManager::GetAllServers() const
 {
@@ -272,8 +295,9 @@ void ClientManager::Update()
 void ClientManager::OnConnect()
 {
 	NET_LOG("[ClientManager] サーバー接続成功");
-	SendJoin(m_playerName.empty() ? "Player" : m_playerName);
-	NET_LOG_F("[ClientManager] JOIN送信: %s", m_playerName.c_str());
+	std::string nameToSend = m_playerName.empty() ? "Player" : m_playerName;
+	SendJoin(nameToSend);
+	NET_LOG_F("[ClientManager] JOIN送信: %s", nameToSend.c_str());
 }
 
 void ClientManager::OnReceive(const ENetEvent& event)
@@ -302,15 +326,30 @@ void ClientManager::OnReceive(const ENetEvent& event)
 
 void ClientManager::OnDisconnect()
 {
-	NET_LOG("[ClientManager] サーバーから切断");
+	NET_LOG("[ClientManager] サーバーから切断されました");
+	m_pServerPeer = nullptr;  // ★★★ ピアをnullにする ★★★
 }
 
 void ClientManager::ProcessLobbyUpdate(const uint8_t* data, size_t len)
 {
 	NET_LOG_F("[ClientManager] ProcessLobbyUpdate: データ長=%d", (int)len);
 
+	// データの16進数ダンプ（デバッグ用）
+	std::string hexDump;
+	size_t dumpLen = (len < 32) ? len : 32;
+	for (size_t i = 0; i < dumpLen; i++)
+	{
+		char buf[8];
+		sprintf(buf, "%02X ", data[i]);
+		hexDump += buf;
+	}
+	NET_LOG_F("[ClientManager] データダンプ: %s", hexDump.c_str());
+
 	size_t idx = 1;
-	if (idx >= len) return;
+	if (idx >= len) {
+		NET_LOG("[ClientManager] エラー: データ長不足（count読み取り不可）");
+		return;
+	}
 
 	uint8_t count = data[idx++];
 	NET_LOG_F("[ClientManager] プレイヤー数: %d", (int)count);
@@ -320,10 +359,23 @@ void ClientManager::ProcessLobbyUpdate(const uint8_t* data, size_t len)
 
 	for (int i = 0; i < count && idx < len; ++i)
 	{
+		if (idx >= len) {
+			NET_LOG_F("[ClientManager] エラー: プレイヤー%d の名前長さ読み取り不可", i + 1);
+			break;
+		}
+
 		uint8_t nl = data[idx++];
-		if (idx + nl > len) break;
-		newNames.emplace_back(reinterpret_cast<const char*>(data + idx), nl);
-		NET_LOG_F("[ClientManager] プレイヤー%d: %s", i + 1, newNames.back().c_str());
+		NET_LOG_F("[ClientManager] プレイヤー%d 名前長さ: %d", i + 1, (int)nl);
+
+		if (idx + nl > len) {
+			NET_LOG_F("[ClientManager] エラー: プレイヤー%d の名前データ不足 (必要:%d 残り:%d)",
+				i + 1, (int)nl, (int)(len - idx));
+			break;
+		}
+
+		std::string playerName(reinterpret_cast<const char*>(data + idx), nl);
+		newNames.emplace_back(playerName);
+		NET_LOG_F("[ClientManager] プレイヤー%d: '%s'", i + 1, playerName.c_str());
 		idx += nl;
 	}
 

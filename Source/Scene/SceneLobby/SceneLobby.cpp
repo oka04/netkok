@@ -53,6 +53,15 @@ void SceneLobby::Update()
 	if (m_server) m_server->Update();
 	if (m_client) m_client->Update();
 
+	// ★★★ クライアントがサーバーから切断された場合、タイトルに戻る ★★★
+	if (m_client && !m_client->IsConnected())
+	{
+		NET_LOG("[SceneLobby] サーバーから切断されました - タイトルに戻ります");
+		m_client->Disconnect();
+		m_nowSceneData.Set(Common::SCENE_TITLE, false, nullptr);
+		return;
+	}
+
 	POINT mp = m_pEngine->GetMousePosition();
 	bool mouseDown = (m_pEngine->GetMouseButtonSync(DIK_LBUTTON) != 0);
 	bool clicked = mouseDown && !m_pressedMouseLast;
@@ -68,7 +77,6 @@ void SceneLobby::Update()
 	}
 
 	// --- ゲーム開始ボタン（ホストのみ有効） ---
-
 	if (m_server)
 	{
 		if (clicked && PointInRect(f_startButtonPosition, f_buttonSize))
