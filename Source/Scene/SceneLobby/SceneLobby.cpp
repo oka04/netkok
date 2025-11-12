@@ -53,16 +53,23 @@ void SceneLobby::Update()
 	if (m_server) m_server->Update();
 	if (m_client) m_client->Update();
 
-	// クライアントのみの場合（ホストではない）、サーバーから切断されたらタイトルに戻る
-	// ただし、接続確立前（まだプレイヤーリストが空）は切断チェックをスキップ
-	if (m_client && !m_client->IsHost())
+	// ★★★ クライアントの切断チェック（ホスト・非ホスト両方） ★★★
+	if (m_client)
 	{
-		// プレイヤーリストが1人以上いる = 接続が確立している
 		auto playerNames = m_client->GetLobbyPlayerNames();
+
+		// 接続が確立している場合のみチェック（プレイヤーリストが1人以上）
 		if (!playerNames.empty() && !m_client->IsConnected())
 		{
 			NET_LOG("[SceneLobby] サーバーから切断されました - タイトルに戻ります");
 			m_client->Disconnect();
+
+			// ホストの場合はサーバーも停止
+			if (m_server)
+			{
+				m_server->StopServer();
+			}
+
 			m_nowSceneData.Set(Common::SCENE_TITLE, false, nullptr);
 			return;
 		}

@@ -178,20 +178,43 @@ bool ClientManager::ConnectToServer(const std::string& ip, int port)
 
 	m_bHost = (ip == "127.0.0.1" || ip == "localhost");
 
-	// ★★★ サーバー名を保存 ★★★
-	// GetAllServers()から該当するサーバーを探す
+	// ★★★ サーバー名を保存（修正版） ★★★
+	m_serverName = "Unknown Server";  // デフォルト値
+
+									  // まずm_allServersから検索
 	for (const auto& server : m_allServers)
 	{
 		char serverIp[64];
-		struct in_addr addr;
-		addr.s_addr = server.ip;
-		inet_ntop(AF_INET, &addr, serverIp, sizeof(serverIp));
+		ENetAddress addr;
+		addr.host = server.ip;
+		addr.port = server.port;
+		enet_address_get_host_ip(&addr, serverIp, sizeof(serverIp));
 
 		if (std::string(serverIp) == ip && server.port == port)
 		{
 			m_serverName = server.name;
 			NET_LOG_F("[ClientManager] サーバー名を設定: %s", m_serverName.c_str());
 			break;
+		}
+	}
+
+	// 見つからなかった場合、m_availableServersからも検索
+	if (m_serverName == "Unknown Server")
+	{
+		for (const auto& server : m_availableServers)
+		{
+			char serverIp[64];
+			ENetAddress addr;
+			addr.host = server.ip;
+			addr.port = server.port;
+			enet_address_get_host_ip(&addr, serverIp, sizeof(serverIp));
+
+			if (std::string(serverIp) == ip && server.port == port)
+			{
+				m_serverName = server.name;
+				NET_LOG_F("[ClientManager] サーバー名を設定(available): %s", m_serverName.c_str());
+				break;
+			}
 		}
 	}
 

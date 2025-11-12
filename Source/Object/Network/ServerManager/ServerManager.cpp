@@ -152,16 +152,35 @@ void ServerManager::BroadcastLobbyUpdate()
 {
 	if (!m_pServerHost) return;
 
-	NET_LOG_F("[ServerManager] BroadcastLobbyUpdate: %d 人", (int)m_clients.size());
+	// ★★★ ホスト名を含めたプレイヤーリストを作成 ★★★
+	std::vector<std::string> allPlayers;
+
+	// ホスト名を最初に追加
+	if (!m_hostName.empty())
+	{
+		allPlayers.push_back(m_hostName);
+	}
+
+	// 他のクライアントを追加（ホスト自身は除外）
+	for (auto &kv : m_clients)
+	{
+		// ホストの接続（最初の接続）は既に追加済みなのでスキップ
+		if (kv.second->name != m_hostName)
+		{
+			allPlayers.push_back(kv.second->name);
+		}
+	}
+
+	NET_LOG_F("[ServerManager] BroadcastLobbyUpdate: %d 人", (int)allPlayers.size());
 
 	std::vector<uint8_t> payload;
 	payload.push_back((uint8_t)MSG_LOBBY_UPDATE);
-	uint8_t count = (uint8_t)m_clients.size();
+	uint8_t count = (uint8_t)allPlayers.size();
 	payload.push_back(count);
 
 	int playerIndex = 0;
-	for (auto &kv : m_clients) {
-		const std::string &name = kv.second->name;
+	for (const auto& name : allPlayers)
+	{
 		size_t nameSize = name.size();
 		if (nameSize > 255) nameSize = 255;
 		uint8_t nl = (uint8_t)nameSize;
@@ -180,7 +199,8 @@ void ServerManager::BroadcastLobbyUpdate()
 
 	if (m_advertiser)
 	{
-		m_advertiser->SetAdvertisePlayerCount(count);
+		// ★★★ 実際のプレイヤー数を設定 ★★★
+		m_advertiser->SetAdvertisePlayerCount((uint8_t)allPlayers.size());
 		m_advertiser->SetAdvertiseState(0);
 	}
 }
@@ -263,8 +283,9 @@ void ServerManager::OnClientConnect(ENetPeer* peer)
 	ci->peer = peer;
 	ci->id = m_nextClientId++;
 
-	// ホストが最初に接続した場合（m_clientCount == 0）
-	if (m_clientCount == 0 && !m_hostName.empty())
+	// ★★★ 修正: ホスト判定の改善 ★★★
+	// 最初の接続がホスト
+	if (m_clients.empty() && !m_hostName.empty())
 	{
 		ci->name = m_hostName;
 		NET_LOG_F("[ServerManager] ホスト接続: %s", m_hostName.c_str());
@@ -278,8 +299,8 @@ void ServerManager::OnClientConnect(ENetPeer* peer)
 	m_clients[peer] = ci;
 	m_clientCount++;
 
-	NET_LOG_F("[ServerManager] クライアント接続 (%d人)", m_clientCount);
-	std::cout << "[Server] クライアント接続 (" << m_clientCount << "人)" << std::endl;
+	NET_LOG_F("[ServerManager] クライアント接続: %s (%d人)", ci->name.c_str(), m_clientCount);
+	std::cout << "[Server] クライアント接続: " << ci->name << " (" << m_clientCount << "人)" << std::endl;
 
 	BroadcastLobbyUpdate();
 }
