@@ -71,8 +71,8 @@ bool ServerManager::StartServer(int port, int maxm_clients)
 	const uint16_t discoveryPort = 12346;
 	m_advertiser = std::make_unique<Discovery>();
 	m_advertiser->StartAdvertise(discoveryPort, (uint16_t)port, m_serverName, (uint8_t)maxm_clients);
-	m_advertiser->SetAdvertisePlayerCount(0);
 	m_advertiser->SetAdvertiseState(0);
+	m_advertiser->SetAdvertisePlayerCount(0);
 	m_clientCount = 0;
 	BroadcastLobbyUpdate();
 

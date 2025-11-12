@@ -187,6 +187,7 @@ void ClientManager::RefreshAvailableServers()
 	NET_LOG("[ClientManager] RefreshAvailableServers 開始");
 
 	m_availableServers.clear();
+	m_allServers.clear(); // 全サーバーリストもクリア
 
 	if (!m_pDiscovery) {
 		NET_LOG("[ClientManager] エラー: m_pDiscovery が nullptr");
@@ -204,15 +205,9 @@ void ClientManager::RefreshAvailableServers()
 		struct in_addr addr;
 		addr.s_addr = s.ip;
 		inet_ntop(AF_INET, &addr, ipStr, sizeof(ipStr));
-		 
+
 		NET_LOG_F("[ClientManager] サーバー情報: %s @ %s:%d (%d/%d) state=%d",
 			s.name.c_str(), ipStr, s.port, (int)s.playerCount, (int)s.maxPlayers, (int)s.state);
-
-		if (s.state != 0) {
-			NET_LOG_F("[ClientManager] スキップ: ゲーム中 (state=%d)", (int)s.state);
-			skippedCount++;
-			continue;
-		}
 
 		ServerInfoNet n;
 		n.ip = s.ip;
@@ -221,6 +216,17 @@ void ClientManager::RefreshAvailableServers()
 		n.maxPlayers = s.maxPlayers;
 		n.state = s.state;
 		n.name = s.name;
+
+		// 全サーバーリストには必ず追加
+		m_allServers.push_back(n);
+
+		// 待機中のサーバーのみ m_availableServers に追加
+		if (s.state != 0) {
+			NET_LOG_F("[ClientManager] スキップ: ゲーム中 (state=%d)", (int)s.state);
+			skippedCount++;
+			continue;
+		}
+
 		m_availableServers.push_back(n);
 		addedCount++;
 
@@ -229,8 +235,14 @@ void ClientManager::RefreshAvailableServers()
 
 	m_cachedServers = m_availableServers;
 
-	NET_LOG_F("[ClientManager] RefreshAvailableServers 完了: 追加=%d スキップ=%d 合計=%d",
-		addedCount, skippedCount, (int)m_cachedServers.size());
+	NET_LOG_F("[ClientManager] RefreshAvailableServers 完了: 追加=%d スキップ=%d 合計=%d 全体=%d",
+		addedCount, skippedCount, (int)m_cachedServers.size(), (int)m_allServers.size());
+}
+
+// 新規メソッド：全サーバー（待機中 + ゲーム中）を取得
+const std::vector<ServerInfoNet>& ClientManager::GetAllServers() const
+{
+	return m_allServers;
 }
 
 void ClientManager::Update()

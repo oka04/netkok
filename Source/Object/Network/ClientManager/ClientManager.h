@@ -34,13 +34,14 @@ public:
 	// lobby state
 	void SendJoin(const std::string& name);
 	std::vector<std::string> GetLobbyPlayerNames();
-	const std::vector<ServerInfoNet>& GetCachedServers() const;
+	const std::vector<ServerInfoNet>& GetCachedServers() const;     // 待機中のみ
+	const std::vector<ServerInfoNet>& GetAllServers() const;        // 全サーバー（待機中 + ゲーム中）
 	const std::string& GetServerName() const;
 	bool IsGameStarted() const;
 	bool IsHost() const;
 	void SetPlayerName(const std::string& name);
 	const std::string& GetPlayerName() const;
-	
+
 	// manual refresh: copy discovery->GetServers() into cachedServers
 	void RefreshAvailableServers();
 
@@ -49,8 +50,9 @@ private:
 	ENetPeer* m_pServerPeer;
 	ENetHost* m_pFinderHost;
 	std::unique_ptr<Discovery> m_pDiscovery;
-	std::vector<ServerInfoNet> m_availableServers; // internal temp
-	std::vector<ServerInfoNet> m_cachedServers;    // UI-visible snapshot
+	std::vector<ServerInfoNet> m_availableServers; // internal temp（待機中のみ）
+	std::vector<ServerInfoNet> m_cachedServers;    // UI-visible snapshot（待機中のみ）
+	std::vector<ServerInfoNet> m_allServers;       // 全サーバー（待機中 + ゲーム中）
 
 	void OnConnect();
 	void OnReceive(const ENetEvent& event);
