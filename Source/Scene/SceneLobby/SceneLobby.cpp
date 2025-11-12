@@ -13,7 +13,7 @@ SceneLobby::SceneLobby(Engine* pEngine)
 	f_backButtonPosition = { 50, 50 };
 	f_startButtonPosition = { WINDOW_WIDTH / 2 - f_buttonSize.x / 2 , 900 };
 	f_serverNameLabelPosition = { 800, 50 };
-	f_serverNamePosition = { WINDOW_WIDTH / 2, 130 }; 
+	f_serverNamePosition = { WINDOW_WIDTH / 2, 130 };
 	f_memberLabelPosition = { 750, 200 };
 	f_memberNamePosition = { 750, 300 };
 	f_backButtonText = "　 戻る";
@@ -53,13 +53,19 @@ void SceneLobby::Update()
 	if (m_server) m_server->Update();
 	if (m_client) m_client->Update();
 
-	// ★★★ クライアントがサーバーから切断された場合、タイトルに戻る ★★★
-	if (m_client && !m_client->IsConnected())
+	// クライアントのみの場合（ホストではない）、サーバーから切断されたらタイトルに戻る
+	// ただし、接続確立前（まだプレイヤーリストが空）は切断チェックをスキップ
+	if (m_client && !m_client->IsHost())
 	{
-		NET_LOG("[SceneLobby] サーバーから切断されました - タイトルに戻ります");
-		m_client->Disconnect();
-		m_nowSceneData.Set(Common::SCENE_TITLE, false, nullptr);
-		return;
+		// プレイヤーリストが1人以上いる = 接続が確立している
+		auto playerNames = m_client->GetLobbyPlayerNames();
+		if (!playerNames.empty() && !m_client->IsConnected())
+		{
+			NET_LOG("[SceneLobby] サーバーから切断されました - タイトルに戻ります");
+			m_client->Disconnect();
+			m_nowSceneData.Set(Common::SCENE_TITLE, false, nullptr);
+			return;
+		}
 	}
 
 	POINT mp = m_pEngine->GetMousePosition();
@@ -67,7 +73,7 @@ void SceneLobby::Update()
 	bool clicked = mouseDown && !m_pressedMouseLast;
 	m_pressedMouseLast = mouseDown;
 
-	// --- タイトルへ戻るボタン ---
+	// タイトルへ戻るボタン
 	if (clicked && PointInRect(f_backButtonPosition, f_buttonSize))
 	{
 		if (m_client) m_client->Disconnect();
@@ -76,16 +82,16 @@ void SceneLobby::Update()
 		return;
 	}
 
-	// --- ゲーム開始ボタン（ホストのみ有効） ---
+	// ゲーム開始ボタン（ホストのみ有効）
 	if (m_server)
 	{
 		if (clicked && PointInRect(f_startButtonPosition, f_buttonSize))
 		{
-			m_server->StartGame(); // 全クライアントへゲーム開始通知
+			m_server->StartGame();
 		}
 	}
 
-	// --- クライアントがゲーム開始を受信したら遷移 ---
+	// クライアントがゲーム開始を受信したら遷移
 	if (m_client && m_client->IsGameStarted())
 	{
 		m_nowSceneData.Set(Common::SCENE_GAME, false, nullptr);
@@ -99,7 +105,7 @@ void SceneLobby::Draw()
 	RECT src, dst;
 	SetRect(&src, 0, 0, f_buttonSize.x, f_buttonSize.y);
 
-	SetRect(&dst,f_backButtonPosition.x, f_backButtonPosition.y, f_backButtonPosition.x + f_buttonSize.x, f_backButtonPosition.y + f_buttonSize.y);
+	SetRect(&dst, f_backButtonPosition.x, f_backButtonPosition.y, f_backButtonPosition.x + f_buttonSize.x, f_backButtonPosition.y + f_buttonSize.y);
 	m_pEngine->Blt(&dst, TEXTURE_BUTTON, &src);
 	m_pEngine->DrawPrintf(f_backButtonPosition.x, f_backButtonPosition.y + f_textOffsetY, FONT_GOTHIC60, Color::BLACK, f_backButtonText);
 
@@ -115,7 +121,7 @@ void SceneLobby::Draw()
 	m_pEngine->DrawPrintf(f_memberLabelPosition.x, f_memberLabelPosition.y + f_textOffsetY, FONT_GOTHIC60, Color::WHITE, f_memberLabelText);
 	for (size_t i = 0; i < members.size(); i++)
 	{
-		m_pEngine->DrawPrintf(f_memberNamePosition.x,(int)i * f_memberOffsetY + f_memberNamePosition.y, FONT_GOTHIC60, Color::WHITE, members[i].c_str());
+		m_pEngine->DrawPrintf(f_memberNamePosition.x, (int)i * f_memberOffsetY + f_memberNamePosition.y, FONT_GOTHIC60, Color::WHITE, members[i].c_str());
 	}
 
 	SetRect(&dst, f_startButtonPosition.x, f_startButtonPosition.y, f_startButtonPosition.x + f_buttonSize.x, f_startButtonPosition.y + f_buttonSize.y);
@@ -124,8 +130,7 @@ void SceneLobby::Draw()
 	if (m_server)
 		m_pEngine->DrawPrintf(f_startButtonPosition.x, f_startButtonPosition.y + f_textOffsetY, FONT_GOTHIC60, Color::BLACK, f_startButtonText);
 
-	if(m_client) m_pEngine->Blt(&dst, TEXTURE_BUTTON, &src, f_clientStartButtonAlpha, 0);
-
+	if (m_client) m_pEngine->Blt(&dst, TEXTURE_BUTTON, &src, f_clientStartButtonAlpha, 0);
 
 	m_pEngine->SpriteEnd();
 }

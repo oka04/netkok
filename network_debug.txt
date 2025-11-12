@@ -2,14 +2,89 @@
 Network Debug Log
 ===========================================
 
-[13:49:18] ========================================
-[13:49:18] ClientManager 初期化開始
-[13:49:18] ========================================
-[13:49:18] [ClientManager] ENet初期化成功
-[13:49:18] [ClientManager] Discovery作成
-[13:49:18] [Discovery/Listener] スレッド開始
-[13:49:18] [Discovery/Listener] WSAStartup成功
-[13:49:18] [ClientManager] Discoveryリスナー起動 (ポート:12346)
-[13:49:18] [Discovery/Listener] ソケット作成成功
-[13:49:18] [Discovery/Listener] bind成功 ポート:12346
-[13:49:18] [Discovery/Listener] 受信ループ開始
+[13:58:22] ========================================
+[13:58:22] ClientManager 初期化開始
+[13:58:22] ========================================
+[13:58:22] [ClientManager] ENet初期化成功
+[13:58:22] [ClientManager] Discovery作成
+[13:58:22] [Discovery/Listener] スレッド開始
+[13:58:22] [Discovery/Listener] WSAStartup成功
+[13:58:22] [ClientManager] Discoveryリスナー起動 (ポート:12346)
+[13:58:22] [Discovery/Listener] ソケット作成成功
+[13:58:22] [Discovery/Listener] bind成功 ポート:12346
+[13:58:22] [Discovery/Listener] 受信ループ開始
+[13:58:25] [Discovery/Advertiser] スレッド開始
+[13:58:25] [Discovery/Advertiser] WSAStartup成功
+[13:58:25] [Discovery/Advertiser] ソケット作成成功
+[13:58:25] [ServerManager] BroadcastLobbyUpdate: 0 人
+[13:58:25] [ServerManager] 送信データサイズ: 2 bytes
+[13:58:25] [Discovery/Advertiser] SO_BROADCAST設定成功
+[13:58:25] [Discovery/Advertiser] ブロードキャストループ開始
+[13:58:25] [ClientManager] ConnectToHost: 127.0.0.1:12372
+[13:58:25] [Discovery/Advertiser] 送信データ: port=12372 player=0/8 state=0 name='FSD'
+[13:58:25] [ClientManager] クライアントホスト作成成功
+[13:58:25] [Discovery/Advertiser] ブロードキャスト送信 #1: サイズ=21 bytes
+[13:58:25] [ClientManager] 接続要求送信中... (ホスト判定: true)
+[13:58:25] [ClientManager] サーバー接続成功
+[13:58:25] [ClientManager] JOIN送信: Player015
+[13:58:25] [ServerManager] BroadcastLobbyUpdate: 1 人
+[13:58:25] [ServerManager] プレイヤー1: 'Player015' (長さ:9)
+[13:58:25] [ServerManager] 送信データサイズ: 12 bytes
+[13:58:25] [ServerManager] ProcessJoin: データ長=11
+[13:58:25] [ServerManager] 名前長さ: 9
+[13:58:25] [ServerManager] 受信した名前: 'Player015'
+[13:58:25] [ServerManager] クライアントID 1 の名前を 'Player015' に設定
+[13:58:25] [ServerManager] BroadcastLobbyUpdate: 1 人
+[13:58:25] [ServerManager] プレイヤー1: 'Player015' (長さ:9)
+[13:58:25] [ServerManager] 送信データサイズ: 12 bytes
+[13:58:25] [ClientManager] ProcessLobbyUpdate: データ長=12
+[13:58:25] [ClientManager] データダンプ: 03 01 09 50 6C 61 79 65 72 30 31 35 
+[13:58:25] [ClientManager] プレイヤー数: 1
+[13:58:25] [ClientManager] プレイヤー1 名前長さ: 9
+[13:58:25] [ClientManager] プレイヤー1: 'Player015'
+[13:58:25] [ClientManager] ロビー更新: 0 → 1 人
+[13:58:25] [ClientManager] ProcessLobbyUpdate: データ長=12
+[13:58:25] [Discovery/Listener] パケット受信! サイズ:21 bytes
+[13:58:25] [Discovery/Listener] マジック一致確認
+[13:58:25] [Discovery/Listener] プロトコルバージョン: 256
+[13:58:25] [Discovery/Listener] ポート: 21552
+[13:58:25] [Discovery/Listener] プレイヤー数: 0
+[13:58:25] [Discovery/Listener] 最大プレイヤー数: 8
+[13:58:25] [Discovery/Listener] ステート: 0
+[13:58:25] [Discovery/Listener] 名前の長さ: 3
+[13:58:25] [Discovery/Listener] サーバー名: 'FSD'
+[13:58:25] [ClientManager] データダンプ: 03 01 09 50 6C 61 79 65 72 30 31 35 
+[13:58:25] [ClientManager] プレイヤー数: 1
+[13:58:25] [ClientManager] プレイヤー1 名前長さ: 9
+[13:58:25] [ClientManager] プレイヤー1: 'Player015'
+[13:58:25] [ClientManager] ロビー更新: 1 → 1 人
+[13:58:25] [Discovery/Listener] ★サーバー検出★: FSD @ 172.20.145.6:21552 (0/8) state=0
+[13:58:25] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[13:58:27] [Discovery/Listener] 生存確認 ループ:50
+[13:58:30] [Discovery/Advertiser] 送信データ: port=12372 player=1/8 state=0 name='FSD'
+[13:58:30] [Discovery/Advertiser] ブロードキャスト送信 #2: サイズ=21 bytes
+[13:58:30] [Discovery/Listener] パケット受信! サイズ:21 bytes
+[13:58:30] [Discovery/Listener] マジック一致確認
+[13:58:30] [Discovery/Listener] プロトコルバージョン: 256
+[13:58:30] [Discovery/Listener] ポート: 21552
+[13:58:30] [Discovery/Listener] プレイヤー数: 1
+[13:58:30] [Discovery/Listener] 最大プレイヤー数: 8
+[13:58:30] [Discovery/Listener] ステート: 0
+[13:58:30] [Discovery/Listener] 名前の長さ: 3
+[13:58:30] [Discovery/Listener] サーバー名: 'FSD'
+[13:58:30] [Discovery/Listener] ★サーバー検出★: FSD @ 172.20.145.6:21552 (1/8) state=0
+[13:58:30] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[13:58:32] [Discovery/Listener] 生存確認 ループ:100
+[13:58:35] [Discovery/Advertiser] 送信データ: port=12372 player=1/8 state=0 name='FSD'
+[13:58:35] [Discovery/Advertiser] ブロードキャスト送信 #3: サイズ=21 bytes
+[13:58:35] [Discovery/Listener] パケット受信! サイズ:21 bytes
+[13:58:35] [Discovery/Listener] マジック一致確認
+[13:58:35] [Discovery/Listener] プロトコルバージョン: 256
+[13:58:35] [Discovery/Listener] ポート: 21552
+[13:58:35] [Discovery/Listener] プレイヤー数: 1
+[13:58:35] [Discovery/Listener] 最大プレイヤー数: 8
+[13:58:35] [Discovery/Listener] ステート: 0
+[13:58:35] [Discovery/Listener] 名前の長さ: 3
+[13:58:35] [Discovery/Listener] サーバー名: 'FSD'
+[13:58:35] [Discovery/Listener] ★サーバー検出★: FSD @ 172.20.145.6:21552 (1/8) state=0
+[13:58:35] [Discovery/Listener] サーバーリストに追加 (合計:1)

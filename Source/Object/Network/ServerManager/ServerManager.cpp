@@ -3,6 +3,7 @@
 #include "ServerManager.h"
 #include "..\\ClientManager\\ClientManager.h"
 #include "..\\Discovery\\Discovery.h"
+#include "..\\NetworkLogger.h" 
 #include <windows.h>
 #include <iostream>
 #include <cstring>
@@ -67,15 +68,16 @@ bool ServerManager::StartServer(int port, int maxm_clients)
 		return false;
 	}
 
-	// Start discovery advertisement on a discovery port (separate from ENet port)
 	const uint16_t discoveryPort = 12346;
 	m_advertiser = std::make_unique<Discovery>();
 	m_advertiser->StartAdvertise(discoveryPort, (uint16_t)port, m_serverName, (uint8_t)maxm_clients);
-	m_advertiser->SetAdvertiseState(0);
-	m_advertiser->SetAdvertisePlayerCount(0);
-	m_clientCount = 0;
-	BroadcastLobbyUpdate();
 
+	// ★★★ ホスト分を含めて1人として表示 ★★★
+	m_advertiser->SetAdvertisePlayerCount(1);
+	m_advertiser->SetAdvertiseState(0);
+	m_clientCount = 0;  // 実際の接続数は0
+
+	NET_LOG_F("[ServerManager] サーバー起動: ポート=%d (表示プレイヤー数: 1)", port);
 	std::cout << "[Server] 起動: ポート " << port << std::endl;
 	return true;
 }
@@ -86,20 +88,19 @@ void ServerManager::StopServer()
 	{
 		NET_LOG("[ServerManager] サーバー停止処理開始");
 
-		// ★★★ 全クライアントに切断通知を送信 ★★★
+		// 全クライアントに切断通知を送信
 		for (auto &kv : m_clients)
 		{
 			if (kv.first && kv.first->state == ENET_PEER_STATE_CONNECTED)
 			{
 				NET_LOG_F("[ServerManager] クライアント %s に切断通知送信", kv.second->name.c_str());
-				// graceful disconnect with reason code
 				enet_peer_disconnect(kv.first, 0);
 			}
 		}
 
 		// クライアントの切断処理を完了するまで少し待つ
 		ENetEvent event;
-		int maxWait = 30; // 最大3秒待機（100ms × 30）
+		int maxWait = 30;
 		while (maxWait > 0 && !m_clients.empty())
 		{
 			while (enet_host_service(m_pServerHost, &event, 100) > 0)
@@ -116,7 +117,7 @@ void ServerManager::StopServer()
 			maxWait--;
 		}
 
-		// 強制切断（まだ接続中のクライアントがいる場合）
+		// 強制切断
 		for (auto &kv : m_clients)
 		{
 			if (kv.first)
@@ -153,7 +154,6 @@ void ServerManager::BroadcastLobbyUpdate()
 
 	NET_LOG_F("[ServerManager] BroadcastLobbyUpdate: %d 人", (int)m_clients.size());
 
-	// format: [MSG_LOBBY_UPDATE][count][nameLen,name...]* (reliable)
 	std::vector<uint8_t> payload;
 	payload.push_back((uint8_t)MSG_LOBBY_UPDATE);
 	uint8_t count = (uint8_t)m_clients.size();
@@ -162,7 +162,9 @@ void ServerManager::BroadcastLobbyUpdate()
 	int playerIndex = 0;
 	for (auto &kv : m_clients) {
 		const std::string &name = kv.second->name;
-		uint8_t nl = (uint8_t)(name.size() > 255 ? 255 : name.size());
+		size_t nameSize = name.size();
+		if (nameSize > 255) nameSize = 255;
+		uint8_t nl = (uint8_t)nameSize;
 		payload.push_back(nl);
 		payload.insert(payload.end(), name.begin(), name.begin() + nl);
 
@@ -191,7 +193,6 @@ void ServerManager::StartGame()
 		return;
 	}
 
-	// set advertise state to in-game so discovery filters it out
 	if (m_advertiser) m_advertiser->SetAdvertiseState(1);
 
 	std::vector<uint8_t> payload;
@@ -261,20 +262,25 @@ void ServerManager::OnClientConnect(ENetPeer* peer)
 	auto ci = new ClientInfo();
 	ci->peer = peer;
 	ci->id = m_nextClientId++;
+
+	// ホストが最初に接続した場合（m_clientCount == 0）
 	if (m_clientCount == 0 && !m_hostName.empty())
 	{
-		ci->name = m_hostName; 
+		ci->name = m_hostName;
+		NET_LOG_F("[ServerManager] ホスト接続: %s", m_hostName.c_str());
 	}
 	else
 	{
-		ci->name = "Player";  
+		ci->name = "Player";
 	}
 	peer->data = ci;
 
 	m_clients[peer] = ci;
 	m_clientCount++;
 
+	NET_LOG_F("[ServerManager] クライアント接続 (%d人)", m_clientCount);
 	std::cout << "[Server] クライアント接続 (" << m_clientCount << "人)" << std::endl;
+
 	BroadcastLobbyUpdate();
 }
 
