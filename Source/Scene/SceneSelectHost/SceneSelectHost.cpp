@@ -165,6 +165,10 @@ void SceneSelectHost::Update()
 		if (m_bMouseOverBackButton)
 		{
 			m_buttonAlpha = f_minAlpha;
+
+			ServerManager::GetInstance()->Reset();
+			ClientManager::GetInstance()->Reset();
+
 			m_nowSceneData.Set(Common::SCENE_TITLE, false, nullptr);
 			return;
 		}

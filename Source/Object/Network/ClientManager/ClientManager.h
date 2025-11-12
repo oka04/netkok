@@ -46,6 +46,9 @@ public:
 	void RefreshAvailableServers();
 	bool IsConnected() const;
 
+	static void DestroyInstance();
+	void Reset();
+
 private:
 	ENetHost* m_pClientHost;
 	ENetPeer* m_pServerPeer;

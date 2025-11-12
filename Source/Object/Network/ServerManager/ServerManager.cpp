@@ -82,6 +82,32 @@ bool ServerManager::StartServer(int port, int maxm_clients)
 	return true;
 }
 
+void ServerManager::DestroyInstance()
+{
+	if (s_instance)
+	{
+		delete s_instance;
+		s_instance = nullptr;
+		NET_LOG("[ServerManager] インスタンス破棄");
+	}
+}
+
+void ServerManager::Reset()
+{
+	NET_LOG("[ServerManager] Reset開始");
+
+	StopServer();
+
+	// 状態をクリア
+	m_clientCount = 0;
+	m_nextClientId = 1;
+	m_serverName = "Silent Host";
+	m_hostName = "";
+	m_lastAdvertiseTime = 0;
+
+	NET_LOG("[ServerManager] Reset完了");
+}
+
 void ServerManager::StopServer()
 {
 	if (m_pServerHost)
@@ -94,41 +120,18 @@ void ServerManager::StopServer()
 			if (kv.first && kv.first->state == ENET_PEER_STATE_CONNECTED)
 			{
 				NET_LOG_F("[ServerManager] クライアント %s に切断通知送信", kv.second->name.c_str());
-				enet_peer_disconnect(kv.first, 0);
+				enet_peer_disconnect_now(kv.first, 0);  // ★★★ 即座に切断 ★★★
 			}
 		}
 
-		// クライアントの切断処理を完了するまで少し待つ
-		ENetEvent event;
-		int maxWait = 30;
-		while (maxWait > 0 && !m_clients.empty())
-		{
-			while (enet_host_service(m_pServerHost, &event, 100) > 0)
-			{
-				switch (event.type)
-				{
-				case ENET_EVENT_TYPE_DISCONNECT:
-					OnClientDisconnect(event.peer);
-					break;
-				default:
-					break;
-				}
-			}
-			maxWait--;
-		}
-
-		// 強制切断
+		// クライアント情報を削除
 		for (auto &kv : m_clients)
 		{
-			if (kv.first)
-			{
-				NET_LOG_F("[ServerManager] クライアント %s を強制切断", kv.second->name.c_str());
-				enet_peer_reset(kv.first);
-			}
 			delete kv.second;
 		}
 		m_clients.clear();
 
+		// ホストを破棄
 		enet_host_destroy(m_pServerHost);
 		m_pServerHost = nullptr;
 		m_clientCount = 0;
@@ -137,9 +140,11 @@ void ServerManager::StopServer()
 		std::cout << "[Server] 停止" << std::endl;
 	}
 
+	// Advertiserを停止
 	if (m_advertiser) {
 		m_advertiser->StopAdvertise();
 		m_advertiser.reset();
+		NET_LOG("[ServerManager] Advertiser停止");
 	}
 }
 
@@ -247,9 +252,23 @@ const std::string& ServerManager::GetHostName() const
 std::vector<std::string> ServerManager::GetLobbyPlayerNames() const
 {
 	std::vector<std::string> names;
-	for (auto& kv : m_clients) {
-		names.push_back(kv.second->name);
+
+	// ★★★ ホスト名を最初に追加 ★★★
+	if (!m_hostName.empty())
+	{
+		names.push_back(m_hostName);
 	}
+
+	// ★★★ 他のクライアントを追加（ホスト自身の接続は除外） ★★★
+	for (auto& kv : m_clients)
+	{
+		if (kv.second->name != m_hostName)
+		{
+			names.push_back(kv.second->name);
+		}
+	}
+
+	NET_LOG_F("[ServerManager] GetLobbyPlayerNames: %d人返却", (int)names.size());
 	return names;
 }
 

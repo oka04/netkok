@@ -2,62 +2,264 @@
 Network Debug Log
 ===========================================
 
-[14:23:35] ========================================
-[14:23:35] ClientManager 初期化開始
-[14:23:35] ========================================
-[14:23:35] [ClientManager] ENet初期化成功
-[14:23:35] [ClientManager] Discovery作成
-[14:23:35] [Discovery/Listener] スレッド開始
-[14:23:35] [Discovery/Listener] WSAStartup成功
-[14:23:35] [ClientManager] Discoveryリスナー起動 (ポート:12346)
-[14:23:35] [Discovery/Listener] ソケット作成成功
-[14:23:35] [Discovery/Listener] bind成功 ポート:12346
-[14:23:35] [Discovery/Listener] 受信ループ開始
-[14:23:36] [Discovery/Advertiser] スレッド開始
-[14:23:36] [Discovery/Advertiser] WSAStartup成功
-[14:23:36] [Discovery/Advertiser] ソケット作成成功
-[14:23:36] [Discovery/Advertiser] SO_BROADCAST設定成功
-[14:23:36] [ServerManager] サーバー起動: ポート=12783 (表示プレイヤー数: 1)
-[14:23:36] [Discovery/Advertiser] ブロードキャストループ開始
-[14:23:36] [Discovery/Advertiser] 送信データ: port=12783 player=1/8 state=0 name='GH'
-[14:23:36] [ClientManager] ConnectToHost: 127.0.0.1:12783
-[14:23:36] [ClientManager] クライアントホスト作成成功
-[14:23:36] [Discovery/Advertiser] ブロードキャスト送信 #1: サイズ=20 bytes
-[14:23:36] [ClientManager] 接続要求送信中... (ホスト判定: true)
-[14:23:36] [ClientManager] サーバー接続成功
-[14:23:36] [ClientManager] JOIN送信: Player956
-[14:23:36] [ServerManager] ホスト接続: Player956
-[14:23:36] [ServerManager] クライアント接続: Player956 (1人)
-[14:23:36] [ServerManager] BroadcastLobbyUpdate: 1 人
-[14:23:36] [ServerManager] プレイヤー1: 'Player956' (長さ:9)
-[14:23:36] [ServerManager] 送信データサイズ: 12 bytes
-[14:23:36] [ServerManager] ProcessJoin: データ長=11
-[14:23:36] [ServerManager] 名前長さ: 9
-[14:23:36] [ServerManager] 受信した名前: 'Player956'
-[14:23:36] [ServerManager] クライアントID 1 の名前を 'Player956' に設定
-[14:23:36] [ServerManager] BroadcastLobbyUpdate: 1 人
-[14:23:36] [ServerManager] プレイヤー1: 'Player956' (長さ:9)
-[14:23:36] [ServerManager] 送信データサイズ: 12 bytes
-[14:23:36] [ClientManager] ProcessLobbyUpdate: データ長=12
-[14:23:36] [ClientManager] データダンプ: 03 01 09 50 6C 61 79 65 72 39 35 36 
-[14:23:36] [ClientManager] プレイヤー数: 1
-[14:23:36] [ClientManager] プレイヤー1 名前長さ: 9
-[14:23:36] [ClientManager] プレイヤー1: 'Player956'
-[14:23:36] [ClientManager] ロビー更新: 0 → 1 人
-[14:23:36] [ClientManager] ProcessLobbyUpdate: データ長=12
-[14:23:36] [ClientManager] データダンプ: 03 01 09 50 6C 61 79 65 72 39 35 36 
-[14:23:36] [ClientManager] プレイヤー数: 1
-[14:23:36] [ClientManager] プレイヤー1 名前長さ: 9
-[14:23:36] [ClientManager] プレイヤー1: 'Player956'
-[14:23:36] [ClientManager] ロビー更新: 1 → 1 人
-[14:23:36] [Discovery/Listener] パケット受信! サイズ:20 bytes
-[14:23:36] [Discovery/Listener] マジック一致確認
-[14:23:36] [Discovery/Listener] プロトコルバージョン: 256
-[14:23:36] [Discovery/Listener] ポート: 61233
-[14:23:36] [Discovery/Listener] プレイヤー数: 1
-[14:23:36] [Discovery/Listener] 最大プレイヤー数: 8
-[14:23:36] [Discovery/Listener] ステート: 0
-[14:23:36] [Discovery/Listener] 名前の長さ: 2
-[14:23:36] [Discovery/Listener] サーバー名: 'GH'
-[14:23:36] [Discovery/Listener] ★サーバー検出★: GH @ 172.20.145.6:61233 (1/8) state=0
-[14:23:36] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:33:30] ========================================
+[14:33:30] ClientManager 初期化開始
+[14:33:30] ========================================
+[14:33:30] [ClientManager] ENet初期化成功
+[14:33:30] [ClientManager] Discovery作成
+[14:33:30] [Discovery/Listener] スレッド開始
+[14:33:30] [Discovery/Listener] WSAStartup成功
+[14:33:30] [ClientManager] Discoveryリスナー起動 (ポート:12346)
+[14:33:30] [Discovery/Listener] ソケット作成成功
+[14:33:30] [Discovery/Listener] bind成功 ポート:12346
+[14:33:30] [Discovery/Listener] 受信ループ開始
+[14:33:32] [Discovery/Advertiser] スレッド開始
+[14:33:32] [Discovery/Advertiser] WSAStartup成功
+[14:33:32] [ServerManager] サーバー起動: ポート=12375 (表示プレイヤー数: 1)
+[14:33:32] [ClientManager] ConnectToHost: 127.0.0.1:12375
+[14:33:32] [Discovery/Advertiser] ソケット作成成功
+[14:33:33] [Discovery/Advertiser] SO_BROADCAST設定成功
+[14:33:33] [Discovery/Advertiser] ブロードキャストループ開始
+[14:33:33] [Discovery/Advertiser] 送信データ: port=12375 player=1/8 state=0 name='DFG'
+[14:33:33] [ClientManager] クライアントホスト作成成功
+[14:33:33] [Discovery/Advertiser] ブロードキャスト送信 #1: サイズ=21 bytes
+[14:33:33] [ClientManager] 接続要求送信中... (ホスト判定: true)
+[14:33:33] [ClientManager] サーバー接続成功
+[14:33:33] [ClientManager] JOIN送信: Player657
+[14:33:33] [ServerManager] ホスト接続: Player657
+[14:33:33] [ServerManager] クライアント接続: Player657 (1人)
+[14:33:33] [ServerManager] BroadcastLobbyUpdate: 1 人
+[14:33:33] [ServerManager] プレイヤー1: 'Player657' (長さ:9)
+[14:33:33] [ServerManager] 送信データサイズ: 12 bytes
+[14:33:33] [ServerManager] ProcessJoin: データ長=11
+[14:33:33] [ServerManager] 名前長さ: 9
+[14:33:33] [ServerManager] 受信した名前: 'Player657'
+[14:33:33] [ServerManager] クライアントID 1 の名前を 'Player657' に設定
+[14:33:33] [ServerManager] BroadcastLobbyUpdate: 1 人
+[14:33:33] [ServerManager] プレイヤー1: 'Player657' (長さ:9)
+[14:33:33] [ServerManager] 送信データサイズ: 12 bytes
+[14:33:33] [ClientManager] ProcessLobbyUpdate: データ長=12
+[14:33:33] [ClientManager] データダンプ: 03 01 09 50 6C 61 79 65 72 36 35 37 
+[14:33:33] [ClientManager] プレイヤー数: 1
+[14:33:33] [ClientManager] プレイヤー1 名前長さ: 9
+[14:33:33] [ClientManager] プレイヤー1: 'Player657'
+[14:33:33] [ClientManager] ロビー更新: 0 → 1 人
+[14:33:33] [ClientManager] ProcessLobbyUpdate: データ長=12
+[14:33:33] [ClientManager] データダンプ: 03 01 09 50 6C 61 79 65 72 36 35 37 
+[14:33:33] [ClientManager] プレイヤー数: 1
+[14:33:33] [ClientManager] プレイヤー1 名前長さ: 9
+[14:33:33] [ClientManager] プレイヤー1: 'Player657'
+[14:33:33] [ClientManager] ロビー更新: 1 → 1 人
+[14:33:33] [Discovery/Listener] パケット受信! サイズ:21 bytes
+[14:33:33] [Discovery/Listener] マジック一致確認
+[14:33:33] [Discovery/Listener] プロトコルバージョン: 256
+[14:33:33] [Discovery/Listener] ポート: 22320
+[14:33:33] [Discovery/Listener] プレイヤー数: 1
+[14:33:33] [Discovery/Listener] 最大プレイヤー数: 8
+[14:33:33] [Discovery/Listener] ステート: 0
+[14:33:33] [Discovery/Listener] 名前の長さ: 3
+[14:33:33] [Discovery/Listener] サーバー名: 'DFG'
+[14:33:33] [Discovery/Listener] ★サーバー検出★: DFG @ 172.20.145.6:22320 (1/8) state=0
+[14:33:33] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:33:35] [Discovery/Listener] 生存確認 ループ:50
+[14:33:38] [Discovery/Advertiser] 送信データ: port=12375 player=1/8 state=0 name='DFG'
+[14:33:38] [Discovery/Advertiser] ブロードキャスト送信 #2: サイズ=21 bytes
+[14:33:38] [Discovery/Listener] パケット受信! サイズ:21 bytes
+[14:33:38] [Discovery/Listener] マジック一致確認
+[14:33:38] [Discovery/Listener] プロトコルバージョン: 256
+[14:33:38] [Discovery/Listener] ポート: 22320
+[14:33:38] [Discovery/Listener] プレイヤー数: 1
+[14:33:38] [Discovery/Listener] 最大プレイヤー数: 8
+[14:33:38] [Discovery/Listener] ステート: 0
+[14:33:38] [Discovery/Listener] 名前の長さ: 3
+[14:33:38] [Discovery/Listener] サーバー名: 'DFG'
+[14:33:38] [Discovery/Listener] ★サーバー検出★: DFG @ 172.20.145.6:22320 (1/8) state=0
+[14:33:38] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:33:40] [Discovery/Listener] 生存確認 ループ:100
+[14:33:43] [Discovery/Advertiser] 送信データ: port=12375 player=1/8 state=0 name='DFG'
+[14:33:43] [Discovery/Advertiser] ブロードキャスト送信 #3: サイズ=21 bytes
+[14:33:43] [Discovery/Listener] パケット受信! サイズ:21 bytes
+[14:33:43] [Discovery/Listener] マジック一致確認
+[14:33:43] [Discovery/Listener] プロトコルバージョン: 256
+[14:33:43] [Discovery/Listener] ポート: 22320
+[14:33:43] [Discovery/Listener] プレイヤー数: 1
+[14:33:43] [Discovery/Listener] 最大プレイヤー数: 8
+[14:33:43] [Discovery/Listener] ステート: 0
+[14:33:43] [Discovery/Listener] 名前の長さ: 3
+[14:33:43] [Discovery/Listener] サーバー名: 'DFG'
+[14:33:43] [Discovery/Listener] ★サーバー検出★: DFG @ 172.20.145.6:22320 (1/8) state=0
+[14:33:43] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:33:45] [Discovery/Listener] 生存確認 ループ:150
+[14:33:46] [ServerManager] サーバー停止処理開始
+[14:33:46] [ServerManager] クライアント Player657 に切断通知送信
+[14:33:48] [Discovery/Advertiser] 送信データ: port=12375 player=1/8 state=0 name='DFG'
+[14:33:48] [Discovery/Advertiser] ブロードキャスト送信 #4: サイズ=21 bytes
+[14:33:48] [Discovery/Listener] パケット受信! サイズ:21 bytes
+[14:33:48] [Discovery/Listener] マジック一致確認
+[14:33:48] [Discovery/Listener] プロトコルバージョン: 256
+[14:33:48] [Discovery/Listener] ポート: 22320
+[14:33:48] [Discovery/Listener] プレイヤー数: 1
+[14:33:48] [Discovery/Listener] 最大プレイヤー数: 8
+[14:33:48] [Discovery/Listener] ステート: 0
+[14:33:48] [Discovery/Listener] 名前の長さ: 3
+[14:33:48] [Discovery/Listener] サーバー名: 'DFG'
+[14:33:48] [Discovery/Listener] ★サーバー検出★: DFG @ 172.20.145.6:22320 (1/8) state=0
+[14:33:48] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:33:49] [ServerManager] クライアント Player657 を強制切断
+[14:33:49] [ServerManager] サーバー停止完了
+[14:33:49] [Discovery/Advertiser] 停止中...
+[14:33:49] [Discovery/Advertiser] ブロードキャストループ終了
+[14:33:49] [Discovery/Advertiser] 停止完了
+[14:33:50] [Discovery/Listener] 生存確認 ループ:200
+[14:33:55] [Discovery/Listener] 生存確認 ループ:250
+[14:33:59] [Discovery/Listener] タイムアウト削除: 172.20.145.6:22320
+[14:34:00] [Discovery/Listener] 生存確認 ループ:300
+[14:34:00] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[14:34:00] [Discovery/Listener] マジック一致確認
+[14:34:00] [Discovery/Listener] プロトコルバージョン: 256
+[14:34:00] [Discovery/Listener] ポート: 27184
+[14:34:00] [Discovery/Listener] プレイヤー数: 1
+[14:34:00] [Discovery/Listener] 最大プレイヤー数: 8
+[14:34:00] [Discovery/Listener] ステート: 0
+[14:34:00] [Discovery/Listener] 名前の長さ: 2
+[14:34:00] [Discovery/Listener] サーバー名: 'HJ'
+[14:34:00] [Discovery/Listener] ★サーバー検出★: HJ @ 172.20.145.8:27184 (1/8) state=0
+[14:34:00] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:34:02] ========================================
+[14:34:02] SceneSelectClient 開始
+[14:34:02] ========================================
+[14:34:02] [SceneSelectClient] 初回サーバー検索開始
+[14:34:02] [ClientManager] RefreshAvailableServers 開始
+[14:34:02] [Discovery] GetServers呼び出し: 1 サーバー返却
+[14:34:02] [ClientManager] Discovery から 1 サーバー取得
+[14:34:02] [ClientManager] サーバー情報: HJ @ 172.20.145.8:27184 (1/8) state=0
+[14:34:02] [ClientManager] 追加成功: HJ
+[14:34:02] [ClientManager] RefreshAvailableServers 完了: 追加=1 スキップ=0 合計=1 全体=1
+[14:34:02] [SceneSelectClient] リスト更新: 待機中=1 ゲーム中=0
+[14:34:02] [SceneSelectClient] 初期サーバー数: 待機中=1 ゲーム中=0
+[14:34:03] [SceneSelectClient] サーバー選択: HJ @ 172.20.145.8:27184
+[14:34:03] [ClientManager] ConnectToHost: 172.20.145.8:27184
+[14:34:03] [ClientManager] クライアントホスト作成成功
+[14:34:03] [ClientManager] サーバー名を設定: HJ
+[14:34:03] [ClientManager] 接続要求送信中... (ホスト判定: false)
+[14:34:03] [SceneSelectClient] Exit
+[14:34:03] [SceneLobby] サーバーから切断されました - タイトルに戻ります
+[14:34:04] ========================================
+[14:34:04] SceneSelectClient 開始
+[14:34:04] ========================================
+[14:34:04] [SceneSelectClient] 初回サーバー検索開始
+[14:34:04] [ClientManager] RefreshAvailableServers 開始
+[14:34:04] [Discovery] GetServers呼び出し: 1 サーバー返却
+[14:34:04] [ClientManager] Discovery から 1 サーバー取得
+[14:34:04] [ClientManager] サーバー情報: HJ @ 172.20.145.8:27184 (1/8) state=0
+[14:34:04] [ClientManager] 追加成功: HJ
+[14:34:04] [ClientManager] RefreshAvailableServers 完了: 追加=1 スキップ=0 合計=1 全体=1
+[14:34:04] [SceneSelectClient] リスト更新: 待機中=1 ゲーム中=0
+[14:34:04] [SceneSelectClient] 初期サーバー数: 待機中=1 ゲーム中=0
+[14:34:05] [SceneSelectClient] サーバー選択: HJ @ 172.20.145.8:27184
+[14:34:05] [ClientManager] ConnectToHost: 172.20.145.8:27184
+[14:34:05] [Discovery/Listener] 生存確認 ループ:350
+[14:34:05] [ClientManager] クライアントホスト作成成功
+[14:34:05] [ClientManager] サーバー名を設定: HJ
+[14:34:05] [ClientManager] 接続要求送信中... (ホスト判定: false)
+[14:34:05] [SceneSelectClient] Exit
+[14:34:05] [SceneLobby] サーバーから切断されました - タイトルに戻ります
+[14:34:05] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[14:34:05] [Discovery/Listener] マジック一致確認
+[14:34:05] [Discovery/Listener] プロトコルバージョン: 256
+[14:34:05] [Discovery/Listener] ポート: 27184
+[14:34:05] [Discovery/Listener] プレイヤー数: 1
+[14:34:05] [Discovery/Listener] 最大プレイヤー数: 8
+[14:34:05] [Discovery/Listener] ステート: 0
+[14:34:05] [Discovery/Listener] 名前の長さ: 2
+[14:34:05] [Discovery/Listener] サーバー名: 'HJ'
+[14:34:05] [Discovery/Listener] ★サーバー検出★: HJ @ 172.20.145.8:27184 (1/8) state=0
+[14:34:05] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:34:08] ========================================
+[14:34:08] SceneSelectClient 開始
+[14:34:08] ========================================
+[14:34:08] [SceneSelectClient] 初回サーバー検索開始
+[14:34:08] [ClientManager] RefreshAvailableServers 開始
+[14:34:08] [Discovery] GetServers呼び出し: 1 サーバー返却
+[14:34:08] [ClientManager] Discovery から 1 サーバー取得
+[14:34:08] [ClientManager] サーバー情報: HJ @ 172.20.145.8:27184 (1/8) state=0
+[14:34:08] [ClientManager] 追加成功: HJ
+[14:34:08] [ClientManager] RefreshAvailableServers 完了: 追加=1 スキップ=0 合計=1 全体=1
+[14:34:08] [SceneSelectClient] リスト更新: 待機中=1 ゲーム中=0
+[14:34:08] [SceneSelectClient] 初期サーバー数: 待機中=1 ゲーム中=0
+[14:34:09] [SceneSelectClient] サーバー選択: HJ @ 172.20.145.8:27184
+[14:34:09] [ClientManager] ConnectToHost: 172.20.145.8:27184
+[14:34:09] [ClientManager] クライアントホスト作成成功
+[14:34:09] [ClientManager] サーバー名を設定: HJ
+[14:34:09] [ClientManager] 接続要求送信中... (ホスト判定: false)
+[14:34:09] [SceneSelectClient] Exit
+[14:34:09] [SceneLobby] サーバーから切断されました - タイトルに戻ります
+[14:34:10] [Discovery/Listener] 生存確認 ループ:400
+[14:34:10] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[14:34:10] [Discovery/Listener] マジック一致確認
+[14:34:10] [Discovery/Listener] プロトコルバージョン: 256
+[14:34:10] [Discovery/Listener] ポート: 27184
+[14:34:10] [Discovery/Listener] プレイヤー数: 1
+[14:34:10] [Discovery/Listener] 最大プレイヤー数: 8
+[14:34:10] [Discovery/Listener] ステート: 0
+[14:34:10] [Discovery/Listener] 名前の長さ: 2
+[14:34:10] [Discovery/Listener] サーバー名: 'HJ'
+[14:34:10] [Discovery/Listener] ★サーバー検出★: HJ @ 172.20.145.8:27184 (1/8) state=0
+[14:34:10] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:34:15] [Discovery/Listener] 生存確認 ループ:450
+[14:34:19] [Discovery/Listener] パケット受信! サイズ:21 bytes
+[14:34:19] [Discovery/Listener] マジック一致確認
+[14:34:19] [Discovery/Listener] プロトコルバージョン: 256
+[14:34:19] [Discovery/Listener] ポート: 48945
+[14:34:19] [Discovery/Listener] プレイヤー数: 1
+[14:34:19] [Discovery/Listener] 最大プレイヤー数: 8
+[14:34:19] [Discovery/Listener] ステート: 0
+[14:34:19] [Discovery/Listener] 名前の長さ: 3
+[14:34:19] [Discovery/Listener] サーバー名: 'KGU'
+[14:34:19] [Discovery/Listener] ★サーバー検出★: KGU @ 172.20.145.8:48945 (1/8) state=0
+[14:34:19] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[14:34:20] ========================================
+[14:34:20] SceneSelectClient 開始
+[14:34:20] ========================================
+[14:34:20] [SceneSelectClient] 初回サーバー検索開始
+[14:34:20] [ClientManager] RefreshAvailableServers 開始
+[14:34:20] [Discovery] GetServers呼び出し: 2 サーバー返却
+[14:34:20] [ClientManager] Discovery から 2 サーバー取得
+[14:34:20] [ClientManager] サーバー情報: HJ @ 172.20.145.8:27184 (1/8) state=0
+[14:34:20] [ClientManager] 追加成功: HJ
+[14:34:20] [ClientManager] サーバー情報: KGU @ 172.20.145.8:48945 (1/8) state=0
+[14:34:20] [ClientManager] 追加成功: KGU
+[14:34:20] [ClientManager] RefreshAvailableServers 完了: 追加=2 スキップ=0 合計=2 全体=2
+[14:34:20] [SceneSelectClient] リスト更新: 待機中=2 ゲーム中=0
+[14:34:20] [SceneSelectClient] 初期サーバー数: 待機中=2 ゲーム中=0
+[14:34:20] [Discovery/Listener] 生存確認 ループ:500
+[14:34:21] [SceneSelectClient] サーバーリスト更新 (経過時間: 1011 ms)
+[14:34:21] [ClientManager] RefreshAvailableServers 開始
+[14:34:21] [Discovery] GetServers呼び出し: 2 サーバー返却
+[14:34:21] [ClientManager] Discovery から 2 サーバー取得
+[14:34:21] [ClientManager] サーバー情報: HJ @ 172.20.145.8:27184 (1/8) state=0
+[14:34:21] [ClientManager] 追加成功: HJ
+[14:34:21] [ClientManager] サーバー情報: KGU @ 172.20.145.8:48945 (1/8) state=0
+[14:34:21] [ClientManager] 追加成功: KGU
+[14:34:21] [ClientManager] RefreshAvailableServers 完了: 追加=2 スキップ=0 合計=2 全体=2
+[14:34:21] [SceneSelectClient] リスト更新: 待機中=2 ゲーム中=0
+[14:34:21] [Discovery/Listener] タイムアウト削除: 172.20.145.8:27184
+[14:34:21] [SceneSelectClient] サーバー選択: KGU @ 172.20.145.8:48945
+[14:34:21] [ClientManager] ConnectToHost: 172.20.145.8:48945
+[14:34:21] [ClientManager] クライアントホスト作成成功
+[14:34:21] [ClientManager] サーバー名を設定: KGU
+[14:34:21] [ClientManager] 接続要求送信中... (ホスト判定: false)
+[14:34:21] [SceneSelectClient] Exit
+[14:34:21] [SceneLobby] サーバーから切断されました - タイトルに戻ります
+[14:34:25] [Discovery/Listener] 生存確認 ループ:550
+[14:34:26] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[14:34:26] [Discovery/Listener] マジック一致確認
+[14:34:26] [Discovery/Listener] プロトコルバージョン: 256
+[14:34:26] [Discovery/Listener] ポート: 42289
+[14:34:26] [Discovery/Listener] プレイヤー数: 1
+[14:34:26] [Discovery/Listener] 最大プレイヤー数: 8
+[14:34:26] [Discovery/Listener] ステート: 0
+[14:34:26] [Discovery/Listener] 名前の長さ: 2
+[14:34:26] [Discovery/Listener] サーバー名: 'MB'
+[14:34:26] [Discovery/Listener] ★サーバー検出★: MB @ 172.20.145.8:42289 (1/8) state=0
+[14:34:26] [Discovery/Listener] サーバーリストに追加 (合計:2)

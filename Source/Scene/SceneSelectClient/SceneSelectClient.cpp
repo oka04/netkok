@@ -126,6 +126,10 @@ void SceneSelectClient::Update()
 	if (m_pEngine->GetKeyStateSync(DIK_ESCAPE))
 	{
 		NET_LOG("[SceneSelectClient] ESCでタイトルに戻る");
+
+		// ★★★ クライアントをリセット ★★★
+		ClientManager::GetInstance()->Reset();
+
 		m_nowSceneData.Set(Common::SCENE_TITLE, false, nullptr);
 	}
 }

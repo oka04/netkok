@@ -90,7 +90,67 @@ void ClientManager::Disconnect()
 
 	std::cout << "[Client] 切断" << std::endl;
 }
+void ClientManager::DestroyInstance()
+{
+	if (s_instance)
+	{
+		delete s_instance;
+		s_instance = nullptr;
+		NET_LOG("[ClientManager] インスタンス破棄");
+	}
+}
 
+void ClientManager::Reset()
+{
+	NET_LOG("[ClientManager] Reset開始");
+
+	// 接続を切断
+	if (m_pServerPeer)
+	{
+		enet_peer_disconnect(m_pServerPeer, 0);
+
+		// 切断完了を待つ
+		if (m_pClientHost)
+		{
+			ENetEvent event;
+			int timeout = 30;
+			while (timeout > 0 && enet_host_service(m_pClientHost, &event, 100) > 0)
+			{
+				if (event.type == ENET_EVENT_TYPE_DISCONNECT)
+				{
+					NET_LOG("[ClientManager] 切断完了");
+					break;
+				}
+				timeout--;
+			}
+		}
+
+		m_pServerPeer = nullptr;
+	}
+
+	// ホストを破棄
+	if (m_pClientHost)
+	{
+		enet_host_destroy(m_pClientHost);
+		m_pClientHost = nullptr;
+	}
+
+	// 状態をクリア
+	{
+		std::lock_guard<std::mutex> lk(m_lobbyMutex);
+		m_lobbyPlayerNames.clear();
+	}
+
+	m_bGameStarted = false;
+	m_bHost = false;
+	m_serverName = "";
+	m_availableServers.clear();
+	m_cachedServers.clear();
+	m_allServers.clear();
+	m_previousLobbyCount = 0;
+
+	NET_LOG("[ClientManager] Reset完了");
+}
 void ClientManager::SendMessage(const char* msg)
 {
 	if (!m_pServerPeer) return;
