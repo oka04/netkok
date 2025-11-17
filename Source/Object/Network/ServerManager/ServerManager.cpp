@@ -3,7 +3,7 @@
 #include "ServerManager.h"
 #include "..\\ClientManager\\ClientManager.h"
 #include "..\\Discovery\\Discovery.h"
-#include "..\\NetworkLogger.h" 
+#include "..\\NetworkLogger.h"
 #include <windows.h>
 #include <iostream>
 #include <cstring>
@@ -17,7 +17,6 @@
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "winmm.lib")
 
-// message ids
 enum {
 	MSG_JOIN = 1,
 	MSG_JOIN_ACK = 2,
@@ -61,35 +60,23 @@ bool ServerManager::StartServer(int port, int maxClients)
 	address.host = ENET_HOST_ANY;
 	address.port = (enet_uint16)port;
 
-	// ★★★ チャンネル数を2に ★★★
 	m_pServerHost = enet_host_create(&address, maxClients, 2, 0, 0);
 	if (m_pServerHost == nullptr)
 	{
 		NET_LOG("[ServerManager] サーバーホスト作成失敗");
-		MessageBoxA(NULL, "サーバーホスト作成失敗", "エラー", MB_OK);
 		return false;
 	}
 
 	const uint16_t discoveryPort = 12346;
 	m_advertiser = std::make_unique<Discovery>();
-	m_advertiser->StartAdvertise(discoveryPort, (uint16_t)port, m_serverName, (uint8_t)maxClients);
-
-	m_advertiser->SetAdvertisePlayerCount(1);
+	m_advertiser->StartAdvertise(discoveryPort, (enet_uint16)port, m_serverName, (uint8_t)maxClients);
+	m_advertiser->SetAdvertisePlayerCount(1);  // ホスト分
 	m_advertiser->SetAdvertiseState(0);
 	m_clientCount = 0;
 
 	NET_LOG_F("[ServerManager] サーバー起動: ポート=%d", port);
+	std::cout << "[Server] 起動: ポート " << port << std::endl;
 	return true;
-}
-
-void ServerManager::DestroyInstance()
-{
-	if (s_instance)
-	{
-		delete s_instance;
-		s_instance = nullptr;
-		NET_LOG("[ServerManager] インスタンス破棄");
-	}
 }
 
 void ServerManager::Reset()
@@ -114,24 +101,23 @@ void ServerManager::StopServer()
 	{
 		NET_LOG("[ServerManager] サーバー停止処理開始");
 
-		// 全クライアントに切断通知を送信
-		for (auto &kv : m_clients)
+		// 全クライアントに切断通知
+		for (auto& kv : m_clients)
 		{
 			if (kv.first && kv.first->state == ENET_PEER_STATE_CONNECTED)
 			{
-				NET_LOG_F("[ServerManager] クライアント %s に切断通知送信", kv.second->name.c_str());
-				enet_peer_disconnect_now(kv.first, 0);  // ★★★ 即座に切断 ★★★
+				NET_LOG_F("[ServerManager] クライアント %s に切断通知", kv.second->name.c_str());
+				enet_peer_disconnect_now(kv.first, 0);
 			}
 		}
 
 		// クライアント情報を削除
-		for (auto &kv : m_clients)
+		for (auto& kv : m_clients)
 		{
 			delete kv.second;
 		}
 		m_clients.clear();
 
-		// ホストを破棄
 		enet_host_destroy(m_pServerHost);
 		m_pServerHost = nullptr;
 		m_clientCount = 0;
@@ -140,11 +126,9 @@ void ServerManager::StopServer()
 		std::cout << "[Server] 停止" << std::endl;
 	}
 
-	// Advertiserを停止
 	if (m_advertiser) {
 		m_advertiser->StopAdvertise();
 		m_advertiser.reset();
-		NET_LOG("[ServerManager] Advertiser停止");
 	}
 }
 
@@ -157,7 +141,7 @@ void ServerManager::BroadcastLobbyUpdate()
 {
 	if (!m_pServerHost) return;
 
-	// ★★★ ホスト名を含めたプレイヤーリストを作成 ★★★
+	// ホスト名を含む全プレイヤーリストを作成
 	std::vector<std::string> allPlayers;
 
 	// ホスト名を最初に追加
@@ -167,9 +151,8 @@ void ServerManager::BroadcastLobbyUpdate()
 	}
 
 	// 他のクライアントを追加（ホスト自身は除外）
-	for (auto &kv : m_clients)
+	for (auto& kv : m_clients)
 	{
-		// ホストの接続（最初の接続）は既に追加済みなのでスキップ
 		if (kv.second->name != m_hostName)
 		{
 			allPlayers.push_back(kv.second->name);
@@ -204,7 +187,6 @@ void ServerManager::BroadcastLobbyUpdate()
 
 	if (m_advertiser)
 	{
-		// ★★★ 実際のプレイヤー数を設定 ★★★
 		m_advertiser->SetAdvertisePlayerCount((uint8_t)allPlayers.size());
 		m_advertiser->SetAdvertiseState(0);
 	}
@@ -213,7 +195,12 @@ void ServerManager::BroadcastLobbyUpdate()
 void ServerManager::StartGame()
 {
 	if (!m_pServerHost) return;
-	if (m_clients.size() < 2) {
+
+	// ホスト含め2人以上必要
+	int totalPlayers = m_clientCount;
+	if (!m_hostName.empty()) totalPlayers++;
+
+	if (totalPlayers < 2) {
 		std::cout << "[Server] プレイヤーが足りません。開始できません。\n";
 		return;
 	}
@@ -229,12 +216,12 @@ void ServerManager::StartGame()
 	std::cout << "[Server] ゲーム開始通知を送信しました\n";
 }
 
-void ServerManager::SetServerName(std::string & name)
+void ServerManager::SetServerName(std::string& name)
 {
 	m_serverName = name;
 }
 
-const std::string & ServerManager::GetServerName() const
+const std::string& ServerManager::GetServerName() const
 {
 	return m_serverName;
 }
@@ -242,6 +229,7 @@ const std::string & ServerManager::GetServerName() const
 void ServerManager::SetHostName(const std::string& name)
 {
 	m_hostName = name;
+	NET_LOG_F("[ServerManager] ホスト名設定: %s", name.c_str());
 }
 
 const std::string& ServerManager::GetHostName() const
@@ -253,13 +241,13 @@ std::vector<std::string> ServerManager::GetLobbyPlayerNames() const
 {
 	std::vector<std::string> names;
 
-	// ★★★ ホスト名を最初に追加 ★★★
+	// ホスト名を最初に追加
 	if (!m_hostName.empty())
 	{
 		names.push_back(m_hostName);
 	}
 
-	// ★★★ 他のクライアントを追加（ホスト自身の接続は除外） ★★★
+	// 他のクライアントを追加
 	for (auto& kv : m_clients)
 	{
 		if (kv.second->name != m_hostName)
@@ -268,7 +256,6 @@ std::vector<std::string> ServerManager::GetLobbyPlayerNames() const
 		}
 	}
 
-	NET_LOG_F("[ServerManager] GetLobbyPlayerNames: %d人返却", (int)names.size());
 	return names;
 }
 
@@ -301,7 +288,7 @@ void ServerManager::OnClientConnect(ENetPeer* peer)
 	auto ci = new ClientInfo();
 	ci->peer = peer;
 	ci->id = m_nextClientId++;
-	ci->name = "Player";  // デフォルト名
+	ci->name = "Player";
 
 	peer->data = ci;
 	m_clients[peer] = ci;
@@ -309,12 +296,11 @@ void ServerManager::OnClientConnect(ENetPeer* peer)
 
 	NET_LOG_F("[ServerManager] クライアント接続: ID=%d (%d人)", ci->id, m_clientCount);
 
-	// ★★★ 最初の接続（ホスト）の場合、即座にホスト名を設定 ★★★
+	// 最初の接続（ホスト）の場合、ホスト名を設定
 	if (m_clientCount == 1 && !m_hostName.empty())
 	{
 		ci->name = m_hostName;
 		NET_LOG_F("[ServerManager] ホスト名を設定: %s", m_hostName.c_str());
-		// ホスト名を設定したら即座にブロードキャスト
 		BroadcastLobbyUpdate();
 	}
 }
@@ -339,6 +325,7 @@ void ServerManager::OnClientDisconnect(ENetPeer* peer)
 {
 	auto it = m_clients.find(peer);
 	if (it != m_clients.end()) {
+		NET_LOG_F("[ServerManager] クライアント切断: %s", it->second->name.c_str());
 		delete it->second;
 		m_clients.erase(it);
 		m_clientCount--;
@@ -363,7 +350,7 @@ void ServerManager::ProcessJoin(ENetPeer* peer, const uint8_t* data, size_t len)
 
 	if (idx + nl > len)
 	{
-		NET_LOG_F("[ServerManager] エラー: 名前データ不足", (int)nl, (int)(len - idx));
+		NET_LOG("[ServerManager] エラー: 名前データ不足");
 		return;
 	}
 
@@ -373,7 +360,7 @@ void ServerManager::ProcessJoin(ENetPeer* peer, const uint8_t* data, size_t len)
 	ClientInfo* ci = static_cast<ClientInfo*>(peer->data);
 	if (ci)
 	{
-		// ★★★ ホストの場合は名前を変更しない ★★★
+		// ホストの場合は名前を変更しない
 		if (ci->name == m_hostName)
 		{
 			NET_LOG_F("[ServerManager] ホストなので名前は維持: %s", ci->name.c_str());

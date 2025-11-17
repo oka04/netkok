@@ -22,11 +22,10 @@ public:
 
 	static ServerManager* GetInstance();
 
-	static void DestroyInstance();
-	void Reset();
 	bool StartServer(int port, int maxClients);
 	void StopServer();
-	void Update();  
+	void Reset();
+	void Update();
 	int GetClientCount() const;
 	void BroadcastLobbyUpdate();
 	void StartGame();
@@ -35,7 +34,8 @@ public:
 	void SetHostName(const std::string& name);
 	const std::string& GetHostName() const;
 	std::vector<std::string> GetLobbyPlayerNames() const;
-private:   
+
+private:
 	void OnClientConnect(ENetPeer* peer);
 	void OnClientReceive(const ENetEvent& event);
 	void OnClientDisconnect(ENetPeer* peer);
@@ -52,7 +52,6 @@ private:
 	unsigned int m_lastAdvertiseTime;
 	std::string m_serverName;
 	std::string m_hostName;
-
 
 	static ServerManager* s_instance;
 };

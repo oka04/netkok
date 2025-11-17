@@ -22,44 +22,34 @@ public:
 	ClientManager();
 	~ClientManager();
 
-	// singleton
 	static ClientManager* GetInstance();
 
-	// discovery cached list (only updated when RefreshAvailableServers is called)
 	bool ConnectToServer(const std::string& ip, int port);
 	void Disconnect();
 	void SendMessage(const char* msg);
 	void Update();
 
-	// lobby state
 	void SendJoin(const std::string& name);
 	std::vector<std::string> GetLobbyPlayerNames();
-	const std::vector<ServerInfoNet>& GetCachedServers() const;     // 待機中のみ
-	const std::vector<ServerInfoNet>& GetAllServers() const;        // 全サーバー（待機中 + ゲーム中）
+	const std::vector<ServerInfoNet>& GetCachedServers() const;
+	const std::vector<ServerInfoNet>& GetAllServers() const;
 	const std::string& GetServerName() const;
 	bool IsGameStarted() const;
 	bool IsHost() const;
+	bool IsConnected() const;
 	void SetPlayerName(const std::string& name);
 	const std::string& GetPlayerName() const;
 
-	// manual refresh: copy discovery->GetServers() into cachedServers
 	void RefreshAvailableServers();
-	bool IsConnected() const;
-
-	static void DestroyInstance();
 	void Reset();
 
 private:
-	static const int CONNECTION_TIMEOUT_MS = 5000;  // 5秒
-	static const int CONNECTION_CHECK_INTERVAL_MS = 100;  // 100ms
-	static const int MAX_CHANNELS = 2;
 	ENetHost* m_pClientHost;
 	ENetPeer* m_pServerPeer;
-	ENetHost* m_pFinderHost;
 	std::unique_ptr<Discovery> m_pDiscovery;
-	std::vector<ServerInfoNet> m_availableServers; // internal temp（待機中のみ）
-	std::vector<ServerInfoNet> m_cachedServers;    // UI-visible snapshot（待機中のみ）
-	std::vector<ServerInfoNet> m_allServers;       // 全サーバー（待機中 + ゲーム中）
+	std::vector<ServerInfoNet> m_availableServers;
+	std::vector<ServerInfoNet> m_cachedServers;
+	std::vector<ServerInfoNet> m_allServers;
 
 	void OnConnect();
 	void OnReceive(const ENetEvent& event);
@@ -75,6 +65,5 @@ private:
 	std::string m_playerName;
 	std::string m_serverName;
 
-	// singleton storage
 	static ClientManager* s_instance;
 };

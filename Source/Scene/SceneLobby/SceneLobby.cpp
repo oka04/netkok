@@ -1,4 +1,5 @@
 ﻿#include "SceneLobby.h"
+#include "..\\..\\Object\\Network\\NetworkLogger.h"
 
 using namespace KeyString;
 using namespace InputKey;
@@ -40,46 +41,34 @@ void SceneLobby::Start()
 
 	m_serverName = "Unknown Server";
 
-	// ★★★ サーバー名の取得を改善 ★★★
-	if (m_server && m_server->GetClientCount() >= 0)  // ホストの場合
+	if (m_server)
 	{
 		m_serverName = m_server->GetServerName();
-		NET_LOG_F("[SceneLobby] ホストとしてロビー開始: サーバー名='%s'", m_serverName.c_str());
+		NET_LOG_F("[SceneLobby] ホストとしてロビー開始: %s", m_serverName.c_str());
 	}
-	else if (m_client && m_client->IsConnected())  // クライアントの場合
+	else if (m_client)
 	{
 		m_serverName = m_client->GetServerName();
-		NET_LOG_F("[SceneLobby] クライアントとしてロビー開始: サーバー名='%s'", m_serverName.c_str());
+		NET_LOG_F("[SceneLobby] クライアントとしてロビー開始: %s", m_serverName.c_str());
 	}
 
 	m_pressedMouseLast = false;
-
-	NET_LOG_F("[SceneLobby] Start完了 サーバー名='%s'", m_serverName.c_str());
 }
 
 void SceneLobby::Update()
 {
-	// 更新処理
 	if (m_server) m_server->Update();
 	if (m_client) m_client->Update();
 
-	// ★★★ クライアントの切断チェック（ホスト・非ホスト両方） ★★★
-	if (m_client)
+	// クライアント（非ホスト）の切断チェック
+	if (m_client && !m_client->IsHost())
 	{
 		auto playerNames = m_client->GetLobbyPlayerNames();
-
-		// 接続が確立している場合のみチェック（プレイヤーリストが1人以上）
+		// 接続確立後に切断されたらタイトルに戻る
 		if (!playerNames.empty() && !m_client->IsConnected())
 		{
-			NET_LOG("[SceneLobby] サーバーから切断されました - タイトルに戻ります");
+			NET_LOG("[SceneLobby] サーバーから切断 - タイトルに戻る");
 			m_client->Disconnect();
-
-			// ホストの場合はサーバーも停止
-			if (m_server)
-			{
-				m_server->StopServer();
-			}
-
 			m_nowSceneData.Set(Common::SCENE_TITLE, false, nullptr);
 			return;
 		}
@@ -90,7 +79,7 @@ void SceneLobby::Update()
 	bool clicked = mouseDown && !m_pressedMouseLast;
 	m_pressedMouseLast = mouseDown;
 
-	// タイトルへ戻るボタン
+	// 戻るボタン
 	if (clicked && PointInRect(f_backButtonPosition, f_buttonSize))
 	{
 		if (m_client) m_client->Disconnect();
@@ -99,7 +88,7 @@ void SceneLobby::Update()
 		return;
 	}
 
-	// ゲーム開始ボタン（ホストのみ有効）
+	// ゲーム開始ボタン（ホストのみ）
 	if (m_server)
 	{
 		if (clicked && PointInRect(f_startButtonPosition, f_buttonSize))
@@ -108,7 +97,7 @@ void SceneLobby::Update()
 		}
 	}
 
-	// クライアントがゲーム開始を受信したら遷移
+	// ゲーム開始通知受信
 	if (m_client && m_client->IsGameStarted())
 	{
 		m_nowSceneData.Set(Common::SCENE_GAME, false, nullptr);
@@ -122,54 +111,59 @@ void SceneLobby::Draw()
 	RECT src, dst;
 	SetRect(&src, 0, 0, f_buttonSize.x, f_buttonSize.y);
 
-	SetRect(&dst, f_backButtonPosition.x, f_backButtonPosition.y, f_backButtonPosition.x + f_buttonSize.x, f_backButtonPosition.y + f_buttonSize.y);
+	// 戻るボタン
+	SetRect(&dst, f_backButtonPosition.x, f_backButtonPosition.y,
+		f_backButtonPosition.x + f_buttonSize.x, f_backButtonPosition.y + f_buttonSize.y);
 	m_pEngine->Blt(&dst, TEXTURE_BUTTON, &src);
-	m_pEngine->DrawPrintf(f_backButtonPosition.x, f_backButtonPosition.y + f_textOffsetY, FONT_GOTHIC60, Color::BLACK, f_backButtonText);
+	m_pEngine->DrawPrintf(f_backButtonPosition.x, f_backButtonPosition.y + f_textOffsetY,
+		FONT_GOTHIC60, Color::BLACK, f_backButtonText);
 
-	// ★★★ サーバー名を毎フレーム更新 ★★★
+	// サーバー名
 	std::string displayServerName = m_serverName;
 	if (m_server)
 		displayServerName = m_server->GetServerName();
 	else if (m_client)
 		displayServerName = m_client->GetServerName();
 
-	m_pEngine->DrawPrintf(f_serverNameLabelPosition.x, f_serverNameLabelPosition.y, FONT_GOTHIC60, Color::WHITE, f_serverNameLabelText);
-	m_pEngine->DrawPrintfCenter(f_serverNamePosition.x, f_serverNamePosition.y, FONT_GOTHIC60, Color::WHITE, displayServerName.c_str());
+	m_pEngine->DrawPrintf(f_serverNameLabelPosition.x, f_serverNameLabelPosition.y,
+		FONT_GOTHIC60, Color::WHITE, f_serverNameLabelText);
+	m_pEngine->DrawPrintfCenter(f_serverNamePosition.x, f_serverNamePosition.y,
+		FONT_GOTHIC60, Color::WHITE, displayServerName.c_str());
 
-	// ★★★ メンバーリストを毎フレーム更新 ★★★
+	// メンバーリスト
 	std::vector<std::string> members;
 	if (m_client)
-	{
 		members = m_client->GetLobbyPlayerNames();
-		NET_LOG_F("[SceneLobby::Draw] クライアントから取得: %d人", (int)members.size());
-	}
 	else if (m_server)
-	{
 		members = m_server->GetLobbyPlayerNames();
-		NET_LOG_F("[SceneLobby::Draw] サーバーから取得: %d人", (int)members.size());
-	}
 
-	m_pEngine->DrawPrintf(f_memberLabelPosition.x, f_memberLabelPosition.y + f_textOffsetY, FONT_GOTHIC60, Color::WHITE, f_memberLabelText);
+	m_pEngine->DrawPrintf(f_memberLabelPosition.x, f_memberLabelPosition.y + f_textOffsetY,
+		FONT_GOTHIC60, Color::WHITE, f_memberLabelText);
 
 	if (members.empty())
 	{
-		m_pEngine->DrawPrintf(f_memberNamePosition.x, f_memberNamePosition.y, FONT_GOTHIC60, Color::GRAY, "読み込み中...");
+		m_pEngine->DrawPrintf(f_memberNamePosition.x, f_memberNamePosition.y,
+			FONT_GOTHIC60, Color::GRAY, "読み込み中...");
 	}
 	else
 	{
 		for (size_t i = 0; i < members.size(); i++)
 		{
-			m_pEngine->DrawPrintf(f_memberNamePosition.x, (int)i * f_memberOffsetY + f_memberNamePosition.y, FONT_GOTHIC60, Color::WHITE, members[i].c_str());
+			m_pEngine->DrawPrintf(f_memberNamePosition.x,
+				(int)i * f_memberOffsetY + f_memberNamePosition.y,
+				FONT_GOTHIC60, Color::WHITE, members[i].c_str());
 		}
 	}
 
-	SetRect(&dst, f_startButtonPosition.x, f_startButtonPosition.y, f_startButtonPosition.x + f_buttonSize.x, f_startButtonPosition.y + f_buttonSize.y);
+	// ゲーム開始ボタン
+	SetRect(&dst, f_startButtonPosition.x, f_startButtonPosition.y,
+		f_startButtonPosition.x + f_buttonSize.x, f_startButtonPosition.y + f_buttonSize.y);
 	m_pEngine->Blt(&dst, TEXTURE_BUTTON, &src);
 
 	if (m_server)
-		m_pEngine->DrawPrintf(f_startButtonPosition.x, f_startButtonPosition.y + f_textOffsetY, FONT_GOTHIC60, Color::BLACK, f_startButtonText);
-
-	if (m_client && !m_server)
+		m_pEngine->DrawPrintf(f_startButtonPosition.x, f_startButtonPosition.y + f_textOffsetY,
+			FONT_GOTHIC60, Color::BLACK, f_startButtonText);
+	else if (m_client)
 		m_pEngine->Blt(&dst, TEXTURE_BUTTON, &src, f_clientStartButtonAlpha, 0);
 
 	m_pEngine->SpriteEnd();
@@ -184,32 +178,16 @@ bool SceneLobby::PointInRect(IntVector2 pos, IntVector2 size)
 
 void SceneLobby::PostEffect()
 {
-
 }
 
 void SceneLobby::Exit()
 {
-	NET_LOG("[SceneLobby] Exit開始");
-
-	// クライアントをリセット
-	if (m_client)
-	{
-		m_client->Reset();
-		NET_LOG("[SceneLobby] Client Reset完了");
-	}
-
-	// サーバーをリセット
-	if (m_server)
-	{
-		m_server->Reset();
-		NET_LOG("[SceneLobby] Server Reset完了");
-	}
-
+	if (m_client) m_client->Disconnect();
+	if (m_server) m_server->StopServer();
 	m_pEngine->ReleaseTexture(TEXTURE_BUTTON);
 	m_pEngine->ReleaseFont(FONT_GOTHIC60);
-
-	NET_LOG("[SceneLobby] Exit完了");
 }
+
 void SceneLobby::SetRequestedMode(REQUEST_MODE mode)
 {
 	s_requestMode = mode;

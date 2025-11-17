@@ -38,7 +38,6 @@ ClientManager::ClientManager()
 	, m_bHost(false)
 	, m_previousLobbyCount(0)
 {
-	// ネットワークログ初期化（ファイルを空にする）
 	NetworkLogger::GetInstance().Initialize("network_debug.txt");
 	NET_LOG("========================================");
 	NET_LOG("ClientManager 初期化開始");
@@ -88,16 +87,7 @@ void ClientManager::Disconnect()
 		m_pClientHost = nullptr;
 	}
 
-	std::cout << "[Client] 切断" << std::endl;
-}
-void ClientManager::DestroyInstance()
-{
-	if (s_instance)
-	{
-		delete s_instance;
-		s_instance = nullptr;
-		NET_LOG("[ClientManager] インスタンス破棄");
-	}
+	NET_LOG("[Client] 切断");
 }
 
 void ClientManager::Reset()
@@ -151,6 +141,7 @@ void ClientManager::Reset()
 
 	NET_LOG("[ClientManager] Reset完了");
 }
+
 void ClientManager::SendMessage(const char* msg)
 {
 	if (!m_pServerPeer) return;
@@ -170,6 +161,7 @@ void ClientManager::SendJoin(const std::string& name)
 	ENetPacket* packet = enet_packet_create(buf.data(), (size_t)buf.size(), ENET_PACKET_FLAG_RELIABLE);
 	enet_peer_send(m_pServerPeer, 0, packet);
 	enet_host_flush(m_pClientHost);
+	NET_LOG_F("[ClientManager] JOIN送信: %s", name.c_str());
 }
 
 std::vector<std::string> ClientManager::GetLobbyPlayerNames()
@@ -183,7 +175,12 @@ const std::vector<ServerInfoNet>& ClientManager::GetCachedServers() const
 	return m_cachedServers;
 }
 
-const std::string & ClientManager::GetServerName() const
+const std::vector<ServerInfoNet>& ClientManager::GetAllServers() const
+{
+	return m_allServers;
+}
+
+const std::string& ClientManager::GetServerName() const
 {
 	return m_serverName;
 }
@@ -197,12 +194,18 @@ bool ClientManager::IsHost() const
 {
 	return m_bHost;
 }
+
+bool ClientManager::IsConnected() const
+{
+	return (m_pServerPeer != nullptr && m_pServerPeer->state == ENET_PEER_STATE_CONNECTED);
+}
+
 void ClientManager::SetPlayerName(const std::string& name)
 {
 	m_playerName = name;
 }
 
-const std::string & ClientManager::GetPlayerName() const
+const std::string& ClientManager::GetPlayerName() const
 {
 	return m_playerName;
 }
@@ -211,91 +214,34 @@ bool ClientManager::ConnectToServer(const std::string& ip, int port)
 {
 	NET_LOG_F("[ClientManager] ConnectToServer: %s:%d", ip.c_str(), port);
 
-	// 既存の接続をクリーンアップ
-	if (m_pServerPeer)
-	{
-		enet_peer_reset(m_pServerPeer);
-		m_pServerPeer = nullptr;
-	}
-
 	if (m_pClientHost)
 	{
 		enet_host_destroy(m_pClientHost);
 		m_pClientHost = nullptr;
 	}
 
-	// クライアントホストを作成
-	m_pClientHost = enet_host_create(nullptr, 1, MAX_CHANNELS, 0, 0);
+	m_pClientHost = enet_host_create(nullptr, 1, 2, 0, 0);
 	if (!m_pClientHost)
 	{
 		NET_LOG("[ClientManager] クライアント作成失敗");
 		return false;
 	}
+	NET_LOG("[ClientManager] クライアントホスト作成成功");
 
-	// アドレス設定
 	ENetAddress address;
-	memset(&address, 0, sizeof(address));
-
-	if (enet_address_set_host(&address, ip.c_str()) != 0)
-	{
-		NET_LOG_F("[ClientManager] IPアドレス設定失敗: %s", ip.c_str());
-		enet_host_destroy(m_pClientHost);
-		m_pClientHost = nullptr;
-		return false;
-	}
+	enet_address_set_host(&address, ip.c_str());
 	address.port = (enet_uint16)port;
 
-	// 接続開始
-	m_pServerPeer = enet_host_connect(m_pClientHost, &address, MAX_CHANNELS, 0);
+	m_pServerPeer = enet_host_connect(m_pClientHost, &address, 2, 0);
 	if (!m_pServerPeer)
 	{
-		NET_LOG("[ClientManager] 接続要求失敗");
-		enet_host_destroy(m_pClientHost);
-		m_pClientHost = nullptr;
+		NET_LOG("[ClientManager] サーバー接続要求失敗");
 		return false;
 	}
 
-	NET_LOG("[ClientManager] 接続要求送信 - 応答待機中...");
-
-	// 接続確立を待つ
-	ENetEvent event;
-	bool connected = false;
-	int maxAttempts = CONNECTION_TIMEOUT_MS / CONNECTION_CHECK_INTERVAL_MS;
-
-	for (int i = 0; i < maxAttempts; i++)
-	{
-		if (enet_host_service(m_pClientHost, &event, CONNECTION_CHECK_INTERVAL_MS) > 0)
-		{
-			if (event.type == ENET_EVENT_TYPE_CONNECT)
-			{
-				NET_LOG("[ClientManager] 接続確立!");
-				connected = true;
-				break;
-			}
-			else if (event.type == ENET_EVENT_TYPE_DISCONNECT)
-			{
-				NET_LOG("[ClientManager] 接続拒否");
-				m_pServerPeer = nullptr;
-				return false;
-			}
-		}
-	}
-
-	if (!connected)
-	{
-		NET_LOG("[ClientManager] 接続タイムアウト");
-		enet_peer_reset(m_pServerPeer);
-		m_pServerPeer = nullptr;
-		enet_host_destroy(m_pClientHost);
-		m_pClientHost = nullptr;
-		return false;
-	}
-
-	// ホスト判定
 	m_bHost = (ip == "127.0.0.1" || ip == "localhost");
 
 	// サーバー名を保存
-	m_serverName = "Unknown Server";
 	for (const auto& server : m_allServers)
 	{
 		char serverIp[64];
@@ -312,22 +258,16 @@ bool ClientManager::ConnectToServer(const std::string& ip, int port)
 		}
 	}
 
-	// JOIN送信
-	std::string nameToSend = m_playerName.empty() ? "Player" : m_playerName;
-	SendJoin(nameToSend);
-	NET_LOG_F("[ClientManager] JOIN送信: %s", nameToSend.c_str());
-
-	enet_host_flush(m_pClientHost);
-
-	NET_LOG("[ClientManager] ConnectToServer完了");
+	NET_LOG_F("[ClientManager] 接続要求送信中... (ホスト判定: %s)", m_bHost ? "true" : "false");
 	return true;
 }
+
 void ClientManager::RefreshAvailableServers()
 {
 	NET_LOG("[ClientManager] RefreshAvailableServers 開始");
 
 	m_availableServers.clear();
-	m_allServers.clear(); // 全サーバーリストもクリア
+	m_allServers.clear();
 
 	if (!m_pDiscovery) {
 		NET_LOG("[ClientManager] エラー: m_pDiscovery が nullptr");
@@ -340,7 +280,7 @@ void ClientManager::RefreshAvailableServers()
 	int addedCount = 0;
 	int skippedCount = 0;
 
-	for (auto &s : servers) {
+	for (auto& s : servers) {
 		char ipStr[INET_ADDRSTRLEN];
 		struct in_addr addr;
 		addr.s_addr = s.ip;
@@ -357,10 +297,8 @@ void ClientManager::RefreshAvailableServers()
 		n.state = s.state;
 		n.name = s.name;
 
-		// 全サーバーリストには必ず追加
 		m_allServers.push_back(n);
 
-		// 待機中のサーバーのみ m_availableServers に追加
 		if (s.state != 0) {
 			NET_LOG_F("[ClientManager] スキップ: ゲーム中 (state=%d)", (int)s.state);
 			skippedCount++;
@@ -375,19 +313,8 @@ void ClientManager::RefreshAvailableServers()
 
 	m_cachedServers = m_availableServers;
 
-	NET_LOG_F("[ClientManager] RefreshAvailableServers 完了: 追加=%d スキップ=%d 合計=%d 全体=%d",
-		addedCount, skippedCount, (int)m_cachedServers.size(), (int)m_allServers.size());
-}
-
-bool ClientManager::IsConnected() const
-{
-	return (m_pServerPeer != nullptr && m_pServerPeer->state == ENET_PEER_STATE_CONNECTED);
-}
-
-// 新規メソッド：全サーバー（待機中 + ゲーム中）を取得
-const std::vector<ServerInfoNet>& ClientManager::GetAllServers() const
-{
-	return m_allServers;
+	NET_LOG_F("[ClientManager] RefreshAvailableServers 完了: 追加=%d スキップ=%d 全体=%d",
+		addedCount, skippedCount, (int)m_allServers.size());
 }
 
 void ClientManager::Update()
@@ -419,7 +346,6 @@ void ClientManager::OnConnect()
 	NET_LOG("[ClientManager] サーバー接続成功");
 	std::string nameToSend = m_playerName.empty() ? "Player" : m_playerName;
 	SendJoin(nameToSend);
-	NET_LOG_F("[ClientManager] JOIN送信: %s", nameToSend.c_str());
 }
 
 void ClientManager::OnReceive(const ENetEvent& event)
@@ -440,6 +366,7 @@ void ClientManager::OnReceive(const ENetEvent& event)
 
 	case MSG_START_GAME:
 		m_bGameStarted = true;
+		NET_LOG("[ClientManager] ゲーム開始通知受信");
 		break;
 	}
 
@@ -449,27 +376,16 @@ void ClientManager::OnReceive(const ENetEvent& event)
 void ClientManager::OnDisconnect()
 {
 	NET_LOG("[ClientManager] サーバーから切断されました");
-	m_pServerPeer = nullptr;  // ★★★ ピアをnullにする ★★★
+	m_pServerPeer = nullptr;
 }
 
 void ClientManager::ProcessLobbyUpdate(const uint8_t* data, size_t len)
 {
 	NET_LOG_F("[ClientManager] ProcessLobbyUpdate: データ長=%d", (int)len);
 
-	// データの16進数ダンプ（デバッグ用）
-	std::string hexDump;
-	size_t dumpLen = (len < 32) ? len : 32;
-	for (size_t i = 0; i < dumpLen; i++)
-	{
-		char buf[8];
-		sprintf(buf, "%02X ", data[i]);
-		hexDump += buf;
-	}
-	NET_LOG_F("[ClientManager] データダンプ: %s", hexDump.c_str());
-
 	size_t idx = 1;
 	if (idx >= len) {
-		NET_LOG("[ClientManager] エラー: データ長不足（count読み取り不可）");
+		NET_LOG("[ClientManager] エラー: データ長不足");
 		return;
 	}
 
@@ -490,8 +406,7 @@ void ClientManager::ProcessLobbyUpdate(const uint8_t* data, size_t len)
 		NET_LOG_F("[ClientManager] プレイヤー%d 名前長さ: %d", i + 1, (int)nl);
 
 		if (idx + nl > len) {
-			NET_LOG_F("[ClientManager] エラー: プレイヤー%d の名前データ不足 (必要:%d 残り:%d)",
-				i + 1, (int)nl, (int)(len - idx));
+			NET_LOG_F("[ClientManager] エラー: プレイヤー%d の名前データ不足", i + 1);
 			break;
 		}
 
@@ -502,14 +417,7 @@ void ClientManager::ProcessLobbyUpdate(const uint8_t* data, size_t len)
 	}
 
 	std::lock_guard<std::mutex> lk(m_lobbyMutex);
-	int prev = (int)m_lobbyPlayerNames.size();
 	m_lobbyPlayerNames = std::move(newNames);
-	int now = (int)m_lobbyPlayerNames.size();
 
-	NET_LOG_F("[ClientManager] ロビー更新: %d → %d 人", prev, now);
-
-	if (now > prev) {
-		// サウンドを鳴らす
-	}
-	m_previousLobbyCount = now;
+	NET_LOG_F("[ClientManager] ロビー更新: %d 人", (int)m_lobbyPlayerNames.size());
 }
