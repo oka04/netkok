@@ -50,6 +50,9 @@ public:
 	void Reset();
 
 private:
+	static const int CONNECTION_TIMEOUT_MS = 5000;  // 5秒
+	static const int CONNECTION_CHECK_INTERVAL_MS = 100;  // 100ms
+	static const int MAX_CHANNELS = 2;
 	ENetHost* m_pClientHost;
 	ENetPeer* m_pServerPeer;
 	ENetHost* m_pFinderHost;

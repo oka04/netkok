@@ -39,7 +39,6 @@ private:
 
 	int m_scrollOffset;        // スクロール位置
 	int m_maxVisibleServers;   // 一度に表示できる最大サーバー数
-
 	bool PointInRect(int x, int y, int w, int h, POINT pt);
 	void RefreshServerList();  // サーバーリストを待機中とゲーム中に分ける
 };

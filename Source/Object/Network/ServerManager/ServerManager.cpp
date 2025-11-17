@@ -61,11 +61,11 @@ bool ServerManager::StartServer(int port, int maxClients)
 	address.host = ENET_HOST_ANY;
 	address.port = (enet_uint16)port;
 
-	// ★★★ チャンネル数を2に変更 ★★★
+	// ★★★ チャンネル数を2に ★★★
 	m_pServerHost = enet_host_create(&address, maxClients, 2, 0, 0);
 	if (m_pServerHost == nullptr)
 	{
-		NET_LOG("[ServerManager] エラー: サーバーホスト作成失敗");
+		NET_LOG("[ServerManager] サーバーホスト作成失敗");
 		MessageBoxA(NULL, "サーバーホスト作成失敗", "エラー", MB_OK);
 		return false;
 	}
@@ -78,8 +78,7 @@ bool ServerManager::StartServer(int port, int maxClients)
 	m_advertiser->SetAdvertiseState(0);
 	m_clientCount = 0;
 
-	NET_LOG_F("[ServerManager] サーバー起動成功: ポート=%d", port);
-	std::cout << "[Server] 起動: ポート " << port << std::endl;
+	NET_LOG_F("[ServerManager] サーバー起動: ポート=%d", port);
 	return true;
 }
 
@@ -302,27 +301,22 @@ void ServerManager::OnClientConnect(ENetPeer* peer)
 	auto ci = new ClientInfo();
 	ci->peer = peer;
 	ci->id = m_nextClientId++;
+	ci->name = "Player";  // デフォルト名
 
-	// ★★★ 修正: ホスト判定の改善 ★★★
-	// 最初の接続がホスト
-	if (m_clients.empty() && !m_hostName.empty())
-	{
-		ci->name = m_hostName;
-		NET_LOG_F("[ServerManager] ホスト接続: %s", m_hostName.c_str());
-	}
-	else
-	{
-		ci->name = "Player";
-	}
 	peer->data = ci;
-
 	m_clients[peer] = ci;
 	m_clientCount++;
 
-	NET_LOG_F("[ServerManager] クライアント接続: %s (%d人)", ci->name.c_str(), m_clientCount);
-	std::cout << "[Server] クライアント接続: " << ci->name << " (" << m_clientCount << "人)" << std::endl;
+	NET_LOG_F("[ServerManager] クライアント接続: ID=%d (%d人)", ci->id, m_clientCount);
 
-	BroadcastLobbyUpdate();
+	// ★★★ 最初の接続（ホスト）の場合、即座にホスト名を設定 ★★★
+	if (m_clientCount == 1 && !m_hostName.empty())
+	{
+		ci->name = m_hostName;
+		NET_LOG_F("[ServerManager] ホスト名を設定: %s", m_hostName.c_str());
+		// ホスト名を設定したら即座にブロードキャスト
+		BroadcastLobbyUpdate();
+	}
 }
 
 void ServerManager::OnClientReceive(const ENetEvent& event)
@@ -358,7 +352,8 @@ void ServerManager::ProcessJoin(ENetPeer* peer, const uint8_t* data, size_t len)
 	NET_LOG_F("[ServerManager] ProcessJoin: データ長=%d", (int)len);
 
 	size_t idx = 1;
-	if (idx >= len) {
+	if (idx >= len)
+	{
 		NET_LOG("[ServerManager] エラー: データ長不足");
 		return;
 	}
@@ -366,19 +361,28 @@ void ServerManager::ProcessJoin(ENetPeer* peer, const uint8_t* data, size_t len)
 	uint8_t nl = data[idx++];
 	NET_LOG_F("[ServerManager] 名前長さ: %d", (int)nl);
 
-	if (idx + nl > len) {
-		NET_LOG_F("[ServerManager] エラー: 名前データ不足 (必要:%d 残り:%d)", (int)nl, (int)(len - idx));
+	if (idx + nl > len)
+	{
+		NET_LOG_F("[ServerManager] エラー: 名前データ不足", (int)nl, (int)(len - idx));
 		return;
 	}
 
 	std::string name(reinterpret_cast<const char*>(data + idx), nl);
 	NET_LOG_F("[ServerManager] 受信した名前: '%s'", name.c_str());
-	idx += nl;
 
 	ClientInfo* ci = static_cast<ClientInfo*>(peer->data);
-	if (ci) {
-		ci->name = name;
-		NET_LOG_F("[ServerManager] クライアントID %d の名前を '%s' に設定", ci->id, name.c_str());
+	if (ci)
+	{
+		// ★★★ ホストの場合は名前を変更しない ★★★
+		if (ci->name == m_hostName)
+		{
+			NET_LOG_F("[ServerManager] ホストなので名前は維持: %s", ci->name.c_str());
+		}
+		else
+		{
+			ci->name = name;
+			NET_LOG_F("[ServerManager] クライアントID %d の名前を '%s' に設定", ci->id, name.c_str());
+		}
 	}
 
 	BroadcastLobbyUpdate();
