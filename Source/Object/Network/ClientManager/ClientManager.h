@@ -37,6 +37,7 @@ public:
 	bool IsGameStarted() const;
 	bool IsHost() const;
 	bool IsConnected() const;
+	void SetServerName(const std::string& name);
 	void SetPlayerName(const std::string& name);
 	const std::string& GetPlayerName() const;
 

@@ -287,9 +287,22 @@ bool SceneSelectHost::CreateServer()
 		return false;
 	}
 
+	NET_LOG("========================================");
+	NET_LOG_F("[SceneSelectHost] サーバー作成開始: %s", m_serverName.c_str());
+
 	ServerManager* server = ServerManager::GetInstance();
+	ClientManager* client = ClientManager::GetInstance();
+
+	// ★★★ 既存の接続をクリーンアップ ★★★
+	client->Disconnect();
+	server->StopServer();
+
+	// サーバー名とホスト名を設定
 	server->SetServerName(m_serverName);
-	server->SetHostName(m_playerName); 
+	server->SetHostName(m_playerName);
+
+	NET_LOG_F("[SceneSelectHost] サーバー名設定: %s", m_serverName.c_str());
+	NET_LOG_F("[SceneSelectHost] ホスト名設定: %s", m_playerName.c_str());
 
 	const int MIN_PORT = 12000;
 	const int MAX_PORT = 12999;
@@ -304,22 +317,33 @@ bool SceneSelectHost::CreateServer()
 		if (server->StartServer(port, 8))
 		{
 			started = true;
+			NET_LOG_F("[SceneSelectHost] サーバー起動成功: ポート=%d", port);
 			break;
 		}
 	}
 
 	if (!started)
 	{
-		MessageBoxA(NULL, "サーバーの起動に失敗しました。\nポート確保に失敗。", "エラー", MB_OK | MB_ICONERROR);
-		return false; 
+		NET_LOG("[SceneSelectHost] サーバー起動失敗");
+		MessageBoxA(NULL, "サーバーの起動に失敗しました。", "エラー", MB_OK | MB_ICONERROR);
+		return false;
 	}
+
+	// ★★★ 少し待ってからクライアント接続 ★★★
+	Sleep(100);
 
 	SceneLobby::SetRequestedMode(REQUEST_MODE::HOST);
 
-	ClientManager* client = ClientManager::GetInstance();
-	// client->SetPlayerName(m_playerName);
-	client->ConnectToServer("127.0.0.1", port);
+	// クライアントとして自分のサーバーに接続
+	if (!client->ConnectToServer("127.0.0.1", port))
+	{
+		NET_LOG("[SceneSelectHost] クライアント接続失敗");
+		server->StopServer();
+		MessageBoxA(NULL, "サーバーへの接続に失敗しました。", "エラー", MB_OK | MB_ICONERROR);
+		return false;
+	}
 
+	NET_LOG("[SceneSelectHost] ロビーに遷移");
 	m_nowSceneData.Set(Common::SCENE_LOBBY, false, nullptr);
 	return true;
 }

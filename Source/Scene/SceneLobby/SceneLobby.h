@@ -2,8 +2,6 @@
 
 #include "..\\..\\Object\\Network\\ClientManager\\ClientManager.h"
 #include "..\\..\\Object\\Network\\ServerManager\\ServerManager.h"
-
-#include "..\\..\\Object\\Network\\NetworkLogger.h" 
 #include "..\\..\\GameBase.h"
 #include "..\\Scene\\Scene.h"
 #include <vector>

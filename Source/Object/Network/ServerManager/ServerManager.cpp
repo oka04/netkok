@@ -288,21 +288,27 @@ void ServerManager::OnClientConnect(ENetPeer* peer)
 	auto ci = new ClientInfo();
 	ci->peer = peer;
 	ci->id = m_nextClientId++;
-	ci->name = "Player";
+
+	// ★★★ 最初の接続（ホスト）の場合、ホスト名を設定 ★★★
+	if (m_clientCount == 0 && !m_hostName.empty())
+	{
+		ci->name = m_hostName;
+		NET_LOG_F("[ServerManager] ホスト接続: %s (ID=%d)", m_hostName.c_str(), ci->id);
+	}
+	else
+	{
+		ci->name = "Player";
+		NET_LOG_F("[ServerManager] クライアント接続: ID=%d", ci->id);
+	}
 
 	peer->data = ci;
 	m_clients[peer] = ci;
 	m_clientCount++;
 
-	NET_LOG_F("[ServerManager] クライアント接続: ID=%d (%d人)", ci->id, m_clientCount);
+	NET_LOG_F("[ServerManager] 現在の接続数: %d人", m_clientCount);
 
-	// 最初の接続（ホスト）の場合、ホスト名を設定
-	if (m_clientCount == 1 && !m_hostName.empty())
-	{
-		ci->name = m_hostName;
-		NET_LOG_F("[ServerManager] ホスト名を設定: %s", m_hostName.c_str());
-		BroadcastLobbyUpdate();
-	}
+	// ★★★ 接続後すぐにロビー更新をブロードキャスト ★★★
+	BroadcastLobbyUpdate();
 }
 
 void ServerManager::OnClientReceive(const ENetEvent& event)

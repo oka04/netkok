@@ -1,10 +1,12 @@
-﻿#include "SceneLobby.h"
+﻿#define _USING_V110_SDK71_ 1
+#include "SceneLobby.h"
 #include "..\\..\\Object\\Network\\NetworkLogger.h"
-
+#include "..\\..\\Object\\Network\\Discovery\\Discovery.h"
 using namespace KeyString;
 using namespace InputKey;
 using namespace WindowSetting;
 using namespace Common;
+
 REQUEST_MODE SceneLobby::s_requestMode = REQUEST_MODE::NONE;
 
 SceneLobby::SceneLobby(Engine* pEngine)
@@ -41,18 +43,28 @@ void SceneLobby::Start()
 
 	m_serverName = "Unknown Server";
 
+	// ★★★ サーバー名を正しく取得 ★★★
 	if (m_server)
 	{
+		// ホストの場合はServerManagerから取得
 		m_serverName = m_server->GetServerName();
+		// ClientManagerのサーバー名も更新
+		if (m_client)
+		{
+			m_client->SetServerName(m_serverName);
+		}
 		NET_LOG_F("[SceneLobby] ホストとしてロビー開始: %s", m_serverName.c_str());
 	}
 	else if (m_client)
 	{
+		// クライアントの場合はClientManagerから取得
 		m_serverName = m_client->GetServerName();
 		NET_LOG_F("[SceneLobby] クライアントとしてロビー開始: %s", m_serverName.c_str());
 	}
 
 	m_pressedMouseLast = false;
+
+	NET_LOG("[SceneLobby] Start完了");
 }
 
 void SceneLobby::Update()
@@ -91,7 +103,7 @@ void SceneLobby::Update()
 	// ゲーム開始ボタン（ホストのみ）
 	if (m_server)
 	{
-		if (clicked && PointInRect(f_startButtonPosition, f_buttonSize))
+		if (clicked && PointInRect(f_startButtonPosition, f_buttonSize) && m_server)
 		{
 			m_server->StartGame();
 		}

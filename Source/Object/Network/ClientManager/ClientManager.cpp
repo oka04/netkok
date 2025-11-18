@@ -210,14 +210,34 @@ const std::string& ClientManager::GetPlayerName() const
 	return m_playerName;
 }
 
+void ClientManager::SetServerName(const std::string& name)
+{
+	m_serverName = name;
+	NET_LOG_F("[ClientManager] サーバー名を設定: %s", name.c_str());
+}
+
 bool ClientManager::ConnectToServer(const std::string& ip, int port)
 {
 	NET_LOG_F("[ClientManager] ConnectToServer: %s:%d", ip.c_str(), port);
+
+	// ★★★ 既存の接続を完全にクリーンアップ ★★★
+	if (m_pServerPeer)
+	{
+		enet_peer_reset(m_pServerPeer);
+		m_pServerPeer = nullptr;
+	}
 
 	if (m_pClientHost)
 	{
 		enet_host_destroy(m_pClientHost);
 		m_pClientHost = nullptr;
+	}
+
+	// 状態をリセット
+	m_bGameStarted = false;
+	{
+		std::lock_guard<std::mutex> lk(m_lobbyMutex);
+		m_lobbyPlayerNames.clear();
 	}
 
 	m_pClientHost = enet_host_create(nullptr, 1, 2, 0, 0);
@@ -236,29 +256,41 @@ bool ClientManager::ConnectToServer(const std::string& ip, int port)
 	if (!m_pServerPeer)
 	{
 		NET_LOG("[ClientManager] サーバー接続要求失敗");
+		enet_host_destroy(m_pClientHost);
+		m_pClientHost = nullptr;
 		return false;
 	}
 
 	m_bHost = (ip == "127.0.0.1" || ip == "localhost");
 
-	// サーバー名を保存
-	for (const auto& server : m_allServers)
+	// ★★★ サーバー名を設定（localhostの場合は後で更新） ★★★
+	if (m_bHost)
 	{
-		char serverIp[64];
-		ENetAddress addr;
-		addr.host = server.ip;
-		addr.port = server.port;
-		enet_address_get_host_ip(&addr, serverIp, sizeof(serverIp));
-
-		if (std::string(serverIp) == ip && server.port == port)
+		// ホストの場合、ServerManagerから取得
+		m_serverName = "My Server";  // 一時的な名前
+		NET_LOG("[ClientManager] ホスト接続 - サーバー名は後で更新");
+	}
+	else
+	{
+		// 通常のクライアントの場合、Discoveryから取得
+		for (const auto& server : m_allServers)
 		{
-			m_serverName = server.name;
-			NET_LOG_F("[ClientManager] サーバー名設定: %s", m_serverName.c_str());
-			break;
+			char serverIp[64];
+			ENetAddress addr;
+			addr.host = server.ip;
+			addr.port = server.port;
+			enet_address_get_host_ip(&addr, serverIp, sizeof(serverIp));
+
+			if (std::string(serverIp) == ip && server.port == port)
+			{
+				m_serverName = server.name;
+				NET_LOG_F("[ClientManager] サーバー名設定: %s", m_serverName.c_str());
+				break;
+			}
 		}
 	}
 
-	NET_LOG_F("[ClientManager] 接続要求送信中... (ホスト判定: %s)", m_bHost ? "true" : "false");
+	NET_LOG_F("[ClientManager] 接続要求送信 (ホスト判定: %s)", m_bHost ? "true" : "false");
 	return true;
 }
 
