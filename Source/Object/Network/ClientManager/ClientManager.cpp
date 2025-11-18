@@ -20,6 +20,7 @@ enum {
 	MSG_JOIN_ACK = 2,
 	MSG_LOBBY_UPDATE = 3,
 	MSG_START_GAME = 4,
+	MSG_SERVER_INFO = 5,  // 新規: サーバー情報送信用
 };
 
 ClientManager* ClientManager::s_instance = nullptr;
@@ -37,6 +38,8 @@ ClientManager::ClientManager()
 	, m_bGameStarted(false)
 	, m_bHost(false)
 	, m_previousLobbyCount(0)
+	, m_bConnected(false)
+	, m_lastHeartbeatTime(0)
 {
 	NetworkLogger::GetInstance().Initialize("network_debug.txt");
 	NET_LOG("========================================");
@@ -87,6 +90,7 @@ void ClientManager::Disconnect()
 		m_pClientHost = nullptr;
 	}
 
+	m_bConnected = false;
 	NET_LOG("[Client] 切断");
 }
 
@@ -133,18 +137,20 @@ void ClientManager::Reset()
 
 	m_bGameStarted = false;
 	m_bHost = false;
+	m_bConnected = false;
 	m_serverName = "";
 	m_availableServers.clear();
 	m_cachedServers.clear();
 	m_allServers.clear();
 	m_previousLobbyCount = 0;
+	m_lastHeartbeatTime = 0;
 
 	NET_LOG("[ClientManager] Reset完了");
 }
 
 void ClientManager::SendMessage(const char* msg)
 {
-	if (!m_pServerPeer) return;
+	if (!m_pServerPeer || !m_bConnected) return;
 	ENetPacket* packet = enet_packet_create(msg, strlen(msg) + 1, ENET_PACKET_FLAG_RELIABLE);
 	enet_peer_send(m_pServerPeer, 0, packet);
 	enet_host_flush(m_pClientHost);
@@ -197,7 +203,8 @@ bool ClientManager::IsHost() const
 
 bool ClientManager::IsConnected() const
 {
-	return (m_pServerPeer != nullptr && m_pServerPeer->state == ENET_PEER_STATE_CONNECTED);
+	return m_bConnected && m_pServerPeer != nullptr &&
+		m_pServerPeer->state == ENET_PEER_STATE_CONNECTED;
 }
 
 void ClientManager::SetPlayerName(const std::string& name)
@@ -220,7 +227,7 @@ bool ClientManager::ConnectToServer(const std::string& ip, int port)
 {
 	NET_LOG_F("[ClientManager] ConnectToServer: %s:%d", ip.c_str(), port);
 
-	// ★★★ 既存の接続を完全にクリーンアップ ★★★
+	// 既存の接続を完全にクリーンアップ
 	if (m_pServerPeer)
 	{
 		enet_peer_reset(m_pServerPeer);
@@ -235,6 +242,8 @@ bool ClientManager::ConnectToServer(const std::string& ip, int port)
 
 	// 状態をリセット
 	m_bGameStarted = false;
+	m_bConnected = false;
+	m_lastHeartbeatTime = 0;
 	{
 		std::lock_guard<std::mutex> lk(m_lobbyMutex);
 		m_lobbyPlayerNames.clear();
@@ -263,18 +272,16 @@ bool ClientManager::ConnectToServer(const std::string& ip, int port)
 
 	m_bHost = (ip == "127.0.0.1" || ip == "localhost");
 
-	// ★★★ サーバー名の初期設定 ★★★
+	// サーバー名の初期設定
 	if (m_bHost)
 	{
-		// ホストの場合、ServerManagerから直接取得を試みる
-		// （SceneLobby::Start()で再度更新される）
 		m_serverName = "接続中...";
-		NET_LOG("[ClientManager] ホスト接続 - サーバー名は後で取得");
+		NET_LOG("[ClientManager] ホスト接続 - サーバー名は接続後に取得");
 	}
 	else
 	{
-		// 通常のクライアントの場合、Discoveryから取得
-		m_serverName = "Unknown Server";  // デフォルト値
+		// Discoveryから取得を試みる
+		m_serverName = "Unknown Server";
 		for (const auto& server : m_allServers)
 		{
 			char serverIp[64];
@@ -286,7 +293,7 @@ bool ClientManager::ConnectToServer(const std::string& ip, int port)
 			if (std::string(serverIp) == ip && server.port == port)
 			{
 				m_serverName = server.name;
-				NET_LOG_F("[ClientManager] サーバー名を設定: %s", m_serverName.c_str());
+				NET_LOG_F("[ClientManager] サーバー名をDiscoveryから取得: %s", m_serverName.c_str());
 				break;
 			}
 		}
@@ -355,6 +362,20 @@ void ClientManager::Update()
 {
 	if (!m_pClientHost) return;
 
+	// 接続チェック（タイムアウト検出）
+	if (m_bConnected && m_pServerPeer)
+	{
+		DWORD now = timeGetTime();
+		if (now - m_lastHeartbeatTime > 5000) // 5秒以上更新がない
+		{
+			if (m_pServerPeer->state != ENET_PEER_STATE_CONNECTED)
+			{
+				NET_LOG("[ClientManager] サーバー接続が切断されました（タイムアウト）");
+				m_bConnected = false;
+			}
+		}
+	}
+
 	ENetEvent event;
 	while (enet_host_service(m_pClientHost, &event, 0) > 0)
 	{
@@ -378,15 +399,19 @@ void ClientManager::Update()
 void ClientManager::OnConnect()
 {
 	NET_LOG("[ClientManager] サーバー接続成功（ENET_EVENT_TYPE_CONNECT受信）");
+	m_bConnected = true;
+	m_lastHeartbeatTime = timeGetTime();
+
 	std::string nameToSend = m_playerName.empty() ? "Player" : m_playerName;
 	SendJoin(nameToSend);
 
-	// ★★★ 接続完了後、少し待ってからロビー更新を要求 ★★★
-	NET_LOG("[ClientManager] JOIN送信完了 - ロビー更新待機中");
+	NET_LOG("[ClientManager] JOIN送信完了 - サーバー情報待機中");
 }
 
 void ClientManager::OnReceive(const ENetEvent& event)
 {
+	m_lastHeartbeatTime = timeGetTime(); // ハートビート更新
+
 	const uint8_t* data = (const uint8_t*)event.packet->data;
 	size_t len = event.packet->dataLength;
 	if (len < 1) {
@@ -397,6 +422,10 @@ void ClientManager::OnReceive(const ENetEvent& event)
 	uint8_t id = data[0];
 	switch (id)
 	{
+	case MSG_SERVER_INFO:
+		ProcessServerInfo(data, len);
+		break;
+
 	case MSG_LOBBY_UPDATE:
 		ProcessLobbyUpdate(data, len);
 		break;
@@ -414,6 +443,31 @@ void ClientManager::OnDisconnect()
 {
 	NET_LOG("[ClientManager] サーバーから切断されました");
 	m_pServerPeer = nullptr;
+	m_bConnected = false;
+}
+
+void ClientManager::ProcessServerInfo(const uint8_t* data, size_t len)
+{
+	NET_LOG_F("[ClientManager] ProcessServerInfo: データ長=%d", (int)len);
+
+	size_t idx = 1;
+	if (idx >= len) {
+		NET_LOG("[ClientManager] エラー: データ長不足");
+		return;
+	}
+
+	uint8_t nameLen = data[idx++];
+	NET_LOG_F("[ClientManager] サーバー名長さ: %d", (int)nameLen);
+
+	if (idx + nameLen > len) {
+		NET_LOG("[ClientManager] エラー: サーバー名データ不足");
+		return;
+	}
+
+	std::string serverName(reinterpret_cast<const char*>(data + idx), nameLen);
+	m_serverName = serverName;
+
+	NET_LOG_F("[ClientManager] ★サーバー情報受信★: サーバー名='%s'", m_serverName.c_str());
 }
 
 void ClientManager::ProcessLobbyUpdate(const uint8_t* data, size_t len)
@@ -456,5 +510,5 @@ void ClientManager::ProcessLobbyUpdate(const uint8_t* data, size_t len)
 	std::lock_guard<std::mutex> lk(m_lobbyMutex);
 	m_lobbyPlayerNames = std::move(newNames);
 
-	NET_LOG_F("[ClientManager] ロビー更新: %d 人", (int)m_lobbyPlayerNames.size());
+	NET_LOG_F("[ClientManager] ロビー更新完了: %d 人", (int)m_lobbyPlayerNames.size());
 }

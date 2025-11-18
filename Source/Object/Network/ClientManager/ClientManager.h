@@ -1,4 +1,7 @@
 ﻿#pragma once
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include "..\\GameBase.h"
 #include "..\\Discovery\\Discovery.h"
 #include <enet/enet.h>
 #include <vector>
@@ -56,15 +59,18 @@ private:
 	void OnReceive(const ENetEvent& event);
 	void OnDisconnect();
 	void ProcessLobbyUpdate(const uint8_t* data, size_t len);
+	void ProcessServerInfo(const uint8_t* data, size_t len);
 
 	std::vector<std::string> m_lobbyPlayerNames;
 	bool m_bGameStarted;
 	bool m_bHost;
+	bool m_bConnected;
 	std::mutex m_lobbyMutex;
 
 	int m_previousLobbyCount;
 	std::string m_playerName;
 	std::string m_serverName;
+	DWORD m_lastHeartbeatTime;
 
 	static ClientManager* s_instance;
 };

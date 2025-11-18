@@ -166,7 +166,7 @@ void SceneTitle::Draw()
 #if _DEBUG	
 	m_pEngine->DrawPrintf(0, 1000, FONT_GOTHIC60, Color::WHITE, "%f", (float)m_pEngine->GetFPS());
 #endif
-	m_pEngine->DrawPrintf(1400, 1000, FONT_GOTHIC60, Color::WHITE, "version : 0.1013");
+	m_pEngine->DrawPrintf(1400, 1000, FONT_GOTHIC60, Color::WHITE, "version : 0.1014");
 	m_pEngine->SpriteEnd();
 }
 
