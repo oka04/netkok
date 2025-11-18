@@ -263,16 +263,18 @@ bool ClientManager::ConnectToServer(const std::string& ip, int port)
 
 	m_bHost = (ip == "127.0.0.1" || ip == "localhost");
 
-	// ★★★ サーバー名を設定（localhostの場合は後で更新） ★★★
+	// ★★★ サーバー名の初期設定 ★★★
 	if (m_bHost)
 	{
-		// ホストの場合、ServerManagerから取得
-		m_serverName = "My Server";  // 一時的な名前
-		NET_LOG("[ClientManager] ホスト接続 - サーバー名は後で更新");
+		// ホストの場合、ServerManagerから直接取得を試みる
+		// （SceneLobby::Start()で再度更新される）
+		m_serverName = "接続中...";
+		NET_LOG("[ClientManager] ホスト接続 - サーバー名は後で取得");
 	}
 	else
 	{
 		// 通常のクライアントの場合、Discoveryから取得
+		m_serverName = "Unknown Server";  // デフォルト値
 		for (const auto& server : m_allServers)
 		{
 			char serverIp[64];
@@ -284,7 +286,7 @@ bool ClientManager::ConnectToServer(const std::string& ip, int port)
 			if (std::string(serverIp) == ip && server.port == port)
 			{
 				m_serverName = server.name;
-				NET_LOG_F("[ClientManager] サーバー名設定: %s", m_serverName.c_str());
+				NET_LOG_F("[ClientManager] サーバー名を設定: %s", m_serverName.c_str());
 				break;
 			}
 		}
@@ -375,9 +377,12 @@ void ClientManager::Update()
 
 void ClientManager::OnConnect()
 {
-	NET_LOG("[ClientManager] サーバー接続成功");
+	NET_LOG("[ClientManager] サーバー接続成功（ENET_EVENT_TYPE_CONNECT受信）");
 	std::string nameToSend = m_playerName.empty() ? "Player" : m_playerName;
 	SendJoin(nameToSend);
+
+	// ★★★ 接続完了後、少し待ってからロビー更新を要求 ★★★
+	NET_LOG("[ClientManager] JOIN送信完了 - ロビー更新待機中");
 }
 
 void ClientManager::OnReceive(const ENetEvent& event)

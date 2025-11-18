@@ -1,12 +1,10 @@
-﻿#define _USING_V110_SDK71_ 1
-#include "SceneLobby.h"
+﻿#include "SceneLobby.h"
 #include "..\\..\\Object\\Network\\NetworkLogger.h"
-#include "..\\..\\Object\\Network\\Discovery\\Discovery.h"
+
 using namespace KeyString;
 using namespace InputKey;
 using namespace WindowSetting;
 using namespace Common;
-
 REQUEST_MODE SceneLobby::s_requestMode = REQUEST_MODE::NONE;
 
 SceneLobby::SceneLobby(Engine* pEngine)
@@ -43,23 +41,34 @@ void SceneLobby::Start()
 
 	m_serverName = "Unknown Server";
 
-	// ★★★ サーバー名を正しく取得 ★★★
+	// ★★★ サーバー名を取得 ★★★
 	if (m_server)
 	{
-		// ホストの場合はServerManagerから取得
+		// ホストの場合
 		m_serverName = m_server->GetServerName();
+		NET_LOG_F("[SceneLobby] ホストとしてロビー開始: サーバー名='%s'", m_serverName.c_str());
+
 		// ClientManagerのサーバー名も更新
 		if (m_client)
 		{
 			m_client->SetServerName(m_serverName);
 		}
-		NET_LOG_F("[SceneLobby] ホストとしてロビー開始: %s", m_serverName.c_str());
 	}
 	else if (m_client)
 	{
-		// クライアントの場合はClientManagerから取得
+		// クライアントの場合
 		m_serverName = m_client->GetServerName();
-		NET_LOG_F("[SceneLobby] クライアントとしてロビー開始: %s", m_serverName.c_str());
+
+		// "Silent Host"や"My Server"のような初期値の場合、接続を待つ
+		if (m_serverName == "Silent Host" || m_serverName == "My Server" || m_serverName.empty())
+		{
+			m_serverName = "接続中...";
+			NET_LOG("[SceneLobby] クライアントとしてロビー開始 - サーバー名取得待機中");
+		}
+		else
+		{
+			NET_LOG_F("[SceneLobby] クライアントとしてロビー開始: サーバー名='%s'", m_serverName.c_str());
+		}
 	}
 
 	m_pressedMouseLast = false;
@@ -72,17 +81,23 @@ void SceneLobby::Update()
 	if (m_server) m_server->Update();
 	if (m_client) m_client->Update();
 
-	// クライアント（非ホスト）の切断チェック
+	// ★★★ クライアント（非ホスト）の切断チェック ★★★
 	if (m_client && !m_client->IsHost())
 	{
-		auto playerNames = m_client->GetLobbyPlayerNames();
-		// 接続確立後に切断されたらタイトルに戻る
-		if (!playerNames.empty() && !m_client->IsConnected())
+		// 接続状態をチェック
+		if (!m_client->IsConnected())
 		{
-			NET_LOG("[SceneLobby] サーバーから切断 - タイトルに戻る");
-			m_client->Disconnect();
-			m_nowSceneData.Set(Common::SCENE_TITLE, false, nullptr);
-			return;
+			// プレイヤーリストを取得して接続確立済みか確認
+			auto playerNames = m_client->GetLobbyPlayerNames();
+
+			// プレイヤーリストが存在していた = 接続確立していたのに切断された
+			if (!playerNames.empty())
+			{
+				NET_LOG("[SceneLobby] サーバーから切断されました - タイトルに戻ります");
+				m_client->Disconnect();
+				m_nowSceneData.Set(Common::SCENE_TITLE, false, nullptr);
+				return;
+			}
 		}
 	}
 
@@ -94,6 +109,7 @@ void SceneLobby::Update()
 	// 戻るボタン
 	if (clicked && PointInRect(f_backButtonPosition, f_buttonSize))
 	{
+		NET_LOG("[SceneLobby] 戻るボタン押下");
 		if (m_client) m_client->Disconnect();
 		if (m_server) m_server->StopServer();
 		m_nowSceneData.Set(Common::SCENE_TITLE, false, nullptr);
@@ -103,8 +119,9 @@ void SceneLobby::Update()
 	// ゲーム開始ボタン（ホストのみ）
 	if (m_server)
 	{
-		if (clicked && PointInRect(f_startButtonPosition, f_buttonSize) && m_server)
+		if (clicked && PointInRect(f_startButtonPosition, f_buttonSize))
 		{
+			NET_LOG("[SceneLobby] ゲーム開始ボタン押下");
 			m_server->StartGame();
 		}
 	}
@@ -112,6 +129,7 @@ void SceneLobby::Update()
 	// ゲーム開始通知受信
 	if (m_client && m_client->IsGameStarted())
 	{
+		NET_LOG("[SceneLobby] ゲーム開始 - ゲームシーンへ遷移");
 		m_nowSceneData.Set(Common::SCENE_GAME, false, nullptr);
 	}
 }

@@ -2,81 +2,231 @@
 Network Debug Log
 ===========================================
 
-[09:14:17] ========================================
-[09:14:17] ClientManager 初期化開始
-[09:14:17] ========================================
-[09:14:17] [ClientManager] ENet初期化成功
-[09:14:17] [ClientManager] Discovery作成
-[09:14:17] [ClientManager] Discoveryリスナー起動 (ポート:12346)
-[09:14:17] [Discovery/Listener] スレッド開始
-[09:14:17] [Discovery/Listener] WSAStartup成功
-[09:14:17] [Discovery/Listener] ソケット作成成功
-[09:14:17] [Discovery/Listener] bind成功 ポート:12346
-[09:14:17] [Discovery/Listener] 受信ループ開始
-[09:14:18] ========================================
-[09:14:18] [SceneSelectHost] サーバー作成開始: UFG
-[09:14:18] [Client] 切断
-[09:14:18] [ServerManager] ホスト名設定: Player826
-[09:14:18] [SceneSelectHost] サーバー名設定: UFG
-[09:14:18] [SceneSelectHost] ホスト名設定: Player826
-[09:14:18] [Discovery/Advertiser] スレッド開始
-[09:14:18] [Discovery/Advertiser] WSAStartup成功
-[09:14:18] [ServerManager] サーバー起動: ポート=12772
-[09:14:18] [Discovery/Advertiser] ソケット作成成功
-[09:14:18] [Discovery/Advertiser] SO_BROADCAST設定成功
-[09:14:18] [SceneSelectHost] サーバー起動成功: ポート=12772
-[09:14:18] [Discovery/Advertiser] ブロードキャストループ開始
-[09:14:18] [Discovery/Advertiser] 送信データ: port=12772 player=1/8 state=0 name='UFG'
-[09:14:18] [Discovery/Advertiser] ブロードキャスト送信 #1: サイズ=21 bytes
-[09:14:18] [Discovery/Listener] パケット受信! サイズ:21 bytes
-[09:14:18] [Discovery/Listener] マジック一致確認
-[09:14:18] [Discovery/Listener] プロトコルバージョン: 256
-[09:14:18] [Discovery/Listener] ポート: 58417
-[09:14:18] [Discovery/Listener] プレイヤー数: 1
-[09:14:18] [Discovery/Listener] 最大プレイヤー数: 8
-[09:14:18] [Discovery/Listener] ステート: 0
-[09:14:18] [Discovery/Listener] 名前の長さ: 3
-[09:14:18] [Discovery/Listener] サーバー名: 'UFG'
-[09:14:18] [Discovery/Listener] ★サーバー検出★: UFG @ 172.20.145.6:58417 (1/8) state=0
-[09:14:18] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[09:14:18] [ClientManager] ConnectToServer: 127.0.0.1:12772
-[09:14:18] [ClientManager] クライアントホスト作成成功
-[09:14:18] [ClientManager] ホスト接続 - サーバー名は後で更新
-[09:14:18] [ClientManager] 接続要求送信 (ホスト判定: true)
-[09:14:18] [SceneSelectHost] ロビーに遷移
-[09:14:18] [ClientManager] サーバー名を設定: UFG
-[09:14:18] [SceneLobby] ホストとしてロビー開始: UFG
-[09:14:18] [SceneLobby] Start完了
-[09:14:18] [ClientManager] サーバー接続成功
-[09:14:18] [ClientManager] JOIN送信: Player826
-[09:14:18] [ServerManager] ホスト接続: Player826 (ID=1)
-[09:14:18] [ServerManager] 現在の接続数: 1人
-[09:14:18] [ServerManager] BroadcastLobbyUpdate: 1 人
-[09:14:18] [ServerManager] プレイヤー1: 'Player826' (長さ:9)
-[09:14:18] [ServerManager] 送信データサイズ: 12 bytes
-[09:14:18] [ServerManager] ProcessJoin: データ長=11
-[09:14:18] [ServerManager] 名前長さ: 9
-[09:14:18] [ServerManager] 受信した名前: 'Player826'
-[09:14:18] [ServerManager] ホストなので名前は維持: Player826
-[09:14:18] [ServerManager] BroadcastLobbyUpdate: 1 人
-[09:14:18] [ServerManager] プレイヤー1: 'Player826' (長さ:9)
-[09:14:18] [ServerManager] 送信データサイズ: 12 bytes
-[09:14:18] [ClientManager] ProcessLobbyUpdate: データ長=12
-[09:14:18] [ClientManager] プレイヤー数: 1
-[09:14:18] [ClientManager] プレイヤー1 名前長さ: 9
-[09:14:18] [ClientManager] プレイヤー1: 'Player826'
-[09:14:18] [ClientManager] ロビー更新: 1 人
-[09:14:18] [ClientManager] ProcessLobbyUpdate: データ長=12
-[09:14:18] [ClientManager] プレイヤー数: 1
-[09:14:18] [ClientManager] プレイヤー1 名前長さ: 9
-[09:14:18] [ClientManager] プレイヤー1: 'Player826'
-[09:14:18] [ClientManager] ロビー更新: 1 人
-[09:14:19] [ClientManager] ゲーム開始通知受信
-[09:14:19] [Client] 切断
-[09:14:19] [ServerManager] サーバー停止処理開始
-[09:14:19] [ServerManager] クライアント Player826 に切断通知
-[09:14:19] [ServerManager] サーバー停止完了
-[09:14:19] [Discovery/Advertiser] 停止中...
-[09:14:19] [Discovery/Advertiser] ブロードキャストループ終了
-[09:14:19] [Discovery/Advertiser] 停止完了
-[09:14:22] [Discovery/Listener] 生存確認 ループ:50
+[09:31:20] ========================================
+[09:31:20] ClientManager 初期化開始
+[09:31:20] ========================================
+[09:31:20] [ClientManager] ENet初期化成功
+[09:31:20] [ClientManager] Discovery作成
+[09:31:20] [Discovery/Listener] スレッド開始
+[09:31:20] [Discovery/Listener] WSAStartup成功
+[09:31:20] [ClientManager] Discoveryリスナー起動 (ポート:12346)
+[09:31:20] [Discovery/Listener] ソケット作成成功
+[09:31:20] [Discovery/Listener] bind成功 ポート:12346
+[09:31:20] [Discovery/Listener] 受信ループ開始
+[09:31:24] ========================================
+[09:31:24] [SceneSelectHost] サーバー作成開始: EWR
+[09:31:24] [Client] 切断
+[09:31:24] [ServerManager] ホスト名設定: Player157
+[09:31:24] [SceneSelectHost] サーバー名設定: EWR
+[09:31:24] [SceneSelectHost] ホスト名設定: Player157
+[09:31:24] [Discovery/Advertiser] スレッド開始
+[09:31:24] [Discovery/Advertiser] WSAStartup成功
+[09:31:24] [Discovery/Advertiser] ソケット作成成功
+[09:31:24] [Discovery/Advertiser] SO_BROADCAST設定成功
+[09:31:24] [Discovery/Advertiser] ブロードキャストループ開始
+[09:31:24] [Discovery/Advertiser] 送信データ: port=12635 player=1/8 state=0 name='EWR'
+[09:31:24] [ServerManager] サーバー起動: ポート=12635
+[09:31:24] [Discovery/Advertiser] ブロードキャスト送信 #1: サイズ=21 bytes
+[09:31:24] [SceneSelectHost] サーバー起動成功: ポート=12635
+[09:31:24] [Discovery/Listener] パケット受信! サイズ:21 bytes
+[09:31:24] [Discovery/Listener] マジック一致確認
+[09:31:24] [Discovery/Listener] プロトコルバージョン: 256
+[09:31:24] [Discovery/Listener] ポート: 23345
+[09:31:24] [Discovery/Listener] プレイヤー数: 1
+[09:31:24] [Discovery/Listener] 最大プレイヤー数: 8
+[09:31:24] [Discovery/Listener] ステート: 0
+[09:31:24] [Discovery/Listener] 名前の長さ: 3
+[09:31:24] [Discovery/Listener] サーバー名: 'EWR'
+[09:31:24] [Discovery/Listener] ★サーバー検出★: EWR @ 172.20.145.6:23345 (1/8) state=0
+[09:31:24] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[09:31:24] [ClientManager] ConnectToServer: 127.0.0.1:12635
+[09:31:24] [ClientManager] クライアントホスト作成成功
+[09:31:24] [ClientManager] ホスト接続 - サーバー名は後で更新
+[09:31:24] [ClientManager] 接続要求送信 (ホスト判定: true)
+[09:31:24] [SceneSelectHost] ロビーに遷移
+[09:31:24] [ClientManager] サーバー名を設定: EWR
+[09:31:24] [SceneLobby] ホストとしてロビー開始: EWR
+[09:31:24] [SceneLobby] Start完了
+[09:31:24] [ClientManager] サーバー接続成功
+[09:31:24] [ClientManager] JOIN送信: Player157
+[09:31:24] [ServerManager] ホスト接続: Player157 (ID=1)
+[09:31:24] [ServerManager] 現在の接続数: 1人
+[09:31:24] [ServerManager] BroadcastLobbyUpdate: 1 人
+[09:31:24] [ServerManager] プレイヤー1: 'Player157' (長さ:9)
+[09:31:24] [ServerManager] 送信データサイズ: 12 bytes
+[09:31:24] [ServerManager] ProcessJoin: データ長=11
+[09:31:24] [ServerManager] 名前長さ: 9
+[09:31:24] [ServerManager] 受信した名前: 'Player157'
+[09:31:24] [ServerManager] ホストなので名前は維持: Player157
+[09:31:24] [ServerManager] BroadcastLobbyUpdate: 1 人
+[09:31:24] [ServerManager] プレイヤー1: 'Player157' (長さ:9)
+[09:31:24] [ServerManager] 送信データサイズ: 12 bytes
+[09:31:24] [ClientManager] ProcessLobbyUpdate: データ長=12
+[09:31:24] [ClientManager] プレイヤー数: 1
+[09:31:24] [ClientManager] プレイヤー1 名前長さ: 9
+[09:31:24] [ClientManager] プレイヤー1: 'Player157'
+[09:31:24] [ClientManager] ロビー更新: 1 人
+[09:31:24] [ClientManager] ProcessLobbyUpdate: データ長=12
+[09:31:24] [ClientManager] プレイヤー数: 1
+[09:31:24] [ClientManager] プレイヤー1 名前長さ: 9
+[09:31:24] [ClientManager] プレイヤー1: 'Player157'
+[09:31:24] [ClientManager] ロビー更新: 1 人
+[09:31:25] [Discovery/Listener] 生存確認 ループ:50
+[09:31:29] [Discovery/Advertiser] 送信データ: port=12635 player=1/8 state=0 name='EWR'
+[09:31:29] [Discovery/Advertiser] ブロードキャスト送信 #2: サイズ=21 bytes
+[09:31:29] [Discovery/Listener] パケット受信! サイズ:21 bytes
+[09:31:29] [Discovery/Listener] マジック一致確認
+[09:31:29] [Discovery/Listener] プロトコルバージョン: 256
+[09:31:29] [Discovery/Listener] ポート: 23345
+[09:31:29] [Discovery/Listener] プレイヤー数: 1
+[09:31:29] [Discovery/Listener] 最大プレイヤー数: 8
+[09:31:29] [Discovery/Listener] ステート: 0
+[09:31:29] [Discovery/Listener] 名前の長さ: 3
+[09:31:29] [Discovery/Listener] サーバー名: 'EWR'
+[09:31:29] [Discovery/Listener] ★サーバー検出★: EWR @ 172.20.145.6:23345 (1/8) state=0
+[09:31:29] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[09:31:30] [Discovery/Listener] 生存確認 ループ:100
+[09:31:34] [Discovery/Advertiser] 送信データ: port=12635 player=1/8 state=0 name='EWR'
+[09:31:34] [Discovery/Advertiser] ブロードキャスト送信 #3: サイズ=21 bytes
+[09:31:34] [Discovery/Listener] パケット受信! サイズ:21 bytes
+[09:31:34] [Discovery/Listener] マジック一致確認
+[09:31:34] [Discovery/Listener] プロトコルバージョン: 256
+[09:31:34] [Discovery/Listener] ポート: 23345
+[09:31:34] [Discovery/Listener] プレイヤー数: 1
+[09:31:34] [Discovery/Listener] 最大プレイヤー数: 8
+[09:31:34] [Discovery/Listener] ステート: 0
+[09:31:34] [Discovery/Listener] 名前の長さ: 3
+[09:31:34] [Discovery/Listener] サーバー名: 'EWR'
+[09:31:34] [Discovery/Listener] ★サーバー検出★: EWR @ 172.20.145.6:23345 (1/8) state=0
+[09:31:34] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[09:31:35] [Discovery/Listener] 生存確認 ループ:150
+[09:31:38] [Client] 切断
+[09:31:38] [ServerManager] サーバー停止処理開始
+[09:31:38] [ServerManager] クライアント Player157 に切断通知
+[09:31:38] [ServerManager] サーバー停止完了
+[09:31:38] [Discovery/Advertiser] 停止中...
+[09:31:38] [Discovery/Advertiser] ブロードキャストループ終了
+[09:31:38] [Discovery/Advertiser] 停止完了
+[09:31:38] [Client] 切断
+[09:31:40] [Discovery/Listener] 生存確認 ループ:200
+[09:31:41] ========================================
+[09:31:41] SceneSelectClient 開始
+[09:31:41] ========================================
+[09:31:41] [SceneSelectClient] 初回サーバー検索開始
+[09:31:41] [ClientManager] RefreshAvailableServers 開始
+[09:31:41] [Discovery] GetServers呼び出し: 1 サーバー返却
+[09:31:41] [ClientManager] Discovery から 1 サーバー取得
+[09:31:41] [ClientManager] サーバー情報: EWR @ 172.20.145.6:23345 (1/8) state=0
+[09:31:41] [ClientManager] 追加成功: EWR
+[09:31:41] [ClientManager] RefreshAvailableServers 完了: 追加=1 スキップ=0 全体=1
+[09:31:41] [SceneSelectClient] リスト更新: 待機中=1 ゲーム中=0
+[09:31:41] [SceneSelectClient] 初期サーバー数: 待機中=1 ゲーム中=0
+[09:31:42] [SceneSelectClient] サーバーリスト更新 (経過時間: 1007 ms)
+[09:31:42] [ClientManager] RefreshAvailableServers 開始
+[09:31:42] [Discovery] GetServers呼び出し: 1 サーバー返却
+[09:31:42] [ClientManager] Discovery から 1 サーバー取得
+[09:31:42] [ClientManager] サーバー情報: EWR @ 172.20.145.6:23345 (1/8) state=0
+[09:31:42] [ClientManager] 追加成功: EWR
+[09:31:42] [ClientManager] RefreshAvailableServers 完了: 追加=1 スキップ=0 全体=1
+[09:31:42] [SceneSelectClient] リスト更新: 待機中=1 ゲーム中=0
+[09:31:43] [SceneSelectClient] サーバーリスト更新 (経過時間: 1007 ms)
+[09:31:43] [ClientManager] RefreshAvailableServers 開始
+[09:31:43] [Discovery] GetServers呼び出し: 1 サーバー返却
+[09:31:43] [ClientManager] Discovery から 1 サーバー取得
+[09:31:43] [ClientManager] サーバー情報: EWR @ 172.20.145.6:23345 (1/8) state=0
+[09:31:43] [ClientManager] 追加成功: EWR
+[09:31:43] [ClientManager] RefreshAvailableServers 完了: 追加=1 スキップ=0 全体=1
+[09:31:43] [SceneSelectClient] リスト更新: 待機中=1 ゲーム中=0
+[09:31:44] [SceneSelectClient] サーバーリスト更新 (経過時間: 1016 ms)
+[09:31:44] [ClientManager] RefreshAvailableServers 開始
+[09:31:44] [Discovery] GetServers呼び出し: 1 サーバー返却
+[09:31:44] [ClientManager] Discovery から 1 サーバー取得
+[09:31:44] [ClientManager] サーバー情報: EWR @ 172.20.145.6:23345 (1/8) state=0
+[09:31:44] [ClientManager] 追加成功: EWR
+[09:31:44] [ClientManager] RefreshAvailableServers 完了: 追加=1 スキップ=0 全体=1
+[09:31:44] [SceneSelectClient] リスト更新: 待機中=1 ゲーム中=0
+[09:31:44] [SceneSelectClient] ESCでタイトルに戻る
+[09:31:44] [ClientManager] Reset開始
+[09:31:44] [ClientManager] Reset完了
+[09:31:44] [SceneSelectClient] Exit
+[09:31:45] [Discovery/Listener] 生存確認 ループ:250
+[09:31:45] [Discovery/Listener] タイムアウト削除: 172.20.145.6:23345
+[09:31:46] ========================================
+[09:31:46] [SceneSelectHost] サーバー作成開始: FF
+[09:31:46] [Client] 切断
+[09:31:46] [ServerManager] ホスト名設定: Player249
+[09:31:46] [SceneSelectHost] サーバー名設定: FF
+[09:31:46] [SceneSelectHost] ホスト名設定: Player249
+[09:31:46] [Discovery/Advertiser] スレッド開始
+[09:31:46] [Discovery/Advertiser] WSAStartup成功
+[09:31:46] [Discovery/Advertiser] ソケット作成成功
+[09:31:46] [Discovery/Advertiser] SO_BROADCAST設定成功
+[09:31:46] [Discovery/Advertiser] ブロードキャストループ開始
+[09:31:46] [Discovery/Advertiser] 送信データ: port=12678 player=1/8 state=0 name='FF'
+[09:31:46] [ServerManager] サーバー起動: ポート=12678
+[09:31:46] [SceneSelectHost] サーバー起動成功: ポート=12678
+[09:31:46] [Discovery/Advertiser] ブロードキャスト送信 #1: サイズ=20 bytes
+[09:31:46] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:31:46] [Discovery/Listener] マジック一致確認
+[09:31:46] [Discovery/Listener] プロトコルバージョン: 256
+[09:31:46] [Discovery/Listener] ポート: 34353
+[09:31:46] [Discovery/Listener] プレイヤー数: 1
+[09:31:46] [Discovery/Listener] 最大プレイヤー数: 8
+[09:31:46] [Discovery/Listener] ステート: 0
+[09:31:46] [Discovery/Listener] 名前の長さ: 2
+[09:31:46] [Discovery/Listener] サーバー名: 'FF'
+[09:31:46] [Discovery/Listener] ★サーバー検出★: FF @ 172.20.145.6:34353 (1/8) state=0
+[09:31:46] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[09:31:46] [ClientManager] ConnectToServer: 127.0.0.1:12678
+[09:31:46] [ClientManager] クライアントホスト作成成功
+[09:31:46] [ClientManager] ホスト接続 - サーバー名は後で更新
+[09:31:46] [ClientManager] 接続要求送信 (ホスト判定: true)
+[09:31:46] [SceneSelectHost] ロビーに遷移
+[09:31:46] [ClientManager] サーバー名を設定: FF
+[09:31:46] [SceneLobby] ホストとしてロビー開始: FF
+[09:31:46] [SceneLobby] Start完了
+[09:31:46] [ClientManager] サーバー接続成功
+[09:31:46] [ClientManager] JOIN送信: Player249
+[09:31:47] [ServerManager] ホスト接続: Player249 (ID=2)
+[09:31:47] [ServerManager] 現在の接続数: 1人
+[09:31:47] [ServerManager] BroadcastLobbyUpdate: 1 人
+[09:31:47] [ServerManager] プレイヤー1: 'Player249' (長さ:9)
+[09:31:47] [ServerManager] 送信データサイズ: 12 bytes
+[09:31:47] [ServerManager] ProcessJoin: データ長=11
+[09:31:47] [ServerManager] 名前長さ: 9
+[09:31:47] [ServerManager] 受信した名前: 'Player249'
+[09:31:47] [ServerManager] ホストなので名前は維持: Player249
+[09:31:47] [ServerManager] BroadcastLobbyUpdate: 1 人
+[09:31:47] [ServerManager] プレイヤー1: 'Player249' (長さ:9)
+[09:31:47] [ServerManager] 送信データサイズ: 12 bytes
+[09:31:47] [ClientManager] ProcessLobbyUpdate: データ長=12
+[09:31:47] [ClientManager] プレイヤー数: 1
+[09:31:47] [ClientManager] プレイヤー1 名前長さ: 9
+[09:31:47] [ClientManager] プレイヤー1: 'Player249'
+[09:31:47] [ClientManager] ロビー更新: 1 人
+[09:31:47] [ClientManager] ProcessLobbyUpdate: データ長=12
+[09:31:47] [ClientManager] プレイヤー数: 1
+[09:31:47] [ClientManager] プレイヤー1 名前長さ: 9
+[09:31:47] [ClientManager] プレイヤー1: 'Player249'
+[09:31:47] [ClientManager] ロビー更新: 1 人
+[09:31:50] [Discovery/Listener] 生存確認 ループ:300
+[09:31:51] [Discovery/Advertiser] 送信データ: port=12678 player=1/8 state=0 name='FF'
+[09:31:51] [Discovery/Advertiser] ブロードキャスト送信 #2: サイズ=20 bytes
+[09:31:51] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:31:51] [Discovery/Listener] マジック一致確認
+[09:31:51] [Discovery/Listener] プロトコルバージョン: 256
+[09:31:51] [Discovery/Listener] ポート: 34353
+[09:31:51] [Discovery/Listener] プレイヤー数: 1
+[09:31:51] [Discovery/Listener] 最大プレイヤー数: 8
+[09:31:51] [Discovery/Listener] ステート: 0
+[09:31:51] [Discovery/Listener] 名前の長さ: 2
+[09:31:51] [Discovery/Listener] サーバー名: 'FF'
+[09:31:51] [Discovery/Listener] ★サーバー検出★: FF @ 172.20.145.6:34353 (1/8) state=0
+[09:31:51] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[09:31:52] [Client] 切断
+[09:31:52] [ServerManager] サーバー停止処理開始
+[09:31:52] [ServerManager] クライアント Player249 に切断通知
+[09:31:52] [ServerManager] サーバー停止完了
+[09:31:52] [Discovery/Advertiser] 停止中...
+[09:31:52] [Discovery/Advertiser] ブロードキャストループ終了
+[09:31:52] [Discovery/Advertiser] 停止完了

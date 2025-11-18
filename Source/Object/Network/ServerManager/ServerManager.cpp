@@ -366,17 +366,23 @@ void ServerManager::ProcessJoin(ENetPeer* peer, const uint8_t* data, size_t len)
 	ClientInfo* ci = static_cast<ClientInfo*>(peer->data);
 	if (ci)
 	{
-		// ホストの場合は名前を変更しない
-		if (ci->name == m_hostName)
+		// ★★★ ホストかどうかをチェック（最初の接続 & ホスト名が設定済み） ★★★
+		bool isHost = (m_clientCount == 1 && !m_hostName.empty() && ci->name == m_hostName);
+
+		if (isHost)
 		{
-			NET_LOG_F("[ServerManager] ホストなので名前は維持: %s", ci->name.c_str());
+			// ホストの場合は名前を維持
+			NET_LOG_F("[ServerManager] ホストのJOIN受信 - 名前維持: %s", ci->name.c_str());
 		}
 		else
 		{
+			// 通常のクライアントの場合は受信した名前を設定
 			ci->name = name;
 			NET_LOG_F("[ServerManager] クライアントID %d の名前を '%s' に設定", ci->id, name.c_str());
 		}
 	}
 
+	// ★★★ 必ずロビー更新をブロードキャスト ★★★
+	NET_LOG("[ServerManager] ロビー更新をブロードキャスト");
 	BroadcastLobbyUpdate();
 }
