@@ -402,10 +402,11 @@ void ClientManager::OnConnect()
 	m_bConnected = true;
 	m_lastHeartbeatTime = timeGetTime();
 
+	// JOIN送信（ホスト・クライアント共通）
 	std::string nameToSend = m_playerName.empty() ? "Player" : m_playerName;
 	SendJoin(nameToSend);
 
-	NET_LOG("[ClientManager] JOIN送信完了 - サーバー情報待機中");
+	NET_LOG_F("[ClientManager] JOIN送信完了: %s", nameToSend.c_str());
 }
 
 void ClientManager::OnReceive(const ENetEvent& event)

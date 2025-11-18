@@ -150,30 +150,24 @@ void SceneLobby::Draw()
 	m_pEngine->DrawPrintf(f_backButtonPosition.x, f_backButtonPosition.y + f_textOffsetY,
 		FONT_GOTHIC60, Color::BLACK, f_backButtonText);
 
-	// ★★★ サーバー名取得の優先順位を修正 ★★★
+	// サーバー名の表示
 	std::string displayServerName = "接続中...";
 
-	if (m_client)
+	if (m_client && m_client->IsHost() && m_server)
 	{
-		// クライアントが存在する場合、まずClientManagerから取得
+		// ホストの場合：ServerManagerから取得
+		displayServerName = m_server->GetServerName();
+	}
+	else if (m_client)
+	{
+		// クライアントの場合：ClientManagerから取得
 		std::string clientServerName = m_client->GetServerName();
-
 		if (!clientServerName.empty() &&
 			clientServerName != "Unknown Server" &&
 			clientServerName != "接続中...")
 		{
 			displayServerName = clientServerName;
 		}
-		else if (m_client->IsHost() && m_server)
-		{
-			// ホストの場合のみServerManagerから取得
-			displayServerName = m_server->GetServerName();
-		}
-	}
-	else if (m_server)
-	{
-		// クライアントがない場合（通常ありえないが念のため）
-		displayServerName = m_server->GetServerName();
 	}
 
 	m_pEngine->DrawPrintf(f_serverNameLabelPosition.x, f_serverNameLabelPosition.y,

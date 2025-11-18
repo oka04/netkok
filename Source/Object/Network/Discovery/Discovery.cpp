@@ -144,11 +144,11 @@ bool Discovery::StartListener(uint16_t discoveryPort)
 				idx += 2;
 				NET_LOG_F("[Discovery/Listener] プロトコルバージョン: %d", (int)protoVer);
 
-				// ENetポート（ネットワークバイトオーダー）
+				// ENetポート（ネットワークバイトオーダー → ホストバイトオーダー）
 				if (idx + 2 > recvLen) continue;
 				uint16_t enetPort = ntohs(*(uint16_t*)(buf + idx));
 				idx += 2;
-				NET_LOG_F("[Discovery/Listener] ポート: %d", (int)enetPort);
+				NET_LOG_F("[Discovery/Listener] ポート（変換後）: %d", (int)enetPort);
 
 				// プレイヤー数
 				if (idx + 1 > recvLen) continue;

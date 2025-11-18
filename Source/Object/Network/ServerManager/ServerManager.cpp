@@ -353,23 +353,28 @@ void ServerManager::ProcessJoin(ENetPeer* peer, const uint8_t* data, size_t len)
 	ClientInfo* ci = static_cast<ClientInfo*>(peer->data);
 	if (ci)
 	{
-		// ★★★ ホストかどうかをチェック（最初の接続 & ホスト名が設定済み） ★★★
-		bool isHost = (m_clientCount == 1 && !m_hostName.empty() && ci->name == m_hostName);
-
-		if (isHost)
+		// まだ名前が設定されていない場合のみ設定（重複JOIN防止）
+		if (ci->name.empty())
 		{
-			// ホストの場合は名前を維持
-			NET_LOG_F("[ServerManager] ホストのJOIN受信 - 名前維持: %s", ci->name.c_str());
+			// ホストの場合はホスト名を優先、そうでなければ受信した名前
+			if (m_clientCount == 1 && !m_hostName.empty())
+			{
+				ci->name = m_hostName;
+				NET_LOG_F("[ServerManager] ホストのJOIN受信: %s (ID=%d)", ci->name.c_str(), ci->id);
+			}
+			else
+			{
+				ci->name = name;
+				NET_LOG_F("[ServerManager] クライアントのJOIN受信: %s (ID=%d)", ci->name.c_str(), ci->id);
+			}
+
+			// 名前設定後にロビー更新をブロードキャスト
+			NET_LOG("[ServerManager] ロビー更新をブロードキャスト");
+			BroadcastLobbyUpdate();
 		}
 		else
 		{
-			// 通常のクライアントの場合は受信した名前を設定
-			ci->name = name;
-			NET_LOG_F("[ServerManager] クライアントID %d の名前を '%s' に設定", ci->id, name.c_str());
+			NET_LOG_F("[ServerManager] 重複JOIN無視: %s は既に登録済み", ci->name.c_str());
 		}
 	}
-
-	// ★★★ 必ずロビー更新をブロードキャスト ★★★
-	NET_LOG("[ServerManager] ロビー更新をブロードキャスト");
-	BroadcastLobbyUpdate();
 }
