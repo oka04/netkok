@@ -125,12 +125,13 @@ bool Discovery::StartListener(uint16_t discoveryPort)
 			if (recvLen > 0) {
 				NET_LOG_F("[Discovery/Listener] パケット受信! サイズ:%d bytes", recvLen);
 
-				// 最小サイズチェック: magic(10) + ver(2) + port(2) + player(1) + max(1) + state(1) + nameLen(1) = 18
+				// 最小サイズチェック
 				if (recvLen < 18) {
-					NET_LOG("[Discovery/Listener] パケットサイズ不足 (最小18bytes必要)");
+					NET_LOG("[Discovery/Listener] パケットサイズ不足");
 					continue;
 				}
 
+				// マジック確認
 				const char magic[] = "SILENT_DISC";
 				if (memcmp(buf, magic, 10) != 0) {
 					NET_LOG("[Discovery/Listener] マジック不一致");
@@ -139,14 +140,20 @@ bool Discovery::StartListener(uint16_t discoveryPort)
 				NET_LOG("[Discovery/Listener] マジック一致確認");
 
 				int idx = 10;
+
+				// プロトコルバージョン
 				if (idx + 2 > recvLen) continue;
-				uint16_t protoVer = ntohs(*(uint16_t*)(buf + idx));
+				uint16_t protoVer;
+				memcpy(&protoVer, buf + idx, sizeof(uint16_t));
+				protoVer = ntohs(protoVer);
 				idx += 2;
 				NET_LOG_F("[Discovery/Listener] プロトコルバージョン: %d", (int)protoVer);
 
-				// ENetポート（ネットワークバイトオーダー → ホストバイトオーダー）
+				// ★★★ 修正: ENetポートを正しく読み取る ★★★
 				if (idx + 2 > recvLen) continue;
-				uint16_t enetPort = ntohs(*(uint16_t*)(buf + idx));
+				uint16_t enetPort;
+				memcpy(&enetPort, buf + idx, sizeof(uint16_t));
+				enetPort = ntohs(enetPort);
 				idx += 2;
 				NET_LOG_F("[Discovery/Listener] ポート（変換後）: %d", (int)enetPort);
 
@@ -191,7 +198,7 @@ bool Discovery::StartListener(uint16_t discoveryPort)
 
 				ServerInfo si;
 				si.ip = from.sin_addr.s_addr;
-				si.port = enetPort;
+				si.port = enetPort; // 既に変換済み
 				si.playerCount = playerCount;
 				si.maxPlayers = maxPlayers;
 				si.state = state;
@@ -298,7 +305,6 @@ bool Discovery::StartAdvertise(uint16_t discoveryPort, uint16_t enetPort, const 
 		addr.sin_port = htons((u_short)impl->discoveryPort);
 		addr.sin_addr.s_addr = inet_addr("255.255.255.255");
 
-		const char magic[] = "SILENT_DISC";
 		int advertiseCount = 0;
 
 		NET_LOG("[Discovery/Advertiser] ブロードキャストループ開始");
@@ -326,17 +332,18 @@ bool Discovery::StartAdvertise(uint16_t discoveryPort, uint16_t enetPort, const 
 
 			std::vector<char> payload;
 			const char magic[] = "SILENT_DISC";
-			payload.insert(payload.end(), magic, magic + 10); // マジックは10バイト（null終端含まない）
+			payload.insert(payload.end(), magic, magic + 10);
 
-															  // プロトコルバージョン（ネットワークバイトオーダー）
+			// プロトコルバージョン（ネットワークバイトオーダー）
 			uint16_t protoVer = htons(1);
 			payload.push_back((char)((protoVer >> 8) & 0xFF));
 			payload.push_back((char)(protoVer & 0xFF));
 
-			// ENetポート（ネットワークバイトオーダー）
+			// ★★★ 修正: ENetポートをネットワークバイトオーダーに変換してからバイト列に追加 ★★★
 			uint16_t portNet = htons(enetPort);
-			payload.push_back((char)((portNet >> 8) & 0xFF));
-			payload.push_back((char)(portNet & 0xFF));
+			const char* portBytes = reinterpret_cast<const char*>(&portNet);
+			payload.push_back(portBytes[0]);
+			payload.push_back(portBytes[1]);
 
 			// プレイヤー数関連（1バイトずつ）
 			payload.push_back((char)playerCount);
@@ -354,7 +361,8 @@ bool Discovery::StartAdvertise(uint16_t discoveryPort, uint16_t enetPort, const 
 				NET_LOG_F("[Discovery/Advertiser] sendto失敗: %d", WSAGetLastError());
 			}
 			else {
-				NET_LOG_F("[Discovery/Advertiser] ブロードキャスト送信 #%d: サイズ=%d bytes", advertiseCount, sent);
+				NET_LOG_F("[Discovery/Advertiser] ブロードキャスト送信 #%d: サイズ=%d bytes (port=%d)",
+					advertiseCount, sent, enetPort);
 			}
 
 			for (int i = 0; i < 50 && impl->advertiserRunning; i++)
