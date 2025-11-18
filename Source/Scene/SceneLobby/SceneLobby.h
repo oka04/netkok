@@ -54,7 +54,9 @@ private:
 
 	std::string m_hostServerName;
 	bool m_hostNameInputActive;
-
+	DWORD f_connectionCheckInterval;
+	DWORD m_lastConnectionCheck;
+	bool m_bWasConnected;
 	bool PointInRect(IntVector2 pos, IntVector2 size);
 	static REQUEST_MODE s_requestMode;
 };

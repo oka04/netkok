@@ -2,14 +2,235 @@
 Network Debug Log
 ===========================================
 
-[10:23:50] ========================================
-[10:23:50] ClientManager 初期化開始
-[10:23:50] ========================================
-[10:23:50] [ClientManager] ENet初期化成功
-[10:23:50] [ClientManager] Discovery作成
-[10:23:50] [Discovery/Listener] スレッド開始
-[10:23:50] [Discovery/Listener] WSAStartup成功
-[10:23:50] [ClientManager] Discoveryリスナー起動 (ポート:12346)
-[10:23:50] [Discovery/Listener] ソケット作成成功
-[10:23:50] [Discovery/Listener] bind成功 ポート:12346
-[10:23:50] [Discovery/Listener] 受信ループ開始
+[10:53:38] ========================================
+[10:53:38] ClientManager 初期化開始
+[10:53:38] ========================================
+[10:53:38] [ClientManager] ENet初期化成功
+[10:53:38] [ClientManager] Discovery作成
+[10:53:38] [Discovery/Listener] スレッド開始
+[10:53:38] [Discovery/Listener] WSAStartup成功
+[10:53:38] [ClientManager] Discoveryリスナー起動 (ポート:12346)
+[10:53:38] [Discovery/Listener] ソケット作成成功
+[10:53:38] [Discovery/Listener] bind成功 ポート:12346
+[10:53:38] [Discovery/Listener] 受信ループ開始
+[10:53:40] ========================================
+[10:53:40] [SceneSelectHost] サーバー作成開始: ADF
+[10:53:40] [Client] 切断
+[10:53:40] [ServerManager] ホスト名設定: Player518
+[10:53:40] [SceneSelectHost] サーバー名設定: ADF
+[10:53:40] [SceneSelectHost] ホスト名設定: Player518
+[10:53:40] [Discovery/Advertiser] スレッド開始
+[10:53:40] [Discovery/Advertiser] WSAStartup成功
+[10:53:40] [ServerManager] サーバー起動: ポート=12854
+[10:53:40] [Discovery/Advertiser] ソケット作成成功
+[10:53:40] [Discovery/Advertiser] SO_BROADCAST設定成功
+[10:53:40] [Discovery/Advertiser] ブロードキャストループ開始
+[10:53:40] [Discovery/Advertiser] 送信データ: port=12854 player=1/8 state=0 name='ADF'
+[10:53:40] [SceneSelectHost] サーバー起動成功: ポート=12854
+[10:53:40] [Discovery/Advertiser] ブロードキャスト送信 #1: サイズ=21 bytes
+[10:53:40] [Discovery/Listener] パケット受信! サイズ:21 bytes
+[10:53:40] [Discovery/Listener] マジック一致確認
+[10:53:40] [Discovery/Listener] プロトコルバージョン: 256
+[10:53:40] [Discovery/Listener] ポート: 13874
+[10:53:40] [Discovery/Listener] プレイヤー数: 1
+[10:53:40] [Discovery/Listener] 最大プレイヤー数: 8
+[10:53:40] [Discovery/Listener] ステート: 0
+[10:53:40] [Discovery/Listener] 名前の長さ: 3
+[10:53:40] [Discovery/Listener] サーバー名: 'ADF'
+[10:53:40] [Discovery/Listener] ★サーバー検出★: ADF @ 172.20.145.6:13874 (1/8) state=0
+[10:53:40] [ClientManager] ConnectToServer: 127.0.0.1:12854
+[10:53:40] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[10:53:40] [ClientManager] クライアントホスト作成成功
+[10:53:40] [ClientManager] ホスト接続 - サーバー名は接続後に取得
+[10:53:40] [ClientManager] 接続要求送信 (ホスト判定: true)
+[10:53:40] [SceneSelectHost] ロビーに遷移
+[10:53:40] [SceneLobby] ホストとしてロビー開始: サーバー名='ADF'
+[10:53:40] [ClientManager] サーバー名を設定: ADF
+[10:53:40] [SceneLobby] Start完了
+[10:53:40] [ClientManager] サーバー接続成功（ENET_EVENT_TYPE_CONNECT受信）
+[10:53:40] [ClientManager] JOIN送信: Player518
+[10:53:40] [ClientManager] JOIN送信完了 - サーバー情報待機中
+[10:53:40] [ServerManager] ホスト接続: Player518 (ID=1)
+[10:53:40] [ServerManager] 現在の接続数: 1人
+[10:53:40] [ServerManager] BroadcastLobbyUpdate: 1 人
+[10:53:40] [ServerManager] プレイヤー1: 'Player518' (長さ:9)
+[10:53:40] [ServerManager] 送信データサイズ: 12 bytes
+[10:53:40] [ServerManager] ProcessJoin: データ長=11
+[10:53:40] [ServerManager] 名前長さ: 9
+[10:53:40] [ServerManager] 受信した名前: 'Player518'
+[10:53:40] [ServerManager] ホストのJOIN受信 - 名前維持: Player518
+[10:53:40] [ServerManager] ロビー更新をブロードキャスト
+[10:53:40] [ServerManager] BroadcastLobbyUpdate: 1 人
+[10:53:40] [ServerManager] プレイヤー1: 'Player518' (長さ:9)
+[10:53:40] [ServerManager] 送信データサイズ: 12 bytes
+[10:53:40] [ClientManager] ProcessLobbyUpdate: データ長=12
+[10:53:40] [ClientManager] プレイヤー数: 1
+[10:53:40] [ClientManager] プレイヤー1 名前長さ: 9
+[10:53:40] [ClientManager] プレイヤー1: 'Player518'
+[10:53:40] [ClientManager] ロビー更新完了: 1 人
+[10:53:40] [ClientManager] ProcessLobbyUpdate: データ長=12
+[10:53:40] [ClientManager] プレイヤー数: 1
+[10:53:40] [ClientManager] プレイヤー1 名前長さ: 9
+[10:53:40] [ClientManager] プレイヤー1: 'Player518'
+[10:53:40] [ClientManager] ロビー更新完了: 1 人
+[10:53:43] [Discovery/Listener] 生存確認 ループ:50
+[10:53:45] [Discovery/Advertiser] 送信データ: port=12854 player=1/8 state=0 name='ADF'
+[10:53:45] [Discovery/Advertiser] ブロードキャスト送信 #2: サイズ=21 bytes
+[10:53:45] [Discovery/Listener] パケット受信! サイズ:21 bytes
+[10:53:45] [Discovery/Listener] マジック一致確認
+[10:53:45] [Discovery/Listener] プロトコルバージョン: 256
+[10:53:45] [Discovery/Listener] ポート: 13874
+[10:53:45] [Discovery/Listener] プレイヤー数: 1
+[10:53:45] [Discovery/Listener] 最大プレイヤー数: 8
+[10:53:45] [Discovery/Listener] ステート: 0
+[10:53:45] [Discovery/Listener] 名前の長さ: 3
+[10:53:45] [Discovery/Listener] サーバー名: 'ADF'
+[10:53:45] [Discovery/Listener] ★サーバー検出★: ADF @ 172.20.145.6:13874 (1/8) state=0
+[10:53:45] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[10:53:48] [Discovery/Listener] 生存確認 ループ:100
+[10:53:50] [Discovery/Advertiser] 送信データ: port=12854 player=1/8 state=0 name='ADF'
+[10:53:50] [Discovery/Advertiser] ブロードキャスト送信 #3: サイズ=21 bytes
+[10:53:50] [Discovery/Listener] パケット受信! サイズ:21 bytes
+[10:53:50] [Discovery/Listener] マジック一致確認
+[10:53:50] [Discovery/Listener] プロトコルバージョン: 256
+[10:53:50] [Discovery/Listener] ポート: 13874
+[10:53:50] [Discovery/Listener] プレイヤー数: 1
+[10:53:50] [Discovery/Listener] 最大プレイヤー数: 8
+[10:53:50] [Discovery/Listener] ステート: 0
+[10:53:50] [Discovery/Listener] 名前の長さ: 3
+[10:53:50] [Discovery/Listener] サーバー名: 'ADF'
+[10:53:50] [Discovery/Listener] ★サーバー検出★: ADF @ 172.20.145.6:13874 (1/8) state=0
+[10:53:50] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[10:53:53] [Discovery/Listener] 生存確認 ループ:150
+[10:53:55] [Discovery/Advertiser] 送信データ: port=12854 player=1/8 state=0 name='ADF'
+[10:53:55] [Discovery/Advertiser] ブロードキャスト送信 #4: サイズ=21 bytes
+[10:53:55] [Discovery/Listener] パケット受信! サイズ:21 bytes
+[10:53:55] [Discovery/Listener] マジック一致確認
+[10:53:55] [Discovery/Listener] プロトコルバージョン: 256
+[10:53:55] [Discovery/Listener] ポート: 13874
+[10:53:55] [Discovery/Listener] プレイヤー数: 1
+[10:53:55] [Discovery/Listener] 最大プレイヤー数: 8
+[10:53:55] [Discovery/Listener] ステート: 0
+[10:53:55] [Discovery/Listener] 名前の長さ: 3
+[10:53:55] [Discovery/Listener] サーバー名: 'ADF'
+[10:53:55] [Discovery/Listener] ★サーバー検出★: ADF @ 172.20.145.6:13874 (1/8) state=0
+[10:53:55] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[10:53:58] [Discovery/Listener] 生存確認 ループ:200
+[10:54:00] [Discovery/Advertiser] 送信データ: port=12854 player=1/8 state=0 name='ADF'
+[10:54:00] [Discovery/Advertiser] ブロードキャスト送信 #5: サイズ=21 bytes
+[10:54:00] [Discovery/Listener] パケット受信! サイズ:21 bytes
+[10:54:00] [Discovery/Listener] マジック一致確認
+[10:54:00] [Discovery/Listener] プロトコルバージョン: 256
+[10:54:00] [Discovery/Listener] ポート: 13874
+[10:54:00] [Discovery/Listener] プレイヤー数: 1
+[10:54:00] [Discovery/Listener] 最大プレイヤー数: 8
+[10:54:00] [Discovery/Listener] ステート: 0
+[10:54:00] [Discovery/Listener] 名前の長さ: 3
+[10:54:00] [Discovery/Listener] サーバー名: 'ADF'
+[10:54:00] [Discovery/Listener] ★サーバー検出★: ADF @ 172.20.145.6:13874 (1/8) state=0
+[10:54:00] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[10:54:03] [Discovery/Listener] 生存確認 ループ:250
+[10:54:05] [Discovery/Advertiser] 送信データ: port=12854 player=1/8 state=0 name='ADF'
+[10:54:05] [Discovery/Advertiser] ブロードキャスト送信 #6: サイズ=21 bytes
+[10:54:05] [Discovery/Listener] パケット受信! サイズ:21 bytes
+[10:54:05] [Discovery/Listener] マジック一致確認
+[10:54:05] [Discovery/Listener] プロトコルバージョン: 256
+[10:54:05] [Discovery/Listener] ポート: 13874
+[10:54:05] [Discovery/Listener] プレイヤー数: 1
+[10:54:05] [Discovery/Listener] 最大プレイヤー数: 8
+[10:54:05] [Discovery/Listener] ステート: 0
+[10:54:05] [Discovery/Listener] 名前の長さ: 3
+[10:54:05] [Discovery/Listener] サーバー名: 'ADF'
+[10:54:05] [Discovery/Listener] ★サーバー検出★: ADF @ 172.20.145.6:13874 (1/8) state=0
+[10:54:05] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[10:54:08] [Discovery/Listener] 生存確認 ループ:300
+[10:54:10] [Discovery/Advertiser] 送信データ: port=12854 player=1/8 state=0 name='ADF'
+[10:54:10] [Discovery/Advertiser] ブロードキャスト送信 #7: サイズ=21 bytes
+[10:54:10] [Discovery/Listener] パケット受信! サイズ:21 bytes
+[10:54:10] [Discovery/Listener] マジック一致確認
+[10:54:10] [Discovery/Listener] プロトコルバージョン: 256
+[10:54:10] [Discovery/Listener] ポート: 13874
+[10:54:10] [Discovery/Listener] プレイヤー数: 1
+[10:54:10] [Discovery/Listener] 最大プレイヤー数: 8
+[10:54:10] [Discovery/Listener] ステート: 0
+[10:54:10] [Discovery/Listener] 名前の長さ: 3
+[10:54:10] [Discovery/Listener] サーバー名: 'ADF'
+[10:54:10] [Discovery/Listener] ★サーバー検出★: ADF @ 172.20.145.6:13874 (1/8) state=0
+[10:54:10] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[10:54:14] [Discovery/Listener] 生存確認 ループ:350
+[10:54:15] [Discovery/Advertiser] 送信データ: port=12854 player=1/8 state=0 name='ADF'
+[10:54:15] [Discovery/Advertiser] ブロードキャスト送信 #8: サイズ=21 bytes
+[10:54:15] [Discovery/Listener] パケット受信! サイズ:21 bytes
+[10:54:15] [Discovery/Listener] マジック一致確認
+[10:54:15] [Discovery/Listener] プロトコルバージョン: 256
+[10:54:15] [Discovery/Listener] ポート: 13874
+[10:54:15] [Discovery/Listener] プレイヤー数: 1
+[10:54:15] [Discovery/Listener] 最大プレイヤー数: 8
+[10:54:15] [Discovery/Listener] ステート: 0
+[10:54:15] [Discovery/Listener] 名前の長さ: 3
+[10:54:15] [Discovery/Listener] サーバー名: 'ADF'
+[10:54:15] [Discovery/Listener] ★サーバー検出★: ADF @ 172.20.145.6:13874 (1/8) state=0
+[10:54:15] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[10:54:19] [Discovery/Listener] 生存確認 ループ:400
+[10:54:20] [Discovery/Advertiser] 送信データ: port=12854 player=1/8 state=0 name='ADF'
+[10:54:20] [Discovery/Advertiser] ブロードキャスト送信 #9: サイズ=21 bytes
+[10:54:20] [Discovery/Listener] パケット受信! サイズ:21 bytes
+[10:54:20] [Discovery/Listener] マジック一致確認
+[10:54:20] [Discovery/Listener] プロトコルバージョン: 256
+[10:54:20] [Discovery/Listener] ポート: 13874
+[10:54:20] [Discovery/Listener] プレイヤー数: 1
+[10:54:20] [Discovery/Listener] 最大プレイヤー数: 8
+[10:54:20] [Discovery/Listener] ステート: 0
+[10:54:20] [Discovery/Listener] 名前の長さ: 3
+[10:54:20] [Discovery/Listener] サーバー名: 'ADF'
+[10:54:20] [Discovery/Listener] ★サーバー検出★: ADF @ 172.20.145.6:13874 (1/8) state=0
+[10:54:20] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[10:54:24] [Discovery/Listener] 生存確認 ループ:450
+[10:54:25] [Discovery/Advertiser] 送信データ: port=12854 player=1/8 state=0 name='ADF'
+[10:54:25] [Discovery/Advertiser] ブロードキャスト送信 #10: サイズ=21 bytes
+[10:54:25] [Discovery/Listener] パケット受信! サイズ:21 bytes
+[10:54:25] [Discovery/Listener] マジック一致確認
+[10:54:25] [Discovery/Listener] プロトコルバージョン: 256
+[10:54:25] [Discovery/Listener] ポート: 13874
+[10:54:25] [Discovery/Listener] プレイヤー数: 1
+[10:54:25] [Discovery/Listener] 最大プレイヤー数: 8
+[10:54:25] [Discovery/Listener] ステート: 0
+[10:54:25] [Discovery/Listener] 名前の長さ: 3
+[10:54:25] [Discovery/Listener] サーバー名: 'ADF'
+[10:54:25] [Discovery/Listener] ★サーバー検出★: ADF @ 172.20.145.6:13874 (1/8) state=0
+[10:54:25] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[10:54:29] [Discovery/Listener] 生存確認 ループ:500
+[10:54:30] [Discovery/Advertiser] 送信データ: port=12854 player=1/8 state=0 name='ADF'
+[10:54:30] [Discovery/Advertiser] ブロードキャスト送信 #11: サイズ=21 bytes
+[10:54:30] [Discovery/Listener] パケット受信! サイズ:21 bytes
+[10:54:30] [Discovery/Listener] マジック一致確認
+[10:54:30] [Discovery/Listener] プロトコルバージョン: 256
+[10:54:30] [Discovery/Listener] ポート: 13874
+[10:54:30] [Discovery/Listener] プレイヤー数: 1
+[10:54:30] [Discovery/Listener] 最大プレイヤー数: 8
+[10:54:30] [Discovery/Listener] ステート: 0
+[10:54:30] [Discovery/Listener] 名前の長さ: 3
+[10:54:30] [Discovery/Listener] サーバー名: 'ADF'
+[10:54:30] [Discovery/Listener] ★サーバー検出★: ADF @ 172.20.145.6:13874 (1/8) state=0
+[10:54:30] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[10:54:34] [Discovery/Listener] 生存確認 ループ:550
+[10:54:35] [Discovery/Advertiser] 送信データ: port=12854 player=1/8 state=0 name='ADF'
+[10:54:35] [Discovery/Advertiser] ブロードキャスト送信 #12: サイズ=21 bytes
+[10:54:35] [Discovery/Listener] パケット受信! サイズ:21 bytes
+[10:54:35] [Discovery/Listener] マジック一致確認
+[10:54:35] [Discovery/Listener] プロトコルバージョン: 256
+[10:54:35] [Discovery/Listener] ポート: 13874
+[10:54:35] [Discovery/Listener] プレイヤー数: 1
+[10:54:35] [Discovery/Listener] 最大プレイヤー数: 8
+[10:54:35] [Discovery/Listener] ステート: 0
+[10:54:35] [Discovery/Listener] 名前の長さ: 3
+[10:54:35] [Discovery/Listener] サーバー名: 'ADF'
+[10:54:35] [Discovery/Listener] ★サーバー検出★: ADF @ 172.20.145.6:13874 (1/8) state=0
+[10:54:35] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[10:54:37] [Client] 切断
+[10:54:37] [ServerManager] サーバー停止処理開始
+[10:54:37] [ServerManager] クライアント Player518 に切断通知
+[10:54:37] [ServerManager] サーバー停止完了
+[10:54:37] [Discovery/Advertiser] 停止中...
+[10:54:37] [Discovery/Advertiser] ブロードキャストループ終了
+[10:54:37] [Discovery/Advertiser] 停止完了
