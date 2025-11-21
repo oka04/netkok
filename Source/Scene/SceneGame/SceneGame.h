@@ -1,71 +1,39 @@
-﻿//*****************************************************************************
-//
-// ゲームシーン
-//
-//*****************************************************************************
+﻿#pragma once
 
-#pragma once
-
+#include <winsock2.h>
+#include <ws2tcpip.h>
 #include "..\\..\\GameBase.h"
-
 #include "..\\Scene\\Scene.h"
-
 #include "..\\..\\Object\\Fade\\Fade.h"
 #include "..\\..\\Object\\Map\\Map.h"
 #include "..\\..\\Object\\Player\\Player.h"
+#include "..\\..\\Object\\Network\\ClientManager\\ClientManager.h"
+#include "..\\..\\Object\\Network\\ServerManager\\ServerManager.h"
+#include <map>
 
 class SceneGame : public Scene
 {
 public:
-
-	//=============================================================================
-	// コンストラクタ
-	// 引　数：Engine* エンジンクラスのアドレス
-	//=============================================================================
 	SceneGame(Engine *pEngine);
-
-	//=============================================================================
-	// デストラクタ
-	//=============================================================================
 	~SceneGame();
 
-	//=============================================================================
-	// シーンの実行時に１度だけ呼び出される開始処理関数
-	//=============================================================================
 	void Start();
-
-	//=============================================================================
-	// シーンの実行時に繰り返し呼び出される更新処理関数
-	//=============================================================================
 	void Update();
-
-	//=============================================================================
-	// シーンの実行時に繰り返し呼び出される描画処理関数
-	//=============================================================================
 	void Draw();
-
-	//=============================================================================
-	// シーンの実行時に繰り返し呼び出されるポストエフェクト関数
-	//=============================================================================
 	void PostEffect();
-
-	//=============================================================================
-	// シーンの終了時に呼び出される終了処理関数
-	//=============================================================================
 	void Exit();
 
 #ifdef USE_IMGUI
-	//=============================================================================
-	// 日本語入力用
-	//=============================================================================
 	void ImGuiFrameProcess();
 #endif
 
 private:
 	void Initialize();
 	void UpdateDebugFlag();
+	void UpdateNetwork();
+	void SyncPlayers();
 
-	enum DEBUG_FLAG 
+	enum DEBUG_FLAG
 	{
 		DRAW_PLAYER_STATE = 1 << 0,
 		DRAW_BOXLINE = 1 << 1,
@@ -93,14 +61,18 @@ private:
 	};
 
 	unsigned char d_debugFlag;
-
 	int d_fpsCount;
 	int d_viewPointCount;
 	int m_gameState;
 	float m_deltaTime;
 	float f_miniMapSourHalfSize;
 	DWORD m_lastTime;
-	
+	DWORD m_lastNetworkUpdate;
+
+	uint32_t m_localClientId;
+	bool m_bIsHost;
+	Player* m_pLocalPlayer;
+	std::map<uint32_t, Player*> m_remotePlayers;
 
 	Camera m_camera;
 	Projection m_projection;
@@ -108,8 +80,10 @@ private:
 	AmbientLight m_ambient;
 	DirectionalLight m_light;
 	Map m_map;
-	Player m_player;
 	Fade m_fade;
 
 	D3DXVECTOR3 m_outPatrollerPosition;
+
+	ClientManager* m_pClient;
+	ServerManager* m_pServer;
 };
