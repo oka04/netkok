@@ -17,13 +17,6 @@
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "winmm.lib")
 
-enum {
-	MSG_JOIN = 1,
-	MSG_JOIN_ACK = 2,
-	MSG_LOBBY_UPDATE = 3,
-	MSG_START_GAME = 4,
-};
-
 ServerManager* ServerManager::s_instance = nullptr;
 
 ServerManager* ServerManager::GetInstance()
@@ -39,6 +32,7 @@ ServerManager::ServerManager()
 	, m_lastAdvertiseTime(0)
 	, m_nextClientId(1)
 	, m_serverName("Silent Host")
+	, m_hostStateSet(false)
 {
 	if (enet_initialize() != 0)
 	{
@@ -70,9 +64,11 @@ bool ServerManager::StartServer(int port, int maxClients)
 	const uint16_t discoveryPort = 12346;
 	m_advertiser = std::make_unique<Discovery>();
 	m_advertiser->StartAdvertise(discoveryPort, (enet_uint16)port, m_serverName, (uint8_t)maxClients);
-	m_advertiser->SetAdvertisePlayerCount(1);  // ホスト分
+	m_advertiser->SetAdvertisePlayerCount(1);
 	m_advertiser->SetAdvertiseState(0);
 	m_clientCount = 0;
+	m_nextClientId = 1;
+	m_hostStateSet = false;
 
 	NET_LOG_F("[ServerManager] サーバー起動: ポート=%d", port);
 	std::cout << "[Server] 起動: ポート " << port << std::endl;
@@ -85,12 +81,12 @@ void ServerManager::Reset()
 
 	StopServer();
 
-	// 状態をクリア
 	m_clientCount = 0;
 	m_nextClientId = 1;
 	m_serverName = "Silent Host";
 	m_hostName = "";
 	m_lastAdvertiseTime = 0;
+	m_hostStateSet = false;
 
 	NET_LOG("[ServerManager] Reset完了");
 }
@@ -101,7 +97,6 @@ void ServerManager::StopServer()
 	{
 		NET_LOG("[ServerManager] サーバー停止処理開始");
 
-		// 全クライアントに切断通知
 		for (auto& kv : m_clients)
 		{
 			if (kv.first && kv.first->state == ENET_PEER_STATE_CONNECTED)
@@ -111,7 +106,6 @@ void ServerManager::StopServer()
 			}
 		}
 
-		// クライアント情報を削除
 		for (auto& kv : m_clients)
 		{
 			delete kv.second;
@@ -126,7 +120,8 @@ void ServerManager::StopServer()
 		std::cout << "[Server] 停止" << std::endl;
 	}
 
-	if (m_advertiser) {
+	if (m_advertiser)
+	{
 		m_advertiser->StopAdvertise();
 		m_advertiser.reset();
 	}
@@ -141,16 +136,13 @@ void ServerManager::BroadcastLobbyUpdate()
 {
 	if (!m_pServerHost) return;
 
-	// ホスト名を含む全プレイヤーリストを作成
 	std::vector<std::string> allPlayers;
 
-	// ホスト名を最初に追加
 	if (!m_hostName.empty())
 	{
 		allPlayers.push_back(m_hostName);
 	}
 
-	// 他のクライアントを追加（ホスト自身は除外）
 	for (auto& kv : m_clients)
 	{
 		if (kv.second->name != m_hostName)
@@ -175,8 +167,7 @@ void ServerManager::BroadcastLobbyUpdate()
 		payload.push_back(nl);
 		payload.insert(payload.end(), name.begin(), name.begin() + nl);
 
-		NET_LOG_F("[ServerManager] プレイヤー%d: '%s' (長さ:%d)",
-			++playerIndex, name.c_str(), (int)nl);
+		NET_LOG_F("[ServerManager] プレイヤー%d: '%s' (長さ:%d)", ++playerIndex, name.c_str(), (int)nl);
 	}
 
 	NET_LOG_F("[ServerManager] 送信データサイズ: %d bytes", (int)payload.size());
@@ -196,11 +187,11 @@ void ServerManager::StartGame()
 {
 	if (!m_pServerHost) return;
 
-	// ホスト含め2人以上必要
 	int totalPlayers = m_clientCount;
 	if (!m_hostName.empty()) totalPlayers++;
 
-	if (totalPlayers < 2) {
+	if (totalPlayers < 2)
+	{
 		std::cout << "[Server] プレイヤーが足りません。開始できません。\n";
 		return;
 	}
@@ -241,13 +232,11 @@ std::vector<std::string> ServerManager::GetLobbyPlayerNames() const
 {
 	std::vector<std::string> names;
 
-	// ホスト名を最初に追加
 	if (!m_hostName.empty())
 	{
 		names.push_back(m_hostName);
 	}
 
-	// 他のクライアントを追加
 	for (auto& kv : m_clients)
 	{
 		if (kv.second->name != m_hostName)
@@ -288,28 +277,36 @@ void ServerManager::OnClientConnect(ENetPeer* peer)
 	auto ci = new ClientInfo();
 	ci->peer = peer;
 	ci->id = m_nextClientId++;
-	ci->name = ""; // 空にして、JOIN受信時に設定
+	ci->name = "";
+	ci->stateReceived = false;
 
 	peer->data = ci;
 	m_clients[peer] = ci;
 	m_clientCount++;
 
 	NET_LOG_F("[ServerManager] クライアント接続: ID=%d (現在%d人)", ci->id, m_clientCount);
-
 }
 
 void ServerManager::OnClientReceive(const ENetEvent& event)
 {
 	const uint8_t* data = (const uint8_t*)event.packet->data;
 	size_t len = event.packet->dataLength;
-	if (len < 1) {
+	if (len < 1)
+	{
 		enet_packet_destroy(event.packet);
 		return;
 	}
 
 	uint8_t id = data[0];
-	if (id == MSG_JOIN)
-		ProcessJoin(event.peer, data, len);
+	switch (id)
+	{
+	case MSG_JOIN:
+		ProcessJoin(event.peer, data + 1, len - 1);
+		break;
+	case MSG_PLAYER_STATE:
+		ProcessPlayerState(event.peer, data + 1, len - 1);
+		break;
+	}
 
 	enet_packet_destroy(event.packet);
 }
@@ -317,8 +314,13 @@ void ServerManager::OnClientReceive(const ENetEvent& event)
 void ServerManager::OnClientDisconnect(ENetPeer* peer)
 {
 	auto it = m_clients.find(peer);
-	if (it != m_clients.end()) {
-		NET_LOG_F("[ServerManager] クライアント切断: %s", it->second->name.c_str());
+	if (it != m_clients.end())
+	{
+		uint32_t clientId = it->second->id;
+		NET_LOG_F("[ServerManager] クライアント切断: %s (ID=%u)", it->second->name.c_str(), clientId);
+
+		BroadcastPlayerDespawn(clientId);
+
 		delete it->second;
 		m_clients.erase(it);
 		m_clientCount--;
@@ -331,7 +333,7 @@ void ServerManager::ProcessJoin(ENetPeer* peer, const uint8_t* data, size_t len)
 {
 	NET_LOG_F("[ServerManager] ProcessJoin: データ長=%d", (int)len);
 
-	size_t idx = 1;
+	size_t idx = 0;
 	if (idx >= len)
 	{
 		NET_LOG("[ServerManager] エラー: データ長不足");
@@ -353,10 +355,8 @@ void ServerManager::ProcessJoin(ENetPeer* peer, const uint8_t* data, size_t len)
 	ClientInfo* ci = static_cast<ClientInfo*>(peer->data);
 	if (ci)
 	{
-		// まだ名前が設定されていない場合のみ設定（重複JOIN防止）
 		if (ci->name.empty())
 		{
-			// ホストの場合はホスト名を優先、そうでなければ受信した名前
 			if (m_clientCount == 1 && !m_hostName.empty())
 			{
 				ci->name = m_hostName;
@@ -368,7 +368,8 @@ void ServerManager::ProcessJoin(ENetPeer* peer, const uint8_t* data, size_t len)
 				NET_LOG_F("[ServerManager] クライアントのJOIN受信: %s (ID=%d)", ci->name.c_str(), ci->id);
 			}
 
-			// 名前設定後にロビー更新をブロードキャスト
+			SendJoinAck(peer, ci->id);
+
 			NET_LOG("[ServerManager] ロビー更新をブロードキャスト");
 			BroadcastLobbyUpdate();
 		}
@@ -377,4 +378,127 @@ void ServerManager::ProcessJoin(ENetPeer* peer, const uint8_t* data, size_t len)
 			NET_LOG_F("[ServerManager] 重複JOIN無視: %s は既に登録済み", ci->name.c_str());
 		}
 	}
+}
+
+void ServerManager::ProcessPlayerState(ENetPeer* peer, const uint8_t* data, size_t len)
+{
+	if (len < sizeof(NetPlayerState)) return;
+
+	NetPlayerState state;
+	if (!NetworkSerializer::DeserializePlayerState(data, len, state))
+		return;
+
+	std::lock_guard<std::mutex> lk(m_stateMutex);
+
+	auto it = m_clients.find(peer);
+	if (it != m_clients.end())
+	{
+		it->second->lastState = state;
+		it->second->lastState.clientId = it->second->id;
+		it->second->stateReceived = true;
+	}
+}
+
+void ServerManager::SetHostState(const NetPlayerState& state)
+{
+	std::lock_guard<std::mutex> lk(m_stateMutex);
+	m_hostState = state;
+	m_hostState.clientId = 1;
+	m_hostStateSet = true;
+}
+
+std::vector<NetPlayerState> ServerManager::GetAllPlayerStates() const
+{
+	std::lock_guard<std::mutex> lk(m_stateMutex);
+	std::vector<NetPlayerState> states;
+
+	if (m_hostStateSet)
+	{
+		states.push_back(m_hostState);
+	}
+
+	for (const auto& kv : m_clients)
+	{
+		if (kv.second->stateReceived)
+		{
+			states.push_back(kv.second->lastState);
+		}
+	}
+
+	return states;
+}
+
+void ServerManager::BroadcastWorldState()
+{
+	if (!m_pServerHost) return;
+
+	NetWorldState world;
+	auto states = GetAllPlayerStates();
+
+	world.playerCount = (uint8_t)min(8, (int)states.size());
+	for (int i = 0; i < world.playerCount; ++i)
+	{
+		world.players[i] = states[i];
+	}
+
+	auto data = NetworkSerializer::SerializeWorldState(world);
+
+	ENetPacket* packet = enet_packet_create(data.data(), data.size(), ENET_PACKET_FLAG_UNSEQUENCED);
+	enet_host_broadcast(m_pServerHost, 1, packet);
+	enet_host_flush(m_pServerHost);
+}
+
+void ServerManager::BroadcastPlayerSpawn(const NetPlayerSpawn& spawn)
+{
+	if (!m_pServerHost) return;
+
+	auto data = NetworkSerializer::SerializePlayerSpawn(spawn);
+	ENetPacket* packet = enet_packet_create(data.data(), data.size(), ENET_PACKET_FLAG_RELIABLE);
+	enet_host_broadcast(m_pServerHost, 0, packet);
+	enet_host_flush(m_pServerHost);
+}
+
+void ServerManager::BroadcastPlayerDespawn(uint32_t clientId)
+{
+	if (!m_pServerHost) return;
+
+	auto data = NetworkSerializer::SerializePlayerDespawn(clientId);
+	ENetPacket* packet = enet_packet_create(data.data(), data.size(), ENET_PACKET_FLAG_RELIABLE);
+	enet_host_broadcast(m_pServerHost, 0, packet);
+	enet_host_flush(m_pServerHost);
+}
+
+void ServerManager::UpdatePlayerState(uint32_t clientId, const NetPlayerState& state)
+{
+	std::lock_guard<std::mutex> lk(m_stateMutex);
+
+	for (auto& kv : m_clients)
+	{
+		if (kv.second->id == clientId)
+		{
+			kv.second->lastState = state;
+			kv.second->stateReceived = true;
+			return;
+		}
+	}
+}
+
+void ServerManager::SendToClient(ENetPeer* peer, const std::vector<uint8_t>& data)
+{
+	ENetPacket* packet = enet_packet_create(data.data(), data.size(), ENET_PACKET_FLAG_RELIABLE);
+	enet_peer_send(peer, 0, packet);
+}
+
+void ServerManager::SendJoinAck(ENetPeer* peer, uint32_t clientId)
+{
+	std::vector<uint8_t> payload;
+	payload.push_back((uint8_t)MSG_JOIN_ACK);
+	const uint8_t* p = reinterpret_cast<const uint8_t*>(&clientId);
+	payload.insert(payload.end(), p, p + sizeof(uint32_t));
+
+	ENetPacket* packet = enet_packet_create(payload.data(), payload.size(), ENET_PACKET_FLAG_RELIABLE);
+	enet_peer_send(peer, 0, packet);
+	enet_host_flush(m_pServerHost);
+
+	NET_LOG_F("[ServerManager] JoinAck送信: ClientID=%u", clientId);
 }

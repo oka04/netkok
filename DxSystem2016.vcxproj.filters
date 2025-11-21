@@ -617,6 +617,9 @@
     <ClInclude Include="Source\Object\Network\NetworkLogger.h">
       <Filter>Object\Network</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Object\Network\NetworkSync.h">
+      <Filter>Object\Network</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Source\Effect\Effects.rc">

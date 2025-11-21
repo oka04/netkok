@@ -15,14 +15,6 @@
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "winmm.lib")
 
-enum {
-	MSG_JOIN = 1,
-	MSG_JOIN_ACK = 2,
-	MSG_LOBBY_UPDATE = 3,
-	MSG_START_GAME = 4,
-	MSG_SERVER_INFO = 5,  // 新規: サーバー情報送信用
-};
-
 ClientManager* ClientManager::s_instance = nullptr;
 
 ClientManager* ClientManager::GetInstance()
@@ -40,6 +32,8 @@ ClientManager::ClientManager()
 	, m_previousLobbyCount(0)
 	, m_bConnected(false)
 	, m_lastHeartbeatTime(0)
+	, m_worldStateReceived(false)
+	, m_assignedClientId(0)
 {
 	NetworkLogger::GetInstance().Initialize("network_debug.txt");
 	NET_LOG("========================================");
@@ -65,7 +59,8 @@ ClientManager::ClientManager()
 
 ClientManager::~ClientManager()
 {
-	if (m_pDiscovery) {
+	if (m_pDiscovery)
+	{
 		m_pDiscovery->StopListener();
 		m_pDiscovery.reset();
 	}
@@ -98,12 +93,10 @@ void ClientManager::Reset()
 {
 	NET_LOG("[ClientManager] Reset開始");
 
-	// 接続を切断
 	if (m_pServerPeer)
 	{
 		enet_peer_disconnect(m_pServerPeer, 0);
 
-		// 切断完了を待つ
 		if (m_pClientHost)
 		{
 			ENetEvent event;
@@ -122,14 +115,12 @@ void ClientManager::Reset()
 		m_pServerPeer = nullptr;
 	}
 
-	// ホストを破棄
 	if (m_pClientHost)
 	{
 		enet_host_destroy(m_pClientHost);
 		m_pClientHost = nullptr;
 	}
 
-	// 状態をクリア
 	{
 		std::lock_guard<std::mutex> lk(m_lobbyMutex);
 		m_lobbyPlayerNames.clear();
@@ -144,6 +135,14 @@ void ClientManager::Reset()
 	m_allServers.clear();
 	m_previousLobbyCount = 0;
 	m_lastHeartbeatTime = 0;
+
+	{
+		std::lock_guard<std::mutex> lk(m_worldMutex);
+		m_worldStateReceived = false;
+		while (!m_spawnQueue.empty()) m_spawnQueue.pop();
+		while (!m_despawnQueue.empty()) m_despawnQueue.pop();
+	}
+	m_assignedClientId = 0;
 
 	NET_LOG("[ClientManager] Reset完了");
 }
@@ -227,7 +226,6 @@ bool ClientManager::ConnectToServer(const std::string& ip, int port)
 {
 	NET_LOG_F("[ClientManager] ConnectToServer: %s:%d", ip.c_str(), port);
 
-	// 既存の接続を完全にクリーンアップ
 	if (m_pServerPeer)
 	{
 		enet_peer_reset(m_pServerPeer);
@@ -240,10 +238,11 @@ bool ClientManager::ConnectToServer(const std::string& ip, int port)
 		m_pClientHost = nullptr;
 	}
 
-	// 状態をリセット
 	m_bGameStarted = false;
 	m_bConnected = false;
 	m_lastHeartbeatTime = 0;
+	m_worldStateReceived = false;
+	m_assignedClientId = 0;
 	{
 		std::lock_guard<std::mutex> lk(m_lobbyMutex);
 		m_lobbyPlayerNames.clear();
@@ -272,15 +271,14 @@ bool ClientManager::ConnectToServer(const std::string& ip, int port)
 
 	m_bHost = (ip == "127.0.0.1" || ip == "localhost");
 
-	// サーバー名の初期設定
 	if (m_bHost)
 	{
 		m_serverName = "接続中...";
+		m_assignedClientId = 1;
 		NET_LOG("[ClientManager] ホスト接続 - サーバー名は接続後に取得");
 	}
 	else
 	{
-		// Discoveryから取得を試みる
 		m_serverName = "Unknown Server";
 		for (const auto& server : m_allServers)
 		{
@@ -310,7 +308,8 @@ void ClientManager::RefreshAvailableServers()
 	m_availableServers.clear();
 	m_allServers.clear();
 
-	if (!m_pDiscovery) {
+	if (!m_pDiscovery)
+	{
 		NET_LOG("[ClientManager] エラー: m_pDiscovery が nullptr");
 		return;
 	}
@@ -321,7 +320,8 @@ void ClientManager::RefreshAvailableServers()
 	int addedCount = 0;
 	int skippedCount = 0;
 
-	for (auto& s : servers) {
+	for (auto& s : servers)
+	{
 		char ipStr[INET_ADDRSTRLEN];
 		struct in_addr addr;
 		addr.s_addr = s.ip;
@@ -340,7 +340,8 @@ void ClientManager::RefreshAvailableServers()
 
 		m_allServers.push_back(n);
 
-		if (s.state != 0) {
+		if (s.state != 0)
+		{
 			NET_LOG_F("[ClientManager] スキップ: ゲーム中 (state=%d)", (int)s.state);
 			skippedCount++;
 			continue;
@@ -362,11 +363,10 @@ void ClientManager::Update()
 {
 	if (!m_pClientHost) return;
 
-	// 接続チェック（タイムアウト検出）
 	if (m_bConnected && m_pServerPeer)
 	{
 		DWORD now = timeGetTime();
-		if (now - m_lastHeartbeatTime > 5000) // 5秒以上更新がない
+		if (now - m_lastHeartbeatTime > 5000)
 		{
 			if (m_pServerPeer->state != ENET_PEER_STATE_CONNECTED)
 			{
@@ -402,7 +402,6 @@ void ClientManager::OnConnect()
 	m_bConnected = true;
 	m_lastHeartbeatTime = timeGetTime();
 
-	// JOIN送信（ホスト・クライアント共通）
 	std::string nameToSend = m_playerName.empty() ? "Player" : m_playerName;
 	SendJoin(nameToSend);
 
@@ -411,11 +410,12 @@ void ClientManager::OnConnect()
 
 void ClientManager::OnReceive(const ENetEvent& event)
 {
-	m_lastHeartbeatTime = timeGetTime(); // ハートビート更新
+	m_lastHeartbeatTime = timeGetTime();
 
 	const uint8_t* data = (const uint8_t*)event.packet->data;
 	size_t len = event.packet->dataLength;
-	if (len < 1) {
+	if (len < 1)
+	{
 		enet_packet_destroy(event.packet);
 		return;
 	}
@@ -435,6 +435,22 @@ void ClientManager::OnReceive(const ENetEvent& event)
 		m_bGameStarted = true;
 		NET_LOG("[ClientManager] ゲーム開始通知受信");
 		break;
+
+	case MSG_WORLD_STATE:
+		ProcessWorldState(data + 1, len - 1);
+		break;
+
+	case MSG_PLAYER_SPAWN:
+		ProcessPlayerSpawn(data + 1, len - 1);
+		break;
+
+	case MSG_PLAYER_DESPAWN:
+		ProcessPlayerDespawn(data + 1, len - 1);
+		break;
+
+	case MSG_JOIN_ACK:
+		ProcessJoinAck(data + 1, len - 1);
+		break;
 	}
 
 	enet_packet_destroy(event.packet);
@@ -452,7 +468,8 @@ void ClientManager::ProcessServerInfo(const uint8_t* data, size_t len)
 	NET_LOG_F("[ClientManager] ProcessServerInfo: データ長=%d", (int)len);
 
 	size_t idx = 1;
-	if (idx >= len) {
+	if (idx >= len)
+	{
 		NET_LOG("[ClientManager] エラー: データ長不足");
 		return;
 	}
@@ -460,7 +477,8 @@ void ClientManager::ProcessServerInfo(const uint8_t* data, size_t len)
 	uint8_t nameLen = data[idx++];
 	NET_LOG_F("[ClientManager] サーバー名長さ: %d", (int)nameLen);
 
-	if (idx + nameLen > len) {
+	if (idx + nameLen > len)
+	{
 		NET_LOG("[ClientManager] エラー: サーバー名データ不足");
 		return;
 	}
@@ -476,7 +494,8 @@ void ClientManager::ProcessLobbyUpdate(const uint8_t* data, size_t len)
 	NET_LOG_F("[ClientManager] ProcessLobbyUpdate: データ長=%d", (int)len);
 
 	size_t idx = 1;
-	if (idx >= len) {
+	if (idx >= len)
+	{
 		NET_LOG("[ClientManager] エラー: データ長不足");
 		return;
 	}
@@ -489,7 +508,8 @@ void ClientManager::ProcessLobbyUpdate(const uint8_t* data, size_t len)
 
 	for (int i = 0; i < count && idx < len; ++i)
 	{
-		if (idx >= len) {
+		if (idx >= len)
+		{
 			NET_LOG_F("[ClientManager] エラー: プレイヤー%d の名前長さ読み取り不可", i + 1);
 			break;
 		}
@@ -497,7 +517,8 @@ void ClientManager::ProcessLobbyUpdate(const uint8_t* data, size_t len)
 		uint8_t nl = data[idx++];
 		NET_LOG_F("[ClientManager] プレイヤー%d 名前長さ: %d", i + 1, (int)nl);
 
-		if (idx + nl > len) {
+		if (idx + nl > len)
+		{
 			NET_LOG_F("[ClientManager] エラー: プレイヤー%d の名前データ不足", i + 1);
 			break;
 		}
@@ -512,4 +533,85 @@ void ClientManager::ProcessLobbyUpdate(const uint8_t* data, size_t len)
 	m_lobbyPlayerNames = std::move(newNames);
 
 	NET_LOG_F("[ClientManager] ロビー更新完了: %d 人", (int)m_lobbyPlayerNames.size());
+}
+
+void ClientManager::SendPlayerState(const NetPlayerState& state)
+{
+	if (!m_pServerPeer || !m_bConnected) return;
+
+	auto data = NetworkSerializer::SerializePlayerState(state);
+
+	ENetPacket* packet = enet_packet_create(data.data(), data.size(), ENET_PACKET_FLAG_UNSEQUENCED);
+	enet_peer_send(m_pServerPeer, 1, packet);
+}
+
+bool ClientManager::GetWorldState(NetWorldState& out)
+{
+	std::lock_guard<std::mutex> lk(m_worldMutex);
+	if (!m_worldStateReceived) return false;
+	out = m_worldState;
+	m_worldStateReceived = false;
+	return true;
+}
+
+bool ClientManager::PopPlayerSpawn(NetPlayerSpawn& out)
+{
+	std::lock_guard<std::mutex> lk(m_worldMutex);
+	if (m_spawnQueue.empty()) return false;
+	out = m_spawnQueue.front();
+	m_spawnQueue.pop();
+	return true;
+}
+
+bool ClientManager::PopPlayerDespawn(uint32_t& out)
+{
+	std::lock_guard<std::mutex> lk(m_worldMutex);
+	if (m_despawnQueue.empty()) return false;
+	out = m_despawnQueue.front();
+	m_despawnQueue.pop();
+	return true;
+}
+
+void ClientManager::ProcessWorldState(const uint8_t* data, size_t len)
+{
+	std::lock_guard<std::mutex> lk(m_worldMutex);
+
+	if (NetworkSerializer::DeserializeWorldState(data, len, m_worldState))
+	{
+		m_worldStateReceived = true;
+	}
+}
+
+void ClientManager::ProcessPlayerSpawn(const uint8_t* data, size_t len)
+{
+	if (len < sizeof(NetPlayerSpawn)) return;
+
+	NetPlayerSpawn spawn;
+	std::memcpy(&spawn, data, sizeof(NetPlayerSpawn));
+
+	std::lock_guard<std::mutex> lk(m_worldMutex);
+	m_spawnQueue.push(spawn);
+
+	NET_LOG_F("[ClientManager] プレイヤー生成通知: ID=%u, Name=%s", spawn.clientId, spawn.name);
+}
+
+void ClientManager::ProcessPlayerDespawn(const uint8_t* data, size_t len)
+{
+	if (len < sizeof(uint32_t)) return;
+
+	uint32_t clientId;
+	std::memcpy(&clientId, data, sizeof(uint32_t));
+
+	std::lock_guard<std::mutex> lk(m_worldMutex);
+	m_despawnQueue.push(clientId);
+
+	NET_LOG_F("[ClientManager] プレイヤー削除通知: ID=%u", clientId);
+}
+
+void ClientManager::ProcessJoinAck(const uint8_t* data, size_t len)
+{
+	if (len < sizeof(uint32_t)) return;
+
+	std::memcpy(&m_assignedClientId, data, sizeof(uint32_t));
+	NET_LOG_F("[ClientManager] クライアントID割り当て: %u", m_assignedClientId);
 }

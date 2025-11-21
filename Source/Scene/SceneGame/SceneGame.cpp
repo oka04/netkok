@@ -9,19 +9,22 @@ using namespace WindowSetting;
 using namespace Common;
 using namespace std;
 
-enum NetworkMessage : uint8_t
-{
-	MSG_PLAYER_UPDATE = 10,
-};
-
-SceneGame::SceneGame(Engine *pEngine)
+SceneGame::SceneGame(Engine* pEngine)
 	: Scene(pEngine)
 	, m_pLocalPlayer(nullptr)
 	, m_localClientId(0)
 	, m_bIsHost(false)
-	, m_lastNetworkUpdate(0)
+	, m_lastNetworkSend(0)
+	, m_lastWorldBroadcast(0)
 	, m_pClient(nullptr)
 	, m_pServer(nullptr)
+	, d_debugFlag(0)
+	, d_fpsCount(60)
+	, d_viewPointCount(0)
+	, m_gameState(FADE_IN)
+	, m_deltaTime(0)
+	, f_miniMapSourHalfSize(0)
+	, m_lastTime(0)
 {
 }
 
@@ -49,11 +52,64 @@ void SceneGame::Start()
 	m_ambient.SetColor(0.7f, 0.1f, 0.1f, 0.1f);
 	m_light.SetDiffuse(0.1f, 0.1f, 0.1f, 0.1f);
 	D3DXVECTOR3 direction = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
-	direction = D3DXVec3Normalize(&direction);
+	D3DXVec3Normalize(&direction, &direction);
 	m_light.SetDirection(direction);
 
 	while (ShowCursor(FALSE) >= 0);
 	Initialize();
+}
+
+void SceneGame::Initialize()
+{
+	SetBackColor(0x00000000);
+	d_debugFlag = 0;
+	d_viewPointCount = 0;
+	d_fpsCount = 60;
+	m_pEngine->AddModel(MODEL_CHARACTER);
+
+	m_gameData.m_alertCount = 0;
+	m_gameData.m_gameTime = 0;
+
+	m_fade.Initialize(m_pEngine);
+	m_gameState = FADE_IN;
+	m_fade.SetFadeIn();
+
+	Camera miniMapCamera = m_camera;
+	m_map.Initialize(m_pEngine, &miniMapCamera, &m_projection, &m_ambient, &m_light, 1);
+
+	m_pClient = ClientManager::GetInstance();
+	m_pServer = ServerManager::GetInstance();
+
+	m_bIsHost = m_pClient->IsHost();
+
+	if (m_bIsHost)
+	{
+		m_localClientId = 1;
+	}
+	else
+	{
+		m_localClientId = m_pClient->GetAssignedClientId();
+		if (m_localClientId == 0) m_localClientId = 2;
+	}
+
+	NET_LOG_F("[SceneGame] Initialize: IsHost=%d, ClientID=%u", m_bIsHost, m_localClientId);
+
+	m_pLocalPlayer = new Player();
+	m_pLocalPlayer->SetIsLocal(true);
+	m_pLocalPlayer->SetClientId(m_localClientId);
+	m_pLocalPlayer->SetPlayerName(m_pClient->GetPlayerName());
+	m_pLocalPlayer->Initialize(m_pEngine, m_map, &m_projection, m_camera, m_light);
+
+	m_players[m_localClientId] = m_pLocalPlayer;
+
+	m_lastTime = timeGetTime();
+	m_lastNetworkSend = m_lastTime;
+	m_lastWorldBroadcast = m_lastTime;
+
+	m_pLocalPlayer->Update(m_pEngine, m_map, m_camera, m_light, 0);
+	m_pLocalPlayer->SetFirstPersonCamera(m_pEngine, m_camera);
+
+	SoundManager::Play(AK::EVENTS::PLAY_BGM_GAME, ID_BGM);
 }
 
 void SceneGame::Update()
@@ -74,23 +130,14 @@ void SceneGame::Update()
 		m_map.UpdateGoalEffect();
 
 		UpdateNetwork();
+		UpdateLocalPlayer();
+		UpdateRemotePlayers();
 
-		if (m_pLocalPlayer)
+		if (m_pLocalPlayer && m_map.CheckGoal(m_pLocalPlayer->GetPosition()) && !(d_debugFlag & DEBUG_MODE))
 		{
-			m_pLocalPlayer->Update(m_pEngine, m_map, m_camera, m_light, m_deltaTime);
-
-			if (nowTime - m_lastNetworkUpdate > 50)
-			{
-				SyncPlayers();
-				m_lastNetworkUpdate = nowTime;
-			}
-
-			if (m_map.CheckGoal(m_pLocalPlayer->GetPosition()) && !(d_debugFlag & DEBUG_MODE))
-			{
-				m_gameState = FADE_OUT;
-				m_fade.SetFadeOut();
-				m_gameData.m_nextSceneNumber = SCENE_CLEAR;
-			}
+			m_gameState = FADE_OUT;
+			m_fade.SetFadeOut();
+			m_gameData.m_nextSceneNumber = SCENE_CLEAR;
 		}
 		break;
 
@@ -102,6 +149,7 @@ void SceneGame::Update()
 		{
 		case Common::RESTART:
 			SoundManager::StopAll(ID_BGM);
+			Exit();
 			Initialize();
 			break;
 		case Common::SCENE_GAME:
@@ -136,27 +184,154 @@ void SceneGame::Update()
 		m_nowSceneData.Set(Common::SCENE_PAUSE, true, this);
 		return;
 	}
+}
 
-#if _DEBUG
-	if (d_debugFlag & RELOAD_FILE)
+void SceneGame::UpdateNetwork()
+{
+	if (m_pClient) m_pClient->Update();
+	if (m_bIsHost && m_pServer) m_pServer->Update();
+
+	DWORD now = timeGetTime();
+
+	if (now - m_lastNetworkSend >= NETWORK_SEND_INTERVAL)
 	{
-		Exit();
-		Initialize();
+		SyncToServer();
+		m_lastNetworkSend = now;
 	}
 
+	if (m_bIsHost && m_pServer && now - m_lastWorldBroadcast >= WORLD_BROADCAST_INTERVAL)
+	{
+		m_pServer->BroadcastWorldState();
+		m_lastWorldBroadcast = now;
+	}
+
+	ReceiveFromServer();
+}
+
+void SceneGame::UpdateLocalPlayer()
+{
+	if (!m_pLocalPlayer) return;
+
+	m_pLocalPlayer->Update(m_pEngine, m_map, m_camera, m_light, m_deltaTime);
+
+#if _DEBUG
 	switch (d_viewPointCount)
 	{
 	case VIEW_GAME: break;
 	case VIEW_FIRST:
-		if (m_pLocalPlayer)
-			m_pLocalPlayer->SetFirstPersonCamera(m_pEngine, m_camera);
+		m_pLocalPlayer->SetFirstPersonCamera(m_pEngine, m_camera);
 		break;
 	case VIEW_THIRD:
-		if (m_pLocalPlayer)
-			m_pLocalPlayer->SetThirdPersonFromBehind(m_pEngine, m_camera, m_map);
+		m_pLocalPlayer->SetThirdPersonFromBehind(m_pEngine, m_camera, m_map);
 		break;
 	}
 #endif
+}
+
+void SceneGame::UpdateRemotePlayers()
+{
+	for (auto& kv : m_players)
+	{
+		if (kv.first == m_localClientId) continue;
+	}
+}
+
+void SceneGame::SyncToServer()
+{
+	if (!m_pLocalPlayer || !m_pClient) return;
+
+	NetPlayerState state = m_pLocalPlayer->GetNetState();
+
+	if (m_bIsHost && m_pServer)
+	{
+		m_pServer->SetHostState(state);
+	}
+	else
+	{
+		m_pClient->SendPlayerState(state);
+	}
+}
+
+void SceneGame::ReceiveFromServer()
+{
+	if (!m_pClient) return;
+
+	NetPlayerSpawn spawn;
+	while (m_pClient->PopPlayerSpawn(spawn))
+	{
+		if (spawn.clientId != m_localClientId)
+		{
+			SpawnPlayer(spawn.clientId, spawn.name, D3DXVECTOR3(spawn.startX, spawn.startY, spawn.startZ));
+		}
+	}
+
+	uint32_t despawnId;
+	while (m_pClient->PopPlayerDespawn(despawnId))
+	{
+		if (despawnId != m_localClientId)
+		{
+			DespawnPlayer(despawnId);
+		}
+	}
+
+	NetWorldState world;
+	if (m_pClient->GetWorldState(world))
+	{
+		for (int i = 0; i < world.playerCount; ++i)
+		{
+			const NetPlayerState& ps = world.players[i];
+
+			if (ps.clientId == m_localClientId) continue;
+
+			auto it = m_players.find(ps.clientId);
+			if (it != m_players.end() && it->second)
+			{
+				it->second->UpdateFromNetwork(ps, m_light, m_deltaTime);
+			}
+			else
+			{
+				SpawnPlayer(ps.clientId, "Player", D3DXVECTOR3(ps.posX, ps.posY, ps.posZ));
+				if (m_players.find(ps.clientId) != m_players.end())
+				{
+					m_players[ps.clientId]->UpdateFromNetwork(ps, m_light, m_deltaTime);
+				}
+			}
+		}
+	}
+}
+
+void SceneGame::SpawnPlayer(uint32_t clientId, const std::string& name, const D3DXVECTOR3& pos)
+{
+	if (m_players.find(clientId) != m_players.end())
+	{
+		NET_LOG_F("[SceneGame] プレイヤー %u は既に存在", clientId);
+		return;
+	}
+
+	Player* p = new Player();
+	p->SetIsLocal(false);
+	p->SetClientId(clientId);
+	p->SetPlayerName(name);
+	p->InitializeAtPosition(m_pEngine, pos, &m_projection, m_camera, m_light);
+
+	m_players[clientId] = p;
+
+	NET_LOG_F("[SceneGame] プレイヤー生成: ID=%u, Name=%s", clientId, name.c_str());
+}
+
+void SceneGame::DespawnPlayer(uint32_t clientId)
+{
+	auto it = m_players.find(clientId);
+	if (it == m_players.end()) return;
+
+	if (it->second)
+	{
+		it->second->Release(m_pEngine);
+		delete it->second;
+	}
+	m_players.erase(it);
+
+	NET_LOG_F("[SceneGame] プレイヤー削除: ID=%u", clientId);
 }
 
 void SceneGame::Draw()
@@ -166,14 +341,12 @@ void SceneGame::Draw()
 	m_map.DrawMap(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light, lights);
 	m_map.DrawGoalEffect(&m_camera, &m_projection);
 
-	if (m_pLocalPlayer)
+	for (auto& kv : m_players)
 	{
-		m_pLocalPlayer->Draw(&m_camera, &m_projection, &m_ambient, &m_light);
-	}
-
-	for (auto& kv : m_remotePlayers)
-	{
-		kv.second->Draw(&m_camera, &m_projection, &m_ambient, &m_light);
+		if (kv.second)
+		{
+			kv.second->Draw(&m_camera, &m_projection, &m_ambient, &m_light);
+		}
 	}
 
 	if (d_debugFlag & DRAW_BOXLINE)
@@ -196,13 +369,22 @@ void SceneGame::Draw()
 #if _DEBUG
 	if (!(d_debugFlag & DISPLAY_DEBUG_STRING))
 	{
-		m_pEngine->DrawPrintf(50, 950, FONT_GOTHIC40, Color::WHITE, "DEL : %f", (float)m_deltaTime);
+		m_pEngine->DrawPrintf(50, 950, FONT_GOTHIC40, Color::WHITE, "DEL : %f", m_deltaTime);
 		m_pEngine->DrawPrintf(50, 1000, FONT_GOTHIC40, Color::WHITE, "FPS : %f", (float)m_pEngine->GetFPS());
-		m_pEngine->DrawPrintf(50, 900, FONT_GOTHIC40, Color::CYAN, "Players: %d", (int)m_remotePlayers.size() + 1);
+		m_pEngine->DrawPrintf(50, 900, FONT_GOTHIC40, Color::CYAN, "Players: %d", (int)m_players.size());
 
 		if (d_debugFlag & DRAW_PLAYER_STATE && m_pLocalPlayer)
 		{
 			m_pLocalPlayer->DebugPrint(m_pEngine);
+		}
+
+		int yOffset = 500;
+		for (auto& kv : m_players)
+		{
+			if (kv.first == m_localClientId) continue;
+			m_pEngine->DrawPrintf(0, yOffset, FONT_GOTHIC40, Color::GREEN,
+				"Remote[%u]: %s", kv.first, kv.second->GetPlayerName().c_str());
+			yOffset += 50;
 		}
 
 		m_pEngine->DrawPrintf(1300, 30, FONT_GOTHIC40, Color::BLUE, "ゲームステータス: In Game");
@@ -256,19 +438,16 @@ void SceneGame::PostEffect()
 
 void SceneGame::Exit()
 {
-	for (auto& kv : m_remotePlayers)
+	for (auto& kv : m_players)
 	{
-		kv.second->Release(m_pEngine);
-		delete kv.second;
+		if (kv.second)
+		{
+			kv.second->Release(m_pEngine);
+			delete kv.second;
+		}
 	}
-	m_remotePlayers.clear();
-
-	if (m_pLocalPlayer)
-	{
-		m_pLocalPlayer->Release(m_pEngine);
-		delete m_pLocalPlayer;
-		m_pLocalPlayer = nullptr;
-	}
+	m_players.clear();
+	m_pLocalPlayer = nullptr;
 
 	m_map.Release(m_pEngine);
 	m_fade.Release(m_pEngine);
@@ -276,124 +455,21 @@ void SceneGame::Exit()
 	m_pEngine->ReleaseModel(MODEL_CHARACTER);
 }
 
+void SceneGame::UpdateDebugFlag()
+{
+	if (m_pEngine->GetKeyStateSync(DIK_F1)) d_debugFlag ^= DRAW_PLAYER_STATE;
+	if (m_pEngine->GetKeyStateSync(DIK_F2)) d_debugFlag ^= DRAW_BOXLINE;
+	if (m_pEngine->GetKeyStateSync(DIK_F3)) d_viewPointCount = (d_viewPointCount + 1) % VIEW_MAX;
+	if (m_pEngine->GetKeyStateSync(DIK_F4)) d_debugFlag |= RELOAD_FILE;
+	else d_debugFlag &= ~RELOAD_FILE;
+	if (m_pEngine->GetKeyStateSync(DIK_F5)) d_debugFlag ^= PATROLLER_VIEW_LINE;
+	if (m_pEngine->GetKeyStateSync(DIK_F6)) d_debugFlag ^= STOP_GAME;
+	if (m_pEngine->GetKeyStateSync(DIK_F7)) d_debugFlag ^= DEBUG_MODE;
+	if (m_pEngine->GetKeyStateSync(DIK_F11)) d_debugFlag ^= DISPLAY_DEBUG_STRING;
+}
+
 #ifdef USE_IMGUI
 void SceneGame::ImGuiFrameProcess()
 {
 }
 #endif
-
-void SceneGame::Initialize()
-{
-	SetBackColor(0x00000000);
-	d_debugFlag = 0;
-	d_viewPointCount = 0;
-	d_fpsCount = 60;
-	m_pEngine->AddModel(MODEL_CHARACTER);
-
-	m_gameData.m_alertCount = 0;
-	m_gameData.m_gameTime = 0;
-
-	m_fade.Initialize(m_pEngine);
-	m_gameState = FADE_IN;
-	m_fade.SetFadeIn();
-
-	Camera miniMapCamera = m_camera;
-	m_map.Initialize(m_pEngine, &miniMapCamera, &m_projection, &m_ambient, &m_light, 1);
-
-	m_pClient = ClientManager::GetInstance();
-	m_pServer = ServerManager::GetInstance();
-
-	m_bIsHost = m_pClient->IsHost();
-	m_localClientId = m_bIsHost ? 1 : 2;
-
-	NET_LOG_F("[SceneGame] Initialize: IsHost=%d, ClientID=%u", m_bIsHost, m_localClientId);
-
-	m_pLocalPlayer = new Player();
-	m_pLocalPlayer->Initialize(m_pEngine, m_map, &m_projection, m_camera, m_light);
-	m_pLocalPlayer->SetClientId(m_localClientId);
-	m_pLocalPlayer->SetPlayerName(m_pClient->GetPlayerName());
-
-	m_lastTime = timeGetTime();
-	m_lastNetworkUpdate = timeGetTime();
-
-	m_pLocalPlayer->Update(m_pEngine, m_map, m_camera, m_light, 0);
-	m_pLocalPlayer->SetFirstPersonCamera(m_pEngine, m_camera);
-
-	SoundManager::Play(AK::EVENTS::PLAY_BGM_GAME, ID_BGM);
-	m_pEngine->AddFont(FONT_GOTHIC40);
-}
-
-void SceneGame::UpdateNetwork()
-{
-	if (m_pClient) m_pClient->Update();
-	if (m_bIsHost && m_pServer) m_pServer->Update();
-}
-
-void SceneGame::SyncPlayers()
-{
-	if (!m_pLocalPlayer) return;
-
-	PlayerNetworkData localData = m_pLocalPlayer->GetNetworkData();
-
-	std::vector<uint8_t> buffer;
-	buffer.push_back((uint8_t)MSG_PLAYER_UPDATE);
-
-	const uint8_t* dataPtr = reinterpret_cast<const uint8_t*>(&localData);
-	buffer.insert(buffer.end(), dataPtr, dataPtr + sizeof(PlayerNetworkData));
-
-	if (m_bIsHost)
-	{
-		NET_LOG_F("[SceneGame] Host broadcasting: ClientID=%u", localData.clientId);
-	}
-	else
-	{
-		NET_LOG_F("[SceneGame] Client sending to host: ClientID=%u", localData.clientId);
-	}
-}
-
-void SceneGame::UpdateDebugFlag()
-{
-	if (m_pEngine->GetKeyStateSync(DIK_F1))
-	{
-		d_debugFlag ^= DRAW_PLAYER_STATE;
-	}
-
-	if (m_pEngine->GetKeyStateSync(DIK_F2))
-	{
-		d_debugFlag ^= DRAW_BOXLINE;
-	}
-
-	if (m_pEngine->GetKeyStateSync(DIK_F3))
-	{
-		d_viewPointCount = (d_viewPointCount + 1) % VIEW_MAX;
-	}
-
-	if (m_pEngine->GetKeyStateSync(DIK_F4))
-	{
-		d_debugFlag |= RELOAD_FILE;
-	}
-	else
-	{
-		d_debugFlag &= ~RELOAD_FILE;
-	}
-
-	if (m_pEngine->GetKeyStateSync(DIK_F5))
-	{
-		d_debugFlag ^= PATROLLER_VIEW_LINE;
-	}
-
-	if (m_pEngine->GetKeyStateSync(DIK_F6))
-	{
-		d_debugFlag ^= STOP_GAME;
-	}
-
-	if (m_pEngine->GetKeyStateSync(DIK_F7))
-	{
-		d_debugFlag ^= DEBUG_MODE;
-	}
-
-	if (m_pEngine->GetKeyStateSync(DIK_F11))
-	{
-		d_debugFlag ^= DISPLAY_DEBUG_STRING;
-	}
-}

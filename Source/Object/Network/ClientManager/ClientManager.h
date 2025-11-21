@@ -3,11 +3,13 @@
 #include <ws2tcpip.h>
 #include "..\\GameBase.h"
 #include "..\\Discovery\\Discovery.h"
+#include "..\\NetworkSync.h"
 #include <enet/enet.h>
 #include <vector>
 #include <memory>
 #include <string>
 #include <mutex>
+#include <queue>
 
 struct ServerInfoNet
 {
@@ -47,6 +49,13 @@ public:
 	void RefreshAvailableServers();
 	void Reset();
 
+	void SendPlayerState(const NetPlayerState& state);
+	bool GetWorldState(NetWorldState& out);
+	bool PopPlayerSpawn(NetPlayerSpawn& out);
+	bool PopPlayerDespawn(uint32_t& out);
+	uint32_t GetAssignedClientId() const { return m_assignedClientId; }
+	void SetAssignedClientId(uint32_t id) { m_assignedClientId = id; }
+
 private:
 	ENetHost* m_pClientHost;
 	ENetPeer* m_pServerPeer;
@@ -60,6 +69,10 @@ private:
 	void OnDisconnect();
 	void ProcessLobbyUpdate(const uint8_t* data, size_t len);
 	void ProcessServerInfo(const uint8_t* data, size_t len);
+	void ProcessWorldState(const uint8_t* data, size_t len);
+	void ProcessPlayerSpawn(const uint8_t* data, size_t len);
+	void ProcessPlayerDespawn(const uint8_t* data, size_t len);
+	void ProcessJoinAck(const uint8_t* data, size_t len);
 
 	std::vector<std::string> m_lobbyPlayerNames;
 	bool m_bGameStarted;
@@ -71,6 +84,13 @@ private:
 	std::string m_playerName;
 	std::string m_serverName;
 	DWORD m_lastHeartbeatTime;
+
+	NetWorldState m_worldState;
+	std::mutex m_worldMutex;
+	bool m_worldStateReceived;
+	std::queue<NetPlayerSpawn> m_spawnQueue;
+	std::queue<uint32_t> m_despawnQueue;
+	uint32_t m_assignedClientId;
 
 	static ClientManager* s_instance;
 };

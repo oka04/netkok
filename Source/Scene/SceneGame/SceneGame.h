@@ -9,12 +9,13 @@
 #include "..\\..\\Object\\Player\\Player.h"
 #include "..\\..\\Object\\Network\\ClientManager\\ClientManager.h"
 #include "..\\..\\Object\\Network\\ServerManager\\ServerManager.h"
+#include "..\\..\\Object\\Network\\NetworkSync.h"
 #include <map>
 
 class SceneGame : public Scene
 {
 public:
-	SceneGame(Engine *pEngine);
+	SceneGame(Engine* pEngine);
 	~SceneGame();
 
 	void Start();
@@ -31,7 +32,12 @@ private:
 	void Initialize();
 	void UpdateDebugFlag();
 	void UpdateNetwork();
-	void SyncPlayers();
+	void UpdateLocalPlayer();
+	void UpdateRemotePlayers();
+	void SyncToServer();
+	void ReceiveFromServer();
+	void SpawnPlayer(uint32_t clientId, const std::string& name, const D3DXVECTOR3& pos);
+	void DespawnPlayer(uint32_t clientId);
 
 	enum DEBUG_FLAG
 	{
@@ -67,12 +73,13 @@ private:
 	float m_deltaTime;
 	float f_miniMapSourHalfSize;
 	DWORD m_lastTime;
-	DWORD m_lastNetworkUpdate;
+	DWORD m_lastNetworkSend;
+	DWORD m_lastWorldBroadcast;
 
 	uint32_t m_localClientId;
 	bool m_bIsHost;
 	Player* m_pLocalPlayer;
-	std::map<uint32_t, Player*> m_remotePlayers;
+	std::map<uint32_t, Player*> m_players;
 
 	Camera m_camera;
 	Projection m_projection;
@@ -86,4 +93,7 @@ private:
 
 	ClientManager* m_pClient;
 	ServerManager* m_pServer;
+
+	static const DWORD NETWORK_SEND_INTERVAL = 33;
+	static const DWORD WORLD_BROADCAST_INTERVAL = 33;
 };

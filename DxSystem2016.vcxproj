@@ -244,6 +244,7 @@
     <ClInclude Include="Source\Object\Network\ClientManager\ClientManager.h" />
     <ClInclude Include="Source\Object\Network\Discovery\Discovery.h" />
     <ClInclude Include="Source\Object\Network\NetworkLogger.h" />
+    <ClInclude Include="Source\Object\Network\NetworkSync.h" />
     <ClInclude Include="Source\Object\Network\ServerManager\ServerManager.h" />
     <ClInclude Include="Source\Object\Player\Player.h" />
     <ClInclude Include="Source\Object\SoundManager\SoundManager.h" />
