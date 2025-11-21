@@ -2,146 +2,164 @@
 Network Debug Log
 ===========================================
 
-[15:16:11] ========================================
-[15:16:11] ClientManager 初期化開始
-[15:16:11] ========================================
-[15:16:11] [ClientManager] ENet初期化成功
-[15:16:11] [ClientManager] Discovery作成
-[15:16:11] [Discovery/Listener] スレッド開始
-[15:16:11] [Discovery/Listener] WSAStartup成功
-[15:16:11] [ClientManager] Discoveryリスナー起動 (ポート:12346)
-[15:16:11] [Discovery/Listener] ソケット作成成功
-[15:16:11] [Discovery/Listener] bind成功 ポート:12346
-[15:16:11] [Discovery/Listener] 受信ループ開始
-[15:16:14] ========================================
-[15:16:14] [SceneSelectHost] サーバー作成開始: K
-[15:16:14] [Client] 切断
-[15:16:14] [ServerManager] ホスト名設定: Player669
-[15:16:14] [SceneSelectHost] サーバー名設定: K
-[15:16:14] [SceneSelectHost] ホスト名設定: Player669
-[15:16:14] [Discovery/Advertiser] スレッド開始
-[15:16:14] [Discovery/Advertiser] WSAStartup成功
-[15:16:14] [ServerManager] サーバー起動: ポート=12012
-[15:16:14] [Discovery/Advertiser] ソケット作成成功
-[15:16:14] [Discovery/Advertiser] SO_BROADCAST設定成功
-[15:16:14] [Discovery/Advertiser] ブロードキャストループ開始
-[15:16:14] [Discovery/Advertiser] 送信データ: port=12012 player=1/8 state=0 name='K'
-[15:16:14] [SceneSelectHost] サーバー起動成功: ポート=12012
-[15:16:14] [Discovery/Advertiser] ブロードキャスト送信 #1: サイズ=19 bytes (port=12012)
-[15:16:14] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[15:16:14] [Discovery/Listener] マジック一致確認
-[15:16:14] [Discovery/Listener] プロトコルバージョン: 256
-[15:16:14] [Discovery/Listener] ポート（変換後）: 12012
-[15:16:14] [Discovery/Listener] プレイヤー数: 1
-[15:16:14] [Discovery/Listener] 最大プレイヤー数: 8
-[15:16:14] [Discovery/Listener] ステート: 0
-[15:16:14] [Discovery/Listener] 名前の長さ: 1
-[15:16:14] [Discovery/Listener] サーバー名: 'K'
-[15:16:14] [ClientManager] ConnectToServer: 127.0.0.1:12012
-[15:16:14] [Discovery/Listener] ★サーバー検出★: K @ 172.20.145.6:12012 (1/8) state=0
-[15:16:14] [ClientManager] クライアントホスト作成成功
-[15:16:14] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[15:16:14] [ClientManager] ホスト接続 - サーバー名は接続後に取得
-[15:16:14] [ClientManager] 接続要求送信 (ホスト判定: true)
-[15:16:14] [SceneSelectHost] ロビーに遷移
-[15:16:14] [SceneLobby] ホストとしてロビー開始: サーバー名='K'
-[15:16:14] [SceneLobby] Start完了
-[15:16:14] [ClientManager] サーバー接続成功（ENET_EVENT_TYPE_CONNECT受信）
-[15:16:14] [ClientManager] JOIN送信: Player669
-[15:16:14] [ClientManager] JOIN送信完了: Player669
-[15:16:14] [ServerManager] クライアント接続: ID=1 (現在1人)
-[15:16:14] [ServerManager] ProcessJoin: データ長=11
-[15:16:14] [ServerManager] 名前長さ: 9
-[15:16:14] [ServerManager] 受信した名前: 'Player669'
-[15:16:14] [ServerManager] ホストのJOIN受信: Player669 (ID=1)
-[15:16:14] [ServerManager] ロビー更新をブロードキャスト
-[15:16:14] [ServerManager] BroadcastLobbyUpdate: 1 人
-[15:16:14] [ServerManager] プレイヤー1: 'Player669' (長さ:9)
-[15:16:14] [ServerManager] 送信データサイズ: 12 bytes
-[15:16:14] [ClientManager] ProcessLobbyUpdate: データ長=12
-[15:16:14] [ClientManager] プレイヤー数: 1
-[15:16:14] [ClientManager] プレイヤー1 名前長さ: 9
-[15:16:14] [ClientManager] プレイヤー1: 'Player669'
-[15:16:14] [ClientManager] ロビー更新完了: 1 人
-[15:16:15] [Discovery/Listener] 生存確認 ループ:50
-[15:16:19] [Discovery/Advertiser] 送信データ: port=12012 player=1/8 state=0 name='K'
-[15:16:19] [Discovery/Advertiser] ブロードキャスト送信 #2: サイズ=19 bytes (port=12012)
-[15:16:19] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[15:16:19] [Discovery/Listener] マジック一致確認
-[15:16:19] [Discovery/Listener] プロトコルバージョン: 256
-[15:16:19] [Discovery/Listener] ポート（変換後）: 12012
-[15:16:19] [Discovery/Listener] プレイヤー数: 1
-[15:16:19] [Discovery/Listener] 最大プレイヤー数: 8
-[15:16:19] [Discovery/Listener] ステート: 0
-[15:16:19] [Discovery/Listener] 名前の長さ: 1
-[15:16:19] [Discovery/Listener] サーバー名: 'K'
-[15:16:19] [Discovery/Listener] ★サーバー検出★: K @ 172.20.145.6:12012 (1/8) state=0
-[15:16:19] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[15:16:20] [ServerManager] クライアント接続: ID=2 (現在2人)
-[15:16:20] [ServerManager] ProcessJoin: データ長=11
-[15:16:20] [ServerManager] 名前長さ: 9
-[15:16:20] [ServerManager] 受信した名前: 'Player672'
-[15:16:20] [ServerManager] クライアントのJOIN受信: Player672 (ID=2)
-[15:16:20] [ServerManager] ロビー更新をブロードキャスト
-[15:16:20] [ServerManager] BroadcastLobbyUpdate: 2 人
-[15:16:20] [ServerManager] プレイヤー1: 'Player669' (長さ:9)
-[15:16:20] [ServerManager] プレイヤー2: 'Player672' (長さ:9)
-[15:16:20] [ServerManager] 送信データサイズ: 22 bytes
-[15:16:20] [ClientManager] ProcessLobbyUpdate: データ長=22
-[15:16:20] [ClientManager] プレイヤー数: 2
-[15:16:20] [ClientManager] プレイヤー1 名前長さ: 9
-[15:16:20] [ClientManager] プレイヤー1: 'Player669'
-[15:16:20] [ClientManager] プレイヤー2 名前長さ: 9
-[15:16:20] [ClientManager] プレイヤー2: 'Player672'
-[15:16:20] [ClientManager] ロビー更新完了: 2 人
-[15:16:20] [Discovery/Listener] 生存確認 ループ:100
-[15:16:21] [SceneLobby] ゲーム開始ボタン押下
-[15:16:22] [ClientManager] ゲーム開始通知受信
-[15:16:22] [SceneLobby] ゲーム開始 - ゲームシーンへ遷移
-[15:16:22] [Client] 切断
-[15:16:22] [ServerManager] サーバー停止処理開始
-[15:16:22] [ServerManager] クライアント Player669 に切断通知
-[15:16:22] [ServerManager] クライアント Player672 に切断通知
-[15:16:22] [ServerManager] サーバー停止完了
-[15:16:22] [Discovery/Advertiser] 停止中...
-[15:16:22] [Discovery/Advertiser] ブロードキャストループ終了
-[15:16:22] [Discovery/Advertiser] 停止完了
-[15:16:23] [SceneGame] Initialize: IsHost=1, ClientID=1
-[15:16:25] [SceneGame] Host broadcasting: ClientID=1
-[15:16:25] [SceneGame] Host broadcasting: ClientID=1
-[15:16:25] [SceneGame] Host broadcasting: ClientID=1
-[15:16:25] [SceneGame] Host broadcasting: ClientID=1
-[15:16:25] [SceneGame] Host broadcasting: ClientID=1
-[15:16:25] [SceneGame] Host broadcasting: ClientID=1
-[15:16:25] [SceneGame] Host broadcasting: ClientID=1
-[15:16:25] [SceneGame] Host broadcasting: ClientID=1
-[15:16:25] [SceneGame] Host broadcasting: ClientID=1
-[15:16:25] [SceneGame] Host broadcasting: ClientID=1
-[15:16:25] [SceneGame] Host broadcasting: ClientID=1
-[15:16:25] [SceneGame] Host broadcasting: ClientID=1
-[15:16:25] [SceneGame] Host broadcasting: ClientID=1
-[15:16:25] [SceneGame] Host broadcasting: ClientID=1
-[15:16:25] [SceneGame] Host broadcasting: ClientID=1
-[15:16:25] [SceneGame] Host broadcasting: ClientID=1
-[15:16:25] [SceneGame] Host broadcasting: ClientID=1
-[15:16:25] [SceneGame] Host broadcasting: ClientID=1
-[15:16:25] [SceneGame] Host broadcasting: ClientID=1
-[15:16:26] [Discovery/Listener] 生存確認 ループ:150
-[15:16:26] [SceneGame] Host broadcasting: ClientID=1
-[15:16:26] [SceneGame] Host broadcasting: ClientID=1
-[15:16:26] [SceneGame] Host broadcasting: ClientID=1
-[15:16:26] [SceneGame] Host broadcasting: ClientID=1
-[15:16:26] [SceneGame] Host broadcasting: ClientID=1
-[15:16:26] [SceneGame] Host broadcasting: ClientID=1
-[15:16:26] [SceneGame] Host broadcasting: ClientID=1
-[15:16:26] [SceneGame] Host broadcasting: ClientID=1
-[15:16:26] [SceneGame] Host broadcasting: ClientID=1
-[15:16:26] [SceneGame] Host broadcasting: ClientID=1
-[15:16:26] [SceneGame] Host broadcasting: ClientID=1
-[15:16:26] [SceneGame] Host broadcasting: ClientID=1
-[15:16:26] [SceneGame] Host broadcasting: ClientID=1
-[15:16:26] [SceneGame] Host broadcasting: ClientID=1
-[15:16:26] [SceneGame] Host broadcasting: ClientID=1
-[15:16:26] [SceneGame] Host broadcasting: ClientID=1
-[15:16:27] [SceneGame] Host broadcasting: ClientID=1
-[15:16:27] [SceneGame] Host broadcasting: ClientID=1
+[16:22:42] ========================================
+[16:22:42] ClientManager 初期化開始
+[16:22:42] ========================================
+[16:22:42] [ClientManager] ENet初期化成功
+[16:22:42] [ClientManager] Discovery作成
+[16:22:42] [Discovery/Listener] スレッド開始
+[16:22:42] [Discovery/Listener] WSAStartup成功
+[16:22:42] [ClientManager] Discoveryリスナー起動 (ポート:12346)
+[16:22:42] [Discovery/Listener] ソケット作成成功
+[16:22:42] [Discovery/Listener] bind成功 ポート:12346
+[16:22:42] [Discovery/Listener] 受信ループ開始
+[16:22:43] ========================================
+[16:22:43] [SceneSelectHost] サーバー作成開始: FRG
+[16:22:43] [Client] 切断
+[16:22:43] [ServerManager] ホスト名設定: Player510
+[16:22:43] [SceneSelectHost] サーバー名設定: FRG
+[16:22:43] [SceneSelectHost] ホスト名設定: Player510
+[16:22:43] [Discovery/Advertiser] スレッド開始
+[16:22:43] [Discovery/Advertiser] WSAStartup成功
+[16:22:43] [ServerManager] サーバー起動: ポート=12321
+[16:22:43] [Discovery/Advertiser] ソケット作成成功
+[16:22:43] [SceneSelectHost] サーバー起動成功: ポート=12321
+[16:22:43] [Discovery/Advertiser] SO_BROADCAST設定成功
+[16:22:43] [Discovery/Advertiser] ブロードキャストループ開始
+[16:22:43] [Discovery/Advertiser] 送信データ: port=12321 player=1/8 state=0 name='FRG'
+[16:22:43] [Discovery/Advertiser] ブロードキャスト送信 #1: サイズ=21 bytes (port=12321)
+[16:22:43] [Discovery/Listener] パケット受信! サイズ:21 bytes
+[16:22:43] [Discovery/Listener] マジック一致確認
+[16:22:43] [Discovery/Listener] プロトコルバージョン: 256
+[16:22:43] [Discovery/Listener] ポート（変換後）: 12321
+[16:22:43] [Discovery/Listener] プレイヤー数: 1
+[16:22:43] [Discovery/Listener] 最大プレイヤー数: 8
+[16:22:43] [Discovery/Listener] ステート: 0
+[16:22:43] [Discovery/Listener] 名前の長さ: 3
+[16:22:43] [Discovery/Listener] サーバー名: 'FRG'
+[16:22:43] [Discovery/Listener] ★サーバー検出★: FRG @ 172.20.145.6:12321 (1/8) state=0
+[16:22:43] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[16:22:43] [ClientManager] ConnectToServer: 127.0.0.1:12321
+[16:22:43] [ClientManager] クライアントホスト作成成功
+[16:22:43] [ClientManager] ホスト接続 - サーバー名は接続後に取得
+[16:22:43] [ClientManager] 接続要求送信 (ホスト判定: true)
+[16:22:43] [SceneSelectHost] ロビーに遷移
+[16:22:43] [SceneLobby] ホストとしてロビー開始: サーバー名='FRG'
+[16:22:43] [SceneLobby] Start完了
+[16:22:43] [ClientManager] サーバー接続成功（ENET_EVENT_TYPE_CONNECT受信）
+[16:22:43] [ClientManager] JOIN送信: Player510
+[16:22:43] [ClientManager] JOIN送信完了: Player510
+[16:22:43] [ServerManager] クライアント接続: ID=1 (現在1人)
+[16:22:43] [ServerManager] ProcessJoin: データ長=10
+[16:22:43] [ServerManager] 名前長さ: 9
+[16:22:43] [ServerManager] 受信した名前: 'Player510'
+[16:22:43] [ServerManager] ホストのJOIN受信: Player510 (ID=1)
+[16:22:43] [ServerManager] JoinAck送信: ClientID=1
+[16:22:43] [ServerManager] ロビー更新をブロードキャスト
+[16:22:43] [ServerManager] BroadcastLobbyUpdate: 1 人
+[16:22:43] [ServerManager] プレイヤー1: 'Player510' (長さ:9)
+[16:22:43] [ServerManager] 送信データサイズ: 12 bytes
+[16:22:43] [ClientManager] クライアントID割り当て: 1
+[16:22:43] [ClientManager] ProcessLobbyUpdate: データ長=12
+[16:22:43] [ClientManager] プレイヤー数: 1
+[16:22:43] [ClientManager] プレイヤー1 名前長さ: 9
+[16:22:43] [ClientManager] プレイヤー1: 'Player510'
+[16:22:43] [ClientManager] ロビー更新完了: 1 人
+[16:22:44] [SceneLobby] ゲーム開始ボタン押下
+[16:22:44] [ClientManager] ゲーム開始通知受信
+[16:22:44] [SceneLobby] ゲーム開始 - ゲームシーンへ遷移
+[16:22:44] [Client] 切断
+[16:22:44] [ServerManager] サーバー停止処理開始
+[16:22:44] [ServerManager] クライアント Player510 に切断通知
+[16:22:44] [ServerManager] サーバー停止完了
+[16:22:44] [Discovery/Advertiser] 停止中...
+[16:22:44] [Discovery/Advertiser] ブロードキャストループ終了
+[16:22:44] [Discovery/Advertiser] 停止完了
+[16:22:45] [SceneGame] Initialize: IsHost=1, ClientID=1
+[16:22:47] [Discovery/Listener] 生存確認 ループ:50
+[16:22:52] [Discovery/Listener] 生存確認 ループ:100
+[16:22:53] ========================================
+[16:22:53] [SceneSelectHost] サーバー作成開始: GDRG
+[16:22:53] [Client] 切断
+[16:22:53] [ServerManager] ホスト名設定: Player964
+[16:22:53] [SceneSelectHost] サーバー名設定: GDRG
+[16:22:53] [SceneSelectHost] ホスト名設定: Player964
+[16:22:53] [Discovery/Advertiser] スレッド開始
+[16:22:53] [Discovery/Advertiser] WSAStartup成功
+[16:22:53] [ServerManager] サーバー起動: ポート=12022
+[16:22:53] [SceneSelectHost] サーバー起動成功: ポート=12022
+[16:22:53] [Discovery/Advertiser] ソケット作成成功
+[16:22:53] [Discovery/Advertiser] SO_BROADCAST設定成功
+[16:22:53] [Discovery/Advertiser] ブロードキャストループ開始
+[16:22:53] [Discovery/Advertiser] 送信データ: port=12022 player=1/8 state=0 name='GDRG'
+[16:22:53] [Discovery/Advertiser] ブロードキャスト送信 #1: サイズ=22 bytes (port=12022)
+[16:22:53] [Discovery/Listener] パケット受信! サイズ:22 bytes
+[16:22:53] [Discovery/Listener] マジック一致確認
+[16:22:53] [Discovery/Listener] プロトコルバージョン: 256
+[16:22:53] [Discovery/Listener] ポート（変換後）: 12022
+[16:22:53] [Discovery/Listener] プレイヤー数: 1
+[16:22:53] [Discovery/Listener] 最大プレイヤー数: 8
+[16:22:53] [Discovery/Listener] ステート: 0
+[16:22:53] [Discovery/Listener] 名前の長さ: 4
+[16:22:53] [Discovery/Listener] サーバー名: 'GDRG'
+[16:22:53] [Discovery/Listener] ★サーバー検出★: GDRG @ 172.20.145.6:12022 (1/8) state=0
+[16:22:53] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[16:22:53] [ClientManager] ConnectToServer: 127.0.0.1:12022
+[16:22:53] [ClientManager] クライアントホスト作成成功
+[16:22:53] [ClientManager] ホスト接続 - サーバー名は接続後に取得
+[16:22:53] [ClientManager] 接続要求送信 (ホスト判定: true)
+[16:22:53] [SceneSelectHost] ロビーに遷移
+[16:22:53] [SceneLobby] ホストとしてロビー開始: サーバー名='GDRG'
+[16:22:53] [SceneLobby] Start完了
+[16:22:53] [ClientManager] サーバー接続成功（ENET_EVENT_TYPE_CONNECT受信）
+[16:22:53] [ClientManager] JOIN送信: Player964
+[16:22:53] [ClientManager] JOIN送信完了: Player964
+[16:22:53] [ServerManager] クライアント接続: ID=1 (現在1人)
+[16:22:53] [ServerManager] ProcessJoin: データ長=10
+[16:22:53] [ServerManager] 名前長さ: 9
+[16:22:53] [ServerManager] 受信した名前: 'Player964'
+[16:22:53] [ServerManager] ホストのJOIN受信: Player964 (ID=1)
+[16:22:53] [ServerManager] JoinAck送信: ClientID=1
+[16:22:53] [ServerManager] ロビー更新をブロードキャスト
+[16:22:53] [ServerManager] BroadcastLobbyUpdate: 1 人
+[16:22:53] [ServerManager] プレイヤー1: 'Player964' (長さ:9)
+[16:22:53] [ServerManager] 送信データサイズ: 12 bytes
+[16:22:53] [ClientManager] クライアントID割り当て: 1
+[16:22:53] [ClientManager] ProcessLobbyUpdate: データ長=12
+[16:22:53] [ClientManager] プレイヤー数: 1
+[16:22:53] [ClientManager] プレイヤー1 名前長さ: 9
+[16:22:53] [ClientManager] プレイヤー1: 'Player964'
+[16:22:53] [ClientManager] ロビー更新完了: 1 人
+[16:22:54] [Discovery/Listener] タイムアウト削除: 172.20.145.6:12321
+[16:22:55] [ServerManager] クライアント接続: ID=2 (現在2人)
+[16:22:55] [ServerManager] ProcessJoin: データ長=10
+[16:22:55] [ServerManager] 名前長さ: 9
+[16:22:55] [ServerManager] 受信した名前: 'Player934'
+[16:22:55] [ServerManager] クライアントのJOIN受信: Player934 (ID=2)
+[16:22:55] [ServerManager] JoinAck送信: ClientID=2
+[16:22:55] [ServerManager] ロビー更新をブロードキャスト
+[16:22:55] [ServerManager] BroadcastLobbyUpdate: 2 人
+[16:22:55] [ServerManager] プレイヤー1: 'Player964' (長さ:9)
+[16:22:55] [ServerManager] プレイヤー2: 'Player934' (長さ:9)
+[16:22:55] [ServerManager] 送信データサイズ: 22 bytes
+[16:22:55] [ClientManager] ProcessLobbyUpdate: データ長=22
+[16:22:55] [ClientManager] プレイヤー数: 2
+[16:22:55] [ClientManager] プレイヤー1 名前長さ: 9
+[16:22:55] [ClientManager] プレイヤー1: 'Player964'
+[16:22:55] [ClientManager] プレイヤー2 名前長さ: 9
+[16:22:55] [ClientManager] プレイヤー2: 'Player934'
+[16:22:55] [ClientManager] ロビー更新完了: 2 人
+[16:22:56] [SceneLobby] ゲーム開始ボタン押下
+[16:22:56] [ClientManager] ゲーム開始通知受信
+[16:22:56] [SceneLobby] ゲーム開始 - ゲームシーンへ遷移
+[16:22:56] [Client] 切断
+[16:22:56] [ServerManager] サーバー停止処理開始
+[16:22:56] [ServerManager] クライアント Player964 に切断通知
+[16:22:56] [ServerManager] クライアント Player934 に切断通知
+[16:22:56] [ServerManager] サーバー停止完了
+[16:22:56] [Discovery/Advertiser] 停止中...
+[16:22:57] [Discovery/Advertiser] ブロードキャストループ終了
+[16:22:57] [Discovery/Advertiser] 停止完了
+[16:22:57] [Discovery/Listener] 生存確認 ループ:150
+[16:22:58] [SceneGame] Initialize: IsHost=1, ClientID=1
+[16:23:02] [Discovery/Listener] 生存確認 ループ:200

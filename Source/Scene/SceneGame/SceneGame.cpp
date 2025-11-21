@@ -25,6 +25,7 @@ SceneGame::SceneGame(Engine* pEngine)
 	, m_deltaTime(0)
 	, f_miniMapSourHalfSize(0)
 	, m_lastTime(0)
+	, m_bInitialSyncDone(false)
 {
 }
 
@@ -94,6 +95,8 @@ void SceneGame::Initialize()
 
 	NET_LOG_F("[SceneGame] Initialize: IsHost=%d, ClientID=%u", m_bIsHost, m_localClientId);
 
+	// ローカルプレイヤーを生成
+	D3DXVECTOR3 startPos = m_map.GetPlayerStartPosition();
 	m_pLocalPlayer = new Player();
 	m_pLocalPlayer->SetIsLocal(true);
 	m_pLocalPlayer->SetClientId(m_localClientId);
@@ -102,14 +105,32 @@ void SceneGame::Initialize()
 
 	m_players[m_localClientId] = m_pLocalPlayer;
 
+	// ★★★ ホストの場合、自分のスポーン情報をブロードキャスト ★★★
+	if (m_bIsHost && m_pServer)
+	{
+		NetPlayerSpawn spawn;
+		spawn.clientId = m_localClientId;
+		spawn.startX = startPos.x;
+		spawn.startY = startPos.y;
+		spawn.startZ = startPos.z;
+		strncpy_s(spawn.name, m_pLocalPlayer->GetPlayerName().c_str(), sizeof(spawn.name) - 1);
+		spawn.name[sizeof(spawn.name) - 1] = '\0';
+
+		m_pServer->BroadcastPlayerSpawn(spawn);
+		NET_LOG_F("[SceneGame] ホストのスポーン情報をブロードキャスト: ID=%u", m_localClientId);
+	}
+
 	m_lastTime = timeGetTime();
 	m_lastNetworkSend = m_lastTime;
 	m_lastWorldBroadcast = m_lastTime;
+	m_bInitialSyncDone = false;
 
 	m_pLocalPlayer->Update(m_pEngine, m_map, m_camera, m_light, 0);
 	m_pLocalPlayer->SetFirstPersonCamera(m_pEngine, m_camera);
 
 	SoundManager::Play(AK::EVENTS::PLAY_BGM_GAME, ID_BGM);
+
+	NET_LOG("[SceneGame] 初期化完了 - 他プレイヤーのスポーン待機中");
 }
 
 void SceneGame::Update()
@@ -163,9 +184,13 @@ void SceneGame::Update()
 		break;
 
 	case FADE_IN:
+		// フェードイン中も同期を開始
+		UpdateNetwork();
+
 		if (m_fade.Update(m_deltaTime))
 		{
 			m_gameState = IN_GAME;
+			NET_LOG("[SceneGame] フェードイン完了 - ゲーム開始");
 		}
 		break;
 
@@ -193,18 +218,47 @@ void SceneGame::UpdateNetwork()
 
 	DWORD now = timeGetTime();
 
+	// ★★★ 初期同期：ゲーム開始直後に既存プレイヤー情報を取得 ★★★
+	if (!m_bInitialSyncDone && now - m_lastTime > 500)
+	{
+		NET_LOG("[SceneGame] 初期同期開始");
+
+		// クライアントの場合、サーバーから既存プレイヤー情報を受信
+		if (!m_bIsHost)
+		{
+			// スポーン情報を処理
+			NetPlayerSpawn spawn;
+			while (m_pClient->PopPlayerSpawn(spawn))
+			{
+				if (spawn.clientId != m_localClientId)
+				{
+					NET_LOG_F("[SceneGame] 既存プレイヤーを生成: ID=%u, Name=%s",
+						spawn.clientId, spawn.name);
+					SpawnPlayer(spawn.clientId, spawn.name,
+						D3DXVECTOR3(spawn.startX, spawn.startY, spawn.startZ));
+				}
+			}
+		}
+
+		m_bInitialSyncDone = true;
+		NET_LOG_F("[SceneGame] 初期同期完了 - プレイヤー数: %d", (int)m_players.size());
+	}
+
+	// 定期的にプレイヤー状態を送信
 	if (now - m_lastNetworkSend >= NETWORK_SEND_INTERVAL)
 	{
 		SyncToServer();
 		m_lastNetworkSend = now;
 	}
 
+	// ホストの場合、ワールド状態をブロードキャスト
 	if (m_bIsHost && m_pServer && now - m_lastWorldBroadcast >= WORLD_BROADCAST_INTERVAL)
 	{
 		m_pServer->BroadcastWorldState();
 		m_lastWorldBroadcast = now;
 	}
 
+	// サーバーからの更新を受信
 	ReceiveFromServer();
 }
 
@@ -230,10 +284,8 @@ void SceneGame::UpdateLocalPlayer()
 
 void SceneGame::UpdateRemotePlayers()
 {
-	for (auto& kv : m_players)
-	{
-		if (kv.first == m_localClientId) continue;
-	}
+	// リモートプレイヤーは UpdateFromNetwork で更新されるため
+	// ここでは特別な処理は不要
 }
 
 void SceneGame::SyncToServer()
@@ -256,24 +308,31 @@ void SceneGame::ReceiveFromServer()
 {
 	if (!m_pClient) return;
 
+	// ★★★ プレイヤーのスポーン処理 ★★★
 	NetPlayerSpawn spawn;
 	while (m_pClient->PopPlayerSpawn(spawn))
 	{
 		if (spawn.clientId != m_localClientId)
 		{
-			SpawnPlayer(spawn.clientId, spawn.name, D3DXVECTOR3(spawn.startX, spawn.startY, spawn.startZ));
+			NET_LOG_F("[SceneGame] 新規プレイヤー参加: ID=%u, Name=%s",
+				spawn.clientId, spawn.name);
+			SpawnPlayer(spawn.clientId, spawn.name,
+				D3DXVECTOR3(spawn.startX, spawn.startY, spawn.startZ));
 		}
 	}
 
+	// ★★★ プレイヤーの削除処理 ★★★
 	uint32_t despawnId;
 	while (m_pClient->PopPlayerDespawn(despawnId))
 	{
 		if (despawnId != m_localClientId)
 		{
+			NET_LOG_F("[SceneGame] プレイヤー退出: ID=%u", despawnId);
 			DespawnPlayer(despawnId);
 		}
 	}
 
+	// ★★★ ワールド状態の同期 ★★★
 	NetWorldState world;
 	if (m_pClient->GetWorldState(world))
 	{
@@ -281,16 +340,21 @@ void SceneGame::ReceiveFromServer()
 		{
 			const NetPlayerState& ps = world.players[i];
 
+			// 自分自身はスキップ
 			if (ps.clientId == m_localClientId) continue;
 
 			auto it = m_players.find(ps.clientId);
 			if (it != m_players.end() && it->second)
 			{
+				// 既存プレイヤーの状態を更新
 				it->second->UpdateFromNetwork(ps, m_light, m_deltaTime);
 			}
 			else
 			{
+				// まだ生成されていないプレイヤーを生成
+				NET_LOG_F("[SceneGame] ワールド状態から新規プレイヤー生成: ID=%u", ps.clientId);
 				SpawnPlayer(ps.clientId, "Player", D3DXVECTOR3(ps.posX, ps.posY, ps.posZ));
+
 				if (m_players.find(ps.clientId) != m_players.end())
 				{
 					m_players[ps.clientId]->UpdateFromNetwork(ps, m_light, m_deltaTime);
@@ -304,7 +368,7 @@ void SceneGame::SpawnPlayer(uint32_t clientId, const std::string& name, const D3
 {
 	if (m_players.find(clientId) != m_players.end())
 	{
-		NET_LOG_F("[SceneGame] プレイヤー %u は既に存在", clientId);
+		NET_LOG_F("[SceneGame] プレイヤー %u は既に存在 - スキップ", clientId);
 		return;
 	}
 
@@ -316,13 +380,18 @@ void SceneGame::SpawnPlayer(uint32_t clientId, const std::string& name, const D3
 
 	m_players[clientId] = p;
 
-	NET_LOG_F("[SceneGame] プレイヤー生成: ID=%u, Name=%s", clientId, name.c_str());
+	NET_LOG_F("[SceneGame] プレイヤー生成完了: ID=%u, Name=%s, Pos=(%.1f, %.1f, %.1f)",
+		clientId, name.c_str(), pos.x, pos.y, pos.z);
 }
 
 void SceneGame::DespawnPlayer(uint32_t clientId)
 {
 	auto it = m_players.find(clientId);
-	if (it == m_players.end()) return;
+	if (it == m_players.end())
+	{
+		NET_LOG_F("[SceneGame] プレイヤー %u は存在しない - 削除スキップ", clientId);
+		return;
+	}
 
 	if (it->second)
 	{
@@ -331,7 +400,7 @@ void SceneGame::DespawnPlayer(uint32_t clientId)
 	}
 	m_players.erase(it);
 
-	NET_LOG_F("[SceneGame] プレイヤー削除: ID=%u", clientId);
+	NET_LOG_F("[SceneGame] プレイヤー削除完了: ID=%u", clientId);
 }
 
 void SceneGame::Draw()
@@ -341,6 +410,7 @@ void SceneGame::Draw()
 	m_map.DrawMap(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light, lights);
 	m_map.DrawGoalEffect(&m_camera, &m_projection);
 
+	// ★★★ すべてのプレイヤーを描画 ★★★
 	for (auto& kv : m_players)
 	{
 		if (kv.second)
@@ -378,12 +448,15 @@ void SceneGame::Draw()
 			m_pLocalPlayer->DebugPrint(m_pEngine);
 		}
 
+		// ★★★ すべてのプレイヤー情報を表示 ★★★
 		int yOffset = 500;
 		for (auto& kv : m_players)
 		{
-			if (kv.first == m_localClientId) continue;
-			m_pEngine->DrawPrintf(0, yOffset, FONT_GOTHIC40, Color::GREEN,
-				"Remote[%u]: %s", kv.first, kv.second->GetPlayerName().c_str());
+			D3DCOLOR color = (kv.first == m_localClientId) ? Color::YELLOW : Color::GREEN;
+			const char* prefix = (kv.first == m_localClientId) ? "Local" : "Remote";
+
+			m_pEngine->DrawPrintf(0, yOffset, FONT_GOTHIC40, color,
+				"%s[%u]: %s", prefix, kv.first, kv.second->GetPlayerName().c_str());
 			yOffset += 50;
 		}
 
@@ -438,6 +511,7 @@ void SceneGame::PostEffect()
 
 void SceneGame::Exit()
 {
+	// すべてのプレイヤーを解放
 	for (auto& kv : m_players)
 	{
 		if (kv.second)

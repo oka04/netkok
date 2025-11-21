@@ -368,8 +368,65 @@ void ServerManager::ProcessJoin(ENetPeer* peer, const uint8_t* data, size_t len)
 				NET_LOG_F("[ServerManager] クライアントのJOIN受信: %s (ID=%d)", ci->name.c_str(), ci->id);
 			}
 
+			// クライアントIDを送信
 			SendJoinAck(peer, ci->id);
 
+			// ★★★ 既存の全プレイヤー情報を新規参加者に送信 ★★★
+			// 1. ホストの情報を送信
+			if (!m_hostName.empty())
+			{
+				NetPlayerSpawn hostSpawn;
+				hostSpawn.clientId = 1;  // ホストのIDは常に1
+				hostSpawn.startX = 0.0f;  // デフォルト位置
+				hostSpawn.startY = 0.0f;
+				hostSpawn.startZ = 0.0f;
+				strncpy_s(hostSpawn.name, m_hostName.c_str(), sizeof(hostSpawn.name) - 1);
+				hostSpawn.name[sizeof(hostSpawn.name) - 1] = '\0';
+
+				auto hostData = NetworkSerializer::SerializePlayerSpawn(hostSpawn);
+				ENetPacket* hostPacket = enet_packet_create(hostData.data(), hostData.size(), ENET_PACKET_FLAG_RELIABLE);
+				enet_peer_send(peer, 0, hostPacket);
+				NET_LOG_F("[ServerManager] 新規参加者にホスト情報を送信: %s", m_hostName.c_str());
+			}
+
+			// 2. 既存の他のクライアント情報を送信
+			for (const auto& kv : m_clients)
+			{
+				if (kv.first != peer && kv.second->name != m_hostName && !kv.second->name.empty())
+				{
+					NetPlayerSpawn existingSpawn;
+					existingSpawn.clientId = kv.second->id;
+					existingSpawn.startX = 0.0f;  // 現在位置は後でワールド状態で更新
+					existingSpawn.startY = 0.0f;
+					existingSpawn.startZ = 0.0f;
+					strncpy_s(existingSpawn.name, kv.second->name.c_str(), sizeof(existingSpawn.name) - 1);
+					existingSpawn.name[sizeof(existingSpawn.name) - 1] = '\0';
+
+					auto existingData = NetworkSerializer::SerializePlayerSpawn(existingSpawn);
+					ENetPacket* existingPacket = enet_packet_create(existingData.data(), existingData.size(), ENET_PACKET_FLAG_RELIABLE);
+					enet_peer_send(peer, 0, existingPacket);
+					NET_LOG_F("[ServerManager] 新規参加者に既存プレイヤー情報を送信: %s (ID=%u)",
+						kv.second->name.c_str(), kv.second->id);
+				}
+			}
+
+			// ★★★ 新規参加者の情報を全員にブロードキャスト ★★★
+			NetPlayerSpawn newSpawn;
+			newSpawn.clientId = ci->id;
+			newSpawn.startX = 0.0f;  // デフォルト位置
+			newSpawn.startY = 0.0f;
+			newSpawn.startZ = 0.0f;
+			strncpy_s(newSpawn.name, ci->name.c_str(), sizeof(newSpawn.name) - 1);
+			newSpawn.name[sizeof(newSpawn.name) - 1] = '\0';
+
+			BroadcastPlayerSpawn(newSpawn);
+			NET_LOG_F("[ServerManager] 新規参加者情報をブロードキャスト: %s (ID=%u)",
+				ci->name.c_str(), ci->id);
+
+			// フラッシュして確実に送信
+			enet_host_flush(m_pServerHost);
+
+			// ロビー更新をブロードキャスト
 			NET_LOG("[ServerManager] ロビー更新をブロードキャスト");
 			BroadcastLobbyUpdate();
 		}
