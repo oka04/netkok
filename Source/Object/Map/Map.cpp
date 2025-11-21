@@ -9,9 +9,9 @@ using namespace Common;
 
 using namespace std;
 
-void Map::Initialize(Engine * pEngine, PatrollerManager& patrollerManager, Camera * pCamera, Projection * pProj, AmbientLight * pAmbient, DirectionalLight * pLight, const int mapNumber)
+void Map::Initialize(Engine * pEngine, Camera * pCamera, Projection * pProj, AmbientLight * pAmbient, DirectionalLight * pLight, const int mapNumber)
 {
-	LoadMap(pEngine, patrollerManager, pCamera, pProj, pAmbient, pLight, mapNumber);
+	LoadMap(pEngine, pCamera, pProj, pAmbient, pLight, mapNumber);
 
 	CreateWall(pEngine);
 
@@ -66,7 +66,7 @@ void Map::DrawGoalEffect(Camera * pCamera, Projection * pProj)
 	m_goalEffect.Draw(pCamera, pProj);
 }
 
-void Map::DrawMiniMap(Engine* pEngine, const D3DXVECTOR2& playerPosition, const float arrowAngle, PatrollerManager& patrollerManager)
+void Map::DrawMiniMap(Engine* pEngine, const D3DXVECTOR2& playerPosition, const float arrowAngle)
 {
 	pEngine->SpriteBegin();
 	pEngine->BeginMiniMap(D3DXVECTOR2(f_miniMapPosition.x + f_miniMapScreenRadius, f_miniMapPosition.y + f_miniMapScreenRadius), f_miniMapScreenRadius, f_miniMapDiv);
@@ -92,11 +92,11 @@ void Map::DrawMiniMap(Engine* pEngine, const D3DXVECTOR2& playerPosition, const 
 
 	D3DXVECTOR2 miniMapCenter = D3DXVECTOR2(f_miniMapPosition.x + f_miniMapScreenRadius, f_miniMapPosition.y + f_miniMapScreenRadius);
 
-	vector<D3DXVECTOR2> patrollerPositions = patrollerManager.GetMiniMapPositions(playerPosition, (float)f_miniMapSourHalfSize);
+	//vector<D3DXVECTOR2> patrollerPositions = patrollerManager.GetMiniMapPositions(playerPosition, (float)f_miniMapSourHalfSize);
 
 	SetRect(&sour, 0, 0, (int)f_pinSourSize.x, (int)f_pinSourSize.y);
 	float scale = f_miniMapScreenRadius / f_miniMapSourHalfSize;
-
+/*
 	// 敵の位置の描画
 	for (const auto& patrollerPos : patrollerPositions)
 	{
@@ -111,6 +111,7 @@ void Map::DrawMiniMap(Engine* pEngine, const D3DXVECTOR2& playerPosition, const 
 		pEngine->Blt(&dest, TEXTURE_ENEMY_PIN, &sour, 255, 0.0f);
 	}
 
+*/
 	// ゴールピンの描画
 	D3DXVECTOR2 goalPosition2D(m_goalPosition.x, m_goalPosition.z);
 	D3DXVECTOR2 relativePos = goalPosition2D - playerPosition;
@@ -152,8 +153,8 @@ void Map::DrawMiniMap(Engine* pEngine, const D3DXVECTOR2& playerPosition, const 
 	dest.right = dest.left + displaySize;
 	dest.bottom = dest.top + displaySize;
 
-	if (patrollerManager.IsViewPlayer()) pEngine->Blt(&dest, TEXTURE_CHASE_CIRCLE, &sour, 255, 0.0f);
-	else pEngine->Blt(&dest, TEXTURE_NORMAL_CIRCLE, &sour, 255, 0.0f);
+	/*if (patrollerManager.IsViewPlayer()) pEngine->Blt(&dest, TEXTURE_CHASE_CIRCLE, &sour, 255, 0.0f);
+	else*/ pEngine->Blt(&dest, TEXTURE_NORMAL_CIRCLE, &sour, 255, 0.0f);
 
 	pEngine->SpriteEnd();
 	pEngine->EndMiniMap();
@@ -560,7 +561,7 @@ void Map::LoadParameter()
 	f_lineColor.a = config["lineColor"][3];
 }
 
-void Map::LoadMap(Engine * pEngine, PatrollerManager& patrollerManager, Camera * pCamera, Projection * pProj, AmbientLight * pAmbient, DirectionalLight * pLight, const int mapNumber)
+void Map::LoadMap(Engine * pEngine, Camera * pCamera, Projection * pProj, AmbientLight * pAmbient, DirectionalLight * pLight, const int mapNumber)
 {
 	LoadParameter();
 
@@ -627,7 +628,6 @@ void Map::LoadMap(Engine * pEngine, PatrollerManager& patrollerManager, Camera *
 			ifsMap >> waypointNumber;
 			waypoints.push_back(&m_waypoints[waypointNumber - WAYPOINT_OFFSET]);
 		}
-		patrollerManager.SetPatroller(pEngine, waypoints);
 	}
 
 	ifsMap.close();

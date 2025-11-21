@@ -70,17 +70,6 @@ void SceneGame::Update()
 			m_gameData.m_nextSceneNumber = SCENE_CLEAR;
 		}
 
-		//敵の更新
-		if (m_patrollerManager.Update(m_pEngine, m_map, m_player.GetPosition(), &m_outPatrollerPosition, m_deltaTime))
-		{
-			//ゲームオーバー
-			if (!(d_debugFlag & DEBUG_MODE))
-			{
-				m_gameState = GAMEOVER_ROTATION;
-				SoundManager::StopAll(ID_BGM);
-				m_patrollerManager.ReleaseSE();
-			}
-		}
 		break;
 
 	case CHANGE_SCENE:
@@ -92,7 +81,6 @@ void SceneGame::Update()
 		{
 		case Common::RESTART:
 			SoundManager::StopAll(ID_BGM);
-			m_patrollerManager.ReleaseSE();
 			Initialize();
 			break;
 		case Common::SCENE_GAME:
@@ -100,7 +88,6 @@ void SceneGame::Update()
 			break;
 		default:
 			SoundManager::StopAll(ID_BGM);
-			m_patrollerManager.ReleaseSE();
 			m_nowSceneData.Set(m_gameData.m_nextSceneNumber, false, nullptr);
 			break;
 		}
@@ -116,23 +103,8 @@ void SceneGame::Update()
 	case FADE_OUT:
 		if (m_fade.Update(m_deltaTime))
 		{
-			m_gameData.m_alertCount = m_patrollerManager.GetAlertCount();
 			m_nowSceneData.Set(m_gameData.m_nextSceneNumber, false, nullptr);
 		}
-		return;
-
-	case GAMEOVER_ROTATION:
-		if (m_gameState == GAMEOVER_ROTATION && !(d_debugFlag & DEBUG_MODE))
-		{
-			if (m_player.RotateToTarget(m_light, m_outPatrollerPosition, m_deltaTime))
-			{
-				m_gameState = FADE_OUT;
-				m_gameData.m_nextSceneNumber = SCENE_GAMEOVER;
-				m_fade.SetFadeOut();
-				SoundManager::Play(AK::EVENTS::PLAY_SE_GAMEOVER, ID_PALYER);
-			}
-			m_player.SetFirstPersonCamera(m_pEngine, m_camera);
-		}			
 		return;
 	}
 
@@ -167,12 +139,11 @@ void SceneGame::Update()
 
 void SceneGame::Draw()
 {
-	vector<SpotLight>* lights = m_patrollerManager.GetLights(m_player.GetPosition(), m_player.GetDepth(), m_player.GetFov());
+	vector<SpotLight>* lights = nullptr;
 
 	m_map.DrawMap(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light, lights);
 	m_map.DrawGoalEffect(&m_camera, &m_projection);
 	m_player.Draw(&m_camera, &m_projection, &m_ambient, &m_light); 
-	m_patrollerManager.Draw(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light);
 
 	if (d_debugFlag & DRAW_BOXLINE) 
 	{
@@ -181,29 +152,26 @@ void SceneGame::Draw()
 
 	if (d_debugFlag & PATROLLER_VIEW_LINE) 
 	{
-		m_patrollerManager.DebugViewLine(m_pEngine, &m_camera, &m_projection);
 	}
 
-	m_map.DrawMiniMap(m_pEngine, m_player.GetPosition2D(), m_player.GetArrowAngle(), m_patrollerManager);
+	m_map.DrawMiniMap(m_pEngine, m_player.GetPosition2D(), m_player.GetArrowAngle());
 
 	m_pEngine->SpriteBegin();
 
-	m_patrollerManager.DrawHeartBeat(m_pEngine, m_player.GetPosition());
 	m_player.DrawStaminaGauge(m_pEngine);
 
 #if _DEBUG
 	//画面上の文字が表示状態ならデバッグ用のテキストを表示する
 	if (!(d_debugFlag & DISPLAY_DEBUG_STRING))
 	{
-		m_pEngine->DrawPrintf(50, 1000, FONT_GOTHIC40, Color::WHITE, "%f", (float)m_pEngine->GetFPS());
+		m_pEngine->DrawPrintf(50, 950, FONT_GOTHIC40, Color::WHITE, "DEL : %f", (float)m_deltaTime);
+		m_pEngine->DrawPrintf(50, 1000, FONT_GOTHIC40, Color::WHITE, "FPS : %f", (float)m_pEngine->GetFPS());
 
 		if (d_debugFlag & DRAW_PLAYER_STATE) 
 		{
 			m_player.DebugPrint(m_pEngine);
-			m_patrollerManager.DebugPrint(m_pEngine);
 		}
 
-		if (m_gameState >= GAMEOVER_ROTATION)m_pEngine->DrawPrintf(1300, 30, FONT_GOTHIC40, Color::BLUE, "ゲームステータス: GameOver");
 		else m_pEngine->DrawPrintf(1300, 30, FONT_GOTHIC40, Color::BLUE, "ゲームステータス: In Game");
 		m_pEngine->DrawPrintf(1300, 80, FONT_GOTHIC40, Color::BLUE, "F1: プレイヤーのステータス表示");
 		m_pEngine->DrawPrintf(1300, 130, FONT_GOTHIC40, Color::BLUE, "F2: マップのボックスライン表示");
@@ -249,7 +217,6 @@ void SceneGame::PostEffect()
 
 void SceneGame::Exit()
 {
-	m_patrollerManager.Release(m_pEngine);
 	m_map.Release(m_pEngine);
 	m_player.Release(m_pEngine);
 	m_fade.Release(m_pEngine);
@@ -281,10 +248,9 @@ void SceneGame::Initialize()
 	m_fade.Initialize(m_pEngine);
 	m_gameState = FADE_IN;
 	m_fade.SetFadeIn();
-	m_patrollerManager.Initialize(m_pEngine, m_nowSceneData.GetNowScene());
 
 	Camera miniMapCamera = m_camera;
-	m_map.Initialize(m_pEngine, m_patrollerManager, &miniMapCamera, &m_projection, &m_ambient, &m_light, 1);
+	m_map.Initialize(m_pEngine, &miniMapCamera, &m_projection, &m_ambient, &m_light, 1);
 	m_player.Initialize(m_pEngine, m_map, &m_projection, m_camera, m_light);
 	m_lastTime = timeGetTime();
 

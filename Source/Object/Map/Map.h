@@ -12,22 +12,17 @@
 
 #include "..\\..\\GameBase.h"
 #include "..\\..\\Scene\\Scene\\Scene.h"
-#include "..\\Patroller\\PatrollerManager.h"
 #include "..\\GoalEffect\\GoalEffect.h"
-
-class PatrollerManager;
-class Patroller;
-
 
 class Map 
 {
 public:
-	void Initialize(Engine * pEngine, PatrollerManager& patrollerManager, Camera * pCamera, Projection * pProj, AmbientLight * pAmbient, DirectionalLight * pLight, const int mapNumber);
+	void Initialize(Engine * pEngine, Camera * pCamera, Projection * pProj, AmbientLight * pAmbient, DirectionalLight * pLight, const int mapNumber);
 	void Release(Engine * pEngine);
 	void UpdateGoalEffect();
 	void DrawMap(Engine* pEngine, Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight, std::vector<SpotLight>* lights);
 	void DrawGoalEffect(Camera* pCamera, Projection* pProj);
-	void DrawMiniMap(Engine * pEngine, const D3DXVECTOR2 & playerPosition, const float arrowAngle, PatrollerManager& patrollerManager);
+	void DrawMiniMap(Engine * pEngine, const D3DXVECTOR2 & playerPosition, const float arrowAngle);
 	void DebugBoxLine(Engine * pEngine, Camera * pCamera, Projection * pProj);
 
 	//移動できるかの確認(移動はこの関数内で行う）
@@ -59,7 +54,7 @@ private:
 		D3DXVECTOR2 max;
 	};
 	void LoadParameter();
-	void LoadMap(Engine * pEngine, PatrollerManager& patrollerManager, Camera * pCamera, Projection * pProj, AmbientLight * pAmbient, DirectionalLight * pLight, const int mapNumber);
+	void LoadMap(Engine * pEngine, Camera * pCamera, Projection * pProj, AmbientLight * pAmbient, DirectionalLight * pLight, const int mapNumber);
 	void CreateWall(Engine * pEngine);
 	// 壁に埋まっていたら押し戻す
 	void Resolve(const WallRect& rect, D3DXVECTOR2& position, float radius);

@@ -1,0 +1,71 @@
+[33mbd610fd[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m HEAD@{0}: checkout: moving from d347b925d8819606e865a116b7e2f4d7350ec627 to main
+[33md347b92[m HEAD@{1}: commit: プレイヤー（仮）
+[33m37a6455[m HEAD@{2}: checkout: moving from main to 37a64550f452dd22e82fbae3a56ec66b9fd7f8e5
+[33mbd610fd[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m HEAD@{3}: commit: ゴミ
+[33mb60ff7b[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{4}: commit: AIに渡す用２
+[33m177f888[m HEAD@{5}: commit: バグ多め　AIに渡す用
+[33m37a6455[m HEAD@{6}: commit: ロビーはほぼ完成（ゲーム時に強制退出させたらOK）
+[33m3550d59[m HEAD@{7}: commit: ポート問題
+[33m927707b[m HEAD@{8}: commit: ええ加減にしてくれー
+[33mfa55fab[m HEAD@{9}: commit: 参加した人の名前も表示したい
+[33m20bf560[m HEAD@{10}: commit: ちょいネタ
+[33m23b11ee[m HEAD@{11}: commit: そろそろなおっとくれ
+[33m8905915[m HEAD@{12}: commit: タルコフしたい
+[33mc7f91de[m HEAD@{13}: commit: ね、ねむい。。。
+[33m999be3f[m HEAD@{14}: commit: バージョン確認用
+[33maae4e0b[m HEAD@{15}: commit: バグ修正
+[33m8d48167[m HEAD@{16}: commit: できね
+[33mbb97599[m HEAD@{17}: checkout: moving from a688a6add2dccf1396571803b61fdeb63d84a1a1 to main
+[33ma688a6a[m HEAD@{18}: checkout: moving from main to a688a6add2dccf1396571803b61fdeb63d84a1a1
+[33mbb97599[m HEAD@{19}: reset: moving to bb97599d8dfc506ae76b6001e982141d0ffd40d7
+[33ma575ad7[m HEAD@{20}: reset: moving to a575ad71c2705bed6ec81b3714ce71a4a8f062dc
+[33m06b1888[m HEAD@{21}: checkout: moving from a575ad71c2705bed6ec81b3714ce71a4a8f062dc to main
+[33ma575ad7[m HEAD@{22}: checkout: moving from main to a575ad71c2705bed6ec81b3714ce71a4a8f062dc
+[33m06b1888[m HEAD@{23}: commit (merge): no
+[33ma575ad7[m HEAD@{24}: checkout: moving from 016dc5eee04abb5400519913fba0deb5cdc1d314 to main
+[33m016dc5e[m HEAD@{25}: commit: いったん
+[33m4e540eb[m HEAD@{26}: checkout: moving from main to 4e540eba64883860090c7d5db42ddf9a26eb37dd
+[33ma575ad7[m HEAD@{27}: checkout: moving from うごけー to main
+[33m2182894[m[33m ([m[1;31morigin/うごけー[m[33m, [m[1;32mうごけー[m[33m)[m HEAD@{28}: reset: moving to HEAD
+[33m2182894[m[33m ([m[1;31morigin/うごけー[m[33m, [m[1;32mうごけー[m[33m)[m HEAD@{29}: checkout: moving from 2182894a499777c0ae0c536d5f570ce183ed9a6e to うごけー
+[33m2182894[m[33m ([m[1;31morigin/うごけー[m[33m, [m[1;32mうごけー[m[33m)[m HEAD@{30}: commit: テスト
+[33m6001a1e[m HEAD@{31}: checkout: moving from main to 6001a1efd5fac13a812811a1d3acc0502cadd56d
+[33ma575ad7[m HEAD@{32}: checkout: moving from 3d7afc140c1571549e65afa41efbc3c4f0388616 to main
+[33m3d7afc1[m HEAD@{33}: commit: v
+[33m34d0382[m HEAD@{34}: checkout: moving from 1083aa62d3002526f278a9fef46758ac40d4ca66 to 34d0382f1c35a5013d8684ba6941dee0c8031211
+[33m1083aa6[m HEAD@{35}: commit: v
+[33m4e540eb[m HEAD@{36}: checkout: moving from main to 4e540eba64883860090c7d5db42ddf9a26eb37dd
+[33ma575ad7[m HEAD@{37}: checkout: moving from b33a1ae68c749dac2a246cd0b3d6eec8644bf86f to main
+[33mb33a1ae[m HEAD@{38}: commit: on
+[33m69b3526[m HEAD@{39}: checkout: moving from bef7a0cbf2408381ae2d5912e329ec301f08d0d4 to 69b3526e0d4474bb147d03bd1cb6a47c1e58f769
+[33mbef7a0c[m HEAD@{40}: commit: no
+[33m581ac82[m HEAD@{41}: checkout: moving from main to 581ac828f79cacd965b795b28ef91426b4027dd1
+[33ma575ad7[m HEAD@{42}: checkout: moving from aec80e75fc959e93141ca8336171137a1b16ee93 to main
+[33maec80e7[m HEAD@{43}: commit: no
+[33m24ae281[m HEAD@{44}: checkout: moving from aff817fc5c179ed0995e9f284dadd34b1c32083d to 24ae2817ea8bfbfc9d41553fb955b9cd920a1a39
+[33maff817f[m HEAD@{45}: commit: no
+[33m6001a1e[m HEAD@{46}: checkout: moving from main to 6001a1efd5fac13a812811a1d3acc0502cadd56d
+[33ma575ad7[m HEAD@{47}: checkout: moving from 096dbed812a095adcce21017b334d7245ce370fe to main
+[33m096dbed[m HEAD@{48}: commit: no
+[33mbce23fa[m HEAD@{49}: checkout: moving from main to bce23fa195d09bb36a3ddf11ad0289d8c9a50a02
+[33ma575ad7[m HEAD@{50}: checkout: moving from fcb5aa88b69921df28285f7f299282f743d80548 to main
+[33mfcb5aa8[m HEAD@{51}: commit: no
+[33m5c50732[m HEAD@{52}: checkout: moving from main to 5c5073213af73d059ba4fc960e3d383ff5a4031c
+[33ma575ad7[m HEAD@{53}: commit: a
+[33mbb97599[m HEAD@{54}: commit: Update .gitignore
+[33ma688a6a[m HEAD@{55}: commit: a
+[33m4e540eb[m HEAD@{56}: commit: a
+[33m581ac82[m HEAD@{57}: commit: d
+[33m69b3526[m HEAD@{58}: commit: s
+[33mbce23fa[m HEAD@{59}: commit: f
+[33m5c50732[m HEAD@{60}: commit: j
+[33m6001a1e[m HEAD@{61}: commit: debug
+[33m24ae281[m HEAD@{62}: commit: debug
+[33m34d0382[m HEAD@{63}: commit: log
+[33md413cd2[m HEAD@{64}: commit: f
+[33m987eb5b[m HEAD@{65}: commit: a
+[33m5667984[m HEAD@{66}: commit: a
+[33mfedf57c[m HEAD@{67}: commit: text
+[33m9b90455[m HEAD@{68}: commit: q
+[33m7fd4de8[m HEAD@{69}: commit: a
+[33mb752964[m HEAD@{70}: commit (initial): Create .gitignore

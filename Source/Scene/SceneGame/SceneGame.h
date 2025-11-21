@@ -13,7 +13,6 @@
 #include "..\\..\\Object\\Fade\\Fade.h"
 #include "..\\..\\Object\\Map\\Map.h"
 #include "..\\..\\Object\\Player\\Player.h"
-#include "..\\..\\Object\\Patroller\\PatrollerManager.h"
 
 class SceneGame : public Scene
 {
@@ -90,7 +89,6 @@ private:
 		FADE_IN,
 		IN_GAME,
 		CHANGE_SCENE,
-		GAMEOVER_ROTATION,
 		FADE_OUT,
 	};
 
@@ -112,7 +110,6 @@ private:
 	Map m_map;
 	Player m_player;
 	Fade m_fade;
-	PatrollerManager m_patrollerManager;
 
 	D3DXVECTOR3 m_outPatrollerPosition;
 };

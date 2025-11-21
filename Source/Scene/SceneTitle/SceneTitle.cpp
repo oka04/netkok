@@ -58,13 +58,11 @@ void SceneTitle::Start()
 	SetBackColor(0x00000000);
 	m_pEngine->AddModel(MODEL_CHARACTER);
 
-	m_patrollerManager.Initialize(m_pEngine, m_nowSceneData.GetNowScene());
 	m_lastTime = timeGetTime();
 
 	Camera camera = m_camera;
-	m_map.Initialize(m_pEngine, m_patrollerManager, &camera, &m_projection, &m_ambient, &m_light, 0);
+	m_map.Initialize(m_pEngine, &camera, &m_projection, &m_ambient, &m_light, 0);
 
-	m_patrollerManager.ReleaseSE();
 	SoundManager::Play(AK::EVENTS::PLAY_BGM_TITLE, ID_BGM);
 
 	srand((unsigned int)time(NULL));
@@ -121,8 +119,6 @@ void SceneTitle::Update()
 
 	UpdatePlayerNameInput();
 
-	m_patrollerManager.Update(m_pEngine, m_map, m_camera.m_vecEye, nullptr, m_deltaTime);
-
 	if (MenuManager::Update(m_pEngine, m_gameData, m_deltaTime))
 	{
 		int buttonKind = m_buttons[m_selectNumber];
@@ -154,9 +150,8 @@ void SceneTitle::Update()
 
 void SceneTitle::Draw()
 {
-	vector<SpotLight>* lights = m_patrollerManager.GetLights(m_camera.m_vecEye, m_camera.m_vecAt, m_projection.GetFov());
+	vector<SpotLight>* lights = nullptr;
 	m_map.DrawMap(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light, lights);
-	m_patrollerManager.Draw(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light);
 
 	m_pEngine->SpriteBegin();
 	MenuManager::Draw(m_pEngine, m_gameData);
@@ -179,7 +174,6 @@ void SceneTitle::Exit()
 	SoundManager::StopAll(ID_BGM);
 	Release(m_pEngine);
 	m_map.Release(m_pEngine);
-	m_patrollerManager.Release(m_pEngine);
 
 	m_pEngine->ReleaseModel(MODEL_CHARACTER);
 }

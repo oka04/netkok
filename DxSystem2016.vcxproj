@@ -166,8 +166,6 @@
     <ClCompile Include="Source\Object\Network\ClientManager\ClientManager.cpp" />
     <ClCompile Include="Source\Object\Network\Discovery\Discovery.cpp" />
     <ClCompile Include="Source\Object\Network\ServerManager\ServerManager.cpp" />
-    <ClCompile Include="Source\Object\Patroller\Patroller.cpp" />
-    <ClCompile Include="Source\Object\Patroller\PatrollerManager.cpp" />
     <ClCompile Include="Source\Object\Player\Player.cpp" />
     <ClCompile Include="Source\Object\SoundManager\SoundManager.cpp" />
     <ClCompile Include="Source\Object\_ObjectSource\ObjectSource.cpp" />
@@ -247,9 +245,6 @@
     <ClInclude Include="Source\Object\Network\Discovery\Discovery.h" />
     <ClInclude Include="Source\Object\Network\NetworkLogger.h" />
     <ClInclude Include="Source\Object\Network\ServerManager\ServerManager.h" />
-    <ClInclude Include="Source\Object\Patroller\Patroller.h" />
-    <ClInclude Include="Source\Object\Patroller\PatrollerFileData.h" />
-    <ClInclude Include="Source\Object\Patroller\PatrollerManager.h" />
     <ClInclude Include="Source\Object\Player\Player.h" />
     <ClInclude Include="Source\Object\SoundManager\SoundManager.h" />
     <ClInclude Include="Source\Object\_ObjectSource\ObjectSource.h" />

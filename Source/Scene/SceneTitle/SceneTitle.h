@@ -12,7 +12,6 @@
 #include "..\\..\\Object\\MenuManager\\MenuManager.h"
 
 #include "..\\..\\Object\\Map\\Map.h"
-#include "..\\..\\Object\\Patroller\\PatrollerManager.h"
 #include "..\\Scene\\SceneLobby\\SceneLobby.h" 
 class SceneTitle : public Scene, MenuManager
 {
@@ -97,5 +96,4 @@ private:
 	AmbientLight m_ambient;
 	DirectionalLight m_light;
 	Map m_map;
-	PatrollerManager m_patrollerManager;
 };
