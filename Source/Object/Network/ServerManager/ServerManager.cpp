@@ -377,16 +377,29 @@ void ServerManager::ProcessJoin(ENetPeer* peer, const uint8_t* data, size_t len)
 			{
 				NetPlayerSpawn hostSpawn;
 				hostSpawn.clientId = 1;  // ホストのIDは常に1
-				hostSpawn.startX = 0.0f;  // デフォルト位置
-				hostSpawn.startY = 0.0f;
-				hostSpawn.startZ = 0.0f;
+
+										 // ★★★ ホストの現在位置を取得（ワールド状態から）★★★
+				if (m_hostStateSet)
+				{
+					hostSpawn.startX = m_hostState.posX;
+					hostSpawn.startY = m_hostState.posY;
+					hostSpawn.startZ = m_hostState.posZ;
+				}
+				else
+				{
+					hostSpawn.startX = 0.0f;
+					hostSpawn.startY = 0.0f;
+					hostSpawn.startZ = 0.0f;
+				}
+
 				strncpy_s(hostSpawn.name, m_hostName.c_str(), sizeof(hostSpawn.name) - 1);
 				hostSpawn.name[sizeof(hostSpawn.name) - 1] = '\0';
 
 				auto hostData = NetworkSerializer::SerializePlayerSpawn(hostSpawn);
 				ENetPacket* hostPacket = enet_packet_create(hostData.data(), hostData.size(), ENET_PACKET_FLAG_RELIABLE);
 				enet_peer_send(peer, 0, hostPacket);
-				NET_LOG_F("[ServerManager] 新規参加者にホスト情報を送信: %s", m_hostName.c_str());
+				NET_LOG_F("[ServerManager] 新規参加者にホスト情報を送信: %s Pos=(%.1f,%.1f,%.1f)",
+					m_hostName.c_str(), hostSpawn.startX, hostSpawn.startY, hostSpawn.startZ);
 			}
 
 			// 2. 既存の他のクライアント情報を送信
@@ -396,24 +409,37 @@ void ServerManager::ProcessJoin(ENetPeer* peer, const uint8_t* data, size_t len)
 				{
 					NetPlayerSpawn existingSpawn;
 					existingSpawn.clientId = kv.second->id;
-					existingSpawn.startX = 0.0f;  // 現在位置は後でワールド状態で更新
-					existingSpawn.startY = 0.0f;
-					existingSpawn.startZ = 0.0f;
+
+					// ★★★ 既存クライアントの現在位置を取得 ★★★
+					if (kv.second->stateReceived)
+					{
+						existingSpawn.startX = kv.second->lastState.posX;
+						existingSpawn.startY = kv.second->lastState.posY;
+						existingSpawn.startZ = kv.second->lastState.posZ;
+					}
+					else
+					{
+						existingSpawn.startX = 0.0f;
+						existingSpawn.startY = 0.0f;
+						existingSpawn.startZ = 0.0f;
+					}
+
 					strncpy_s(existingSpawn.name, kv.second->name.c_str(), sizeof(existingSpawn.name) - 1);
 					existingSpawn.name[sizeof(existingSpawn.name) - 1] = '\0';
 
 					auto existingData = NetworkSerializer::SerializePlayerSpawn(existingSpawn);
 					ENetPacket* existingPacket = enet_packet_create(existingData.data(), existingData.size(), ENET_PACKET_FLAG_RELIABLE);
 					enet_peer_send(peer, 0, existingPacket);
-					NET_LOG_F("[ServerManager] 新規参加者に既存プレイヤー情報を送信: %s (ID=%u)",
-						kv.second->name.c_str(), kv.second->id);
+					NET_LOG_F("[ServerManager] 新規参加者に既存プレイヤー情報を送信: %s (ID=%u) Pos=(%.1f,%.1f,%.1f)",
+						kv.second->name.c_str(), kv.second->id,
+						existingSpawn.startX, existingSpawn.startY, existingSpawn.startZ);
 				}
 			}
 
 			// ★★★ 新規参加者の情報を全員にブロードキャスト ★★★
 			NetPlayerSpawn newSpawn;
 			newSpawn.clientId = ci->id;
-			newSpawn.startX = 0.0f;  // デフォルト位置
+			newSpawn.startX = 0.0f;  // 新規参加者は初期位置
 			newSpawn.startY = 0.0f;
 			newSpawn.startZ = 0.0f;
 			strncpy_s(newSpawn.name, ci->name.c_str(), sizeof(newSpawn.name) - 1);

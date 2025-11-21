@@ -26,6 +26,7 @@ SceneGame::SceneGame(Engine* pEngine)
 	, f_miniMapSourHalfSize(0)
 	, m_lastTime(0)
 	, m_bInitialSyncDone(false)
+	, m_bFirstPerson(true)
 {
 }
 
@@ -124,6 +125,7 @@ void SceneGame::Initialize()
 	m_lastNetworkSend = m_lastTime;
 	m_lastWorldBroadcast = m_lastTime;
 	m_bInitialSyncDone = false;
+	m_bFirstPerson = true;  // ★★★ デフォルトは一人称視点 ★★★
 
 	m_pLocalPlayer->Update(m_pEngine, m_map, m_camera, m_light, 0);
 	m_pLocalPlayer->SetFirstPersonCamera(m_pEngine, m_camera);
@@ -271,14 +273,21 @@ void SceneGame::UpdateLocalPlayer()
 #if _DEBUG
 	switch (d_viewPointCount)
 	{
-	case VIEW_GAME: break;
+	case VIEW_GAME:
+		m_bFirstPerson = true;
+		break;
 	case VIEW_FIRST:
 		m_pLocalPlayer->SetFirstPersonCamera(m_pEngine, m_camera);
+		m_bFirstPerson = true;
 		break;
 	case VIEW_THIRD:
 		m_pLocalPlayer->SetThirdPersonFromBehind(m_pEngine, m_camera, m_map);
+		m_bFirstPerson = false;
 		break;
 	}
+#else
+	// リリースビルドではデフォルトで一人称視点
+	m_bFirstPerson = true;
 #endif
 }
 
@@ -376,12 +385,30 @@ void SceneGame::SpawnPlayer(uint32_t clientId, const std::string& name, const D3
 	p->SetIsLocal(false);
 	p->SetClientId(clientId);
 	p->SetPlayerName(name);
-	p->InitializeAtPosition(m_pEngine, pos, &m_projection, m_camera, m_light);
+
+	// ★★★ 位置が(0,0,0)の場合はマップのスタート位置を使用 ★★★
+	D3DXVECTOR3 spawnPos = pos;
+	if (pos.x == 0.0f && pos.y == 0.0f && pos.z == 0.0f)
+	{
+		spawnPos = m_map.GetPlayerStartPosition();
+		NET_LOG_F("[SceneGame] デフォルト位置を使用: (%.1f, %.1f, %.1f)",
+			spawnPos.x, spawnPos.y, spawnPos.z);
+	}
+
+	p->InitializeAtPosition(m_pEngine, spawnPos, &m_projection, m_camera, m_light);
+
+	// ★★★ 初期位置を確実に設定 ★★★
+	p->SetPosition(spawnPos);
 
 	m_players[clientId] = p;
 
 	NET_LOG_F("[SceneGame] プレイヤー生成完了: ID=%u, Name=%s, Pos=(%.1f, %.1f, %.1f)",
-		clientId, name.c_str(), pos.x, pos.y, pos.z);
+		clientId, name.c_str(), spawnPos.x, spawnPos.y, spawnPos.z);
+
+	// ★★★ デバッグ: 生成直後の位置を確認 ★★★
+	D3DXVECTOR3 checkPos = p->GetPosition();
+	NET_LOG_F("[SceneGame] 確認: プレイヤー実際の位置=(%.1f, %.1f, %.1f)",
+		checkPos.x, checkPos.y, checkPos.z);
 }
 
 void SceneGame::DespawnPlayer(uint32_t clientId)
@@ -410,12 +437,20 @@ void SceneGame::Draw()
 	m_map.DrawMap(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light, lights);
 	m_map.DrawGoalEffect(&m_camera, &m_projection);
 
-	// ★★★ すべてのプレイヤーを描画 ★★★
+	// ★★★ すべてのプレイヤーを描画（ローカルは一人称視点時のみスキップ）★★★
+	int drawnCount = 0;
 	for (auto& kv : m_players)
 	{
 		if (kv.second)
 		{
+			// ローカルプレイヤーが一人称視点の場合のみスキップ
+			if (kv.first == m_localClientId && m_pLocalPlayer && m_pLocalPlayer->IsLocal() && m_bFirstPerson)
+			{
+				continue;
+			}
+
 			kv.second->Draw(&m_camera, &m_projection, &m_ambient, &m_light);
+			drawnCount++;
 		}
 	}
 
@@ -441,22 +476,26 @@ void SceneGame::Draw()
 	{
 		m_pEngine->DrawPrintf(50, 950, FONT_GOTHIC40, Color::WHITE, "DEL : %f", m_deltaTime);
 		m_pEngine->DrawPrintf(50, 1000, FONT_GOTHIC40, Color::WHITE, "FPS : %f", (float)m_pEngine->GetFPS());
-		m_pEngine->DrawPrintf(50, 900, FONT_GOTHIC40, Color::CYAN, "Players: %d", (int)m_players.size());
+		m_pEngine->DrawPrintf(50, 900, FONT_GOTHIC40, Color::CYAN, "Players: %d (Drawn: %d)",
+			(int)m_players.size(), drawnCount);
 
 		if (d_debugFlag & DRAW_PLAYER_STATE && m_pLocalPlayer)
 		{
 			m_pLocalPlayer->DebugPrint(m_pEngine);
 		}
 
-		// ★★★ すべてのプレイヤー情報を表示 ★★★
+		// ★★★ すべてのプレイヤー情報を表示（位置情報付き）★★★
 		int yOffset = 500;
 		for (auto& kv : m_players)
 		{
 			D3DCOLOR color = (kv.first == m_localClientId) ? Color::YELLOW : Color::GREEN;
 			const char* prefix = (kv.first == m_localClientId) ? "Local" : "Remote";
+			D3DXVECTOR3 pos = kv.second->GetPosition();
 
 			m_pEngine->DrawPrintf(0, yOffset, FONT_GOTHIC40, color,
-				"%s[%u]: %s", prefix, kv.first, kv.second->GetPlayerName().c_str());
+				"%s[%u]: %s Pos=(%.1f,%.1f,%.1f)",
+				prefix, kv.first, kv.second->GetPlayerName().c_str(),
+				pos.x, pos.y, pos.z);
 			yOffset += 50;
 		}
 

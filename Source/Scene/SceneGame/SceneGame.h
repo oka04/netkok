@@ -1,5 +1,4 @@
 ﻿#pragma once
-
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include "..\\..\\GameBase.h"
@@ -79,6 +78,7 @@ private:
 	uint32_t m_localClientId;
 	bool m_bIsHost;
 	bool m_bInitialSyncDone;  // ★★★ 追加: 初期同期完了フラグ ★★★
+	bool m_bFirstPerson;      // ★★★ 追加: 一人称視点フラグ ★★★
 	Player* m_pLocalPlayer;
 	std::map<uint32_t, Player*> m_players;
 
