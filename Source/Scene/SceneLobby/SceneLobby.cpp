@@ -133,6 +133,7 @@ void SceneLobby::Update()
 	if (m_client && m_client->IsGameStarted())
 	{
 		NET_LOG("[SceneLobby] ゲーム開始 - ゲームシーンへ遷移");
+
 		m_nowSceneData.Set(Common::SCENE_GAME, false, nullptr);
 	}
 }
@@ -225,8 +226,6 @@ void SceneLobby::PostEffect()
 
 void SceneLobby::Exit()
 {
-	if (m_client) m_client->Disconnect();
-	if (m_server) m_server->StopServer();
 	m_pEngine->ReleaseTexture(TEXTURE_BUTTON);
 	m_pEngine->ReleaseFont(FONT_GOTHIC60);
 }

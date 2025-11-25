@@ -218,9 +218,23 @@ void SceneGame::UpdateNetwork()
 	if (m_pClient) m_pClient->Update();
 	if (m_bIsHost && m_pServer) m_pServer->Update();
 
+	if (!m_bIsHost && m_pClient)
+	{
+		static bool wasConnected = true;
+		bool isConnected = m_pClient->IsConnected();
+
+		if (!isConnected && wasConnected)
+		{
+			NET_LOG("[SceneGame] サーバーとの接続が失われました - タイトルに戻ります");
+			m_pClient->Disconnect();
+			m_nowSceneData.Set(Common::SCENE_TITLE, false, nullptr);
+			return;
+		}
+		wasConnected = isConnected;
+	}
+
 	DWORD now = timeGetTime();
 
-	// ★★★ 初期同期：ゲーム開始直後に既存プレイヤー情報を取得 ★★★
 	if (!m_bInitialSyncDone && now - m_lastTime > 500)
 	{
 		NET_LOG("[SceneGame] 初期同期開始");

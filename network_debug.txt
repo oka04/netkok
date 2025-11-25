@@ -2,284 +2,256 @@
 Network Debug Log
 ===========================================
 
-[16:52:06] ========================================
-[16:52:06] ClientManager 初期化開始
-[16:52:06] ========================================
-[16:52:06] [ClientManager] ENet初期化成功
-[16:52:06] [ClientManager] Discovery作成
-[16:52:06] [Discovery/Listener] スレッド開始
-[16:52:06] [ClientManager] Discoveryリスナー起動 (ポート:12346)
-[16:52:06] [Discovery/Listener] WSAStartup成功
-[16:52:06] [Discovery/Listener] ソケット作成成功
-[16:52:06] [Discovery/Listener] bind成功 ポート:12346
-[16:52:06] [Discovery/Listener] 受信ループ開始
-[16:52:10] ========================================
-[16:52:10] [SceneSelectHost] サーバー作成開始: YHJU
-[16:52:10] [Client] 切断
-[16:52:10] [ServerManager] ホスト名設定: Player659
-[16:52:10] [SceneSelectHost] サーバー名設定: YHJU
-[16:52:10] [SceneSelectHost] ホスト名設定: Player659
-[16:52:10] [Discovery/Advertiser] スレッド開始
-[16:52:10] [Discovery/Advertiser] WSAStartup成功
-[16:52:10] [ServerManager] サーバー起動: ポート=12947
-[16:52:10] [Discovery/Advertiser] ソケット作成成功
-[16:52:10] [Discovery/Advertiser] SO_BROADCAST設定成功
-[16:52:10] [SceneSelectHost] サーバー起動成功: ポート=12947
-[16:52:10] [Discovery/Advertiser] ブロードキャストループ開始
-[16:52:10] [Discovery/Advertiser] 送信データ: port=12947 player=1/8 state=0 name='YHJU'
-[16:52:10] [Discovery/Advertiser] ブロードキャスト送信 #1: サイズ=22 bytes (port=12947)
-[16:52:10] [Discovery/Listener] パケット受信! サイズ:22 bytes
-[16:52:10] [Discovery/Listener] マジック一致確認
-[16:52:10] [Discovery/Listener] プロトコルバージョン: 256
-[16:52:10] [Discovery/Listener] ポート（変換後）: 12947
-[16:52:10] [Discovery/Listener] プレイヤー数: 1
-[16:52:10] [Discovery/Listener] 最大プレイヤー数: 8
-[16:52:10] [Discovery/Listener] ステート: 0
-[16:52:10] [Discovery/Listener] 名前の長さ: 4
-[16:52:10] [Discovery/Listener] サーバー名: 'YHJU'
-[16:52:10] [Discovery/Listener] ★サーバー検出★: YHJU @ 172.20.145.6:12947 (1/8) state=0
-[16:52:10] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:52:10] [ClientManager] ConnectToServer: 127.0.0.1:12947
-[16:52:10] [ClientManager] クライアントホスト作成成功
-[16:52:10] [ClientManager] ホスト接続 - サーバー名は接続後に取得
-[16:52:10] [ClientManager] 接続要求送信 (ホスト判定: true)
-[16:52:10] [SceneSelectHost] ロビーに遷移
-[16:52:10] [SceneLobby] ホストとしてロビー開始: サーバー名='YHJU'
-[16:52:10] [SceneLobby] Start完了
-[16:52:10] [ClientManager] サーバー接続成功（ENET_EVENT_TYPE_CONNECT受信）
-[16:52:10] [ClientManager] JOIN送信: Player659
-[16:52:10] [ClientManager] JOIN送信完了: Player659
-[16:52:10] [ServerManager] クライアント接続: ID=1 (現在1人)
-[16:52:10] [ServerManager] ProcessJoin: データ長=10
-[16:52:10] [ServerManager] 名前長さ: 9
-[16:52:10] [ServerManager] 受信した名前: 'Player659'
-[16:52:10] [ServerManager] ホストのJOIN受信: Player659 (ID=1)
-[16:52:10] [ServerManager] JoinAck送信: ClientID=1
-[16:52:10] [ServerManager] 新規参加者にホスト情報を送信: Player659 Pos=(0.0,0.0,0.0)
-[16:52:10] [ServerManager] 新規参加者情報をブロードキャスト: Player659 (ID=1)
-[16:52:10] [ServerManager] ロビー更新をブロードキャスト
-[16:52:10] [ServerManager] BroadcastLobbyUpdate: 1 人
-[16:52:10] [ServerManager] プレイヤー1: 'Player659' (長さ:9)
-[16:52:10] [ServerManager] 送信データサイズ: 12 bytes
-[16:52:10] [ClientManager] クライアントID割り当て: 1
-[16:52:10] [ClientManager] プレイヤー生成通知: ID=1, Name=Player659
-[16:52:10] [ClientManager] プレイヤー生成通知: ID=1, Name=Player659
-[16:52:10] [ClientManager] ProcessLobbyUpdate: データ長=12
-[16:52:10] [ClientManager] プレイヤー数: 1
-[16:52:10] [ClientManager] プレイヤー1 名前長さ: 9
-[16:52:10] [ClientManager] プレイヤー1: 'Player659'
-[16:52:10] [ClientManager] ロビー更新完了: 1 人
-[16:52:11] [Discovery/Listener] 生存確認 ループ:50
-[16:52:15] [Discovery/Advertiser] 送信データ: port=12947 player=1/8 state=0 name='YHJU'
-[16:52:15] [Discovery/Advertiser] ブロードキャスト送信 #2: サイズ=22 bytes (port=12947)
-[16:52:15] [Discovery/Listener] パケット受信! サイズ:22 bytes
-[16:52:15] [Discovery/Listener] マジック一致確認
-[16:52:15] [Discovery/Listener] プロトコルバージョン: 256
-[16:52:15] [Discovery/Listener] ポート（変換後）: 12947
-[16:52:15] [Discovery/Listener] プレイヤー数: 1
-[16:52:15] [Discovery/Listener] 最大プレイヤー数: 8
-[16:52:15] [Discovery/Listener] ステート: 0
-[16:52:15] [Discovery/Listener] 名前の長さ: 4
-[16:52:15] [Discovery/Listener] サーバー名: 'YHJU'
-[16:52:15] [Discovery/Listener] ★サーバー検出★: YHJU @ 172.20.145.6:12947 (1/8) state=0
-[16:52:15] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:52:16] [Discovery/Listener] 生存確認 ループ:100
-[16:52:20] [Discovery/Advertiser] 送信データ: port=12947 player=1/8 state=0 name='YHJU'
-[16:52:20] [Discovery/Advertiser] ブロードキャスト送信 #3: サイズ=22 bytes (port=12947)
-[16:52:20] [Discovery/Listener] パケット受信! サイズ:22 bytes
-[16:52:20] [Discovery/Listener] マジック一致確認
-[16:52:20] [Discovery/Listener] プロトコルバージョン: 256
-[16:52:20] [Discovery/Listener] ポート（変換後）: 12947
-[16:52:20] [Discovery/Listener] プレイヤー数: 1
-[16:52:20] [Discovery/Listener] 最大プレイヤー数: 8
-[16:52:20] [Discovery/Listener] ステート: 0
-[16:52:20] [Discovery/Listener] 名前の長さ: 4
-[16:52:20] [Discovery/Listener] サーバー名: 'YHJU'
-[16:52:20] [Discovery/Listener] ★サーバー検出★: YHJU @ 172.20.145.6:12947 (1/8) state=0
-[16:52:20] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:52:21] [Discovery/Listener] 生存確認 ループ:150
-[16:52:25] [Discovery/Advertiser] 送信データ: port=12947 player=1/8 state=0 name='YHJU'
-[16:52:25] [Discovery/Advertiser] ブロードキャスト送信 #4: サイズ=22 bytes (port=12947)
-[16:52:25] [Discovery/Listener] パケット受信! サイズ:22 bytes
-[16:52:25] [Discovery/Listener] マジック一致確認
-[16:52:25] [Discovery/Listener] プロトコルバージョン: 256
-[16:52:25] [Discovery/Listener] ポート（変換後）: 12947
-[16:52:25] [Discovery/Listener] プレイヤー数: 1
-[16:52:25] [Discovery/Listener] 最大プレイヤー数: 8
-[16:52:25] [Discovery/Listener] ステート: 0
-[16:52:25] [Discovery/Listener] 名前の長さ: 4
-[16:52:25] [Discovery/Listener] サーバー名: 'YHJU'
-[16:52:25] [Discovery/Listener] ★サーバー検出★: YHJU @ 172.20.145.6:12947 (1/8) state=0
-[16:52:25] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:52:26] [Discovery/Listener] 生存確認 ループ:200
-[16:52:30] [Discovery/Advertiser] 送信データ: port=12947 player=1/8 state=0 name='YHJU'
-[16:52:30] [Discovery/Advertiser] ブロードキャスト送信 #5: サイズ=22 bytes (port=12947)
-[16:52:30] [Discovery/Listener] パケット受信! サイズ:22 bytes
-[16:52:30] [Discovery/Listener] マジック一致確認
-[16:52:30] [Discovery/Listener] プロトコルバージョン: 256
-[16:52:30] [Discovery/Listener] ポート（変換後）: 12947
-[16:52:30] [Discovery/Listener] プレイヤー数: 1
-[16:52:30] [Discovery/Listener] 最大プレイヤー数: 8
-[16:52:30] [Discovery/Listener] ステート: 0
-[16:52:30] [Discovery/Listener] 名前の長さ: 4
-[16:52:30] [Discovery/Listener] サーバー名: 'YHJU'
-[16:52:30] [Discovery/Listener] ★サーバー検出★: YHJU @ 172.20.145.6:12947 (1/8) state=0
-[16:52:30] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:52:31] [Discovery/Listener] 生存確認 ループ:250
-[16:52:35] [Discovery/Advertiser] 送信データ: port=12947 player=1/8 state=0 name='YHJU'
-[16:52:35] [Discovery/Advertiser] ブロードキャスト送信 #6: サイズ=22 bytes (port=12947)
-[16:52:35] [Discovery/Listener] パケット受信! サイズ:22 bytes
-[16:52:35] [Discovery/Listener] マジック一致確認
-[16:52:35] [Discovery/Listener] プロトコルバージョン: 256
-[16:52:35] [Discovery/Listener] ポート（変換後）: 12947
-[16:52:35] [Discovery/Listener] プレイヤー数: 1
-[16:52:35] [Discovery/Listener] 最大プレイヤー数: 8
-[16:52:35] [Discovery/Listener] ステート: 0
-[16:52:35] [Discovery/Listener] 名前の長さ: 4
-[16:52:35] [Discovery/Listener] サーバー名: 'YHJU'
-[16:52:35] [Discovery/Listener] ★サーバー検出★: YHJU @ 172.20.145.6:12947 (1/8) state=0
-[16:52:35] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:52:36] [Discovery/Listener] 生存確認 ループ:300
-[16:52:40] [Discovery/Advertiser] 送信データ: port=12947 player=1/8 state=0 name='YHJU'
-[16:52:40] [Discovery/Advertiser] ブロードキャスト送信 #7: サイズ=22 bytes (port=12947)
-[16:52:40] [Discovery/Listener] パケット受信! サイズ:22 bytes
-[16:52:40] [Discovery/Listener] マジック一致確認
-[16:52:40] [Discovery/Listener] プロトコルバージョン: 256
-[16:52:40] [Discovery/Listener] ポート（変換後）: 12947
-[16:52:40] [Discovery/Listener] プレイヤー数: 1
-[16:52:40] [Discovery/Listener] 最大プレイヤー数: 8
-[16:52:40] [Discovery/Listener] ステート: 0
-[16:52:40] [Discovery/Listener] 名前の長さ: 4
-[16:52:40] [Discovery/Listener] サーバー名: 'YHJU'
-[16:52:40] [Discovery/Listener] ★サーバー検出★: YHJU @ 172.20.145.6:12947 (1/8) state=0
-[16:52:40] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:52:41] [Discovery/Listener] 生存確認 ループ:350
-[16:52:45] [Discovery/Advertiser] 送信データ: port=12947 player=1/8 state=0 name='YHJU'
-[16:52:45] [Discovery/Advertiser] ブロードキャスト送信 #8: サイズ=22 bytes (port=12947)
-[16:52:45] [Discovery/Listener] パケット受信! サイズ:22 bytes
-[16:52:45] [Discovery/Listener] マジック一致確認
-[16:52:45] [Discovery/Listener] プロトコルバージョン: 256
-[16:52:45] [Discovery/Listener] ポート（変換後）: 12947
-[16:52:45] [Discovery/Listener] プレイヤー数: 1
-[16:52:45] [Discovery/Listener] 最大プレイヤー数: 8
-[16:52:45] [Discovery/Listener] ステート: 0
-[16:52:45] [Discovery/Listener] 名前の長さ: 4
-[16:52:45] [Discovery/Listener] サーバー名: 'YHJU'
-[16:52:45] [Discovery/Listener] ★サーバー検出★: YHJU @ 172.20.145.6:12947 (1/8) state=0
-[16:52:45] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:52:46] [Discovery/Listener] 生存確認 ループ:400
-[16:52:50] [Discovery/Advertiser] 送信データ: port=12947 player=1/8 state=0 name='YHJU'
-[16:52:50] [Discovery/Advertiser] ブロードキャスト送信 #9: サイズ=22 bytes (port=12947)
-[16:52:50] [Discovery/Listener] パケット受信! サイズ:22 bytes
-[16:52:50] [Discovery/Listener] マジック一致確認
-[16:52:50] [Discovery/Listener] プロトコルバージョン: 256
-[16:52:50] [Discovery/Listener] ポート（変換後）: 12947
-[16:52:50] [Discovery/Listener] プレイヤー数: 1
-[16:52:50] [Discovery/Listener] 最大プレイヤー数: 8
-[16:52:50] [Discovery/Listener] ステート: 0
-[16:52:50] [Discovery/Listener] 名前の長さ: 4
-[16:52:50] [Discovery/Listener] サーバー名: 'YHJU'
-[16:52:50] [Discovery/Listener] ★サーバー検出★: YHJU @ 172.20.145.6:12947 (1/8) state=0
-[16:52:50] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:52:51] [Discovery/Listener] 生存確認 ループ:450
-[16:52:55] [Discovery/Advertiser] 送信データ: port=12947 player=1/8 state=0 name='YHJU'
-[16:52:55] [Discovery/Advertiser] ブロードキャスト送信 #10: サイズ=22 bytes (port=12947)
-[16:52:55] [Discovery/Listener] パケット受信! サイズ:22 bytes
-[16:52:55] [Discovery/Listener] マジック一致確認
-[16:52:55] [Discovery/Listener] プロトコルバージョン: 256
-[16:52:55] [Discovery/Listener] ポート（変換後）: 12947
-[16:52:55] [Discovery/Listener] プレイヤー数: 1
-[16:52:55] [Discovery/Listener] 最大プレイヤー数: 8
-[16:52:55] [Discovery/Listener] ステート: 0
-[16:52:55] [Discovery/Listener] 名前の長さ: 4
-[16:52:55] [Discovery/Listener] サーバー名: 'YHJU'
-[16:52:55] [Discovery/Listener] ★サーバー検出★: YHJU @ 172.20.145.6:12947 (1/8) state=0
-[16:52:55] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:52:56] [Discovery/Listener] 生存確認 ループ:500
-[16:53:00] [Discovery/Advertiser] 送信データ: port=12947 player=1/8 state=0 name='YHJU'
-[16:53:00] [Discovery/Advertiser] ブロードキャスト送信 #11: サイズ=22 bytes (port=12947)
-[16:53:00] [Discovery/Listener] パケット受信! サイズ:22 bytes
-[16:53:00] [Discovery/Listener] マジック一致確認
-[16:53:00] [Discovery/Listener] プロトコルバージョン: 256
-[16:53:00] [Discovery/Listener] ポート（変換後）: 12947
-[16:53:00] [Discovery/Listener] プレイヤー数: 1
-[16:53:00] [Discovery/Listener] 最大プレイヤー数: 8
-[16:53:00] [Discovery/Listener] ステート: 0
-[16:53:00] [Discovery/Listener] 名前の長さ: 4
-[16:53:00] [Discovery/Listener] サーバー名: 'YHJU'
-[16:53:00] [Discovery/Listener] ★サーバー検出★: YHJU @ 172.20.145.6:12947 (1/8) state=0
-[16:53:00] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:53:01] [Discovery/Listener] 生存確認 ループ:550
-[16:53:05] [Discovery/Advertiser] 送信データ: port=12947 player=1/8 state=0 name='YHJU'
-[16:53:05] [Discovery/Advertiser] ブロードキャスト送信 #12: サイズ=22 bytes (port=12947)
-[16:53:05] [Discovery/Listener] パケット受信! サイズ:22 bytes
-[16:53:05] [Discovery/Listener] マジック一致確認
-[16:53:05] [Discovery/Listener] プロトコルバージョン: 256
-[16:53:05] [Discovery/Listener] ポート（変換後）: 12947
-[16:53:05] [Discovery/Listener] プレイヤー数: 1
-[16:53:05] [Discovery/Listener] 最大プレイヤー数: 8
-[16:53:05] [Discovery/Listener] ステート: 0
-[16:53:05] [Discovery/Listener] 名前の長さ: 4
-[16:53:05] [Discovery/Listener] サーバー名: 'YHJU'
-[16:53:05] [Discovery/Listener] ★サーバー検出★: YHJU @ 172.20.145.6:12947 (1/8) state=0
-[16:53:05] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:53:06] [Discovery/Listener] 生存確認 ループ:600
-[16:53:10] [Discovery/Advertiser] 送信データ: port=12947 player=1/8 state=0 name='YHJU'
-[16:53:10] [Discovery/Advertiser] ブロードキャスト送信 #13: サイズ=22 bytes (port=12947)
-[16:53:10] [Discovery/Listener] パケット受信! サイズ:22 bytes
-[16:53:10] [Discovery/Listener] マジック一致確認
-[16:53:10] [Discovery/Listener] プロトコルバージョン: 256
-[16:53:10] [Discovery/Listener] ポート（変換後）: 12947
-[16:53:10] [Discovery/Listener] プレイヤー数: 1
-[16:53:10] [Discovery/Listener] 最大プレイヤー数: 8
-[16:53:10] [Discovery/Listener] ステート: 0
-[16:53:10] [Discovery/Listener] 名前の長さ: 4
-[16:53:10] [Discovery/Listener] サーバー名: 'YHJU'
-[16:53:10] [Discovery/Listener] ★サーバー検出★: YHJU @ 172.20.145.6:12947 (1/8) state=0
-[16:53:10] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:53:11] [Discovery/Listener] 生存確認 ループ:650
-[16:53:11] [ServerManager] クライアント接続: ID=2 (現在2人)
-[16:53:11] [ServerManager] ProcessJoin: データ長=10
-[16:53:11] [ServerManager] 名前長さ: 9
-[16:53:11] [ServerManager] 受信した名前: 'Player655'
-[16:53:11] [ServerManager] クライアントのJOIN受信: Player655 (ID=2)
-[16:53:11] [ServerManager] JoinAck送信: ClientID=2
-[16:53:11] [ServerManager] 新規参加者にホスト情報を送信: Player659 Pos=(0.0,0.0,0.0)
-[16:53:11] [ServerManager] 新規参加者情報をブロードキャスト: Player655 (ID=2)
-[16:53:11] [ServerManager] ロビー更新をブロードキャスト
-[16:53:11] [ServerManager] BroadcastLobbyUpdate: 2 人
-[16:53:11] [ServerManager] プレイヤー1: 'Player659' (長さ:9)
-[16:53:11] [ServerManager] プレイヤー2: 'Player655' (長さ:9)
-[16:53:11] [ServerManager] 送信データサイズ: 22 bytes
-[16:53:11] [ClientManager] プレイヤー生成通知: ID=2, Name=Player655
-[16:53:11] [ClientManager] ProcessLobbyUpdate: データ長=22
-[16:53:11] [ClientManager] プレイヤー数: 2
-[16:53:11] [ClientManager] プレイヤー1 名前長さ: 9
-[16:53:11] [ClientManager] プレイヤー1: 'Player659'
-[16:53:11] [ClientManager] プレイヤー2 名前長さ: 9
-[16:53:11] [ClientManager] プレイヤー2: 'Player655'
-[16:53:11] [ClientManager] ロビー更新完了: 2 人
-[16:53:13] [SceneLobby] ゲーム開始ボタン押下
-[16:53:13] [ClientManager] ゲーム開始通知受信
-[16:53:13] [SceneLobby] ゲーム開始 - ゲームシーンへ遷移
-[16:53:13] [Client] 切断
-[16:53:13] [ServerManager] サーバー停止処理開始
-[16:53:13] [ServerManager] クライアント Player659 に切断通知
-[16:53:13] [ServerManager] クライアント Player655 に切断通知
-[16:53:13] [ServerManager] サーバー停止完了
-[16:53:13] [Discovery/Advertiser] 停止中...
-[16:53:13] [Discovery/Advertiser] ブロードキャストループ終了
-[16:53:13] [Discovery/Advertiser] 停止完了
-[16:53:14] [SceneGame] Initialize: IsHost=1, ClientID=1
-[16:53:14] [SceneGame] ホストのスポーン情報をブロードキャスト: ID=1
-[16:53:14] [SceneGame] 初期化完了 - 他プレイヤーのスポーン待機中
-[16:53:14] [SceneGame] 新規プレイヤー参加: ID=2, Name=Player655
-[16:53:14] [SceneGame] デフォルト位置を使用: (7.5, 0.5, 72.5)
-[16:53:14] [SceneGame] プレイヤー生成完了: ID=2, Name=Player655, Pos=(7.5, 0.5, 72.5)
-[16:53:14] [SceneGame] 確認: プレイヤー実際の位置=(7.5, 0.5, 72.5)
-[16:53:16] [SceneGame] フェードイン完了 - ゲーム開始
-[16:53:16] [Discovery/Listener] 生存確認 ループ:700
-[16:53:21] [Discovery/Listener] タイムアウト削除: 172.20.145.6:12947
-[16:53:21] [Discovery/Listener] 生存確認 ループ:750
-[16:53:26] [Discovery/Listener] 生存確認 ループ:800
-[16:53:31] [Discovery/Listener] 生存確認 ループ:850
+[09:44:04] ========================================
+[09:44:04] ClientManager 初期化開始
+[09:44:04] ========================================
+[09:44:04] [ClientManager] ENet初期化成功
+[09:44:04] [ClientManager] Discovery作成
+[09:44:04] [Discovery/Listener] スレッド開始
+[09:44:04] [Discovery/Listener] WSAStartup成功
+[09:44:04] [ClientManager] Discoveryリスナー起動 (ポート:12346)
+[09:44:04] [Discovery/Listener] ソケット作成成功
+[09:44:04] [Discovery/Listener] bind成功 ポート:12346
+[09:44:04] [Discovery/Listener] 受信ループ開始
+[09:44:06] ========================================
+[09:44:06] [SceneSelectHost] サーバー作成開始: WE
+[09:44:06] [Client] 切断
+[09:44:06] [ServerManager] ホスト名設定: Player817
+[09:44:06] [SceneSelectHost] サーバー名設定: WE
+[09:44:06] [SceneSelectHost] ホスト名設定: Player817
+[09:44:06] [Discovery/Advertiser] スレッド開始
+[09:44:06] [Discovery/Advertiser] WSAStartup成功
+[09:44:06] [ServerManager] サーバー起動: ポート=12443
+[09:44:06] [SceneSelectHost] サーバー起動成功: ポート=12443
+[09:44:06] [Discovery/Advertiser] ソケット作成成功
+[09:44:06] [Discovery/Advertiser] SO_BROADCAST設定成功
+[09:44:06] [Discovery/Advertiser] ブロードキャストループ開始
+[09:44:06] [Discovery/Advertiser] 送信データ: port=12443 player=1/8 state=0 name='WE'
+[09:44:06] [Discovery/Advertiser] ブロードキャスト送信 #1: サイズ=20 bytes (port=12443)
+[09:44:06] [ClientManager] ConnectToServer: 127.0.0.1:12443
+[09:44:06] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:44:06] [Discovery/Listener] マジック一致確認
+[09:44:06] [Discovery/Listener] プロトコルバージョン: 256
+[09:44:06] [Discovery/Listener] ポート（変換後）: 12443
+[09:44:06] [Discovery/Listener] プレイヤー数: 1
+[09:44:06] [ClientManager] クライアントホスト作成成功
+[09:44:06] [Discovery/Listener] 最大プレイヤー数: 8
+[09:44:06] [Discovery/Listener] ステート: 0
+[09:44:06] [Discovery/Listener] 名前の長さ: 2
+[09:44:06] [Discovery/Listener] サーバー名: 'WE'
+[09:44:06] [Discovery/Listener] ★サーバー検出★: WE @ 172.20.145.6:12443 (1/8) state=0
+[09:44:06] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[09:44:06] [ClientManager] ホスト接続 - サーバー名は接続後に取得
+[09:44:06] [ClientManager] 接続要求送信 (ホスト判定: true)
+[09:44:06] [SceneSelectHost] ロビーに遷移
+[09:44:06] [SceneLobby] ホストとしてロビー開始: サーバー名='WE'
+[09:44:06] [SceneLobby] Start完了
+[09:44:06] [ClientManager] サーバー接続成功（ENET_EVENT_TYPE_CONNECT受信）
+[09:44:06] [ClientManager] JOIN送信: Player817
+[09:44:06] [ClientManager] JOIN送信完了: Player817
+[09:44:06] [ServerManager] クライアント接続: ID=1 (現在1人)
+[09:44:06] [ServerManager] ProcessJoin: データ長=10
+[09:44:06] [ServerManager] 名前長さ: 9
+[09:44:06] [ServerManager] 受信した名前: 'Player817'
+[09:44:06] [ServerManager] ホストのJOIN受信: Player817 (ID=1)
+[09:44:06] [ServerManager] JoinAck送信: ClientID=1
+[09:44:06] [ServerManager] 新規参加者にホスト情報を送信: Player817 Pos=(0.0,0.0,0.0)
+[09:44:06] [ServerManager] 新規参加者情報をブロードキャスト: Player817 (ID=1)
+[09:44:06] [ServerManager] ロビー更新をブロードキャスト
+[09:44:06] [ServerManager] BroadcastLobbyUpdate: 1 人
+[09:44:06] [ServerManager] プレイヤー1: 'Player817' (長さ:9)
+[09:44:06] [ServerManager] 送信データサイズ: 12 bytes
+[09:44:06] [ClientManager] クライアントID割り当て: 1
+[09:44:06] [ClientManager] プレイヤー生成通知: ID=1, Name=Player817
+[09:44:06] [ClientManager] プレイヤー生成通知: ID=1, Name=Player817
+[09:44:06] [ClientManager] ProcessLobbyUpdate: データ長=12
+[09:44:06] [ClientManager] プレイヤー数: 1
+[09:44:06] [ClientManager] プレイヤー1 名前長さ: 9
+[09:44:06] [ClientManager] プレイヤー1: 'Player817'
+[09:44:06] [ClientManager] ロビー更新完了: 1 人
+[09:44:08] [SceneLobby] ゲーム開始ボタン押下
+[09:44:08] [ClientManager] ゲーム開始通知受信
+[09:44:08] [SceneLobby] ゲーム開始 - ゲームシーンへ遷移
+[09:44:08] [Client] 切断
+[09:44:08] [ServerManager] サーバー停止処理開始
+[09:44:08] [ServerManager] クライアント Player817 に切断通知
+[09:44:08] [ServerManager] サーバー停止完了
+[09:44:08] [Discovery/Advertiser] 停止中...
+[09:44:08] [Discovery/Advertiser] ブロードキャストループ終了
+[09:44:08] [Discovery/Advertiser] 停止完了
+[09:44:09] [Discovery/Listener] 生存確認 ループ:50
+[09:44:09] [SceneGame] Initialize: IsHost=1, ClientID=1
+[09:44:09] [SceneGame] ホストのスポーン情報をブロードキャスト: ID=1
+[09:44:09] [SceneGame] 初期化完了 - 他プレイヤーのスポーン待機中
+[09:44:09] [Player] GetNetState: ID=1 Pos=(7.5,0.5,72.5)
+[09:44:09] [SceneGame] 送信: ID=1 Pos=(7.5,0.5,72.5) Angle=(0.0,0.0)
+[09:44:10] [SceneGame] 送信: ID=1 Pos=(7.5,0.5,72.5) Angle=(0.0,0.0)
+[09:44:11] [SceneGame] フェードイン完了 - ゲーム開始
+[09:44:14] [Discovery/Listener] 生存確認 ループ:100
+[09:44:17] [Discovery/Listener] タイムアウト削除: 172.20.145.6:12443
+[09:44:19] [Discovery/Listener] 生存確認 ループ:150
+[09:44:24] [Discovery/Listener] 生存確認 ループ:200
+[09:44:29] [Discovery/Listener] 生存確認 ループ:250
+[09:44:34] [Discovery/Listener] 生存確認 ループ:300
+[09:44:39] [Discovery/Listener] 生存確認 ループ:350
+[09:44:44] [Discovery/Listener] 生存確認 ループ:400
+[09:44:49] [Discovery/Listener] 生存確認 ループ:450
+[09:44:54] [Discovery/Listener] 生存確認 ループ:500
+[09:44:58] ========================================
+[09:44:58] [SceneSelectHost] サーバー作成開始: AD
+[09:44:58] [Client] 切断
+[09:44:58] [ServerManager] ホスト名設定: Player875
+[09:44:58] [SceneSelectHost] サーバー名設定: AD
+[09:44:58] [SceneSelectHost] ホスト名設定: Player875
+[09:44:58] [Discovery/Advertiser] スレッド開始
+[09:44:58] [Discovery/Advertiser] WSAStartup成功
+[09:44:58] [Discovery/Advertiser] ソケット作成成功
+[09:44:58] [Discovery/Advertiser] SO_BROADCAST設定成功
+[09:44:58] [Discovery/Advertiser] ブロードキャストループ開始
+[09:44:58] [Discovery/Advertiser] 送信データ: port=12075 player=1/8 state=0 name='AD'
+[09:44:58] [ServerManager] サーバー起動: ポート=12075
+[09:44:58] [Discovery/Advertiser] ブロードキャスト送信 #1: サイズ=20 bytes (port=12075)
+[09:44:58] [SceneSelectHost] サーバー起動成功: ポート=12075
+[09:44:58] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:44:58] [Discovery/Listener] マジック一致確認
+[09:44:58] [Discovery/Listener] プロトコルバージョン: 256
+[09:44:58] [Discovery/Listener] ポート（変換後）: 12075
+[09:44:58] [Discovery/Listener] プレイヤー数: 1
+[09:44:58] [Discovery/Listener] 最大プレイヤー数: 8
+[09:44:58] [Discovery/Listener] ステート: 0
+[09:44:58] [Discovery/Listener] 名前の長さ: 2
+[09:44:58] [Discovery/Listener] サーバー名: 'AD'
+[09:44:58] [Discovery/Listener] ★サーバー検出★: AD @ 172.20.145.6:12075 (1/8) state=0
+[09:44:58] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[09:44:58] [ClientManager] ConnectToServer: 127.0.0.1:12075
+[09:44:58] [ClientManager] クライアントホスト作成成功
+[09:44:58] [ClientManager] ホスト接続 - サーバー名は接続後に取得
+[09:44:58] [ClientManager] 接続要求送信 (ホスト判定: true)
+[09:44:58] [SceneSelectHost] ロビーに遷移
+[09:44:58] [SceneLobby] ホストとしてロビー開始: サーバー名='AD'
+[09:44:58] [SceneLobby] Start完了
+[09:44:58] [ClientManager] サーバー接続成功（ENET_EVENT_TYPE_CONNECT受信）
+[09:44:58] [ClientManager] JOIN送信: Player875
+[09:44:58] [ClientManager] JOIN送信完了: Player875
+[09:44:58] [ServerManager] クライアント接続: ID=1 (現在1人)
+[09:44:58] [ServerManager] ProcessJoin: データ長=10
+[09:44:58] [ServerManager] 名前長さ: 9
+[09:44:58] [ServerManager] 受信した名前: 'Player875'
+[09:44:58] [ServerManager] ホストのJOIN受信: Player875 (ID=1)
+[09:44:58] [ServerManager] JoinAck送信: ClientID=1
+[09:44:58] [ServerManager] 新規参加者にホスト情報を送信: Player875 Pos=(0.0,0.0,0.0)
+[09:44:58] [ServerManager] 新規参加者情報をブロードキャスト: Player875 (ID=1)
+[09:44:58] [ServerManager] ロビー更新をブロードキャスト
+[09:44:58] [ServerManager] BroadcastLobbyUpdate: 1 人
+[09:44:58] [ServerManager] プレイヤー1: 'Player875' (長さ:9)
+[09:44:58] [ServerManager] 送信データサイズ: 12 bytes
+[09:44:58] [ClientManager] クライアントID割り当て: 1
+[09:44:58] [ClientManager] プレイヤー生成通知: ID=1, Name=Player875
+[09:44:58] [ClientManager] プレイヤー生成通知: ID=1, Name=Player875
+[09:44:58] [ClientManager] ProcessLobbyUpdate: データ長=12
+[09:44:58] [ClientManager] プレイヤー数: 1
+[09:44:58] [ClientManager] プレイヤー1 名前長さ: 9
+[09:44:58] [ClientManager] プレイヤー1: 'Player875'
+[09:44:58] [ClientManager] ロビー更新完了: 1 人
+[09:44:59] [Discovery/Listener] 生存確認 ループ:550
+[09:45:03] [Discovery/Advertiser] 送信データ: port=12075 player=1/8 state=0 name='AD'
+[09:45:03] [Discovery/Advertiser] ブロードキャスト送信 #2: サイズ=20 bytes (port=12075)
+[09:45:03] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:45:03] [Discovery/Listener] マジック一致確認
+[09:45:03] [Discovery/Listener] プロトコルバージョン: 256
+[09:45:03] [Discovery/Listener] ポート（変換後）: 12075
+[09:45:03] [Discovery/Listener] プレイヤー数: 1
+[09:45:03] [Discovery/Listener] 最大プレイヤー数: 8
+[09:45:03] [Discovery/Listener] ステート: 0
+[09:45:03] [Discovery/Listener] 名前の長さ: 2
+[09:45:03] [Discovery/Listener] サーバー名: 'AD'
+[09:45:03] [Discovery/Listener] ★サーバー検出★: AD @ 172.20.145.6:12075 (1/8) state=0
+[09:45:03] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[09:45:04] [Discovery/Listener] 生存確認 ループ:600
+[09:45:05] [ServerManager] クライアント接続: ID=2 (現在2人)
+[09:45:05] [ServerManager] ProcessJoin: データ長=10
+[09:45:05] [ServerManager] 名前長さ: 9
+[09:45:05] [ServerManager] 受信した名前: 'Player839'
+[09:45:05] [ServerManager] クライアントのJOIN受信: Player839 (ID=2)
+[09:45:05] [ServerManager] JoinAck送信: ClientID=2
+[09:45:05] [ServerManager] 新規参加者にホスト情報を送信: Player875 Pos=(0.0,0.0,0.0)
+[09:45:05] [ServerManager] 新規参加者情報をブロードキャスト: Player839 (ID=2)
+[09:45:05] [ServerManager] ロビー更新をブロードキャスト
+[09:45:05] [ServerManager] BroadcastLobbyUpdate: 2 人
+[09:45:05] [ServerManager] プレイヤー1: 'Player875' (長さ:9)
+[09:45:05] [ServerManager] プレイヤー2: 'Player839' (長さ:9)
+[09:45:05] [ServerManager] 送信データサイズ: 22 bytes
+[09:45:05] [ClientManager] プレイヤー生成通知: ID=2, Name=Player839
+[09:45:05] [ClientManager] ProcessLobbyUpdate: データ長=22
+[09:45:05] [ClientManager] プレイヤー数: 2
+[09:45:05] [ClientManager] プレイヤー1 名前長さ: 9
+[09:45:05] [ClientManager] プレイヤー1: 'Player875'
+[09:45:05] [ClientManager] プレイヤー2 名前長さ: 9
+[09:45:05] [ClientManager] プレイヤー2: 'Player839'
+[09:45:05] [ClientManager] ロビー更新完了: 2 人
+[09:45:06] [SceneLobby] ゲーム開始ボタン押下
+[09:45:06] [ClientManager] ゲーム開始通知受信
+[09:45:06] [SceneLobby] ゲーム開始 - ゲームシーンへ遷移
+[09:45:06] [Client] 切断
+[09:45:06] [ServerManager] サーバー停止処理開始
+[09:45:06] [ServerManager] クライアント Player875 に切断通知
+[09:45:06] [ServerManager] クライアント Player839 に切断通知
+[09:45:06] [ServerManager] サーバー停止完了
+[09:45:06] [Discovery/Advertiser] 停止中...
+[09:45:06] [Discovery/Advertiser] ブロードキャストループ終了
+[09:45:06] [Discovery/Advertiser] 停止完了
+[09:45:07] [SceneGame] Initialize: IsHost=1, ClientID=1
+[09:45:07] [SceneGame] ホストのスポーン情報をブロードキャスト: ID=1
+[09:45:07] [SceneGame] 初期化完了 - 他プレイヤーのスポーン待機中
+[09:45:07] [SceneGame] 新規プレイヤー参加: ID=2, Name=Player839
+[09:45:07] [SceneGame] デフォルト位置を使用: (7.5, 0.5, 72.5)
+[09:45:07] [SceneGame] プレイヤー生成完了: ID=2, Name=Player839, Pos=(7.5, 0.5, 72.5)
+[09:45:07] [SceneGame] 確認: プレイヤー実際の位置=(7.5, 0.5, 72.5)
+[09:45:07] [Player] GetNetState: ID=1 Pos=(7.5,0.5,72.5)
+[09:45:07] [SceneGame] 送信: ID=1 Pos=(7.5,0.5,72.5) Angle=(0.0,0.0)
+[09:45:08] [SceneGame] 送信: ID=1 Pos=(7.5,0.5,72.5) Angle=(0.0,0.0)
+[09:45:09] [SceneGame] フェードイン完了 - ゲーム開始
+[09:45:09] [Discovery/Listener] 生存確認 ループ:650
+[09:45:09] [Player] GetNetState: ID=1 Pos=(7.5,0.5,72.5)
+[09:45:09] [SceneGame] 送信: ID=1 Pos=(7.5,0.5,72.5) Angle=(0.4,-0.0)
+[09:45:10] [SceneGame] 送信: ID=1 Pos=(9.1,0.5,71.8) Angle=(55.6,-0.3)
+[09:45:11] [Player] GetNetState: ID=1 Pos=(10.3,0.5,72.4)
+[09:45:11] [SceneGame] 送信: ID=1 Pos=(10.2,0.5,72.4) Angle=(68.4,4.8)
+[09:45:12] [SceneGame] 送信: ID=1 Pos=(11.9,0.5,72.0) Angle=(69.9,4.1)
+[09:45:13] [Player] GetNetState: ID=1 Pos=(11.5,0.5,72.9)
+[09:45:14] [SceneGame] 送信: ID=1 Pos=(11.5,0.5,72.9) Angle=(70.0,3.7)
+[09:45:14] [Discovery/Listener] 生存確認 ループ:700
+[09:45:14] [Discovery/Listener] タイムアウト削除: 172.20.145.6:12075
+[09:45:15] [SceneGame] 送信: ID=1 Pos=(11.5,0.5,72.9) Angle=(70.0,3.7)
+[09:45:15] [Player] GetNetState: ID=1 Pos=(11.5,0.5,72.9)
+[09:45:16] [SceneGame] 送信: ID=1 Pos=(11.5,0.5,72.9) Angle=(70.0,3.7)
+[09:45:17] [SceneGame] 送信: ID=1 Pos=(11.5,0.5,72.9) Angle=(70.0,3.7)
+[09:45:18] [Player] GetNetState: ID=1 Pos=(11.5,0.5,72.9)
+[09:45:18] [SceneGame] 送信: ID=1 Pos=(11.5,0.5,72.9) Angle=(70.0,3.7)
+[09:45:19] [SceneGame] 送信: ID=1 Pos=(11.5,0.5,72.9) Angle=(70.0,3.7)
+[09:45:19] [Discovery/Listener] 生存確認 ループ:750
+[09:45:20] [Player] GetNetState: ID=1 Pos=(11.5,0.5,72.9)
+[09:45:20] [SceneGame] 送信: ID=1 Pos=(11.5,0.5,72.9) Angle=(70.1,3.7)
+[09:45:21] [SceneGame] 送信: ID=1 Pos=(11.5,0.5,72.9) Angle=(70.1,3.7)
+[09:45:22] [Player] GetNetState: ID=1 Pos=(11.5,0.5,72.9)
+[09:45:22] [SceneGame] 送信: ID=1 Pos=(11.5,0.5,72.9) Angle=(70.1,3.7)
+[09:45:23] [SceneGame] 送信: ID=1 Pos=(11.5,0.5,72.9) Angle=(70.1,3.7)
+[09:45:24] [Player] GetNetState: ID=1 Pos=(11.5,0.5,72.9)
+[09:45:24] [SceneGame] 送信: ID=1 Pos=(11.5,0.5,72.9) Angle=(70.1,3.7)
+[09:45:24] [Discovery/Listener] 生存確認 ループ:800
+[09:45:25] [SceneGame] 送信: ID=1 Pos=(11.5,0.5,72.9) Angle=(70.1,3.7)
+[09:45:26] [Player] GetNetState: ID=1 Pos=(11.5,0.5,72.9)
+[09:45:26] [SceneGame] 送信: ID=1 Pos=(11.5,0.5,72.9) Angle=(70.1,3.7)
+[09:45:27] [SceneGame] 送信: ID=1 Pos=(11.5,0.5,72.9) Angle=(70.1,3.7)
+[09:45:28] [Player] GetNetState: ID=1 Pos=(11.5,0.5,72.9)
+[09:45:28] [SceneGame] 送信: ID=1 Pos=(11.5,0.5,72.9) Angle=(70.1,3.7)
+[09:45:29] [SceneGame] 送信: ID=1 Pos=(11.5,0.5,72.9) Angle=(70.1,3.7)
+[09:45:29] [Discovery/Listener] 生存確認 ループ:850
+[09:45:30] [Player] GetNetState: ID=1 Pos=(11.5,0.5,72.9)
+[09:45:30] [SceneGame] 送信: ID=1 Pos=(11.5,0.5,72.9) Angle=(70.1,3.7)
+[09:45:31] [SceneGame] 送信: ID=1 Pos=(11.5,0.5,72.9) Angle=(70.1,3.7)
+[09:45:32] [Player] GetNetState: ID=1 Pos=(11.5,0.5,72.9)
+[09:45:32] [SceneGame] 送信: ID=1 Pos=(11.5,0.5,72.9) Angle=(70.1,3.7)
+[09:45:33] [SceneGame] 送信: ID=1 Pos=(11.5,0.5,72.9) Angle=(113.3,-2.6)
+[09:45:34] [Discovery/Listener] 生存確認 ループ:900
+[09:45:39] [Discovery/Listener] 生存確認 ループ:950
