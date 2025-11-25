@@ -303,12 +303,24 @@ void SceneGame::SyncToServer()
 
 	NetPlayerState state = m_pLocalPlayer->GetNetState();
 
+	// ★★★ デバッグ: 送信する状態をログ出力 ★★★
+	static DWORD lastLogTime = 0;
+	DWORD now = timeGetTime();
+	if (now - lastLogTime > 1000) // 1秒ごとにログ
+	{
+		NET_LOG_F("[SceneGame] 送信: ID=%u Pos=(%.1f,%.1f,%.1f) Angle=(%.1f,%.1f)",
+			state.clientId, state.posX, state.posY, state.posZ, state.hAngle, state.vAngle);
+		lastLogTime = now;
+	}
+
 	if (m_bIsHost && m_pServer)
 	{
+		// ホストの場合、サーバーに直接状態を設定
 		m_pServer->SetHostState(state);
 	}
 	else
 	{
+		// クライアントの場合、サーバーに送信
 		m_pClient->SendPlayerState(state);
 	}
 }
@@ -345,6 +357,21 @@ void SceneGame::ReceiveFromServer()
 	NetWorldState world;
 	if (m_pClient->GetWorldState(world))
 	{
+		// ★★★ デバッグ: 受信したワールド状態をログ出力 ★★★
+		static DWORD lastLogTime = 0;
+		DWORD now = timeGetTime();
+		if (now - lastLogTime > 1000) // 1秒ごとにログ
+		{
+			NET_LOG_F("[SceneGame] ワールド状態受信: プレイヤー数=%d", (int)world.playerCount);
+			for (int i = 0; i < world.playerCount; ++i)
+			{
+				const NetPlayerState& ps = world.players[i];
+				NET_LOG_F("  [%d] ID=%u Pos=(%.1f,%.1f,%.1f)",
+					i, ps.clientId, ps.posX, ps.posY, ps.posZ);
+			}
+			lastLogTime = now;
+		}
+
 		for (int i = 0; i < world.playerCount; ++i)
 		{
 			const NetPlayerState& ps = world.players[i];
@@ -355,15 +382,17 @@ void SceneGame::ReceiveFromServer()
 			auto it = m_players.find(ps.clientId);
 			if (it != m_players.end() && it->second)
 			{
-				// 既存プレイヤーの状態を更新
+				// ★★★ 既存プレイヤーの状態を更新 ★★★
 				it->second->UpdateFromNetwork(ps, m_light, m_deltaTime);
 			}
 			else
 			{
-				// まだ生成されていないプレイヤーを生成
-				NET_LOG_F("[SceneGame] ワールド状態から新規プレイヤー生成: ID=%u", ps.clientId);
+				// ★★★ まだ生成されていないプレイヤーを生成 ★★★
+				NET_LOG_F("[SceneGame] ワールド状態から新規プレイヤー生成: ID=%u Pos=(%.1f,%.1f,%.1f)",
+					ps.clientId, ps.posX, ps.posY, ps.posZ);
 				SpawnPlayer(ps.clientId, "Player", D3DXVECTOR3(ps.posX, ps.posY, ps.posZ));
 
+				// 生成直後に状態を更新
 				if (m_players.find(ps.clientId) != m_players.end())
 				{
 					m_players[ps.clientId]->UpdateFromNetwork(ps, m_light, m_deltaTime);
@@ -437,18 +466,12 @@ void SceneGame::Draw()
 	m_map.DrawMap(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light, lights);
 	m_map.DrawGoalEffect(&m_camera, &m_projection);
 
-	// ★★★ すべてのプレイヤーを描画（ローカルは一人称視点時のみスキップ）★★★
+	// ★★★ すべてのプレイヤーを描画 ★★★
 	int drawnCount = 0;
 	for (auto& kv : m_players)
 	{
 		if (kv.second)
 		{
-			// ローカルプレイヤーが一人称視点の場合のみスキップ
-			if (kv.first == m_localClientId && m_pLocalPlayer && m_pLocalPlayer->IsLocal() && m_bFirstPerson)
-			{
-				continue;
-			}
-
 			kv.second->Draw(&m_camera, &m_projection, &m_ambient, &m_light);
 			drawnCount++;
 		}

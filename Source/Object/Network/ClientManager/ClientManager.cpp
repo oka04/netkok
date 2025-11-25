@@ -537,12 +537,30 @@ void ClientManager::ProcessLobbyUpdate(const uint8_t* data, size_t len)
 
 void ClientManager::SendPlayerState(const NetPlayerState& state)
 {
-	if (!m_pServerPeer || !m_bConnected) return;
+	if (!m_pServerPeer || !m_bConnected)
+	{
+		NET_LOG("[ClientManager] サーバーに未接続 - 状態送信スキップ");
+		return;
+	}
 
 	auto data = NetworkSerializer::SerializePlayerState(state);
 
+	// ★★★ デバッグ: 送信内容をログ出力 ★★★
+	static DWORD lastLogTime = 0;
+	DWORD now = timeGetTime();
+	if (now - lastLogTime > 1000) // 1秒ごとにログ
+	{
+		NET_LOG_F("[ClientManager] 状態送信: ID=%u Pos=(%.1f,%.1f,%.1f) Size=%d bytes",
+			state.clientId, state.posX, state.posY, state.posZ, (int)data.size());
+		lastLogTime = now;
+	}
+
+	// ★★★ チャンネル1（信頼性なし・順序なし）で高速送信 ★★★
 	ENetPacket* packet = enet_packet_create(data.data(), data.size(), ENET_PACKET_FLAG_UNSEQUENCED);
 	enet_peer_send(m_pServerPeer, 1, packet);
+
+	// ★★★ 即座に送信 ★★★
+	enet_host_flush(m_pClientHost);
 }
 
 bool ClientManager::GetWorldState(NetWorldState& out)

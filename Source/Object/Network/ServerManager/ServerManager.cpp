@@ -465,20 +465,42 @@ void ServerManager::ProcessJoin(ENetPeer* peer, const uint8_t* data, size_t len)
 
 void ServerManager::ProcessPlayerState(ENetPeer* peer, const uint8_t* data, size_t len)
 {
-	if (len < sizeof(NetPlayerState)) return;
+	if (len < sizeof(NetPlayerState))
+	{
+		NET_LOG_F("[ServerManager] プレイヤー状態データ不足: %d bytes", (int)len);
+		return;
+	}
 
 	NetPlayerState state;
 	if (!NetworkSerializer::DeserializePlayerState(data, len, state))
+	{
+		NET_LOG("[ServerManager] プレイヤー状態のデシリアライズ失敗");
 		return;
+	}
 
 	std::lock_guard<std::mutex> lk(m_stateMutex);
 
 	auto it = m_clients.find(peer);
 	if (it != m_clients.end())
 	{
+		// ★★★ 受信した状態を保存 ★★★
 		it->second->lastState = state;
-		it->second->lastState.clientId = it->second->id;
+		it->second->lastState.clientId = it->second->id; // IDを確実に設定
 		it->second->stateReceived = true;
+
+		// ★★★ デバッグ: 受信した状態をログ出力 ★★★
+		static DWORD lastLogTime = 0;
+		DWORD now = timeGetTime();
+		if (now - lastLogTime > 1000) // 1秒ごとにログ
+		{
+			NET_LOG_F("[ServerManager] クライアント状態受信: ID=%u Pos=(%.1f,%.1f,%.1f)",
+				it->second->id, state.posX, state.posY, state.posZ);
+			lastLogTime = now;
+		}
+	}
+	else
+	{
+		NET_LOG("[ServerManager] 不明なクライアントから状態を受信");
 	}
 }
 
@@ -498,6 +520,8 @@ std::vector<NetPlayerState> ServerManager::GetAllPlayerStates() const
 	if (m_hostStateSet)
 	{
 		states.push_back(m_hostState);
+		NET_LOG_F("[ServerManager] ホスト状態取得: ID=%u Pos=(%.1f,%.1f,%.1f)",
+			m_hostState.clientId, m_hostState.posX, m_hostState.posY, m_hostState.posZ);
 	}
 
 	for (const auto& kv : m_clients)
@@ -505,12 +529,14 @@ std::vector<NetPlayerState> ServerManager::GetAllPlayerStates() const
 		if (kv.second->stateReceived)
 		{
 			states.push_back(kv.second->lastState);
+			NET_LOG_F("[ServerManager] クライアント状態取得: ID=%u Pos=(%.1f,%.1f,%.1f)",
+				kv.second->lastState.clientId,
+				kv.second->lastState.posX, kv.second->lastState.posY, kv.second->lastState.posZ);
 		}
 	}
 
 	return states;
 }
-
 void ServerManager::BroadcastWorldState()
 {
 	if (!m_pServerHost) return;
@@ -522,6 +548,21 @@ void ServerManager::BroadcastWorldState()
 	for (int i = 0; i < world.playerCount; ++i)
 	{
 		world.players[i] = states[i];
+	}
+
+	// ★★★ デバッグ: ブロードキャストする内容をログ出力 ★★★
+	static DWORD lastLogTime = 0;
+	DWORD now = timeGetTime();
+	if (now - lastLogTime > 1000) // 1秒ごとにログ
+	{
+		NET_LOG_F("[ServerManager] ワールド状態ブロードキャスト: プレイヤー数=%d", (int)world.playerCount);
+		for (int i = 0; i < world.playerCount; ++i)
+		{
+			NET_LOG_F("  [%d] ID=%u Pos=(%.1f,%.1f,%.1f)",
+				i, world.players[i].clientId,
+				world.players[i].posX, world.players[i].posY, world.players[i].posZ);
+		}
+		lastLogTime = now;
 	}
 
 	auto data = NetworkSerializer::SerializeWorldState(world);

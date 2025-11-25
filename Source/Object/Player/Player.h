@@ -7,6 +7,7 @@
 #include "..\\..\\Object\\CharacterBase\\CharacterBase.h"
 #include "..\\..\\Object\\Map\\Map.h"
 #include "..\\..\\Object\\Network\\NetworkSync.h"
+#include "..\\..\\Object\\Network\\NetworkLogger.h"
 #include <fstream>
 #include "..\\json.hpp"
 

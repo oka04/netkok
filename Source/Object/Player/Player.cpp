@@ -77,23 +77,43 @@ void Player::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 
 void Player::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& light, float deltaTime)
 {
+	// ★★★ デバッグ: 受信した状態をログ出力 ★★★
+	static DWORD lastLogTime = 0;
+	static std::map<uint32_t, DWORD> lastLogPerPlayer;
+	DWORD now = timeGetTime();
+
+	if (now - lastLogPerPlayer[state.clientId] > 2000) // プレイヤーごとに2秒ごと
+	{
+		NET_LOG_F("[Player] UpdateFromNetwork: ID=%u Pos=(%.1f,%.1f,%.1f) -> Target=(%.1f,%.1f,%.1f)",
+			m_clientId, m_position.x, m_position.y, m_position.z,
+			state.posX, state.posY, state.posZ);
+		lastLogPerPlayer[state.clientId] = now;
+	}
+
+	// ターゲット位置を設定
 	m_targetPosition = D3DXVECTOR3(state.posX, state.posY, state.posZ);
 	m_targetHAngle = state.hAngle;
 	m_targetVAngle = state.vAngle;
 
+	// 現在位置との距離を計算
 	D3DXVECTOR3 diff = m_targetPosition - m_position;
 	float dist = D3DXVec3Length(&diff);
 
-	if (dist > 5.0f)
+	// ★★★ テレポート閾値を下げて、より素早く同期 ★★★
+	if (dist > 3.0f) // 5.0f → 3.0f に変更
 	{
+		// 距離が大きい場合は即座にテレポート
 		m_position = m_targetPosition;
+		NET_LOG_F("[Player] テレポート: ID=%u Dist=%.1f", m_clientId, dist);
 	}
 	else if (dist > 0.01f)
 	{
+		// ★★★ 補間速度を上げて、より滑らかかつ迅速に移動 ★★★
 		float t = min(1.0f, m_interpolationSpeed * deltaTime);
 		m_position += diff * t;
 	}
 
+	// 角度の補間
 	float hDiff = m_targetHAngle - m_hAngle;
 	while (hDiff > 180.0f) hDiff -= 360.0f;
 	while (hDiff < -180.0f) hDiff += 360.0f;
@@ -102,12 +122,16 @@ void Player::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 	float vDiff = m_targetVAngle - m_vAngle;
 	m_vAngle += vDiff * min(1.0f, m_interpolationSpeed * deltaTime);
 
+	// 向きベクトルとその他の状態を更新
 	m_depth = D3DXVECTOR3(state.depthX, state.depthY, state.depthZ);
 	m_keyFlag = state.keyFlag;
 	m_stamina = state.stamina;
 	m_bFirstPerson = state.IsFirstPerson();
 
+	// 目の位置を更新
 	m_eyePosition = m_position + ((m_keyFlag & CROUCH_KEY) ? f_crouchEyePosition : f_standEyePosition);
+
+	// 行列を更新
 	UpdateMatrix(light);
 }
 
@@ -127,6 +151,19 @@ NetPlayerState Player::GetNetState() const
 	state.stamina = m_stamina;
 	state.flags = 0;
 	state.SetFirstPerson(m_bFirstPerson);
+
+	// ★★★ デバッグ: 状態生成時にログ出力（呼び出し頻度が高いので抑制）★★★
+	static DWORD lastLogTime = 0;
+	static uint32_t lastLoggedId = 0;
+	DWORD now = timeGetTime();
+	if (m_bIsLocal && now - lastLogTime > 2000) // 2秒ごと、ローカルのみ
+	{
+		NET_LOG_F("[Player] GetNetState: ID=%u Pos=(%.1f,%.1f,%.1f)",
+			state.clientId, state.posX, state.posY, state.posZ);
+		lastLogTime = now;
+		lastLoggedId = m_clientId;
+	}
+
 	return state;
 }
 
