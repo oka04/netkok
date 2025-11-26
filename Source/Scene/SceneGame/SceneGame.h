@@ -95,6 +95,6 @@ private:
 	ClientManager* m_pClient;
 	ServerManager* m_pServer;
 
-	static const DWORD NETWORK_SEND_INTERVAL = 33;
-	static const DWORD WORLD_BROADCAST_INTERVAL = 33;
+	static const DWORD NETWORK_SEND_INTERVAL = 16;
+	static const DWORD WORLD_BROADCAST_INTERVAL = 16;
 };

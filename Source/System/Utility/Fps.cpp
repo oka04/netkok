@@ -18,7 +18,7 @@
 // コンストラクタ
 //=============================================================================
 Fps::Fps()
-	: m_refreshRate(60)
+	: m_refreshRate(120)
 	, m_counter(0)
 	, m_nowFPS(0)
 	, m_timeInterval(1000 / m_refreshRate)
