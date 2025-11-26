@@ -27,6 +27,8 @@ SceneGame::SceneGame(Engine* pEngine)
 	, m_lastTime(0)
 	, m_bInitialSyncDone(false)
 	, m_bFirstPerson(true)
+	, m_bEnablePrediction(true)          
+	, m_bEnableJitterReduction(true)
 {
 }
 

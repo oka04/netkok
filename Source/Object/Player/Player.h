@@ -39,6 +39,9 @@ public:
 	void SetPosition(const D3DXVECTOR3& pos) { m_position = pos; }
 	const D3DXVECTOR3& GetEyePosition() const { return m_eyePosition; }
 
+	void PredictMovement(float deltaTime);
+	void AddPositionToHistory(const D3DXVECTOR3& pos);
+	D3DXVECTOR3 GetAveragedPosition() const;
 private:
 	void LoadParameter();
 	void ChangeSpeed();
@@ -79,5 +82,19 @@ private:
 	D3DXVECTOR3 m_targetPosition;
 	float m_targetHAngle;
 	float m_targetVAngle;
-	float m_interpolationSpeed;
+	float m_interpolationSpeed; 
+	float m_adaptiveInterpolationSpeed;
+
+	D3DXVECTOR3 m_velocity;             
+	D3DXVECTOR3 m_predictedPosition;
+
+	D3DXVECTOR3 m_smoothedVelocity;     
+	float m_velocitySmoothingFactor;
+	static const int MAX_POSITION_HISTORY = 5;
+	D3DXVECTOR3 m_positionHistory[MAX_POSITION_HISTORY];
+	int m_positionHistoryIndex;
+	int m_positionHistoryCount;
+	DWORD m_lastUpdateTime;             
+	float m_timeSinceLastUpdate;
+
 };

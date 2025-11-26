@@ -16,8 +16,21 @@ Player::Player()
 	, m_targetPosition(0, 0, 0)
 	, m_targetHAngle(0)
 	, m_targetVAngle(0)
-	, m_interpolationSpeed(50.0f)
+	, m_interpolationSpeed(30.0f)     
+	, m_adaptiveInterpolationSpeed(30.0f)
+	, m_velocity(0, 0, 0)
+	, m_predictedPosition(0, 0, 0)
+	, m_smoothedVelocity(0, 0, 0)
+	, m_velocitySmoothingFactor(0.3f)   
+	, m_positionHistoryIndex(0)
+	, m_positionHistoryCount(0)
+	, m_lastUpdateTime(0)
+	, m_timeSinceLastUpdate(0.0f)
 {
+	for (int i = 0; i < MAX_POSITION_HISTORY; i++)
+	{
+		m_positionHistory[i] = D3DXVECTOR3(0, 0, 0);
+	}
 }
 
 Player::~Player()
@@ -180,7 +193,6 @@ void Player::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 	// ★★★ 行列を更新 ★★★
 	UpdateMatrix(light);
 }
-
 NetPlayerState Player::GetNetState() const
 {
 	NetPlayerState state;
@@ -382,4 +394,49 @@ void Player::ChangeSpeed()
 	{
 		m_speed = f_walkSpeed * m_deltaTime;
 	}
+}
+
+void Player::PredictMovement(float deltaTime)
+{
+	if (m_bIsLocal) return;  // ローカルプレイヤーは予測不要
+
+							 // ★★★ 速度ベースの予測 ★★★
+	if (D3DXVec3Length(&m_velocity) > 0.01f)
+	{
+		D3DXVECTOR3 prediction = m_velocity * deltaTime;
+		m_predictedPosition = m_position + prediction;
+
+		// ★★★ 予測位置とターゲット位置の間で補間 ★★★
+		float blend = 0.3f;  // 30%予測、70%現在位置
+		m_position = m_position * (1.0f - blend) + m_predictedPosition * blend;
+	}
+}
+
+// ★★★ 位置履歴の追加 ★★★
+void Player::AddPositionToHistory(const D3DXVECTOR3& pos)
+{
+	m_positionHistory[m_positionHistoryIndex] = pos;
+	m_positionHistoryIndex = (m_positionHistoryIndex + 1) % MAX_POSITION_HISTORY;
+
+	if (m_positionHistoryCount < MAX_POSITION_HISTORY)
+	{
+		m_positionHistoryCount++;
+	}
+}
+
+// ★★★ 平均位置の取得（ジッター対策）★★★
+D3DXVECTOR3 Player::GetAveragedPosition() const
+{
+	if (m_positionHistoryCount == 0)
+	{
+		return m_position;
+	}
+
+	D3DXVECTOR3 sum(0, 0, 0);
+	for (int i = 0; i < m_positionHistoryCount; i++)
+	{
+		sum += m_positionHistory[i];
+	}
+
+	return sum / (float)m_positionHistoryCount;
 }
