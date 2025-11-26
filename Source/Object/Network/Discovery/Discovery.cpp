@@ -149,7 +149,6 @@ bool Discovery::StartListener(uint16_t discoveryPort)
 				idx += 2;
 				NET_LOG_F("[Discovery/Listener] プロトコルバージョン: %d", (int)protoVer);
 
-				// ★★★ 修正: ENetポートを正しく読み取る ★★★
 				if (idx + 2 > recvLen) continue;
 				uint16_t enetPort;
 				memcpy(&enetPort, buf + idx, sizeof(uint16_t));
@@ -198,7 +197,7 @@ bool Discovery::StartListener(uint16_t discoveryPort)
 
 				ServerInfo si;
 				si.ip = from.sin_addr.s_addr;
-				si.port = enetPort; // 既に変換済み
+				si.port = enetPort; 
 				si.playerCount = playerCount;
 				si.maxPlayers = maxPlayers;
 				si.state = state;
@@ -339,7 +338,7 @@ bool Discovery::StartAdvertise(uint16_t discoveryPort, uint16_t enetPort, const 
 			payload.push_back((char)((protoVer >> 8) & 0xFF));
 			payload.push_back((char)(protoVer & 0xFF));
 
-			// ★★★ 修正: ENetポートをネットワークバイトオーダーに変換してからバイト列に追加 ★★★
+			//ENetポートをネットワークバイトオーダーに変換してからバイト列に追加
 			uint16_t portNet = htons(enetPort);
 			const char* portBytes = reinterpret_cast<const char*>(&portNet);
 			payload.push_back(portBytes[0]);

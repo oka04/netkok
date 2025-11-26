@@ -375,14 +375,13 @@ void ServerManager::ProcessJoin(ENetPeer* peer, const uint8_t* data, size_t len)
 			// クライアントIDを送信
 			SendJoinAck(peer, ci->id);
 
-			// ★★★ 既存の全プレイヤー情報を新規参加者に送信 ★★★
-			// 1. ホストの情報を送信
+			//既存の全プレイヤー情報を新規参加者に送信
+			//ホストの情報を送信
 			if (!m_hostName.empty())
 			{
 				NetPlayerSpawn hostSpawn;
-				hostSpawn.clientId = 1;  // ホストのIDは常に1
-
-										 // ★★★ ホストの現在位置を取得（ワールド状態から）★★★
+				hostSpawn.clientId = 1; 
+				//ホストの現在位置を取得
 				if (m_hostStateSet)
 				{
 					hostSpawn.startX = m_hostState.posX;
@@ -406,7 +405,7 @@ void ServerManager::ProcessJoin(ENetPeer* peer, const uint8_t* data, size_t len)
 					m_hostName.c_str(), hostSpawn.startX, hostSpawn.startY, hostSpawn.startZ);
 			}
 
-			// 2. 既存の他のクライアント情報を送信
+			//既存の他のクライアント情報を送信
 			for (const auto& kv : m_clients)
 			{
 				if (kv.first != peer && kv.second->name != m_hostName && !kv.second->name.empty())
@@ -414,7 +413,7 @@ void ServerManager::ProcessJoin(ENetPeer* peer, const uint8_t* data, size_t len)
 					NetPlayerSpawn existingSpawn;
 					existingSpawn.clientId = kv.second->id;
 
-					// ★★★ 既存クライアントの現在位置を取得 ★★★
+					//既存クライアントの現在位置を取得
 					if (kv.second->stateReceived)
 					{
 						existingSpawn.startX = kv.second->lastState.posX;
@@ -440,10 +439,9 @@ void ServerManager::ProcessJoin(ENetPeer* peer, const uint8_t* data, size_t len)
 				}
 			}
 
-			// ★★★ 新規参加者の情報を全員にブロードキャスト ★★★
 			NetPlayerSpawn newSpawn;
 			newSpawn.clientId = ci->id;
-			newSpawn.startX = 0.0f;  // 新規参加者は初期位置
+			newSpawn.startX = 0.0f; 
 			newSpawn.startY = 0.0f;
 			newSpawn.startZ = 0.0f;
 			strncpy_s(newSpawn.name, ci->name.c_str(), sizeof(newSpawn.name) - 1);
@@ -453,10 +451,10 @@ void ServerManager::ProcessJoin(ENetPeer* peer, const uint8_t* data, size_t len)
 			NET_LOG_F("[ServerManager] 新規参加者情報をブロードキャスト: %s (ID=%u)",
 				ci->name.c_str(), ci->id);
 
-			// フラッシュして確実に送信
+			//フラッシュして確実に送信
 			enet_host_flush(m_pServerHost);
 
-			// ロビー更新をブロードキャスト
+			//ロビー更新をブロードキャスト
 			NET_LOG("[ServerManager] ロビー更新をブロードキャスト");
 			BroadcastLobbyUpdate();
 		}

@@ -106,7 +106,7 @@ void SceneGame::Initialize()
 
 	m_players[m_localClientId] = m_pLocalPlayer;
 
-	// ★★★ ホストの場合、自分のスポーン情報をブロードキャスト ★★★
+	//ホストの場合、自分のスポーン情報をブロードキャスト
 	if (m_bIsHost && m_pServer)
 	{
 		NetPlayerSpawn spawn;
@@ -125,8 +125,7 @@ void SceneGame::Initialize()
 	m_lastNetworkSend = m_lastTime;
 	m_lastWorldBroadcast = m_lastTime;
 	m_bInitialSyncDone = false;
-	m_bFirstPerson = true;  // ★★★ デフォルトは一人称視点 ★★★
-
+	m_bFirstPerson = true;  
 	m_pLocalPlayer->Update(m_pEngine, m_map, m_camera, m_light, 0);
 	m_pLocalPlayer->SetFirstPersonCamera(m_pEngine, m_camera);
 

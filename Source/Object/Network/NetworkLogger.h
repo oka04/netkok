@@ -17,7 +17,7 @@ public:
 		return instance;
 	}
 
-	// ログファイルを初期化（既存の内容を削除）
+	// ログファイルを初期化
 	void Initialize(const std::string& filename = "network_debug.txt")
 	{
 		std::lock_guard<std::mutex> lock(m_mutex);

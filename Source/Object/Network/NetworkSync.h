@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <cstring>
 
-// ネットワークメッセージタイプ
+//ネットワークメッセージタイプ
 enum NetworkMessageType : uint8_t
 {
 	MSG_JOIN = 1,
