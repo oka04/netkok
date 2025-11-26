@@ -96,5 +96,8 @@ private:
 	ServerManager* m_pServer;
 
 	static const DWORD NETWORK_SEND_INTERVAL = 16;
-	static const DWORD WORLD_BROADCAST_INTERVAL = 16;
+	static const DWORD WORLD_BROADCAST_INTERVAL = 8;
+	
+	bool m_bEnablePrediction;
+	bool m_bEnableJitterReduction;
 };

@@ -306,23 +306,30 @@ void SceneGame::UpdateLocalPlayer()
 
 void SceneGame::UpdateRemotePlayers()
 {
-	// リモートプレイヤーは UpdateFromNetwork で更新されるため
-	// ここでは特別な処理は不要
+	if (m_bEnablePrediction)
+	{
+		for (auto& kv : m_players)
+		{
+			if (kv.second && !kv.second->IsLocal())
+			{
+				kv.second->PredictMovement(m_deltaTime);
+			}
+		}
+	}
 }
-
 void SceneGame::SyncToServer()
 {
 	if (!m_pLocalPlayer || !m_pClient) return;
 
 	NetPlayerState state = m_pLocalPlayer->GetNetState();
 
-	// ★★★ デバッグ: 送信する状態をログ出力 ★★★
+	// ★★★ デバッグログの頻度を下げる（3秒に1回）★★★
 	static DWORD lastLogTime = 0;
 	DWORD now = timeGetTime();
-	if (now - lastLogTime > 1000) // 1秒ごとにログ
+	if (now - lastLogTime > 3000)
 	{
-		NET_LOG_F("[SceneGame] 送信: ID=%u Pos=(%.1f,%.1f,%.1f) Angle=(%.1f,%.1f)",
-			state.clientId, state.posX, state.posY, state.posZ, state.hAngle, state.vAngle);
+		NET_LOG_F("[SceneGame] 送信: ID=%u Pos=(%.1f,%.1f,%.1f) Interval=%dms",
+			state.clientId, state.posX, state.posY, state.posZ, NETWORK_SEND_INTERVAL);
 		lastLogTime = now;
 	}
 
@@ -342,7 +349,7 @@ void SceneGame::ReceiveFromServer()
 {
 	if (!m_pClient) return;
 
-	// ★★★ プレイヤーのスポーン処理 ★★★
+	// プレイヤーのスポーン処理
 	NetPlayerSpawn spawn;
 	while (m_pClient->PopPlayerSpawn(spawn))
 	{
@@ -355,7 +362,7 @@ void SceneGame::ReceiveFromServer()
 		}
 	}
 
-	// ★★★ プレイヤーの削除処理 ★★★
+	// プレイヤーの削除処理
 	uint32_t despawnId;
 	while (m_pClient->PopPlayerDespawn(despawnId))
 	{
@@ -370,18 +377,13 @@ void SceneGame::ReceiveFromServer()
 	NetWorldState world;
 	if (m_pClient->GetWorldState(world))
 	{
-		// ★★★ デバッグ: 受信したワールド状態をログ出力 ★★★
+		// ★★★ デバッグログの頻度を下げる（3秒に1回）★★★
 		static DWORD lastLogTime = 0;
 		DWORD now = timeGetTime();
-		if (now - lastLogTime > 1000) // 1秒ごとにログ
+		if (now - lastLogTime > 3000)
 		{
-			NET_LOG_F("[SceneGame] ワールド状態受信: プレイヤー数=%d", (int)world.playerCount);
-			for (int i = 0; i < world.playerCount; ++i)
-			{
-				const NetPlayerState& ps = world.players[i];
-				NET_LOG_F("  [%d] ID=%u Pos=(%.1f,%.1f,%.1f)",
-					i, ps.clientId, ps.posX, ps.posY, ps.posZ);
-			}
+			NET_LOG_F("[SceneGame] ワールド状態受信: プレイヤー数=%d Interval=%dms",
+				(int)world.playerCount, WORLD_BROADCAST_INTERVAL);
 			lastLogTime = now;
 		}
 
@@ -401,8 +403,6 @@ void SceneGame::ReceiveFromServer()
 			else
 			{
 				// ★★★ まだ生成されていないプレイヤーを生成 ★★★
-				NET_LOG_F("[SceneGame] ワールド状態から新規プレイヤー生成: ID=%u Pos=(%.1f,%.1f,%.1f)",
-					ps.clientId, ps.posX, ps.posY, ps.posZ);
 				SpawnPlayer(ps.clientId, "Player", D3DXVECTOR3(ps.posX, ps.posY, ps.posZ));
 
 				// 生成直後に状態を更新
@@ -479,7 +479,7 @@ void SceneGame::Draw()
 	m_map.DrawMap(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light, lights);
 	m_map.DrawGoalEffect(&m_camera, &m_projection);
 
-	// ★★★ すべてのプレイヤーを描画 ★★★
+	// すべてのプレイヤーを描画
 	int drawnCount = 0;
 	for (auto& kv : m_players)
 	{
@@ -510,17 +510,22 @@ void SceneGame::Draw()
 #if _DEBUG
 	if (!(d_debugFlag & DISPLAY_DEBUG_STRING))
 	{
-		m_pEngine->DrawPrintf(50, 950, FONT_GOTHIC40, Color::WHITE, "DEL : %f", m_deltaTime);
-		m_pEngine->DrawPrintf(50, 1000, FONT_GOTHIC40, Color::WHITE, "FPS : %f", (float)m_pEngine->GetFPS());
+		m_pEngine->DrawPrintf(50, 950, FONT_GOTHIC40, Color::WHITE, "DEL : %.3f", m_deltaTime);
+		m_pEngine->DrawPrintf(50, 1000, FONT_GOTHIC40, Color::WHITE, "FPS : %.1f", (float)m_pEngine->GetFPS());
 		m_pEngine->DrawPrintf(50, 900, FONT_GOTHIC40, Color::CYAN, "Players: %d (Drawn: %d)",
 			(int)m_players.size(), drawnCount);
+
+		// ★★★ ネットワーク情報の表示 ★★★
+		m_pEngine->DrawPrintf(50, 850, FONT_GOTHIC40, Color::GREEN,
+			"Net: Send=%dms Broadcast=%dms",
+			NETWORK_SEND_INTERVAL, WORLD_BROADCAST_INTERVAL);
 
 		if (d_debugFlag & DRAW_PLAYER_STATE && m_pLocalPlayer)
 		{
 			m_pLocalPlayer->DebugPrint(m_pEngine);
 		}
 
-		// ★★★ すべてのプレイヤー情報を表示（位置情報付き）★★★
+		// すべてのプレイヤー情報を表示（位置情報付き）
 		int yOffset = 500;
 		for (auto& kv : m_players)
 		{

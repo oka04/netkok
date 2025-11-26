@@ -16,7 +16,7 @@ Player::Player()
 	, m_targetPosition(0, 0, 0)
 	, m_targetHAngle(0)
 	, m_targetVAngle(0)
-	, m_interpolationSpeed(15.0f)
+	, m_interpolationSpeed(50.0f)
 {
 }
 
@@ -77,61 +77,107 @@ void Player::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 
 void Player::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& light, float deltaTime)
 {
-	// ★★★ デバッグ: 受信した状態をログ出力 ★★★
-	static DWORD lastLogTime = 0;
-	static std::map<uint32_t, DWORD> lastLogPerPlayer;
 	DWORD now = timeGetTime();
 
-	if (now - lastLogPerPlayer[state.clientId] > 2000) // プレイヤーごとに2秒ごと
+	// ★★★ タイムスタンプ管理 ★★★
+	if (m_lastUpdateTime != 0)
 	{
-		NET_LOG_F("[Player] UpdateFromNetwork: ID=%u Pos=(%.1f,%.1f,%.1f) -> Target=(%.1f,%.1f,%.1f)",
-			m_clientId, m_position.x, m_position.y, m_position.z,
-			state.posX, state.posY, state.posZ);
-		lastLogPerPlayer[state.clientId] = now;
+		m_timeSinceLastUpdate = (now - m_lastUpdateTime) / 1000.0f;
 	}
+	else
+	{
+		m_timeSinceLastUpdate = deltaTime;
+	}
+	m_lastUpdateTime = now;
 
-	// ターゲット位置を設定
-	m_targetPosition = D3DXVECTOR3(state.posX, state.posY, state.posZ);
+	// ★★★ ターゲット位置を設定 ★★★
+	D3DXVECTOR3 newTargetPos = D3DXVECTOR3(state.posX, state.posY, state.posZ);
+
+	// ★★★ 速度の計算（予測移動用）★★★
+	D3DXVECTOR3 rawVelocity = (newTargetPos - m_targetPosition) / max(0.001f, m_timeSinceLastUpdate);
+
+	// ★★★ 速度のスムージング（急激な変化を抑制）★★★
+	m_smoothedVelocity = m_smoothedVelocity * (1.0f - m_velocitySmoothingFactor) +
+		rawVelocity * m_velocitySmoothingFactor;
+
+	// ★★★ 新しいターゲット位置を設定 ★★★
+	m_targetPosition = newTargetPos;
 	m_targetHAngle = state.hAngle;
 	m_targetVAngle = state.vAngle;
 
-	// 現在位置との距離を計算
+	// ★★★ 位置履歴に追加（ジッター対策）★★★
+	AddPositionToHistory(m_targetPosition);
+
+	// ★★★ 現在位置との距離を計算 ★★★
 	D3DXVECTOR3 diff = m_targetPosition - m_position;
 	float dist = D3DXVec3Length(&diff);
 
-	// ★★★ テレポート閾値を下げて、より素早く同期 ★★★
-	if (dist > 3.0f) // 5.0f → 3.0f に変更
+	// ★★★ デバッグログ（頻度を下げる）★★★
+	static std::map<uint32_t, DWORD> lastLogPerPlayer;
+	if (now - lastLogPerPlayer[state.clientId] > 2000)
 	{
-		// 距離が大きい場合は即座にテレポート
+		NET_LOG_F("[Player] UpdateFromNetwork: ID=%u Dist=%.2f Speed=%.2f",
+			m_clientId, dist, D3DXVec3Length(&m_smoothedVelocity));
+		lastLogPerPlayer[state.clientId] = now;
+	}
+
+	// ★★★ 適応的テレポート閾値（速度に応じて調整）★★★
+	float speedFactor = D3DXVec3Length(&m_smoothedVelocity);
+	float teleportThreshold = 1.5f + speedFactor * 0.1f;  // 基本1.5f、速度に応じて増加
+	teleportThreshold = min(teleportThreshold, 5.0f);     // 最大5.0f
+
+	if (dist > teleportThreshold)
+	{
+		// ★★★ 距離が大きい場合は即座にテレポート ★★★
 		m_position = m_targetPosition;
-		NET_LOG_F("[Player] テレポート: ID=%u Dist=%.1f", m_clientId, dist);
+		m_velocity = m_smoothedVelocity;
+		NET_LOG_F("[Player] テレポート: ID=%u Dist=%.2f", m_clientId, dist);
 	}
 	else if (dist > 0.01f)
 	{
-		// ★★★ 補間速度を上げて、より滑らかかつ迅速に移動 ★★★
-		float t = min(1.0f, m_interpolationSpeed * deltaTime);
+		// ★★★ 適応的補間速度（距離に応じて調整）★★★
+		// 距離が大きいほど速く追従、近いほどスムーズに
+		float distanceFactor = min(dist * 2.0f, 1.0f);  // 0.5m以内は緩やか
+		m_adaptiveInterpolationSpeed = m_interpolationSpeed * (1.0f + distanceFactor * 2.0f);
+
+		// ★★★ 補間係数の計算 ★★★
+		float t = min(1.0f, m_adaptiveInterpolationSpeed * deltaTime);
+
+		// ★★★ 位置の補間 ★★★
 		m_position += diff * t;
+
+		// ★★★ 速度の更新 ★★★
+		m_velocity = m_smoothedVelocity;
+	}
+	else
+	{
+		// ★★★ ほぼ到達している場合 ★★★
+		m_position = m_targetPosition;
+		m_velocity = D3DXVECTOR3(0, 0, 0);
 	}
 
-	// 角度の補間
+	// ★★★ 角度の補間（改善版）★★★
 	float hDiff = m_targetHAngle - m_hAngle;
 	while (hDiff > 180.0f) hDiff -= 360.0f;
 	while (hDiff < -180.0f) hDiff += 360.0f;
-	m_hAngle += hDiff * min(1.0f, m_interpolationSpeed * deltaTime);
+
+	// ★★★ 角度も適応的に補間 ★★★
+	float angleLerpSpeed = m_interpolationSpeed * 1.5f;  // 角度は少し速めに
+	m_hAngle += hDiff * min(1.0f, angleLerpSpeed * deltaTime);
 
 	float vDiff = m_targetVAngle - m_vAngle;
-	m_vAngle += vDiff * min(1.0f, m_interpolationSpeed * deltaTime);
+	m_vAngle += vDiff * min(1.0f, angleLerpSpeed * deltaTime);
 
-	// 向きベクトルとその他の状態を更新
+	// ★★★ 向きベクトルとその他の状態を更新 ★★★
 	m_depth = D3DXVECTOR3(state.depthX, state.depthY, state.depthZ);
 	m_keyFlag = state.keyFlag;
 	m_stamina = state.stamina;
 	m_bFirstPerson = state.IsFirstPerson();
 
-	// 目の位置を更新
+	// ★★★ 目の位置を更新 ★★★
 	m_eyePosition = m_position + ((m_keyFlag & CROUCH_KEY) ? f_crouchEyePosition : f_standEyePosition);
 
-	// 行列を更新
+	// ★★★ 行列を更新 ★★★
 	UpdateMatrix(light);
 }
 
