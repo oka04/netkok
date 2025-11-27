@@ -100,9 +100,6 @@
     <Filter Include="Object\Map">
       <UniqueIdentifier>{926984c1-2695-4844-97fb-e8d9ea1b83a8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Object\Player">
-      <UniqueIdentifier>{b8cf80b1-df9a-4312-8485-9b742d8172fc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Object\CharacterBase">
       <UniqueIdentifier>{0777229f-ee43-455a-a680-eb6301b374dc}</UniqueIdentifier>
     </Filter>
@@ -147,6 +144,12 @@
     </Filter>
     <Filter Include="Scene\SceneSelectClient">
       <UniqueIdentifier>{e6df79b1-b1fd-464b-9955-876e706467dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Runner">
+      <UniqueIdentifier>{b8cf80b1-df9a-4312-8485-9b742d8172fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Chaser">
+      <UniqueIdentifier>{d82375e9-d6c1-45c9-a0eb-e3c9709c1f69}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -321,9 +324,6 @@
     <ClCompile Include="Source\Object\Map\Map.cpp">
       <Filter>Object\Map</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Object\Player\Player.cpp">
-      <Filter>Object\Player</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Object\CharacterBase\CharacterBase.cpp">
       <Filter>Object\CharacterBase</Filter>
     </ClCompile>
@@ -368,6 +368,12 @@
     </ClCompile>
     <ClCompile Include="Source\Scene\SceneSelectHost\SceneSelectHost.cpp">
       <Filter>Scene\SceneSelectHost</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Object\Runner\Runner.cpp">
+      <Filter>Object\Runner</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Object\Chaser\Chaser.cpp">
+      <Filter>Object\Chaser</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -557,9 +563,6 @@
     <ClInclude Include="Source\System\Engine\Color\Color.h">
       <Filter>System\Engine\Color</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Object\Player\Player.h">
-      <Filter>Object\Player</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Object\CharacterBase\CharacterBase.h">
       <Filter>Object\CharacterBase</Filter>
     </ClInclude>
@@ -619,6 +622,12 @@
     </ClInclude>
     <ClInclude Include="Source\Object\Network\NetworkSync.h">
       <Filter>Object\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Object\Runner\Runner.h">
+      <Filter>Object\Runner</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Object\Chaser\Chaser.h">
+      <Filter>Object\Chaser</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

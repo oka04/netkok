@@ -2,115 +2,337 @@
 Network Debug Log
 ===========================================
 
-[13:16:20] ========================================
-[13:16:20] ClientManager 初期化開始
-[13:16:20] ========================================
-[13:16:20] [ClientManager] ENet初期化成功
-[13:16:20] [ClientManager] Discovery作成
-[13:16:20] [ClientManager] Discoveryリスナー起動 (ポート:12346)
-[13:16:20] [Discovery/Listener] スレッド開始
-[13:16:20] [Discovery/Listener] WSAStartup成功
-[13:16:20] [Discovery/Listener] ソケット作成成功
-[13:16:20] [Discovery/Listener] bind成功 ポート:12346
-[13:16:20] [Discovery/Listener] 受信ループ開始
-[13:16:21] ========================================
-[13:16:21] [SceneSelectHost] サーバー作成開始: D
-[13:16:21] [Client] 切断
-[13:16:21] [ServerManager] ホスト名設定: Player895
-[13:16:21] [SceneSelectHost] サーバー名設定: D
-[13:16:21] [SceneSelectHost] ホスト名設定: Player895
-[13:16:21] [ServerManager] サーバー起動: ポート=12781
-[13:16:21] [SceneSelectHost] サーバー起動成功: ポート=12781
-[13:16:21] [Discovery/Advertiser] スレッド開始
-[13:16:21] [Discovery/Advertiser] WSAStartup成功
-[13:16:21] [Discovery/Advertiser] ソケット作成成功
-[13:16:21] [Discovery/Advertiser] SO_BROADCAST設定成功
-[13:16:21] [Discovery/Advertiser] ブロードキャストループ開始
-[13:16:21] [Discovery/Advertiser] 送信データ: port=12781 player=1/8 state=0 name='D'
-[13:16:21] [Discovery/Advertiser] ブロードキャスト送信 #1: サイズ=19 bytes (port=12781)
-[13:16:21] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[13:16:21] [Discovery/Listener] マジック一致確認
-[13:16:21] [Discovery/Listener] プロトコルバージョン: 256
-[13:16:21] [Discovery/Listener] ポート（変換後）: 12781
-[13:16:21] [Discovery/Listener] プレイヤー数: 1
-[13:16:21] [Discovery/Listener] 最大プレイヤー数: 8
-[13:16:21] [Discovery/Listener] ステート: 0
-[13:16:21] [Discovery/Listener] 名前の長さ: 1
-[13:16:21] [Discovery/Listener] サーバー名: 'D'
-[13:16:21] [Discovery/Listener] ★サーバー検出★: D @ 172.20.145.6:12781 (1/8) state=0
-[13:16:21] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[13:16:21] [ClientManager] ConnectToServer: 127.0.0.1:12781
-[13:16:21] [ClientManager] クライアントホスト作成成功
-[13:16:21] [ClientManager] ホスト接続 - サーバー名は接続後に取得
-[13:16:21] [ClientManager] 接続要求送信 (ホスト判定: true)
-[13:16:21] [SceneSelectHost] ロビーに遷移
-[13:16:21] [SceneLobby] ホストとしてロビー開始: サーバー名='D'
-[13:16:21] [SceneLobby] Start完了
-[13:16:21] [ClientManager] サーバー接続成功（ENET_EVENT_TYPE_CONNECT受信）
-[13:16:21] [ClientManager] JOIN送信: Player895
-[13:16:21] [ClientManager] JOIN送信完了: Player895
-[13:16:21] [ServerManager] クライアント接続: ID=1 (現在1人)
-[13:16:21] [ServerManager] ProcessJoin: データ長=10
-[13:16:21] [ServerManager] 名前長さ: 9
-[13:16:21] [ServerManager] 受信した名前: 'Player895'
-[13:16:21] [ServerManager] ホストのJOIN受信: Player895 (ID=1)
-[13:16:21] [ServerManager] JoinAck送信: ClientID=1
-[13:16:21] [ServerManager] 新規参加者にホスト情報を送信: Player895 Pos=(0.0,0.0,0.0)
-[13:16:21] [ServerManager] 新規参加者情報をブロードキャスト: Player895 (ID=1)
-[13:16:21] [ServerManager] ロビー更新をブロードキャスト
-[13:16:21] [ServerManager] BroadcastLobbyUpdate: 1 人
-[13:16:21] [ServerManager] プレイヤー1: 'Player895' (長さ:9)
-[13:16:21] [ServerManager] 送信データサイズ: 12 bytes
-[13:16:21] [ClientManager] クライアントID割り当て: 1
-[13:16:21] [ClientManager] プレイヤー生成通知: ID=1, Name=Player895
-[13:16:21] [ClientManager] プレイヤー生成通知: ID=1, Name=Player895
-[13:16:21] [ClientManager] ProcessLobbyUpdate: データ長=12
-[13:16:21] [ClientManager] プレイヤー数: 1
-[13:16:21] [ClientManager] プレイヤー1 名前長さ: 9
-[13:16:21] [ClientManager] プレイヤー1: 'Player895'
-[13:16:21] [ClientManager] ロビー更新完了: 1 人
-[13:16:21] [SceneLobby] ゲーム開始ボタン押下
-[13:16:21] [ClientManager] ゲーム開始通知受信
-[13:16:21] [SceneLobby] ゲーム開始 - ゲームシーンへ遷移
-[13:16:23] [SceneGame] Initialize: IsHost=1, ClientID=1
-[13:16:23] [SceneGame] ホストのスポーン情報をブロードキャスト: ID=1
-[13:16:23] [SceneGame] 初期化完了 - 他プレイヤーのスポーン待機中
-[13:16:23] [ClientManager] プレイヤー生成通知: ID=1, Name=
-[13:16:23] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
-[13:16:23] [SceneGame] ワールド状態受信: プレイヤー数=0 Interval=8ms
-[13:16:24] [SceneGame] フェードイン完了 - ゲーム開始
-[13:16:25] [Discovery/Listener] 生存確認 ループ:50
-[13:16:26] [SceneGame] 送信: ID=0 Pos=(11.2,0.5,71.4) Interval=16ms
-[13:16:26] [SceneGame] ワールド状態受信: プレイヤー数=1 Interval=8ms
-[13:16:26] [Discovery/Advertiser] 送信データ: port=12781 player=1/8 state=1 name='D'
-[13:16:26] [Discovery/Advertiser] ブロードキャスト送信 #2: サイズ=19 bytes (port=12781)
-[13:16:26] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[13:16:26] [Discovery/Listener] マジック一致確認
-[13:16:26] [Discovery/Listener] プロトコルバージョン: 256
-[13:16:26] [Discovery/Listener] ポート（変換後）: 12781
-[13:16:26] [Discovery/Listener] プレイヤー数: 1
-[13:16:26] [Discovery/Listener] 最大プレイヤー数: 8
-[13:16:26] [Discovery/Listener] ステート: 1
-[13:16:26] [Discovery/Listener] 名前の長さ: 1
-[13:16:26] [Discovery/Listener] サーバー名: 'D'
-[13:16:26] [Discovery/Listener] ★サーバー検出★: D @ 172.20.145.6:12781 (1/8) state=1
-[13:16:26] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[13:16:29] [SceneGame] ワールド状態受信: プレイヤー数=1 Interval=8ms
-[13:16:29] [SceneGame] 送信: ID=0 Pos=(12.2,0.5,72.3) Interval=16ms
-[13:16:30] [Discovery/Listener] 生存確認 ループ:100
-[13:16:31] [Discovery/Advertiser] 送信データ: port=12781 player=1/8 state=1 name='D'
-[13:16:31] [Discovery/Advertiser] ブロードキャスト送信 #3: サイズ=19 bytes (port=12781)
-[13:16:31] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[13:16:31] [Discovery/Listener] マジック一致確認
-[13:16:31] [Discovery/Listener] プロトコルバージョン: 256
-[13:16:31] [Discovery/Listener] ポート（変換後）: 12781
-[13:16:31] [Discovery/Listener] プレイヤー数: 1
-[13:16:31] [Discovery/Listener] 最大プレイヤー数: 8
-[13:16:31] [Discovery/Listener] ステート: 1
-[13:16:31] [Discovery/Listener] 名前の長さ: 1
-[13:16:31] [Discovery/Listener] サーバー名: 'D'
-[13:16:31] [Discovery/Listener] ★サーバー検出★: D @ 172.20.145.6:12781 (1/8) state=1
-[13:16:31] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[13:16:32] [SceneGame] ワールド状態受信: プレイヤー数=1 Interval=8ms
-[13:16:32] [SceneGame] 送信: ID=0 Pos=(19.2,0.5,71.4) Interval=16ms
-[13:16:35] [Discovery/Listener] 生存確認 ループ:150
+[13:22:38] ========================================
+[13:22:38] ClientManager 初期化開始
+[13:22:38] ========================================
+[13:22:38] [ClientManager] ENet初期化成功
+[13:22:38] [ClientManager] Discovery作成
+[13:22:38] [ClientManager] Discoveryリスナー起動 (ポート:12346)
+[13:22:38] [Discovery/Listener] スレッド開始
+[13:22:38] [Discovery/Listener] WSAStartup成功
+[13:22:38] [Discovery/Listener] ソケット作成成功
+[13:22:38] [Discovery/Listener] bind成功 ポート:12346
+[13:22:38] [Discovery/Listener] 受信ループ開始
+[13:22:41] ========================================
+[13:22:41] [SceneSelectHost] サーバー作成開始: GCDG
+[13:22:41] [Client] 切断
+[13:22:41] [ServerManager] ホスト名設定: Player126
+[13:22:41] [SceneSelectHost] サーバー名設定: GCDG
+[13:22:41] [SceneSelectHost] ホスト名設定: Player126
+[13:22:41] [Discovery/Advertiser] スレッド開始
+[13:22:41] [Discovery/Advertiser] WSAStartup成功
+[13:22:41] [ServerManager] サーバー起動: ポート=12698
+[13:22:41] [SceneSelectHost] サーバー起動成功: ポート=12698
+[13:22:41] [Discovery/Advertiser] ソケット作成成功
+[13:22:41] [Discovery/Advertiser] SO_BROADCAST設定成功
+[13:22:41] [Discovery/Advertiser] ブロードキャストループ開始
+[13:22:41] [Discovery/Advertiser] 送信データ: port=12698 player=1/8 state=0 name='GCDG'
+[13:22:41] [Discovery/Advertiser] ブロードキャスト送信 #1: サイズ=22 bytes (port=12698)
+[13:22:41] [Discovery/Listener] パケット受信! サイズ:22 bytes
+[13:22:41] [Discovery/Listener] マジック一致確認
+[13:22:41] [Discovery/Listener] プロトコルバージョン: 256
+[13:22:41] [Discovery/Listener] ポート（変換後）: 12698
+[13:22:41] [Discovery/Listener] プレイヤー数: 1
+[13:22:41] [Discovery/Listener] 最大プレイヤー数: 8
+[13:22:41] [Discovery/Listener] ステート: 0
+[13:22:41] [Discovery/Listener] 名前の長さ: 4
+[13:22:41] [Discovery/Listener] サーバー名: 'GCDG'
+[13:22:41] [Discovery/Listener] ★サーバー検出★: GCDG @ 172.20.145.6:12698 (1/8) state=0
+[13:22:41] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[13:22:41] [ClientManager] ConnectToServer: 127.0.0.1:12698
+[13:22:41] [ClientManager] クライアントホスト作成成功
+[13:22:41] [ClientManager] ホスト接続 - サーバー名は接続後に取得
+[13:22:41] [ClientManager] 接続要求送信 (ホスト判定: true)
+[13:22:41] [SceneSelectHost] ロビーに遷移
+[13:22:41] [SceneLobby] ホストとしてロビー開始: サーバー名='GCDG'
+[13:22:41] [SceneLobby] Start完了
+[13:22:41] [ClientManager] サーバー接続成功（ENET_EVENT_TYPE_CONNECT受信）
+[13:22:41] [ClientManager] JOIN送信: Player126
+[13:22:41] [ClientManager] JOIN送信完了: Player126
+[13:22:41] [ServerManager] クライアント接続: ID=1 (現在1人)
+[13:22:41] [ServerManager] ProcessJoin: データ長=10
+[13:22:41] [ServerManager] 名前長さ: 9
+[13:22:41] [ServerManager] 受信した名前: 'Player126'
+[13:22:41] [ServerManager] ホストのJOIN受信: Player126 (ID=1)
+[13:22:41] [ServerManager] JoinAck送信: ClientID=1
+[13:22:41] [ServerManager] 新規参加者にホスト情報を送信: Player126 Pos=(0.0,0.0,0.0)
+[13:22:41] [ServerManager] 新規参加者情報をブロードキャスト: Player126 (ID=1)
+[13:22:41] [ServerManager] ロビー更新をブロードキャスト
+[13:22:41] [ServerManager] BroadcastLobbyUpdate: 1 人
+[13:22:41] [ServerManager] プレイヤー1: 'Player126' (長さ:9)
+[13:22:41] [ServerManager] 送信データサイズ: 12 bytes
+[13:22:41] [ClientManager] クライアントID割り当て: 1
+[13:22:41] [ClientManager] プレイヤー生成通知: ID=1, Name=Player126
+[13:22:41] [ClientManager] プレイヤー生成通知: ID=1, Name=Player126
+[13:22:41] [ClientManager] ProcessLobbyUpdate: データ長=12
+[13:22:41] [ClientManager] プレイヤー数: 1
+[13:22:41] [ClientManager] プレイヤー1 名前長さ: 9
+[13:22:41] [ClientManager] プレイヤー1: 'Player126'
+[13:22:41] [ClientManager] ロビー更新完了: 1 人
+[13:22:43] [Discovery/Listener] 生存確認 ループ:50
+[13:22:46] [Discovery/Advertiser] 送信データ: port=12698 player=1/8 state=0 name='GCDG'
+[13:22:46] [Discovery/Advertiser] ブロードキャスト送信 #2: サイズ=22 bytes (port=12698)
+[13:22:46] [Discovery/Listener] パケット受信! サイズ:22 bytes
+[13:22:46] [Discovery/Listener] マジック一致確認
+[13:22:46] [Discovery/Listener] プロトコルバージョン: 256
+[13:22:46] [Discovery/Listener] ポート（変換後）: 12698
+[13:22:46] [Discovery/Listener] プレイヤー数: 1
+[13:22:46] [Discovery/Listener] 最大プレイヤー数: 8
+[13:22:46] [Discovery/Listener] ステート: 0
+[13:22:46] [Discovery/Listener] 名前の長さ: 4
+[13:22:46] [Discovery/Listener] サーバー名: 'GCDG'
+[13:22:46] [Discovery/Listener] ★サーバー検出★: GCDG @ 172.20.145.6:12698 (1/8) state=0
+[13:22:46] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[13:22:48] [Discovery/Listener] 生存確認 ループ:100
+[13:22:51] [Discovery/Advertiser] 送信データ: port=12698 player=1/8 state=0 name='GCDG'
+[13:22:51] [Discovery/Advertiser] ブロードキャスト送信 #3: サイズ=22 bytes (port=12698)
+[13:22:51] [Discovery/Listener] パケット受信! サイズ:22 bytes
+[13:22:51] [Discovery/Listener] マジック一致確認
+[13:22:51] [Discovery/Listener] プロトコルバージョン: 256
+[13:22:51] [Discovery/Listener] ポート（変換後）: 12698
+[13:22:51] [Discovery/Listener] プレイヤー数: 1
+[13:22:51] [Discovery/Listener] 最大プレイヤー数: 8
+[13:22:51] [Discovery/Listener] ステート: 0
+[13:22:51] [Discovery/Listener] 名前の長さ: 4
+[13:22:51] [Discovery/Listener] サーバー名: 'GCDG'
+[13:22:51] [Discovery/Listener] ★サーバー検出★: GCDG @ 172.20.145.6:12698 (1/8) state=0
+[13:22:51] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[13:22:53] [Discovery/Listener] 生存確認 ループ:150
+[13:22:56] [Discovery/Advertiser] 送信データ: port=12698 player=1/8 state=0 name='GCDG'
+[13:22:56] [Discovery/Advertiser] ブロードキャスト送信 #4: サイズ=22 bytes (port=12698)
+[13:22:56] [Discovery/Listener] パケット受信! サイズ:22 bytes
+[13:22:56] [Discovery/Listener] マジック一致確認
+[13:22:56] [Discovery/Listener] プロトコルバージョン: 256
+[13:22:56] [Discovery/Listener] ポート（変換後）: 12698
+[13:22:56] [Discovery/Listener] プレイヤー数: 1
+[13:22:56] [Discovery/Listener] 最大プレイヤー数: 8
+[13:22:56] [Discovery/Listener] ステート: 0
+[13:22:56] [Discovery/Listener] 名前の長さ: 4
+[13:22:56] [Discovery/Listener] サーバー名: 'GCDG'
+[13:22:56] [Discovery/Listener] ★サーバー検出★: GCDG @ 172.20.145.6:12698 (1/8) state=0
+[13:22:56] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[13:22:58] [ServerManager] クライアント接続: ID=2 (現在2人)
+[13:22:58] [ServerManager] ProcessJoin: データ長=10
+[13:22:58] [ServerManager] 名前長さ: 9
+[13:22:58] [ServerManager] 受信した名前: 'Player185'
+[13:22:58] [ServerManager] クライアントのJOIN受信: Player185 (ID=2)
+[13:22:58] [ServerManager] JoinAck送信: ClientID=2
+[13:22:58] [ServerManager] 新規参加者にホスト情報を送信: Player126 Pos=(0.0,0.0,0.0)
+[13:22:58] [ServerManager] 新規参加者情報をブロードキャスト: Player185 (ID=2)
+[13:22:58] [ServerManager] ロビー更新をブロードキャスト
+[13:22:58] [ServerManager] BroadcastLobbyUpdate: 2 人
+[13:22:58] [ServerManager] プレイヤー1: 'Player126' (長さ:9)
+[13:22:58] [ServerManager] プレイヤー2: 'Player185' (長さ:9)
+[13:22:58] [ServerManager] 送信データサイズ: 22 bytes
+[13:22:58] [ClientManager] プレイヤー生成通知: ID=2, Name=Player185
+[13:22:58] [ClientManager] ProcessLobbyUpdate: データ長=22
+[13:22:58] [ClientManager] プレイヤー数: 2
+[13:22:58] [ClientManager] プレイヤー1 名前長さ: 9
+[13:22:58] [ClientManager] プレイヤー1: 'Player126'
+[13:22:58] [ClientManager] プレイヤー2 名前長さ: 9
+[13:22:58] [ClientManager] プレイヤー2: 'Player185'
+[13:22:58] [ClientManager] ロビー更新完了: 2 人
+[13:22:58] [Discovery/Listener] 生存確認 ループ:200
+[13:23:00] [SceneLobby] ゲーム開始ボタン押下
+[13:23:00] [ClientManager] ゲーム開始通知受信
+[13:23:00] [SceneLobby] ゲーム開始 - ゲームシーンへ遷移
+[13:23:01] [Discovery/Advertiser] 送信データ: port=12698 player=2/8 state=1 name='GCDG'
+[13:23:01] [Discovery/Advertiser] ブロードキャスト送信 #5: サイズ=22 bytes (port=12698)
+[13:23:01] [Discovery/Listener] パケット受信! サイズ:22 bytes
+[13:23:01] [Discovery/Listener] マジック一致確認
+[13:23:01] [Discovery/Listener] プロトコルバージョン: 256
+[13:23:01] [Discovery/Listener] ポート（変換後）: 12698
+[13:23:01] [Discovery/Listener] プレイヤー数: 2
+[13:23:01] [Discovery/Listener] 最大プレイヤー数: 8
+[13:23:01] [Discovery/Listener] ステート: 1
+[13:23:01] [Discovery/Listener] 名前の長さ: 4
+[13:23:01] [Discovery/Listener] サーバー名: 'GCDG'
+[13:23:01] [Discovery/Listener] ★サーバー検出★: GCDG @ 172.20.145.6:12698 (2/8) state=1
+[13:23:01] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[13:23:01] [SceneGame] Initialize: IsHost=1, ClientID=1
+[13:23:01] [SceneGame] ホストのスポーン情報をブロードキャスト: ID=1
+[13:23:01] [SceneGame] 初期化完了 - 他プレイヤーのスポーン待機中
+[13:23:01] [ClientManager] プレイヤー生成通知: ID=1, Name=
+[13:23:01] [SceneGame] 新規プレイヤー参加: ID=2, Name=Player185
+[13:23:01] [SceneGame] デフォルト位置を使用: (7.5, 0.5, 72.5)
+[13:23:01] [SceneGame] プレイヤー生成完了: ID=2, Name=Player185, Pos=(7.5, 0.5, 72.5)
+[13:23:01] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[13:23:01] [SceneGame] ワールド状態受信: プレイヤー数=0 Interval=8ms
+[13:23:01] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.00 Speed=0.00
+[13:23:03] [SceneGame] フェードイン完了 - ゲーム開始
+[13:23:03] [Discovery/Listener] 生存確認 ループ:250
+[13:23:03] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.00 Speed=0.00
+[13:23:04] [SceneGame] ワールド状態受信: プレイヤー数=2 Interval=8ms
+[13:23:04] [SceneGame] 送信: ID=0 Pos=(8.2,0.5,71.4) Interval=16ms
+[13:23:05] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.00 Speed=0.00
+[13:23:06] [Discovery/Advertiser] 送信データ: port=12698 player=2/8 state=1 name='GCDG'
+[13:23:06] [Discovery/Advertiser] ブロードキャスト送信 #6: サイズ=22 bytes (port=12698)
+[13:23:06] [Discovery/Listener] パケット受信! サイズ:22 bytes
+[13:23:06] [Discovery/Listener] マジック一致確認
+[13:23:06] [Discovery/Listener] プロトコルバージョン: 256
+[13:23:06] [Discovery/Listener] ポート（変換後）: 12698
+[13:23:06] [Discovery/Listener] プレイヤー数: 2
+[13:23:06] [Discovery/Listener] 最大プレイヤー数: 8
+[13:23:06] [Discovery/Listener] ステート: 1
+[13:23:06] [Discovery/Listener] 名前の長さ: 4
+[13:23:06] [Discovery/Listener] サーバー名: 'GCDG'
+[13:23:06] [Discovery/Listener] ★サーバー検出★: GCDG @ 172.20.145.6:12698 (2/8) state=1
+[13:23:06] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[13:23:07] [SceneGame] ワールド状態受信: プレイヤー数=2 Interval=8ms
+[13:23:07] [SceneGame] 送信: ID=0 Pos=(8.5,0.5,72.7) Interval=16ms
+[13:23:07] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.00 Speed=0.00
+[13:23:08] [Discovery/Listener] 生存確認 ループ:300
+[13:23:09] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.00 Speed=0.00
+[13:23:10] [SceneGame] ワールド状態受信: プレイヤー数=2 Interval=8ms
+[13:23:10] [SceneGame] 送信: ID=0 Pos=(11.5,0.5,71.4) Interval=16ms
+[13:23:11] [Discovery/Advertiser] 送信データ: port=12698 player=2/8 state=1 name='GCDG'
+[13:23:11] [Discovery/Advertiser] ブロードキャスト送信 #7: サイズ=22 bytes (port=12698)
+[13:23:11] [Discovery/Listener] パケット受信! サイズ:22 bytes
+[13:23:11] [Discovery/Listener] マジック一致確認
+[13:23:11] [Discovery/Listener] プロトコルバージョン: 256
+[13:23:11] [Discovery/Listener] ポート（変換後）: 12698
+[13:23:11] [Discovery/Listener] プレイヤー数: 2
+[13:23:11] [Discovery/Listener] 最大プレイヤー数: 8
+[13:23:11] [Discovery/Listener] ステート: 1
+[13:23:11] [Discovery/Listener] 名前の長さ: 4
+[13:23:11] [Discovery/Listener] サーバー名: 'GCDG'
+[13:23:11] [Discovery/Listener] ★サーバー検出★: GCDG @ 172.20.145.6:12698 (2/8) state=1
+[13:23:11] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[13:23:11] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.00 Speed=0.01
+[13:23:13] [Discovery/Listener] 生存確認 ループ:350
+[13:23:13] [SceneGame] ワールド状態受信: プレイヤー数=2 Interval=8ms
+[13:23:13] [SceneGame] 送信: ID=0 Pos=(14.0,0.5,68.3) Interval=16ms
+[13:23:13] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.12 Speed=4.93
+[13:23:15] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.07 Speed=3.27
+[13:23:16] [Discovery/Advertiser] 送信データ: port=12698 player=2/8 state=1 name='GCDG'
+[13:23:16] [Discovery/Advertiser] ブロードキャスト送信 #8: サイズ=22 bytes (port=12698)
+[13:23:16] [Discovery/Listener] パケット受信! サイズ:22 bytes
+[13:23:16] [Discovery/Listener] マジック一致確認
+[13:23:16] [Discovery/Listener] プロトコルバージョン: 256
+[13:23:16] [Discovery/Listener] ポート（変換後）: 12698
+[13:23:16] [Discovery/Listener] プレイヤー数: 2
+[13:23:16] [Discovery/Listener] 最大プレイヤー数: 8
+[13:23:16] [Discovery/Listener] ステート: 1
+[13:23:16] [Discovery/Listener] 名前の長さ: 4
+[13:23:16] [Discovery/Listener] サーバー名: 'GCDG'
+[13:23:16] [Discovery/Listener] ★サーバー検出★: GCDG @ 172.20.145.6:12698 (2/8) state=1
+[13:23:16] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[13:23:16] [SceneGame] ワールド状態受信: プレイヤー数=2 Interval=8ms
+[13:23:16] [SceneGame] 送信: ID=0 Pos=(12.5,0.5,62.5) Interval=16ms
+[13:23:17] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.07 Speed=3.20
+[13:23:18] [Discovery/Listener] 生存確認 ループ:400
+[13:23:19] [SceneGame] ワールド状態受信: プレイヤー数=2 Interval=8ms
+[13:23:19] [SceneGame] 送信: ID=0 Pos=(14.5,0.5,58.7) Interval=16ms
+[13:23:19] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.12 Speed=4.85
+[13:23:21] [Discovery/Advertiser] 送信データ: port=12698 player=2/8 state=1 name='GCDG'
+[13:23:21] [Discovery/Advertiser] ブロードキャスト送信 #9: サイズ=22 bytes (port=12698)
+[13:23:21] [Discovery/Listener] パケット受信! サイズ:22 bytes
+[13:23:21] [Discovery/Listener] マジック一致確認
+[13:23:21] [Discovery/Listener] プロトコルバージョン: 256
+[13:23:21] [Discovery/Listener] ポート（変換後）: 12698
+[13:23:21] [Discovery/Listener] プレイヤー数: 2
+[13:23:21] [Discovery/Listener] 最大プレイヤー数: 8
+[13:23:21] [Discovery/Listener] ステート: 1
+[13:23:21] [Discovery/Listener] 名前の長さ: 4
+[13:23:21] [Discovery/Listener] サーバー名: 'GCDG'
+[13:23:21] [Discovery/Listener] ★サーバー検出★: GCDG @ 172.20.145.6:12698 (2/8) state=1
+[13:23:21] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[13:23:21] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.01 Speed=0.49
+[13:23:22] [SceneGame] ワールド状態受信: プレイヤー数=2 Interval=8ms
+[13:23:22] [SceneGame] 送信: ID=0 Pos=(12.6,0.5,58.1) Interval=16ms
+[13:23:23] [Discovery/Listener] 生存確認 ループ:450
+[13:23:23] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.12 Speed=5.28
+[13:23:25] [SceneGame] ワールド状態受信: プレイヤー数=2 Interval=8ms
+[13:23:25] [SceneGame] 送信: ID=0 Pos=(13.8,0.5,46.7) Interval=16ms
+[13:23:25] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.02 Speed=0.48
+[13:23:26] [Discovery/Advertiser] 送信データ: port=12698 player=2/8 state=1 name='GCDG'
+[13:23:26] [Discovery/Advertiser] ブロードキャスト送信 #10: サイズ=22 bytes (port=12698)
+[13:23:26] [Discovery/Listener] パケット受信! サイズ:22 bytes
+[13:23:26] [Discovery/Listener] マジック一致確認
+[13:23:26] [Discovery/Listener] プロトコルバージョン: 256
+[13:23:26] [Discovery/Listener] ポート（変換後）: 12698
+[13:23:26] [Discovery/Listener] プレイヤー数: 2
+[13:23:26] [Discovery/Listener] 最大プレイヤー数: 8
+[13:23:26] [Discovery/Listener] ステート: 1
+[13:23:26] [Discovery/Listener] 名前の長さ: 4
+[13:23:26] [Discovery/Listener] サーバー名: 'GCDG'
+[13:23:26] [Discovery/Listener] ★サーバー検出★: GCDG @ 172.20.145.6:12698 (2/8) state=1
+[13:23:26] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[13:23:27] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.10 Speed=3.66
+[13:23:28] [Discovery/Listener] 生存確認 ループ:500
+[13:23:28] [SceneGame] ワールド状態受信: プレイヤー数=2 Interval=8ms
+[13:23:28] [SceneGame] 送信: ID=0 Pos=(15.3,0.5,36.0) Interval=16ms
+[13:23:29] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.07 Speed=3.27
+[13:23:31] [Discovery/Advertiser] 送信データ: port=12698 player=2/8 state=1 name='GCDG'
+[13:23:31] [Discovery/Advertiser] ブロードキャスト送信 #11: サイズ=22 bytes (port=12698)
+[13:23:31] [Discovery/Listener] パケット受信! サイズ:22 bytes
+[13:23:31] [Discovery/Listener] マジック一致確認
+[13:23:31] [Discovery/Listener] プロトコルバージョン: 256
+[13:23:31] [Discovery/Listener] ポート（変換後）: 12698
+[13:23:31] [Discovery/Listener] プレイヤー数: 2
+[13:23:31] [Discovery/Listener] 最大プレイヤー数: 8
+[13:23:31] [Discovery/Listener] ステート: 1
+[13:23:31] [Discovery/Listener] 名前の長さ: 4
+[13:23:31] [Discovery/Listener] サーバー名: 'GCDG'
+[13:23:31] [Discovery/Listener] ★サーバー検出★: GCDG @ 172.20.145.6:12698 (2/8) state=1
+[13:23:31] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[13:23:31] [SceneGame] ワールド状態受信: プレイヤー数=2 Interval=8ms
+[13:23:31] [SceneGame] 送信: ID=0 Pos=(13.7,0.5,26.1) Interval=16ms
+[13:23:31] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.07 Speed=3.01
+[13:23:33] [Discovery/Listener] 生存確認 ループ:550
+[13:23:33] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.12 Speed=5.00
+[13:23:34] [SceneGame] ワールド状態受信: プレイヤー数=2 Interval=8ms
+[13:23:34] [SceneGame] 送信: ID=0 Pos=(14.5,0.5,20.4) Interval=16ms
+[13:23:35] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.07 Speed=3.29
+[13:23:36] [Discovery/Advertiser] 送信データ: port=12698 player=2/8 state=1 name='GCDG'
+[13:23:36] [Discovery/Advertiser] ブロードキャスト送信 #12: サイズ=22 bytes (port=12698)
+[13:23:36] [Discovery/Listener] パケット受信! サイズ:22 bytes
+[13:23:36] [Discovery/Listener] マジック一致確認
+[13:23:36] [Discovery/Listener] プロトコルバージョン: 256
+[13:23:36] [Discovery/Listener] ポート（変換後）: 12698
+[13:23:36] [Discovery/Listener] プレイヤー数: 2
+[13:23:36] [Discovery/Listener] 最大プレイヤー数: 8
+[13:23:36] [Discovery/Listener] ステート: 1
+[13:23:36] [Discovery/Listener] 名前の長さ: 4
+[13:23:36] [Discovery/Listener] サーバー名: 'GCDG'
+[13:23:36] [Discovery/Listener] ★サーバー検出★: GCDG @ 172.20.145.6:12698 (2/8) state=1
+[13:23:36] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[13:23:37] [SceneGame] ワールド状態受信: プレイヤー数=2 Interval=8ms
+[13:23:37] [SceneGame] 送信: ID=0 Pos=(24.5,0.5,19.7) Interval=16ms
+[13:23:37] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.12 Speed=4.54
+[13:23:38] [Discovery/Listener] 生存確認 ループ:600
+[13:23:39] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.08 Speed=3.75
+[13:23:40] [SceneGame] ワールド状態受信: プレイヤー数=2 Interval=8ms
+[13:23:40] [SceneGame] 送信: ID=0 Pos=(24.5,0.5,19.7) Interval=16ms
+[13:23:41] [Discovery/Advertiser] 送信データ: port=12698 player=2/8 state=1 name='GCDG'
+[13:23:41] [Discovery/Advertiser] ブロードキャスト送信 #13: サイズ=22 bytes (port=12698)
+[13:23:41] [Discovery/Listener] パケット受信! サイズ:22 bytes
+[13:23:41] [Discovery/Listener] マジック一致確認
+[13:23:41] [Discovery/Listener] プロトコルバージョン: 256
+[13:23:41] [Discovery/Listener] ポート（変換後）: 12698
+[13:23:41] [Discovery/Listener] プレイヤー数: 2
+[13:23:41] [Discovery/Listener] 最大プレイヤー数: 8
+[13:23:41] [Discovery/Listener] ステート: 1
+[13:23:41] [Discovery/Listener] 名前の長さ: 4
+[13:23:41] [Discovery/Listener] サーバー名: 'GCDG'
+[13:23:41] [Discovery/Listener] ★サーバー検出★: GCDG @ 172.20.145.6:12698 (2/8) state=1
+[13:23:41] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[13:23:41] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.00 Speed=0.00
+[13:23:43] [Discovery/Listener] 生存確認 ループ:650
+[13:23:43] [SceneGame] ワールド状態受信: プレイヤー数=2 Interval=8ms
+[13:23:43] [SceneGame] 送信: ID=0 Pos=(24.5,0.5,19.7) Interval=16ms
+[13:23:43] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.00 Speed=0.00
+[13:23:45] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.00 Speed=0.00
+[13:23:46] [Discovery/Advertiser] 送信データ: port=12698 player=2/8 state=1 name='GCDG'
+[13:23:46] [Discovery/Advertiser] ブロードキャスト送信 #14: サイズ=22 bytes (port=12698)
+[13:23:46] [Discovery/Listener] パケット受信! サイズ:22 bytes
+[13:23:46] [Discovery/Listener] マジック一致確認
+[13:23:46] [Discovery/Listener] プロトコルバージョン: 256
+[13:23:46] [Discovery/Listener] ポート（変換後）: 12698
+[13:23:46] [Discovery/Listener] プレイヤー数: 2
+[13:23:46] [Discovery/Listener] 最大プレイヤー数: 8
+[13:23:46] [Discovery/Listener] ステート: 1
+[13:23:46] [Discovery/Listener] 名前の長さ: 4
+[13:23:46] [Discovery/Listener] サーバー名: 'GCDG'
+[13:23:46] [Discovery/Listener] ★サーバー検出★: GCDG @ 172.20.145.6:12698 (2/8) state=1
+[13:23:46] [Discovery/Listener] サーバーリストに追加 (合計:1)

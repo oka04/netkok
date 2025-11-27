@@ -5,7 +5,7 @@
 #include "..\\Scene\\Scene.h"
 #include "..\\..\\Object\\Fade\\Fade.h"
 #include "..\\..\\Object\\Map\\Map.h"
-#include "..\\..\\Object\\Player\\Player.h"
+#include "..\\..\\Object\\Runner\\Runner.h"
 #include "..\\..\\Object\\Network\\ClientManager\\ClientManager.h"
 #include "..\\..\\Object\\Network\\ServerManager\\ServerManager.h"
 #include "..\\..\\Object\\Network\\NetworkSync.h"
@@ -79,8 +79,8 @@ private:
 	bool m_bIsHost;
 	bool m_bInitialSyncDone;  
 	bool m_bFirstPerson;      
-	Player* m_pLocalPlayer;
-	std::map<uint32_t, Player*> m_players;
+	Runner* m_pLocalRunner;
+	std::map<uint32_t, Runner*> m_runners;
 
 	Camera m_camera;
 	Projection m_projection;

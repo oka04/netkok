@@ -10,11 +10,11 @@
 #include <fstream>
 #include "..\\json.hpp"
 
-class Player : public CharacterBase
+class Runner : public CharacterBase
 {
 public:
-	Player();
-	~Player();
+	Runner();
+	~Runner();
 
 	void Initialize(Engine* pEngine, Map& map, Projection* projection, Camera& camera, DirectionalLight& light);
 	void InitializeAtPosition(Engine* pEngine, const D3DXVECTOR3& startPos, Projection* projection, Camera& camera, DirectionalLight& light);

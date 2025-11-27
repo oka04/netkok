@@ -1,15 +1,15 @@
-﻿// Player.cpp - プレイヤー固有の実装のみ
+﻿// Runner.cpp - プレイヤー固有の実装のみ
 
 #define _USING_V110_SDK71_ 1
 
-#include "Player.h"
+#include "Runner.h"
 
 using namespace KeyString;
 using namespace InputKey;
 using namespace WindowSetting;
 using namespace Common;
 
-Player::Player()
+Runner::Runner()
 	: m_stamina(100.0f)
 	, m_staminaRecoveryTimer(0.0f)
 	, m_bFatigued(false)
@@ -17,14 +17,14 @@ Player::Player()
 	// ★ CharacterBaseのコンストラクタで初期化済み
 }
 
-Player::~Player()
+Runner::~Runner()
 {
 }
 
-void Player::Initialize(Engine* pEngine, Map& map, Projection* projection, Camera& camera, DirectionalLight& light)
+void Runner::Initialize(Engine* pEngine, Map& map, Projection* projection, Camera& camera, DirectionalLight& light)
 {
 	if (m_bIsLocal)
-		SoundManager::RegisterGameObject(ID_PALYER, "PLAYER");
+		SoundManager::RegisterGameObject(ID_PALYER, "Runner");
 
 	LoadParameter();
 	CharacterBase::Initialize(pEngine, MODEL_CHARACTER, projection, camera, light);
@@ -37,10 +37,10 @@ void Player::Initialize(Engine* pEngine, Map& map, Projection* projection, Camer
 	UpdateMatrix(light);
 }
 
-void Player::InitializeAtPosition(Engine* pEngine, const D3DXVECTOR3& startPos, Projection* projection, Camera& camera, DirectionalLight& light)
+void Runner::InitializeAtPosition(Engine* pEngine, const D3DXVECTOR3& startPos, Projection* projection, Camera& camera, DirectionalLight& light)
 {
 	if (m_bIsLocal)
-		SoundManager::RegisterGameObject(ID_PALYER, "PLAYER");
+		SoundManager::RegisterGameObject(ID_PALYER, "Runner");
 
 	LoadParameter();
 	CharacterBase::Initialize(pEngine, MODEL_CHARACTER, projection, camera, light);
@@ -53,7 +53,7 @@ void Player::InitializeAtPosition(Engine* pEngine, const D3DXVECTOR3& startPos, 
 	UpdateMatrix(light);
 }
 
-void Player::Release(Engine* pEngine)
+void Runner::Release(Engine* pEngine)
 {
 	pEngine->ReleaseTexture(TEXTURE_STAMINA_GAUGE);
 	if (m_bIsLocal)
@@ -61,7 +61,7 @@ void Player::Release(Engine* pEngine)
 }
 
 // ★★★ プレイヤー固有の更新処理 ★★★
-void Player::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight& light, float deltaTime)
+void Runner::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight& light, float deltaTime)
 {
 	m_deltaTime = deltaTime;
 	SetMouseCursor(pEngine, camera);
@@ -74,21 +74,21 @@ void Player::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 }
 
 // ★★★ ネットワーク状態の取得（スタミナ情報を含む）★★★
-NetPlayerState Player::GetNetState() const
+NetPlayerState Runner::GetNetState() const
 {
 	NetPlayerState state = CharacterBase::GetNetState();
 	return state;
 }
 
 // ★★★ ネットワークからの更新（スタミナ情報を含む）★★★
-void Player::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& light, float deltaTime)
+void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& light, float deltaTime)
 {
 	// ★ 基底クラスのネットワーク更新を呼び出し
 	CharacterBase::UpdateFromNetwork(state, light, deltaTime);
 
 }
 
-void Player::Draw(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight)
+void Runner::Draw(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight)
 {
 	if (m_bIsLocal && m_bFirstPerson)
 		return;
@@ -96,7 +96,7 @@ void Player::Draw(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, Di
 	CharacterBase::Draw(pCamera, pProj, pAmbient, pLight);
 }
 
-void Player::DrawStaminaGauge(Engine* pEngine)
+void Runner::DrawStaminaGauge(Engine* pEngine)
 {
 	if (!m_bIsLocal) return;
 
@@ -139,7 +139,7 @@ void Player::DrawStaminaGauge(Engine* pEngine)
 	}
 }
 
-void Player::DebugPrint(Engine* pEngine)
+void Runner::DebugPrint(Engine* pEngine)
 {
 	pEngine->DrawPrintf(0, 50, FONT_GOTHIC40, Color::BLUE, "Position: %f,%f,%f", m_position.x, m_position.y, m_position.z);
 	pEngine->DrawPrintf(0, 100, FONT_GOTHIC40, Color::BLUE, "depth: %f,%f,%f", m_depth.x, m_depth.y, m_depth.z);
@@ -153,7 +153,7 @@ void Player::DebugPrint(Engine* pEngine)
 }
 
 // ★★★ プレイヤー固有のスタミナ更新 ★★★
-void Player::UpdateStamina(float deltaTime)
+void Runner::UpdateStamina(float deltaTime)
 {
 	bool bMoving = (m_keyFlag & (W_KEY | S_KEY | D_KEY | A_KEY)) != 0;
 	bool bDashing = (m_keyFlag & DASH_KEY) && bMoving;
@@ -194,9 +194,9 @@ void Player::UpdateStamina(float deltaTime)
 	m_stamina = max(0.0f, m_stamina);
 }
 
-void Player::LoadParameter()
+void Runner::LoadParameter()
 {
-	std::ifstream file(JSON_PLAYER_PARAMETER);
+	std::ifstream file(JSON_RUNNER_PARAMETER);
 	if (!file.is_open())
 	{
 		throw DxSystemException(DxSystemException::OM_FILE_OPEN_ERROR);
@@ -242,7 +242,7 @@ void Player::LoadParameter()
 }
 
 // ★★★ プレイヤー固有の速度変更 ★★★
-void Player::ChangeSpeed()
+void Runner::ChangeSpeed()
 {
 	if (m_bFatigued)
 	{

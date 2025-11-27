@@ -11,7 +11,7 @@ using namespace std;
 
 SceneGame::SceneGame(Engine* pEngine)
 	: Scene(pEngine)
-	, m_pLocalPlayer(nullptr)
+	, m_pLocalRunner(nullptr)
 	, m_localClientId(0)
 	, m_bIsHost(false)
 	, m_lastNetworkSend(0)
@@ -100,13 +100,13 @@ void SceneGame::Initialize()
 
 	// ローカルプレイヤーを生成
 	D3DXVECTOR3 startPos = m_map.GetPlayerStartPosition();
-	m_pLocalPlayer = new Player();
-	m_pLocalPlayer->SetIsLocal(true);
-	m_pLocalPlayer->SetClientId(m_localClientId);
-	m_pLocalPlayer->SetCharacterName(m_pClient->GetPlayerName());  // ★ 修正
-	m_pLocalPlayer->Initialize(m_pEngine, m_map, &m_projection, m_camera, m_light);
+	m_pLocalRunner = new Runner();
+	m_pLocalRunner->SetIsLocal(true);
+	m_pLocalRunner->SetClientId(m_localClientId);
+	m_pLocalRunner->SetCharacterName(m_pClient->GetPlayerName());  // ★ 修正
+	m_pLocalRunner->Initialize(m_pEngine, m_map, &m_projection, m_camera, m_light);
 
-	m_players[m_localClientId] = m_pLocalPlayer;
+	m_runners[m_localClientId] = m_pLocalRunner;
 
 	//ホストの場合、自分のスポーン情報をブロードキャスト
 	if (m_bIsHost && m_pServer)
@@ -117,7 +117,7 @@ void SceneGame::Initialize()
 		spawn.startY = startPos.y;
 		spawn.startZ = startPos.z;
 		// ★ strncpy_s の正しい使い方
-		strncpy_s(spawn.name, sizeof(spawn.name), m_pLocalPlayer->GetCharacterName().c_str(), _TRUNCATE);
+		strncpy_s(spawn.name, sizeof(spawn.name), m_pLocalRunner->GetCharacterName().c_str(), _TRUNCATE);
 		spawn.name[sizeof(spawn.name) - 1] = '\0';
 
 		m_pServer->BroadcastPlayerSpawn(spawn);
@@ -129,8 +129,8 @@ void SceneGame::Initialize()
 	m_lastWorldBroadcast = m_lastTime;
 	m_bInitialSyncDone = false;
 	m_bFirstPerson = true;
-	m_pLocalPlayer->Update(m_pEngine, m_map, m_camera, m_light, 0);
-	m_pLocalPlayer->SetFirstPersonCamera(m_pEngine, m_camera);
+	m_pLocalRunner->Update(m_pEngine, m_map, m_camera, m_light, 0);
+	m_pLocalRunner->SetFirstPersonCamera(m_pEngine, m_camera);
 
 	SoundManager::Play(AK::EVENTS::PLAY_BGM_GAME, ID_BGM);
 
@@ -158,7 +158,7 @@ void SceneGame::Update()
 		UpdateLocalPlayer();
 		UpdateRemotePlayers();
 
-		if (m_pLocalPlayer && m_map.CheckGoal(m_pLocalPlayer->GetPosition()) && !(d_debugFlag & DEBUG_MODE))
+		if (m_pLocalRunner && m_map.CheckGoal(m_pLocalRunner->GetPosition()) && !(d_debugFlag & DEBUG_MODE))
 		{
 			m_gameState = FADE_OUT;
 			m_fade.SetFadeOut();
@@ -259,7 +259,7 @@ void SceneGame::UpdateNetwork()
 		}
 
 		m_bInitialSyncDone = true;
-		NET_LOG_F("[SceneGame] 初期同期完了 - プレイヤー数: %d", (int)m_players.size());
+		NET_LOG_F("[SceneGame] 初期同期完了 - プレイヤー数: %d", (int)m_runners.size());
 	}
 
 	// 定期的にプレイヤー状態を送信
@@ -282,9 +282,9 @@ void SceneGame::UpdateNetwork()
 
 void SceneGame::UpdateLocalPlayer()
 {
-	if (!m_pLocalPlayer) return;
+	if (!m_pLocalRunner) return;
 
-	m_pLocalPlayer->Update(m_pEngine, m_map, m_camera, m_light, m_deltaTime);
+	m_pLocalRunner->Update(m_pEngine, m_map, m_camera, m_light, m_deltaTime);
 
 #if _DEBUG
 	switch (d_viewPointCount)
@@ -293,11 +293,11 @@ void SceneGame::UpdateLocalPlayer()
 		m_bFirstPerson = true;
 		break;
 	case VIEW_FIRST:
-		m_pLocalPlayer->SetFirstPersonCamera(m_pEngine, m_camera);
+		m_pLocalRunner->SetFirstPersonCamera(m_pEngine, m_camera);
 		m_bFirstPerson = true;
 		break;
 	case VIEW_THIRD:
-		m_pLocalPlayer->SetThirdPersonFromBehind(m_pEngine, m_camera, m_map);
+		m_pLocalRunner->SetThirdPersonFromBehind(m_pEngine, m_camera, m_map);
 		m_bFirstPerson = false;
 		break;
 	}
@@ -311,7 +311,7 @@ void SceneGame::UpdateRemotePlayers()
 {
 	if (m_bEnablePrediction)
 	{
-		for (auto& kv : m_players)
+		for (auto& kv : m_runners)
 		{
 			if (kv.second && !kv.second->IsLocal())
 			{
@@ -322,9 +322,9 @@ void SceneGame::UpdateRemotePlayers()
 }
 void SceneGame::SyncToServer()
 {
-	if (!m_pLocalPlayer || !m_pClient) return;
+	if (!m_pLocalRunner || !m_pClient) return;
 
-	NetPlayerState state = m_pLocalPlayer->GetNetState();
+	NetPlayerState state = m_pLocalRunner->GetNetState();
 
 	// ★★★ デバッグログの頻度を下げる（3秒に1回）★★★
 	static DWORD lastLogTime = 0;
@@ -397,8 +397,8 @@ void SceneGame::ReceiveFromServer()
 			// 自分自身はスキップ
 			if (ps.clientId == m_localClientId) continue;
 
-			auto it = m_players.find(ps.clientId);
-			if (it != m_players.end() && it->second)
+			auto it = m_runners.find(ps.clientId);
+			if (it != m_runners.end() && it->second)
 			{
 				// ★★★ 既存プレイヤーの状態を更新 ★★★
 				it->second->UpdateFromNetwork(ps, m_light, m_deltaTime);
@@ -409,9 +409,9 @@ void SceneGame::ReceiveFromServer()
 				SpawnPlayer(ps.clientId, "Player", D3DXVECTOR3(ps.posX, ps.posY, ps.posZ));
 
 				// 生成直後に状態を更新
-				if (m_players.find(ps.clientId) != m_players.end())
+				if (m_runners.find(ps.clientId) != m_runners.end())
 				{
-					m_players[ps.clientId]->UpdateFromNetwork(ps, m_light, m_deltaTime);
+					m_runners[ps.clientId]->UpdateFromNetwork(ps, m_light, m_deltaTime);
 				}
 			}
 		}
@@ -420,18 +420,16 @@ void SceneGame::ReceiveFromServer()
 
 void SceneGame::SpawnPlayer(uint32_t clientId, const std::string& name, const D3DXVECTOR3& pos)
 {
-	if (m_players.find(clientId) != m_players.end())
+	if (m_runners.find(clientId) != m_runners.end())
 	{
 		NET_LOG_F("[SceneGame] プレイヤー %u は既に存在 - スキップ", clientId);
 		return;
 	}
 
-	Player* p = new Player();
+	Runner* p = new Runner();
 	p->SetIsLocal(false);
 	p->SetClientId(clientId);
-	p->SetCharacterName(name);  // ★ SetPlayerName → SetCharacterName
-
-								// 位置が(0,0,0)の場合はマップのスタート位置を使用
+	p->SetCharacterName(name); 
 	D3DXVECTOR3 spawnPos = pos;
 	if (pos.x == 0.0f && pos.y == 0.0f && pos.z == 0.0f)
 	{
@@ -443,15 +441,15 @@ void SceneGame::SpawnPlayer(uint32_t clientId, const std::string& name, const D3
 	p->InitializeAtPosition(m_pEngine, spawnPos, &m_projection, m_camera, m_light);
 	p->SetPosition(spawnPos);
 
-	m_players[clientId] = p;
+	m_runners[clientId] = p;
 
 	NET_LOG_F("[SceneGame] プレイヤー生成完了: ID=%u, Name=%s, Pos=(%.1f, %.1f, %.1f)",
 		clientId, name.c_str(), spawnPos.x, spawnPos.y, spawnPos.z);
 }
 void SceneGame::DespawnPlayer(uint32_t clientId)
 {
-	auto it = m_players.find(clientId);
-	if (it == m_players.end())
+	auto it = m_runners.find(clientId);
+	if (it == m_runners.end())
 	{
 		NET_LOG_F("[SceneGame] プレイヤー %u は存在しない - 削除スキップ", clientId);
 		return;
@@ -462,7 +460,7 @@ void SceneGame::DespawnPlayer(uint32_t clientId)
 		it->second->Release(m_pEngine);
 		delete it->second;
 	}
-	m_players.erase(it);
+	m_runners.erase(it);
 
 	NET_LOG_F("[SceneGame] プレイヤー削除完了: ID=%u", clientId);
 }
@@ -476,7 +474,7 @@ void SceneGame::Draw()
 
 	// すべてのプレイヤーを描画
 	int drawnCount = 0;
-	for (auto& kv : m_players)
+	for (auto& kv : m_runners)
 	{
 		if (kv.second)
 		{
@@ -490,16 +488,16 @@ void SceneGame::Draw()
 		m_map.DebugBoxLine(m_pEngine, &m_camera, &m_projection);
 	}
 
-	if (m_pLocalPlayer)
+	if (m_pLocalRunner)
 	{
-		m_map.DrawMiniMap(m_pEngine, m_pLocalPlayer->GetPosition2D(), m_pLocalPlayer->GetArrowAngle());
+		m_map.DrawMiniMap(m_pEngine, m_pLocalRunner->GetPosition2D(), m_pLocalRunner->GetArrowAngle());
 	}
 
 	m_pEngine->SpriteBegin();
 
-	if (m_pLocalPlayer)
+	if (m_pLocalRunner)
 	{
-		m_pLocalPlayer->DrawStaminaGauge(m_pEngine);
+		m_pLocalRunner->DrawStaminaGauge(m_pEngine);
 	}
 
 #if _DEBUG
@@ -508,16 +506,16 @@ void SceneGame::Draw()
 		m_pEngine->DrawPrintf(50, 950, FONT_GOTHIC40, Color::WHITE, "DEL : %f", m_deltaTime);
 		m_pEngine->DrawPrintf(50, 1000, FONT_GOTHIC40, Color::WHITE, "FPS : %f", (float)m_pEngine->GetFPS());
 		m_pEngine->DrawPrintf(50, 900, FONT_GOTHIC40, Color::CYAN, "Players: %d (Drawn: %d)",
-			(int)m_players.size(), drawnCount);
+			(int)m_runners.size(), drawnCount);
 
-		if (d_debugFlag & DRAW_PLAYER_STATE && m_pLocalPlayer)
+		if (d_debugFlag & DRAW_PLAYER_STATE && m_pLocalRunner)
 		{
-			m_pLocalPlayer->DebugPrint(m_pEngine);
+			m_pLocalRunner->DebugPrint(m_pEngine);
 		}
 
 		// すべてのプレイヤー情報を表示（位置情報付き）
 		int yOffset = 500;
-		for (auto& kv : m_players)
+		for (auto& kv : m_runners)
 		{
 			D3DCOLOR color = (kv.first == m_localClientId) ? Color::YELLOW : Color::GREEN;
 			const char* prefix = (kv.first == m_localClientId) ? "Local" : "Remote";
@@ -582,7 +580,7 @@ void SceneGame::PostEffect()
 void SceneGame::Exit()
 {
 	// すべてのプレイヤーを解放
-	for (auto& kv : m_players)
+	for (auto& kv : m_runners)
 	{
 		if (kv.second)
 		{
@@ -590,8 +588,8 @@ void SceneGame::Exit()
 			delete kv.second;
 		}
 	}
-	m_players.clear();
-	m_pLocalPlayer = nullptr;
+	m_runners.clear();
+	m_pLocalRunner = nullptr;
 
 	m_map.Release(m_pEngine);
 	m_fade.Release(m_pEngine);
