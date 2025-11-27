@@ -1,9 +1,13 @@
 ﻿#pragma once
 
-#include "..\\..\\GameBase.h"
+#include <winsock2.h> 
+#include <ws2tcpip.h>
 
+#include "..\\..\\GameBase.h"
 #include "..\\..\\Scene\\Scene\\Scene.h"
 #include "..\\Object\\Map\\Map.h"
+#include "..\\..\\Object\\Network\\NetworkSync.h"
+#include "..\\..\\Object\\Network\\NetworkLogger.h"
 
 class Map;
 class CharacterBase
@@ -16,10 +20,29 @@ public:
 	const D3DXVECTOR3& GetDirection()const;
 	const D3DXVECTOR3& GetDepth()const;
 	const D3DXVECTOR2& GetPosition2D()const;
-	
+
 	const float& GetFov()const;
 	const float& GetRadius()const;
 	const float& GetArrowAngle()const;
+
+	// ★★★ ネットワーク関連メソッド ★★★
+	virtual NetPlayerState GetNetState() const;
+	virtual void UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& light, float deltaTime);
+	void PredictMovement(float deltaTime);
+
+	// ★★★ ネットワーク情報の設定・取得 ★★★
+	void SetClientId(uint32_t id) { m_clientId = id; }
+	uint32_t GetClientId() const { return m_clientId; }
+
+	void SetCharacterName(const std::string& name) { m_characterName = name; }
+	const std::string& GetCharacterName() const { return m_characterName; }
+
+	void SetIsLocal(bool local) { m_bIsLocal = local; }
+	bool IsLocal() const { return m_bIsLocal; }
+
+	void SetPosition(const D3DXVECTOR3& pos) { m_position = pos; }
+	const D3DXVECTOR3& GetEyePosition() const { return m_eyePosition; }
+
 protected:
 	static const D3DXVECTOR3 DEPTH_DIRECTION;
 	static const D3DXVECTOR3 UP_DIRECTION;
@@ -53,8 +76,12 @@ protected:
 	void SetMouseCursor(Engine* pEngine, Camera& camera);
 
 	virtual void LoadParameter() = 0;
-	virtual void UpdateStamina();
-	virtual void DrawStaminaGauge();
+	virtual void UpdateStamina(float deltaTime) {}
+	virtual void DrawStaminaGauge(Engine* pEngine) {}
+
+	// ★★★ ネットワーク同期用の内部メソッド ★★★
+	void AddPositionToHistory(const D3DXVECTOR3& pos);
+	D3DXVECTOR3 GetAveragedPosition() const;
 
 	//ファイルからの読み込み用
 	//必ず実装させるクラスですべて読み込むこと
@@ -97,6 +124,34 @@ protected:
 	float m_vAngle;
 	float m_fov;
 	float m_deltaTime;
-	
+
 	bool m_bFirstPerson;
+
+	// ★★★ ネットワーク同期用メンバー変数 ★★★
+	uint32_t m_clientId;
+	std::string m_characterName;
+	bool m_bIsLocal;
+
+	// ★★★ 補間用変数 ★★★
+	D3DXVECTOR3 m_targetPosition;
+	float m_targetHAngle;
+	float m_targetVAngle;
+	float m_interpolationSpeed;
+	float m_adaptiveInterpolationSpeed;
+
+	// ★★★ 予測移動用変数 ★★★
+	D3DXVECTOR3 m_velocity;
+	D3DXVECTOR3 m_predictedPosition;
+	D3DXVECTOR3 m_smoothedVelocity;
+	float m_velocitySmoothingFactor;
+
+	// ★★★ ジッター対策用変数 ★★★
+	static const int MAX_POSITION_HISTORY = 5;
+	D3DXVECTOR3 m_positionHistory[MAX_POSITION_HISTORY];
+	int m_positionHistoryIndex;
+	int m_positionHistoryCount;
+
+	// ★★★ タイムスタンプ管理 ★★★
+	DWORD m_lastUpdateTime;
+	float m_timeSinceLastUpdate;
 };

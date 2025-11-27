@@ -1,13 +1,12 @@
 ﻿#pragma once
 
-#include <winsock2.h>
+#include <winsock2.h> 
 #include <ws2tcpip.h>
+
 #include "..\\..\\GameBase.h"
 #include "..\\..\\Scene\\Scene\\Scene.h"
 #include "..\\..\\Object\\CharacterBase\\CharacterBase.h"
 #include "..\\..\\Object\\Map\\Map.h"
-#include "..\\..\\Object\\Network\\NetworkSync.h"
-#include "..\\..\\Object\\Network\\NetworkLogger.h"
 #include <fstream>
 #include "..\\json.hpp"
 
@@ -22,30 +21,19 @@ public:
 	void Release(Engine* pEngine);
 
 	void Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight& light, float deltaTime);
-	void UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& light, float deltaTime);
 
 	void Draw(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight);
-	void DrawStaminaGauge(Engine* pEngine);
+	void DrawStaminaGauge(Engine* pEngine) override;
 	void DebugPrint(Engine* pEngine);
 
-	NetPlayerState GetNetState() const;
-	void SetClientId(uint32_t id) { m_clientId = id; }
-	uint32_t GetClientId() const { return m_clientId; }
-	void SetPlayerName(const std::string& name) { m_playerName = name; }
-	const std::string& GetPlayerName() const { return m_playerName; }
-	void SetIsLocal(bool local) { m_bIsLocal = local; }
-	bool IsLocal() const { return m_bIsLocal; }
+	virtual NetPlayerState GetNetState() const override;
 
-	void SetPosition(const D3DXVECTOR3& pos) { m_position = pos; }
-	const D3DXVECTOR3& GetEyePosition() const { return m_eyePosition; }
+	virtual void UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& light, float deltaTime) override;
 
-	void PredictMovement(float deltaTime);
-	void AddPositionToHistory(const D3DXVECTOR3& pos);
-	D3DXVECTOR3 GetAveragedPosition() const;
 private:
-	void LoadParameter();
+	void LoadParameter() override;
 	void ChangeSpeed();
-	void UpdateStamina(float deltaTime);
+	void UpdateStamina(float deltaTime)override;
 
 	enum GAUGE_COLOR
 	{
@@ -74,27 +62,4 @@ private:
 	float m_stamina;
 	float m_staminaRecoveryTimer;
 	bool m_bFatigued;
-
-	uint32_t m_clientId;
-	std::string m_playerName;
-	bool m_bIsLocal;
-
-	D3DXVECTOR3 m_targetPosition;
-	float m_targetHAngle;
-	float m_targetVAngle;
-	float m_interpolationSpeed; 
-	float m_adaptiveInterpolationSpeed;
-
-	D3DXVECTOR3 m_velocity;             
-	D3DXVECTOR3 m_predictedPosition;
-
-	D3DXVECTOR3 m_smoothedVelocity;     
-	float m_velocitySmoothingFactor;
-	static const int MAX_POSITION_HISTORY = 5;
-	D3DXVECTOR3 m_positionHistory[MAX_POSITION_HISTORY];
-	int m_positionHistoryIndex;
-	int m_positionHistoryCount;
-	DWORD m_lastUpdateTime;             
-	float m_timeSinceLastUpdate;
-
 };

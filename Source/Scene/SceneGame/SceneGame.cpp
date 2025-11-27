@@ -103,7 +103,7 @@ void SceneGame::Initialize()
 	m_pLocalPlayer = new Player();
 	m_pLocalPlayer->SetIsLocal(true);
 	m_pLocalPlayer->SetClientId(m_localClientId);
-	m_pLocalPlayer->SetPlayerName(m_pClient->GetPlayerName());
+	m_pLocalPlayer->SetCharacterName(m_pClient->GetPlayerName());  // ★ 修正
 	m_pLocalPlayer->Initialize(m_pEngine, m_map, &m_projection, m_camera, m_light);
 
 	m_players[m_localClientId] = m_pLocalPlayer;
@@ -116,7 +116,8 @@ void SceneGame::Initialize()
 		spawn.startX = startPos.x;
 		spawn.startY = startPos.y;
 		spawn.startZ = startPos.z;
-		strncpy_s(spawn.name, m_pLocalPlayer->GetPlayerName().c_str(), sizeof(spawn.name) - 1);
+		// ★ strncpy_s の正しい使い方
+		strncpy_s(spawn.name, sizeof(spawn.name), m_pLocalPlayer->GetCharacterName().c_str(), _TRUNCATE);
 		spawn.name[sizeof(spawn.name) - 1] = '\0';
 
 		m_pServer->BroadcastPlayerSpawn(spawn);
@@ -127,7 +128,7 @@ void SceneGame::Initialize()
 	m_lastNetworkSend = m_lastTime;
 	m_lastWorldBroadcast = m_lastTime;
 	m_bInitialSyncDone = false;
-	m_bFirstPerson = true;  
+	m_bFirstPerson = true;
 	m_pLocalPlayer->Update(m_pEngine, m_map, m_camera, m_light, 0);
 	m_pLocalPlayer->SetFirstPersonCamera(m_pEngine, m_camera);
 
@@ -428,9 +429,9 @@ void SceneGame::SpawnPlayer(uint32_t clientId, const std::string& name, const D3
 	Player* p = new Player();
 	p->SetIsLocal(false);
 	p->SetClientId(clientId);
-	p->SetPlayerName(name);
+	p->SetCharacterName(name);  // ★ SetPlayerName → SetCharacterName
 
-	// ★★★ 位置が(0,0,0)の場合はマップのスタート位置を使用 ★★★
+								// 位置が(0,0,0)の場合はマップのスタート位置を使用
 	D3DXVECTOR3 spawnPos = pos;
 	if (pos.x == 0.0f && pos.y == 0.0f && pos.z == 0.0f)
 	{
@@ -440,21 +441,13 @@ void SceneGame::SpawnPlayer(uint32_t clientId, const std::string& name, const D3
 	}
 
 	p->InitializeAtPosition(m_pEngine, spawnPos, &m_projection, m_camera, m_light);
-
-	// ★★★ 初期位置を確実に設定 ★★★
 	p->SetPosition(spawnPos);
 
 	m_players[clientId] = p;
 
 	NET_LOG_F("[SceneGame] プレイヤー生成完了: ID=%u, Name=%s, Pos=(%.1f, %.1f, %.1f)",
 		clientId, name.c_str(), spawnPos.x, spawnPos.y, spawnPos.z);
-
-	// ★★★ デバッグ: 生成直後の位置を確認 ★★★
-	D3DXVECTOR3 checkPos = p->GetPosition();
-	NET_LOG_F("[SceneGame] 確認: プレイヤー実際の位置=(%.1f, %.1f, %.1f)",
-		checkPos.x, checkPos.y, checkPos.z);
 }
-
 void SceneGame::DespawnPlayer(uint32_t clientId)
 {
 	auto it = m_players.find(clientId);
@@ -512,15 +505,10 @@ void SceneGame::Draw()
 #if _DEBUG
 	if (!(d_debugFlag & DISPLAY_DEBUG_STRING))
 	{
-		m_pEngine->DrawPrintf(50, 950, FONT_GOTHIC40, Color::WHITE, "DEL : %.3f", m_deltaTime);
-		m_pEngine->DrawPrintf(50, 1000, FONT_GOTHIC40, Color::WHITE, "FPS : %.1f", (float)m_pEngine->GetFPS());
+		m_pEngine->DrawPrintf(50, 950, FONT_GOTHIC40, Color::WHITE, "DEL : %f", m_deltaTime);
+		m_pEngine->DrawPrintf(50, 1000, FONT_GOTHIC40, Color::WHITE, "FPS : %f", (float)m_pEngine->GetFPS());
 		m_pEngine->DrawPrintf(50, 900, FONT_GOTHIC40, Color::CYAN, "Players: %d (Drawn: %d)",
 			(int)m_players.size(), drawnCount);
-
-		// ★★★ ネットワーク情報の表示 ★★★
-		m_pEngine->DrawPrintf(50, 850, FONT_GOTHIC40, Color::GREEN,
-			"Net: Send=%dms Broadcast=%dms",
-			NETWORK_SEND_INTERVAL, WORLD_BROADCAST_INTERVAL);
 
 		if (d_debugFlag & DRAW_PLAYER_STATE && m_pLocalPlayer)
 		{
@@ -537,7 +525,7 @@ void SceneGame::Draw()
 
 			m_pEngine->DrawPrintf(0, yOffset, FONT_GOTHIC40, color,
 				"%s[%u]: %s Pos=(%.1f,%.1f,%.1f)",
-				prefix, kv.first, kv.second->GetPlayerName().c_str(),
+				prefix, kv.first, kv.second->GetCharacterName().c_str(),  // ★ GetPlayerName → GetCharacterName
 				pos.x, pos.y, pos.z);
 			yOffset += 50;
 		}

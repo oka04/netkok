@@ -8,6 +8,7 @@ using namespace WindowSetting;
 
 const D3DXVECTOR3 CharacterBase::UP_DIRECTION = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 const D3DXVECTOR3 CharacterBase::DEPTH_DIRECTION = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+
 //初期化
 void CharacterBase::Initialize(Engine *pEngine, std::string filename, Projection* projection, Camera& camera, DirectionalLight &light)
 {
@@ -26,6 +27,29 @@ void CharacterBase::Initialize(Engine *pEngine, std::string filename, Projection
 
 	m_keyFlag = 0x00;
 
+	// ★★★ ネットワーク関連の初期化 ★★★
+	m_clientId = 0;
+	m_characterName = "";
+	m_bIsLocal = true;
+	m_targetPosition = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_targetHAngle = 0.0f;
+	m_targetVAngle = 0.0f;
+	m_interpolationSpeed = 30.0f;
+	m_adaptiveInterpolationSpeed = 30.0f;
+	m_velocity = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_predictedPosition = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_smoothedVelocity = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_velocitySmoothingFactor = 0.3f;
+	m_positionHistoryIndex = 0;
+	m_positionHistoryCount = 0;
+	m_lastUpdateTime = 0;
+	m_timeSinceLastUpdate = 0.0f;
+
+	for (int i = 0; i < MAX_POSITION_HISTORY; i++)
+	{
+		m_positionHistory[i] = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	}
+
 	SetMouseCursor(pEngine, camera);
 	UpdateMatrix(light);
 }
@@ -36,7 +60,7 @@ void CharacterBase::UpdateMatrix(DirectionalLight &light)
 	float currentAngle = D3DXToRadian(m_hAngle);
 
 	D3DXVECTOR3 baseDirection;
-	
+
 	baseDirection = DEPTH_DIRECTION;
 	m_angle = currentAngle;
 
@@ -64,7 +88,7 @@ void CharacterBase::UpdateMatrix(DirectionalLight &light)
 	D3DXMatrixTranslation(&m_matTrans, &m_position);
 
 	m_matWorld = m_matRotate * m_matTrans;
-	
+
 	m_model.SetWorldTransform(&m_matWorld);
 }
 
@@ -145,7 +169,7 @@ void CharacterBase::Move(Map & map)
 	if (D3DXVec3Length(&m_direction) > 0.0f)
 	{
 		//m_speedだけ呼び出す先のクラスで決める
-		
+
 		D3DXVECTOR3 vector = m_direction * m_speed;
 		vector.y = 0;
 
@@ -169,14 +193,6 @@ void CharacterBase::SetMouseCursor(Engine * pEngine, Camera & camera)
 	ShowCursor(FALSE);
 
 	SetCursorPos(GetSystemMetrics(SM_CXFULLSCREEN) / 2, GetSystemMetrics(SM_CYFULLSCREEN) / 2);
-}
-
-void CharacterBase::UpdateStamina()
-{
-}
-
-void CharacterBase::DrawStaminaGauge()
-{
 }
 
 void CharacterBase::SetFirstPersonCamera(Engine * pEngine, Camera & camera)
@@ -269,4 +285,175 @@ const float & CharacterBase::GetArrowAngle() const
 	if (rad < 0) rad += D3DX_PI * 2.0f;
 
 	return rad;
+}
+
+// ★★★ ネットワーク状態の取得 ★★★
+NetPlayerState CharacterBase::GetNetState() const
+{
+	NetPlayerState state;
+	state.clientId = m_clientId;
+	state.posX = m_position.x;
+	state.posY = m_position.y;
+	state.posZ = m_position.z;
+	state.hAngle = m_hAngle;
+	state.vAngle = m_vAngle;
+	state.depthX = m_depth.x;
+	state.depthY = m_depth.y;
+	state.depthZ = m_depth.z;
+	state.keyFlag = m_keyFlag;
+	state.flags = 0;
+	state.SetFirstPerson(m_bFirstPerson);
+
+	return state;
+}
+
+// ★★★ ネットワークからの更新 ★★★
+void CharacterBase::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& light, float deltaTime)
+{
+	DWORD now = timeGetTime();
+
+	// タイムスタンプ管理
+	if (m_lastUpdateTime != 0)
+	{
+		m_timeSinceLastUpdate = (now - m_lastUpdateTime) / 1000.0f;
+	}
+	else
+	{
+		m_timeSinceLastUpdate = deltaTime;
+	}
+	m_lastUpdateTime = now;
+
+	// 新しいターゲット位置を設定
+	D3DXVECTOR3 newTargetPos = D3DXVECTOR3(state.posX, state.posY, state.posZ);
+
+	// 速度の計算（予測移動用）
+	D3DXVECTOR3 rawVelocity = (newTargetPos - m_targetPosition) / max(0.001f, m_timeSinceLastUpdate);
+
+	// 速度のスムージング（急激な変化を抑制）
+	m_smoothedVelocity = m_smoothedVelocity * (1.0f - m_velocitySmoothingFactor) +
+		rawVelocity * m_velocitySmoothingFactor;
+
+	// 新しいターゲット位置を設定
+	m_targetPosition = newTargetPos;
+	m_targetHAngle = state.hAngle;
+	m_targetVAngle = state.vAngle;
+
+	// 位置履歴に追加（ジッター対策）
+	AddPositionToHistory(m_targetPosition);
+
+	// 現在位置との距離を計算
+	D3DXVECTOR3 diff = m_targetPosition - m_position;
+	float dist = D3DXVec3Length(&diff);
+
+	// デバッグログ（頻度を下げる）
+	static std::map<uint32_t, DWORD> lastLogPerPlayer;
+	if (now - lastLogPerPlayer[state.clientId] > 2000)
+	{
+		NET_LOG_F("[CharacterBase] UpdateFromNetwork: ID=%u Dist=%.2f Speed=%.2f",
+			m_clientId, dist, D3DXVec3Length(&m_smoothedVelocity));
+		lastLogPerPlayer[state.clientId] = now;
+	}
+
+	// 適応的テレポート閾値（速度に応じて調整）
+	float speedFactor = D3DXVec3Length(&m_smoothedVelocity);
+	float teleportThreshold = 1.5f + speedFactor * 0.1f;
+	teleportThreshold = min(teleportThreshold, 5.0f);
+
+	if (dist > teleportThreshold)
+	{
+		// 距離が大きい場合は即座にテレポート
+		m_position = m_targetPosition;
+		m_velocity = m_smoothedVelocity;
+		NET_LOG_F("[CharacterBase] テレポート: ID=%u Dist=%.2f", m_clientId, dist);
+	}
+	else if (dist > 0.01f)
+	{
+		// 適応的補間速度（距離に応じて調整）
+		float distanceFactor = min(dist * 2.0f, 1.0f);
+		m_adaptiveInterpolationSpeed = m_interpolationSpeed * (1.0f + distanceFactor * 2.0f);
+
+		// 補間係数の計算
+		float t = min(1.0f, m_adaptiveInterpolationSpeed * deltaTime);
+
+		// 位置の補間
+		m_position += diff * t;
+
+		// 速度の更新
+		m_velocity = m_smoothedVelocity;
+	}
+	else
+	{
+		// ほぼ到達している場合
+		m_position = m_targetPosition;
+		m_velocity = D3DXVECTOR3(0, 0, 0);
+	}
+
+	// 角度の補間（改善版）
+	float hDiff = m_targetHAngle - m_hAngle;
+	while (hDiff > 180.0f) hDiff -= 360.0f;
+	while (hDiff < -180.0f) hDiff += 360.0f;
+
+	// 角度も適応的に補間
+	float angleLerpSpeed = m_interpolationSpeed * 1.5f;
+	m_hAngle += hDiff * min(1.0f, angleLerpSpeed * deltaTime);
+
+	float vDiff = m_targetVAngle - m_vAngle;
+	m_vAngle += vDiff * min(1.0f, angleLerpSpeed * deltaTime);
+
+	// 向きベクトルとその他の状態を更新
+	m_depth = D3DXVECTOR3(state.depthX, state.depthY, state.depthZ);
+	m_keyFlag = state.keyFlag;
+	m_bFirstPerson = state.IsFirstPerson();
+
+	// 目の位置を更新
+	m_eyePosition = m_position + ((m_keyFlag & CROUCH_KEY) ? f_crouchEyePosition : f_standEyePosition);
+
+	// 行列を更新
+	UpdateMatrix(light);
+}
+
+// ★★★ 予測移動（フレーム間の補間）★★★
+void CharacterBase::PredictMovement(float deltaTime)
+{
+	if (m_bIsLocal) return;  // ローカルキャラクターは予測不要
+
+							 // 速度ベースの予測
+	if (D3DXVec3Length(&m_velocity) > 0.01f)
+	{
+		D3DXVECTOR3 prediction = m_velocity * deltaTime;
+		m_predictedPosition = m_position + prediction;
+
+		// 予測位置とターゲット位置の間で補間
+		float blend = 0.3f;  // 30%予測、70%現在位置
+		m_position = m_position * (1.0f - blend) + m_predictedPosition * blend;
+	}
+}
+
+// ★★★ 位置履歴の追加 ★★★
+void CharacterBase::AddPositionToHistory(const D3DXVECTOR3& pos)
+{
+	m_positionHistory[m_positionHistoryIndex] = pos;
+	m_positionHistoryIndex = (m_positionHistoryIndex + 1) % MAX_POSITION_HISTORY;
+
+	if (m_positionHistoryCount < MAX_POSITION_HISTORY)
+	{
+		m_positionHistoryCount++;
+	}
+}
+
+// ★★★ 平均位置の取得（ジッター対策）★★★
+D3DXVECTOR3 CharacterBase::GetAveragedPosition() const
+{
+	if (m_positionHistoryCount == 0)
+	{
+		return m_position;
+	}
+
+	D3DXVECTOR3 sum(0, 0, 0);
+	for (int i = 0; i < m_positionHistoryCount; i++)
+	{
+		sum += m_positionHistory[i];
+	}
+
+	return sum / (float)m_positionHistoryCount;
 }

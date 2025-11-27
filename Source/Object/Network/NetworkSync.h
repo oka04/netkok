@@ -27,7 +27,6 @@ struct NetPlayerState
 	float hAngle, vAngle;
 	float depthX, depthY, depthZ;
 	uint8_t keyFlag;
-	float stamina;
 	uint8_t flags;
 
 	void SetFirstPerson(bool v) { flags = v ? (flags | 0x01) : (flags & ~0x01); }
