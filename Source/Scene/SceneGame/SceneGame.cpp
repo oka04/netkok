@@ -2,6 +2,8 @@
 
 #include "SceneGame.h"
 #include "..\\..\\Object\\Network\\NetworkLogger.h"
+#include "..\\..\\Object\\Chaser\\Chaser.h"
+#include "..\\..\\Object\\Runner\\Runner.h"
 
 using namespace KeyString;
 using namespace InputKey;
@@ -11,7 +13,7 @@ using namespace std;
 
 SceneGame::SceneGame(Engine* pEngine)
 	: Scene(pEngine)
-	, m_pLocalRunner(nullptr)
+	, m_pLocalPlayer(nullptr)
 	, m_localClientId(0)
 	, m_bIsHost(false)
 	, m_lastNetworkSend(0)
@@ -27,8 +29,9 @@ SceneGame::SceneGame(Engine* pEngine)
 	, m_lastTime(0)
 	, m_bInitialSyncDone(false)
 	, m_bFirstPerson(true)
-	, m_bEnablePrediction(true)          
+	, m_bEnablePrediction(true)
 	, m_bEnableJitterReduction(true)
+	, m_localRole(ROLE_NONE)
 {
 }
 
@@ -98,43 +101,18 @@ void SceneGame::Initialize()
 
 	NET_LOG_F("[SceneGame] Initialize: IsHost=%d, ClientID=%u", m_bIsHost, m_localClientId);
 
-	// ローカルプレイヤーを生成
-	D3DXVECTOR3 startPos = m_map.GetPlayerStartPosition();
-	m_pLocalRunner = new Runner();
-	m_pLocalRunner->SetIsLocal(true);
-	m_pLocalRunner->SetClientId(m_localClientId);
-	m_pLocalRunner->SetCharacterName(m_pClient->GetPlayerName());  // ★ 修正
-	m_pLocalRunner->Initialize(m_pEngine, m_map, &m_projection, m_camera, m_light);
-
-	m_runners[m_localClientId] = m_pLocalRunner;
-
-	//ホストの場合、自分のスポーン情報をブロードキャスト
-	if (m_bIsHost && m_pServer)
-	{
-		NetPlayerSpawn spawn;
-		spawn.clientId = m_localClientId;
-		spawn.startX = startPos.x;
-		spawn.startY = startPos.y;
-		spawn.startZ = startPos.z;
-		// ★ strncpy_s の正しい使い方
-		strncpy_s(spawn.name, sizeof(spawn.name), m_pLocalRunner->GetCharacterName().c_str(), _TRUNCATE);
-		spawn.name[sizeof(spawn.name) - 1] = '\0';
-
-		m_pServer->BroadcastPlayerSpawn(spawn);
-		NET_LOG_F("[SceneGame] ホストのスポーン情報をブロードキャスト: ID=%u", m_localClientId);
-	}
+	// ★ ローカルプレイヤーは役割が決まるまで生成しない
+	m_localRole = ROLE_NONE;
 
 	m_lastTime = timeGetTime();
 	m_lastNetworkSend = m_lastTime;
 	m_lastWorldBroadcast = m_lastTime;
 	m_bInitialSyncDone = false;
 	m_bFirstPerson = true;
-	m_pLocalRunner->Update(m_pEngine, m_map, m_camera, m_light, 0);
-	m_pLocalRunner->SetFirstPersonCamera(m_pEngine, m_camera);
 
 	SoundManager::Play(AK::EVENTS::PLAY_BGM_GAME, ID_BGM);
 
-	NET_LOG("[SceneGame] 初期化完了 - 他プレイヤーのスポーン待機中");
+	NET_LOG("[SceneGame] 初期化完了 - 役割割り当て待機中");
 }
 
 void SceneGame::Update()
@@ -158,11 +136,14 @@ void SceneGame::Update()
 		UpdateLocalPlayer();
 		UpdateRemotePlayers();
 
-		if (m_pLocalRunner && m_map.CheckGoal(m_pLocalRunner->GetPosition()) && !(d_debugFlag & DEBUG_MODE))
+		if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
 		{
-			m_gameState = FADE_OUT;
-			m_fade.SetFadeOut();
-			m_gameData.m_nextSceneNumber = SCENE_CLEAR;
+			if (m_map.CheckGoal(m_pLocalPlayer->GetPosition()) && !(d_debugFlag & DEBUG_MODE))
+			{
+				m_gameState = FADE_OUT;
+				m_fade.SetFadeOut();
+				m_gameData.m_nextSceneNumber = SCENE_CLEAR;
+			}
 		}
 		break;
 
@@ -188,7 +169,6 @@ void SceneGame::Update()
 		break;
 
 	case FADE_IN:
-		// フェードイン中も同期を開始
 		UpdateNetwork();
 
 		if (m_fade.Update(m_deltaTime))
@@ -241,50 +221,62 @@ void SceneGame::UpdateNetwork()
 	{
 		NET_LOG("[SceneGame] 初期同期開始");
 
-		// クライアントの場合、サーバーから既存プレイヤー情報を受信
 		if (!m_bIsHost)
 		{
-			// スポーン情報を処理
 			NetPlayerSpawn spawn;
 			while (m_pClient->PopPlayerSpawn(spawn))
 			{
 				if (spawn.clientId != m_localClientId)
 				{
-					NET_LOG_F("[SceneGame] 既存プレイヤーを生成: ID=%u, Name=%s",
-						spawn.clientId, spawn.name);
-					SpawnPlayer(spawn.clientId, spawn.name,
-						D3DXVECTOR3(spawn.startX, spawn.startY, spawn.startZ));
+					NET_LOG_F("[SceneGame] 既存プレイヤーを生成: ID=%u, Name=%s, Role=%s",
+						spawn.clientId, spawn.name,
+						(spawn.role == ROLE_CHASER) ? "鬼" : "逃げる側");
+					SpawnPlayerWithRole(spawn.clientId, spawn.name,
+						D3DXVECTOR3(spawn.startX, spawn.startY, spawn.startZ),
+						spawn.role);
 				}
 			}
 		}
 
 		m_bInitialSyncDone = true;
-		NET_LOG_F("[SceneGame] 初期同期完了 - プレイヤー数: %d", (int)m_runners.size());
+		NET_LOG_F("[SceneGame] 初期同期完了 - プレイヤー数: %d", (int)m_players.size());
 	}
 
-	// 定期的にプレイヤー状態を送信
 	if (now - m_lastNetworkSend >= NETWORK_SEND_INTERVAL)
 	{
 		SyncToServer();
 		m_lastNetworkSend = now;
 	}
 
-	// ホストの場合、ワールド状態をブロードキャスト
 	if (m_bIsHost && m_pServer && now - m_lastWorldBroadcast >= WORLD_BROADCAST_INTERVAL)
 	{
 		m_pServer->BroadcastWorldState();
 		m_lastWorldBroadcast = now;
 	}
 
-	// サーバーからの更新を受信
 	ReceiveFromServer();
 }
 
 void SceneGame::UpdateLocalPlayer()
 {
-	if (!m_pLocalRunner) return;
+	if (!m_pLocalPlayer) return;
 
-	m_pLocalRunner->Update(m_pEngine, m_map, m_camera, m_light, m_deltaTime);
+	if (m_localRole == ROLE_RUNNER)
+	{
+		Runner* runner = dynamic_cast<Runner*>(m_pLocalPlayer);
+		if (runner)
+		{
+			runner->Update(m_pEngine, m_map, m_camera, m_light, m_deltaTime);
+		}
+	}
+	else if (m_localRole == ROLE_CHASER)
+	{
+		Chaser* chaser = dynamic_cast<Chaser*>(m_pLocalPlayer);
+		if (chaser)
+		{
+			chaser->Update(m_pEngine, m_map, m_camera, m_light, m_deltaTime);
+		}
+	}
 
 #if _DEBUG
 	switch (d_viewPointCount)
@@ -293,16 +285,17 @@ void SceneGame::UpdateLocalPlayer()
 		m_bFirstPerson = true;
 		break;
 	case VIEW_FIRST:
-		m_pLocalRunner->SetFirstPersonCamera(m_pEngine, m_camera);
+		if (m_pLocalPlayer)
+			m_pLocalPlayer->SetFirstPersonCamera(m_pEngine, m_camera);
 		m_bFirstPerson = true;
 		break;
 	case VIEW_THIRD:
-		m_pLocalRunner->SetThirdPersonFromBehind(m_pEngine, m_camera, m_map);
+		if (m_pLocalPlayer)
+			m_pLocalPlayer->SetThirdPersonFromBehind(m_pEngine, m_camera, m_map);
 		m_bFirstPerson = false;
 		break;
 	}
 #else
-	// リリースビルドではデフォルトで一人称視点
 	m_bFirstPerson = true;
 #endif
 }
@@ -311,7 +304,7 @@ void SceneGame::UpdateRemotePlayers()
 {
 	if (m_bEnablePrediction)
 	{
-		for (auto& kv : m_runners)
+		for (auto& kv : m_players)
 		{
 			if (kv.second && !kv.second->IsLocal())
 			{
@@ -320,13 +313,13 @@ void SceneGame::UpdateRemotePlayers()
 		}
 	}
 }
+
 void SceneGame::SyncToServer()
 {
-	if (!m_pLocalRunner || !m_pClient) return;
+	if (!m_pLocalPlayer || !m_pClient) return;
 
-	NetPlayerState state = m_pLocalRunner->GetNetState();
+	NetPlayerState state = m_pLocalPlayer->GetNetState();
 
-	// ★★★ デバッグログの頻度を下げる（3秒に1回）★★★
 	static DWORD lastLogTime = 0;
 	DWORD now = timeGetTime();
 	if (now - lastLogTime > 3000)
@@ -338,12 +331,10 @@ void SceneGame::SyncToServer()
 
 	if (m_bIsHost && m_pServer)
 	{
-		// ホストの場合、サーバーに直接状態を設定
 		m_pServer->SetHostState(state);
 	}
 	else
 	{
-		// クライアントの場合、サーバーに送信
 		m_pClient->SendPlayerState(state);
 	}
 }
@@ -352,16 +343,46 @@ void SceneGame::ReceiveFromServer()
 {
 	if (!m_pClient) return;
 
+	// ★ 役割割り当ての処理（最優先）
+	NetRoleAssignment roleAssign;
+	while (m_pClient->PopRoleAssignment(roleAssign))
+	{
+		m_playerRoles[roleAssign.clientId] = roleAssign.role;
+
+		// 自分の役割が決定したらローカルプレイヤーを生成
+		if (roleAssign.clientId == m_localClientId && !m_pLocalPlayer)
+		{
+			m_localRole = roleAssign.role;
+
+			D3DXVECTOR3 startPos = m_map.GetPlayerStartPosition();
+			std::string myName = m_pClient->GetPlayerName();
+
+			NET_LOG_F("[SceneGame] ローカルプレイヤー生成: Role=%s",
+				(m_localRole == ROLE_CHASER) ? "鬼" : "逃げる側");
+
+			SpawnPlayerWithRole(m_localClientId, myName, startPos, m_localRole);
+
+			// 初期カメラ設定
+			if (m_pLocalPlayer)
+			{
+				m_pLocalPlayer->Update(m_pEngine, m_map, m_camera, m_light, 0);
+				m_pLocalPlayer->SetFirstPersonCamera(m_pEngine, m_camera);
+			}
+		}
+	}
+
 	// プレイヤーのスポーン処理
 	NetPlayerSpawn spawn;
 	while (m_pClient->PopPlayerSpawn(spawn))
 	{
 		if (spawn.clientId != m_localClientId)
 		{
-			NET_LOG_F("[SceneGame] 新規プレイヤー参加: ID=%u, Name=%s",
-				spawn.clientId, spawn.name);
-			SpawnPlayer(spawn.clientId, spawn.name,
-				D3DXVECTOR3(spawn.startX, spawn.startY, spawn.startZ));
+			NET_LOG_F("[SceneGame] 新規プレイヤー参加: ID=%u, Name=%s, Role=%s",
+				spawn.clientId, spawn.name,
+				(spawn.role == ROLE_CHASER) ? "鬼" : "逃げる側");
+			SpawnPlayerWithRole(spawn.clientId, spawn.name,
+				D3DXVECTOR3(spawn.startX, spawn.startY, spawn.startZ),
+				spawn.role);
 		}
 	}
 
@@ -376,11 +397,10 @@ void SceneGame::ReceiveFromServer()
 		}
 	}
 
-	// ★★★ ワールド状態の同期 ★★★
+	// ワールド状態の同期
 	NetWorldState world;
 	if (m_pClient->GetWorldState(world))
 	{
-		// ★★★ デバッグログの頻度を下げる（3秒に1回）★★★
 		static DWORD lastLogTime = 0;
 		DWORD now = timeGetTime();
 		if (now - lastLogTime > 3000)
@@ -394,62 +414,110 @@ void SceneGame::ReceiveFromServer()
 		{
 			const NetPlayerState& ps = world.players[i];
 
-			// 自分自身はスキップ
 			if (ps.clientId == m_localClientId) continue;
 
-			auto it = m_runners.find(ps.clientId);
-			if (it != m_runners.end() && it->second)
+			auto it = m_players.find(ps.clientId);
+			if (it != m_players.end() && it->second)
 			{
-				// ★★★ 既存プレイヤーの状態を更新 ★★★
 				it->second->UpdateFromNetwork(ps, m_light, m_deltaTime);
 			}
 			else
 			{
-				// ★★★ まだ生成されていないプレイヤーを生成 ★★★
-				SpawnPlayer(ps.clientId, "Player", D3DXVECTOR3(ps.posX, ps.posY, ps.posZ));
-
-				// 生成直後に状態を更新
-				if (m_runners.find(ps.clientId) != m_runners.end())
+				// 役割情報があれば生成
+				auto roleIt = m_playerRoles.find(ps.clientId);
+				if (roleIt != m_playerRoles.end())
 				{
-					m_runners[ps.clientId]->UpdateFromNetwork(ps, m_light, m_deltaTime);
+					SpawnPlayerWithRole(ps.clientId, "Player",
+						D3DXVECTOR3(ps.posX, ps.posY, ps.posZ),
+						roleIt->second);
+
+					if (m_players.find(ps.clientId) != m_players.end())
+					{
+						m_players[ps.clientId]->UpdateFromNetwork(ps, m_light, m_deltaTime);
+					}
 				}
 			}
 		}
 	}
 }
 
-void SceneGame::SpawnPlayer(uint32_t clientId, const std::string& name, const D3DXVECTOR3& pos)
+void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name,
+	const D3DXVECTOR3& pos, PlayerRole role)
 {
-	if (m_runners.find(clientId) != m_runners.end())
+	if (m_players.find(clientId) != m_players.end())
 	{
 		NET_LOG_F("[SceneGame] プレイヤー %u は既に存在 - スキップ", clientId);
 		return;
 	}
 
-	Runner* p = new Runner();
-	p->SetIsLocal(false);
-	p->SetClientId(clientId);
-	p->SetCharacterName(name); 
-	D3DXVECTOR3 spawnPos = pos;
-	if (pos.x == 0.0f && pos.y == 0.0f && pos.z == 0.0f)
+	CharacterBase* p = nullptr;
+
+	// 役割に応じてRunnerまたはChaserを生成
+	if (role == ROLE_RUNNER)
 	{
-		spawnPos = m_map.GetPlayerStartPosition();
-		NET_LOG_F("[SceneGame] デフォルト位置を使用: (%.1f, %.1f, %.1f)",
-			spawnPos.x, spawnPos.y, spawnPos.z);
+		p = new Runner();
+		NET_LOG_F("[SceneGame] Runnerを生成: ID=%u, Name=%s", clientId, name.c_str());
+	}
+	else if (role == ROLE_CHASER)
+	{
+		p = new Chaser();
+		NET_LOG_F("[SceneGame] Chaserを生成: ID=%u, Name=%s", clientId, name.c_str());
+	}
+	else
+	{
+		NET_LOG_F("[SceneGame] 役割未定: ID=%u - 生成スキップ", clientId);
+		return;
 	}
 
-	p->InitializeAtPosition(m_pEngine, spawnPos, &m_projection, m_camera, m_light);
+	bool isLocal = (clientId == m_localClientId);
+	p->SetIsLocal(isLocal);
+	p->SetClientId(clientId);
+	p->SetCharacterName(name);
+
+	D3DXVECTOR3 spawnPos = (pos.x == 0.0f && pos.y == 0.0f && pos.z == 0.0f)
+		? m_map.GetPlayerStartPosition() : pos;
+
+	if (isLocal)
+	{
+		// ローカルプレイヤー
+		if (role == ROLE_RUNNER)
+		{
+			((Runner*)p)->Initialize(m_pEngine, m_map, &m_projection, m_camera, m_light);
+		}
+		else
+		{
+			((Chaser*)p)->Initialize(m_pEngine, m_map, &m_projection, m_camera, m_light);
+		}
+		m_pLocalPlayer = p;
+	}
+	else
+	{
+		// リモートプレイヤー
+		if (role == ROLE_RUNNER)
+		{
+			((Runner*)p)->InitializeAtPosition(m_pEngine, spawnPos, &m_projection,
+				m_camera, m_light);
+		}
+		else
+		{
+			((Chaser*)p)->InitializeAtPosition(m_pEngine, spawnPos, &m_projection,
+				m_camera, m_light);
+		}
+	}
+
 	p->SetPosition(spawnPos);
+	m_players[clientId] = p;
+	m_playerRoles[clientId] = role;
 
-	m_runners[clientId] = p;
-
-	NET_LOG_F("[SceneGame] プレイヤー生成完了: ID=%u, Name=%s, Pos=(%.1f, %.1f, %.1f)",
-		clientId, name.c_str(), spawnPos.x, spawnPos.y, spawnPos.z);
+	NET_LOG_F("[SceneGame] プレイヤー生成完了: ID=%u, Role=%s, Pos=(%.1f,%.1f,%.1f)",
+		clientId, (role == ROLE_CHASER) ? "鬼" : "逃げる側",
+		spawnPos.x, spawnPos.y, spawnPos.z);
 }
+
 void SceneGame::DespawnPlayer(uint32_t clientId)
 {
-	auto it = m_runners.find(clientId);
-	if (it == m_runners.end())
+	auto it = m_players.find(clientId);
+	if (it == m_players.end())
 	{
 		NET_LOG_F("[SceneGame] プレイヤー %u は存在しない - 削除スキップ", clientId);
 		return;
@@ -457,10 +525,18 @@ void SceneGame::DespawnPlayer(uint32_t clientId)
 
 	if (it->second)
 	{
-		it->second->Release(m_pEngine);
+		if (m_playerRoles[clientId] == ROLE_RUNNER)
+		{
+			((Runner*)it->second)->Release(m_pEngine);
+		}
+		else if (m_playerRoles[clientId] == ROLE_CHASER)
+		{
+			((Chaser*)it->second)->Release(m_pEngine);
+		}
 		delete it->second;
 	}
-	m_runners.erase(it);
+	m_players.erase(it);
+	m_playerRoles.erase(clientId);
 
 	NET_LOG_F("[SceneGame] プレイヤー削除完了: ID=%u", clientId);
 }
@@ -472,9 +548,8 @@ void SceneGame::Draw()
 	m_map.DrawMap(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light, lights);
 	m_map.DrawGoalEffect(&m_camera, &m_projection);
 
-	// すべてのプレイヤーを描画
 	int drawnCount = 0;
-	for (auto& kv : m_runners)
+	for (auto& kv : m_players)
 	{
 		if (kv.second)
 		{
@@ -488,16 +563,20 @@ void SceneGame::Draw()
 		m_map.DebugBoxLine(m_pEngine, &m_camera, &m_projection);
 	}
 
-	if (m_pLocalRunner)
+	if (m_pLocalPlayer)
 	{
-		m_map.DrawMiniMap(m_pEngine, m_pLocalRunner->GetPosition2D(), m_pLocalRunner->GetArrowAngle());
+		m_map.DrawMiniMap(m_pEngine, m_pLocalPlayer->GetPosition2D(), m_pLocalPlayer->GetArrowAngle());
 	}
 
 	m_pEngine->SpriteBegin();
 
-	if (m_pLocalRunner)
+	if (m_pLocalPlayer)
 	{
-		m_pLocalRunner->DrawStaminaGauge(m_pEngine);
+		if (m_localRole == ROLE_RUNNER)
+		{
+			Runner* runner = dynamic_cast<Runner*>(m_pLocalPlayer);
+			if (runner) runner->DrawStaminaGauge(m_pEngine);
+		}
 	}
 
 #if _DEBUG
@@ -506,24 +585,41 @@ void SceneGame::Draw()
 		m_pEngine->DrawPrintf(50, 950, FONT_GOTHIC40, Color::WHITE, "DEL : %f", m_deltaTime);
 		m_pEngine->DrawPrintf(50, 1000, FONT_GOTHIC40, Color::WHITE, "FPS : %f", (float)m_pEngine->GetFPS());
 		m_pEngine->DrawPrintf(50, 900, FONT_GOTHIC40, Color::CYAN, "Players: %d (Drawn: %d)",
-			(int)m_runners.size(), drawnCount);
+			(int)m_players.size(), drawnCount);
 
-		if (d_debugFlag & DRAW_PLAYER_STATE && m_pLocalRunner)
+		if (d_debugFlag & DRAW_PLAYER_STATE && m_pLocalPlayer)
 		{
-			m_pLocalRunner->DebugPrint(m_pEngine);
+			if (m_localRole == ROLE_RUNNER)
+			{
+				Runner* runner = dynamic_cast<Runner*>(m_pLocalPlayer);
+				if (runner) runner->DebugPrint(m_pEngine);
+			}
+			else if (m_localRole == ROLE_CHASER)
+			{
+				Chaser* chaser = dynamic_cast<Chaser*>(m_pLocalPlayer);
+				if (chaser) chaser->DebugPrint(m_pEngine);
+			}
 		}
 
-		// すべてのプレイヤー情報を表示（位置情報付き）
+		// 全プレイヤー情報を表示
 		int yOffset = 500;
-		for (auto& kv : m_runners)
+		for (auto& kv : m_players)
 		{
 			D3DCOLOR color = (kv.first == m_localClientId) ? Color::YELLOW : Color::GREEN;
+
+			// 鬼は赤色で表示
+			if (m_playerRoles[kv.first] == ROLE_CHASER)
+			{
+				color = Color::RED;
+			}
+
 			const char* prefix = (kv.first == m_localClientId) ? "Local" : "Remote";
+			const char* roleStr = (m_playerRoles[kv.first] == ROLE_CHASER) ? "鬼" : "逃げる側";
 			D3DXVECTOR3 pos = kv.second->GetPosition();
 
 			m_pEngine->DrawPrintf(0, yOffset, FONT_GOTHIC40, color,
-				"%s[%u]: %s Pos=(%.1f,%.1f,%.1f)",
-				prefix, kv.first, kv.second->GetCharacterName().c_str(),  // ★ GetPlayerName → GetCharacterName
+				"%s[%u]: %s [%s] Pos=(%.1f,%.1f,%.1f)",
+				prefix, kv.first, kv.second->GetCharacterName().c_str(), roleStr,
 				pos.x, pos.y, pos.z);
 			yOffset += 50;
 		}
@@ -579,17 +675,24 @@ void SceneGame::PostEffect()
 
 void SceneGame::Exit()
 {
-	// すべてのプレイヤーを解放
-	for (auto& kv : m_runners)
+	for (auto& kv : m_players)
 	{
 		if (kv.second)
 		{
-			kv.second->Release(m_pEngine);
+			if (m_playerRoles[kv.first] == ROLE_RUNNER)
+			{
+				((Runner*)kv.second)->Release(m_pEngine);
+			}
+			else if (m_playerRoles[kv.first] == ROLE_CHASER)
+			{
+				((Chaser*)kv.second)->Release(m_pEngine);
+			}
 			delete kv.second;
 		}
 	}
-	m_runners.clear();
-	m_pLocalRunner = nullptr;
+	m_players.clear();
+	m_playerRoles.clear();
+	m_pLocalPlayer = nullptr;
 
 	m_map.Release(m_pEngine);
 	m_fade.Release(m_pEngine);

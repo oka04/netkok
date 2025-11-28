@@ -276,16 +276,20 @@ const float & CharacterBase::GetRadius() const
 
 const float & CharacterBase::GetArrowAngle() const
 {
+	// staticにしてアドレスを安全に返せるようにする
+	static float rad = 0.0f;
+
 	D3DXVECTOR2 dirXZ(m_cameraFront.x, m_cameraFront.z);
 	D3DXVec2Normalize(&dirXZ, &dirXZ);
 
-	float rad = atan2f(dirXZ.x, dirXZ.y);
+	rad = atan2f(dirXZ.x, dirXZ.y);
 
 	//０～２πになるように調節する
 	if (rad < 0) rad += D3DX_PI * 2.0f;
 
 	return rad;
 }
+
 
 // ★★★ ネットワーク状態の取得 ★★★
 NetPlayerState CharacterBase::GetNetState() const

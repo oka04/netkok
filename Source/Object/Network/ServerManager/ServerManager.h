@@ -1,10 +1,13 @@
-﻿#pragma once
+﻿// ServerManager.h - 役割割り当て機能追加
+#pragma once
 #include <enet/enet.h>
 #include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
 #include <mutex>
+#include <algorithm>
+#include <random>
 #include "..\\NetworkSync.h"
 
 class Discovery;
@@ -16,6 +19,7 @@ struct ClientInfo
 	std::string name;
 	NetPlayerState lastState;
 	bool stateReceived;
+	PlayerRole role;  // ★ 役割を追加
 };
 
 class ServerManager
@@ -48,6 +52,12 @@ public:
 
 	void SetHostState(const NetPlayerState& state);
 
+	// ★ 役割関連メソッド
+	void AssignRoles();  // 役割を割り当て
+	void BroadcastRoleAssignments();  // 役割をブロードキャスト
+	void SetHostRole(PlayerRole role) { m_hostRole = role; }
+	PlayerRole GetHostRole() const { return m_hostRole; }
+
 private:
 	void OnClientConnect(ENetPeer* peer);
 	void OnClientReceive(const ENetEvent& event);
@@ -71,6 +81,7 @@ private:
 
 	NetPlayerState m_hostState;
 	bool m_hostStateSet;
+	PlayerRole m_hostRole;  // ★ ホストの役割
 	mutable std::mutex m_stateMutex;
 
 	static ServerManager* s_instance;

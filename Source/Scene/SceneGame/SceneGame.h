@@ -5,6 +5,7 @@
 #include "..\\Scene\\Scene.h"
 #include "..\\..\\Object\\Fade\\Fade.h"
 #include "..\\..\\Object\\Map\\Map.h"
+#include "..\\..\\Object\\Chaser\\Chaser.h"
 #include "..\\..\\Object\\Runner\\Runner.h"
 #include "..\\..\\Object\\Network\\ClientManager\\ClientManager.h"
 #include "..\\..\\Object\\Network\\ServerManager\\ServerManager.h"
@@ -35,7 +36,7 @@ private:
 	void UpdateRemotePlayers();
 	void SyncToServer();
 	void ReceiveFromServer();
-	void SpawnPlayer(uint32_t clientId, const std::string& name, const D3DXVECTOR3& pos);
+	void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name,	const D3DXVECTOR3& pos, PlayerRole role);
 	void DespawnPlayer(uint32_t clientId);
 
 	enum DEBUG_FLAG
@@ -78,9 +79,11 @@ private:
 	uint32_t m_localClientId;
 	bool m_bIsHost;
 	bool m_bInitialSyncDone;  
-	bool m_bFirstPerson;      
-	Runner* m_pLocalRunner;
-	std::map<uint32_t, Runner*> m_runners;
+	bool m_bFirstPerson;
+	CharacterBase* m_pLocalPlayer; 
+	std::map<uint32_t, CharacterBase*> m_players;
+	PlayerRole m_localRole;
+	std::map<uint32_t, PlayerRole> m_playerRoles;
 
 	Camera m_camera;
 	Projection m_projection;
@@ -97,7 +100,6 @@ private:
 
 	static const DWORD NETWORK_SEND_INTERVAL = 16;
 	static const DWORD WORLD_BROADCAST_INTERVAL = 8;
-
 	bool m_bEnablePrediction;
 	bool m_bEnableJitterReduction;
 

@@ -34,6 +34,7 @@ ClientManager::ClientManager()
 	, m_lastHeartbeatTime(0)
 	, m_worldStateReceived(false)
 	, m_assignedClientId(0)
+	, m_myRole(ROLE_NONE)
 {
 	NetworkLogger::GetInstance().Initialize("network_debug.txt");
 	NET_LOG("========================================");
@@ -136,6 +137,9 @@ void ClientManager::Reset()
 	m_previousLobbyCount = 0;
 	m_lastHeartbeatTime = 0;
 
+	m_assignedClientId = 0;
+	m_myRole = ROLE_NONE; 
+	m_roleMap.clear();
 	{
 		std::lock_guard<std::mutex> lk(m_worldMutex);
 		m_worldStateReceived = false;
@@ -451,6 +455,10 @@ void ClientManager::OnReceive(const ENetEvent& event)
 	case MSG_JOIN_ACK:
 		ProcessJoinAck(data + 1, len - 1);
 		break;
+
+	case MSG_ROLE_ASSIGNMENT:  // ★ 追加
+		ProcessRoleAssignment(data + 1, len - 1);
+		break;
 	}
 
 	enet_packet_destroy(event.packet);
@@ -632,4 +640,44 @@ void ClientManager::ProcessJoinAck(const uint8_t* data, size_t len)
 
 	std::memcpy(&m_assignedClientId, data, sizeof(uint32_t));
 	NET_LOG_F("[ClientManager] クライアントID割り当て: %u", m_assignedClientId);
+}
+
+void ClientManager::ProcessRoleAssignment(const uint8_t* data, size_t len)
+{
+	if (len < sizeof(NetRoleAssignment)) return;
+
+	NetRoleAssignment assignment;
+	if (!NetworkSerializer::DeserializeRoleAssignment(data, len, assignment))
+		return;
+
+	std::lock_guard<std::mutex> lk(m_worldMutex);
+
+	// キューに追加
+	m_roleQueue.push(assignment);
+
+	// 役割マップに登録
+	m_roleMap[assignment.clientId] = assignment.role;
+
+	// 自分の役割なら記録
+	if (assignment.clientId == m_assignedClientId)
+	{
+		m_myRole = assignment.role;
+		NET_LOG_F("[ClientManager] 自分の役割が決定: %s (ID=%u)",
+			(m_myRole == ROLE_CHASER) ? "鬼" : "逃げる側", m_assignedClientId);
+	}
+	else
+	{
+		NET_LOG_F("[ClientManager] 他プレイヤーの役割: ID=%u %s",
+			assignment.clientId,
+			(assignment.role == ROLE_CHASER) ? "鬼" : "逃げる側");
+	}
+}
+
+bool ClientManager::PopRoleAssignment(NetRoleAssignment& out)
+{
+	std::lock_guard<std::mutex> lk(m_worldMutex);
+	if (m_roleQueue.empty()) return false;
+	out = m_roleQueue.front();
+	m_roleQueue.pop();
+	return true;
 }

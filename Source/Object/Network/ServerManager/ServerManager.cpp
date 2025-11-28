@@ -183,29 +183,6 @@ void ServerManager::BroadcastLobbyUpdate()
 	}
 }
 
-void ServerManager::StartGame()
-{
-	if (!m_pServerHost) return;
-
-	int totalPlayers = m_clientCount;
-	if (!m_hostName.empty()) totalPlayers++;
-
-	if (totalPlayers < 2)
-	{
-		std::cout << "[Server] プレイヤーが足りません。開始できません。\n";
-		return;
-	}
-
-	if (m_advertiser) m_advertiser->SetAdvertiseState(1);
-
-	std::vector<uint8_t> payload;
-	payload.push_back((uint8_t)MSG_START_GAME);
-	ENetPacket* packet = enet_packet_create(payload.data(), payload.size(), ENET_PACKET_FLAG_RELIABLE);
-	enet_host_broadcast(m_pServerHost, 0, packet);
-	enet_host_flush(m_pServerHost);
-
-	std::cout << "[Server] ゲーム開始通知を送信しました\n";
-}
 
 void ServerManager::SetServerName(std::string& name)
 {
@@ -586,4 +563,158 @@ void ServerManager::SendJoinAck(ENetPeer* peer, uint32_t clientId)
 	enet_host_flush(m_pServerHost);
 
 	NET_LOG_F("[ServerManager] JoinAck送信: ClientID=%u", clientId);
+}
+
+void ServerManager::AssignRoles()
+{
+	NET_LOG("[ServerManager] 役割割り当て開始");
+
+	// 全プレイヤー数を計算（ホスト + クライアント）
+	int totalPlayers = m_clientCount;
+	if (!m_hostName.empty()) totalPlayers++;
+
+	if (totalPlayers == 0)
+	{
+		NET_LOG("[ServerManager] プレイヤーが0人のため割り当て中止");
+		return;
+	}
+
+	// 鬼の数を計算（全体の3分の1、最低1人）
+	int chaserCount = (std::max)(1, totalPlayers / 3);
+	int runnerCount = totalPlayers - chaserCount;
+
+	NET_LOG_F("[ServerManager] 総人数=%d 鬼=%d 逃げる側=%d",
+		totalPlayers, chaserCount, runnerCount);
+
+	// 全クライアントIDを収集
+	std::vector<uint32_t> allClientIds;
+
+	// ホストを含める
+	if (!m_hostName.empty())
+	{
+		allClientIds.push_back(1);  // ホストのIDは常に1
+	}
+
+	// 他のクライアントを追加
+	for (auto& kv : m_clients)
+	{
+		if (kv.second->name != m_hostName)  // ホスト以外
+		{
+			allClientIds.push_back(kv.second->id);
+		}
+	}
+
+	// ランダムにシャッフル
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::shuffle(allClientIds.begin(), allClientIds.end(), gen);
+
+	// 最初のchaserCount人を鬼に、残りを逃げる側に
+	for (size_t i = 0; i < allClientIds.size(); ++i)
+	{
+		uint32_t clientId = allClientIds[i];
+		PlayerRole role = (i < (size_t)chaserCount) ? ROLE_CHASER : ROLE_RUNNER;
+
+		// ホストの役割を設定
+		if (clientId == 1)
+		{
+			m_hostRole = role;
+			NET_LOG_F("[ServerManager] ホストの役割: %s",
+				(role == ROLE_CHASER) ? "鬼" : "逃げる側");
+		}
+		else
+		{
+			// クライアントの役割を設定
+			for (auto& kv : m_clients)
+			{
+				if (kv.second->id == clientId)
+				{
+					kv.second->role = role;
+					NET_LOG_F("[ServerManager] クライアント %s (ID=%u) の役割: %s",
+						kv.second->name.c_str(), clientId,
+						(role == ROLE_CHASER) ? "鬼" : "逃げる側");
+					break;
+				}
+			}
+		}
+	}
+
+	NET_LOG("[ServerManager] 役割割り当て完了");
+}
+// ★ 役割をクライアントにブロードキャスト
+void ServerManager::BroadcastRoleAssignments()
+{
+	if (!m_pServerHost) return;
+
+	NET_LOG("[ServerManager] 役割割り当てをブロードキャスト");
+
+	// ホストの役割を送信
+	if (!m_hostName.empty())
+	{
+		NetRoleAssignment assignment;
+		assignment.clientId = 1;
+		assignment.role = m_hostRole;
+
+		auto data = NetworkSerializer::SerializeRoleAssignment(assignment);
+		ENetPacket* packet = enet_packet_create(data.data(), data.size(),
+			ENET_PACKET_FLAG_RELIABLE);
+		enet_host_broadcast(m_pServerHost, 0, packet);
+
+		NET_LOG_F("[ServerManager] ホスト(ID=1)の役割送信: %s",
+			(m_hostRole == ROLE_CHASER) ? "鬼" : "逃げる側");
+	}
+
+	// 各クライアントの役割を送信
+	for (auto& kv : m_clients)
+	{
+		NetRoleAssignment assignment;
+		assignment.clientId = kv.second->id;
+		assignment.role = kv.second->role;
+
+		auto data = NetworkSerializer::SerializeRoleAssignment(assignment);
+		ENetPacket* packet = enet_packet_create(data.data(), data.size(),
+			ENET_PACKET_FLAG_RELIABLE);
+		enet_host_broadcast(m_pServerHost, 0, packet);
+
+		NET_LOG_F("[ServerManager] クライアント %s (ID=%u)の役割送信: %s",
+			kv.second->name.c_str(), kv.second->id,
+			(kv.second->role == ROLE_CHASER) ? "鬼" : "逃げる側");
+	}
+
+	enet_host_flush(m_pServerHost);
+	NET_LOG("[ServerManager] 役割割り当てブロードキャスト完了");
+}
+
+// ★ ゲーム開始処理を修正（役割割り当てを追加）
+void ServerManager::StartGame()
+{
+	if (!m_pServerHost) return;
+
+	int totalPlayers = m_clientCount;
+	if (!m_hostName.empty()) totalPlayers++;
+
+	if (totalPlayers < 2)
+	{
+		std::cout << "[Server] プレイヤーが足りません。開始できません。\n";
+		return;
+	}
+
+	// ★ 役割を割り当て
+	AssignRoles();
+
+	// ★ 役割をブロードキャスト
+	BroadcastRoleAssignments();
+
+	if (m_advertiser) m_advertiser->SetAdvertiseState(1);
+
+	// ゲーム開始通知
+	std::vector<uint8_t> payload;
+	payload.push_back((uint8_t)MSG_START_GAME);
+	ENetPacket* packet = enet_packet_create(payload.data(), payload.size(),
+		ENET_PACKET_FLAG_RELIABLE);
+	enet_host_broadcast(m_pServerHost, 0, packet);
+	enet_host_flush(m_pServerHost);
+
+	std::cout << "[Server] ゲーム開始通知を送信しました\n";
+	NET_LOG("[ServerManager] ゲーム開始 - 役割割り当て済み");
 }

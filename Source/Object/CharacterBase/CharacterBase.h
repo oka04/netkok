@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿// CharacterBase.h - Update/Draw/SetThirdPersonFromBehindをpublicに変更
+#pragma once
 
 #include <winsock2.h> 
 #include <ws2tcpip.h>
@@ -13,6 +14,10 @@ class Map;
 class CharacterBase
 {
 public:
+	// ★ これらをpublicに移動
+	virtual void Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight& light, float deltaTime) = 0;
+	void Draw(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight);
+
 	void SetFirstPersonCamera(Engine* pEngine, Camera & camera);
 	void SetThirdPersonFromBehind(Engine* pEngine, Camera& camera, Map& map);
 
@@ -68,7 +73,6 @@ protected:
 
 	void Initialize(Engine *pEngine, std::string filename, Projection* projection, Camera& camera, DirectionalLight &light);
 	void UpdateMatrix(DirectionalLight &light);
-	void Draw(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight);
 	void Input(Engine * pEngine);
 
 	//m_speedを変えてから呼び出す

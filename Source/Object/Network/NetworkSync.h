@@ -1,11 +1,20 @@
-﻿#pragma once
+﻿// NetworkSync.h - 役割（Role）を追加
+#pragma once
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <vector>
 #include <cstdint>
 #include <cstring>
 
-//ネットワークメッセージタイプ
+// プレイヤーの役割
+enum PlayerRole : uint8_t
+{
+	ROLE_NONE = 0,    // 未割り当て
+	ROLE_RUNNER = 1,  // 逃げる側
+	ROLE_CHASER = 2   // 鬼
+};
+
+// ネットワークメッセージタイプ
 enum NetworkMessageType : uint8_t
 {
 	MSG_JOIN = 1,
@@ -17,6 +26,7 @@ enum NetworkMessageType : uint8_t
 	MSG_WORLD_STATE = 11,
 	MSG_PLAYER_SPAWN = 12,
 	MSG_PLAYER_DESPAWN = 13,
+	MSG_ROLE_ASSIGNMENT = 14,  // ★ 役割割り当てメッセージ
 };
 
 #pragma pack(push, 1)
@@ -52,6 +62,16 @@ struct NetPlayerSpawn
 	uint32_t clientId;
 	float startX, startY, startZ;
 	char name[32];
+	PlayerRole role;  // ★ 役割を追加
+};
+#pragma pack(pop)
+
+// ★ 役割割り当てメッセージ
+#pragma pack(push, 1)
+struct NetRoleAssignment
+{
+	uint32_t clientId;
+	PlayerRole role;
 };
 #pragma pack(pop)
 
@@ -98,6 +118,16 @@ public:
 		return buf;
 	}
 
+	// ★ 役割割り当てのシリアライズ
+	static std::vector<uint8_t> SerializeRoleAssignment(const NetRoleAssignment& assignment)
+	{
+		std::vector<uint8_t> buf;
+		buf.push_back(MSG_ROLE_ASSIGNMENT);
+		const uint8_t* p = reinterpret_cast<const uint8_t*>(&assignment);
+		buf.insert(buf.end(), p, p + sizeof(NetRoleAssignment));
+		return buf;
+	}
+
 	static bool DeserializePlayerState(const uint8_t* data, size_t len, NetPlayerState& out)
 	{
 		if (len < sizeof(NetPlayerState)) return false;
@@ -116,6 +146,14 @@ public:
 		{
 			std::memcpy(&out.players[i], data + 1 + i * sizeof(NetPlayerState), sizeof(NetPlayerState));
 		}
+		return true;
+	}
+
+	// ★ 役割割り当てのデシリアライズ
+	static bool DeserializeRoleAssignment(const uint8_t* data, size_t len, NetRoleAssignment& out)
+	{
+		if (len < sizeof(NetRoleAssignment)) return false;
+		std::memcpy(&out, data, sizeof(NetRoleAssignment));
 		return true;
 	}
 };
