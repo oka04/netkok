@@ -354,42 +354,23 @@ void SceneGame::ReceiveFromServer()
 
 	// ★ 役割割り当ての処理（最優先）
 	NetRoleAssignment roleAssign;
+	bool roleUpdated = false;
+
 	while (m_pClient->PopRoleAssignment(roleAssign))
 	{
+		roleUpdated = true;
 		m_playerRoles[roleAssign.clientId] = roleAssign.role;
 
 		NET_LOG_F("[SceneGame] 役割受信: ID=%u Role=%s",
 			roleAssign.clientId,
 			(roleAssign.role == ROLE_CHASER) ? "鬼" : "逃げる側");
 
-		// ★★★ 既存プレイヤーがいたら役割変更して再生成 ★★★
+		// ★★★ 修正: 既存プレイヤーの役割変更は行わない ★★★
+		// 役割は一度決まったら変更しない
 		auto it = m_players.find(roleAssign.clientId);
 		if (it != m_players.end() && it->second)
 		{
-			PlayerRole oldRole = m_playerRoles[roleAssign.clientId];
-
-			// 役割が変わった場合のみ再生成
-			if (oldRole != roleAssign.role)
-			{
-				NET_LOG_F("[SceneGame] 役割変更を検出: ID=%u %s→%s - 再生成",
-					roleAssign.clientId,
-					(oldRole == ROLE_CHASER) ? "鬼" : "逃げる側",
-					(roleAssign.role == ROLE_CHASER) ? "鬼" : "逃げる側");
-
-				// 現在位置を保存
-				D3DXVECTOR3 currentPos = it->second->GetPosition();
-				std::string name = it->second->GetCharacterName();
-
-				// 削除
-				DespawnPlayer(roleAssign.clientId);
-
-				// 新しい役割で再生成
-				SpawnPlayerWithRole(roleAssign.clientId, name, currentPos, roleAssign.role);
-			}
-			else
-			{
-				NET_LOG_F("[SceneGame] 既存プレイヤーの役割確認: ID=%u", roleAssign.clientId);
-			}
+			NET_LOG_F("[SceneGame] プレイヤー %u は既に生成済み", roleAssign.clientId);
 			continue;
 		}
 
@@ -413,6 +394,12 @@ void SceneGame::ReceiveFromServer()
 				m_pLocalPlayer->SetFirstPersonCamera(m_pEngine, m_camera);
 			}
 		}
+	}
+
+	// ★★★ 役割が更新されたらライトを再収集 ★★★
+	if (roleUpdated)
+	{
+		UpdateChaserLights();
 	}
 
 	// プレイヤーのスポーン処理
@@ -446,6 +433,12 @@ void SceneGame::ReceiveFromServer()
 			SpawnPlayerWithRole(spawn.clientId, spawn.name,
 				D3DXVECTOR3(spawn.startX, spawn.startY, spawn.startZ),
 				role);
+
+			// ★★★ 鬼が追加されたらライトを更新 ★★★
+			if (role == ROLE_CHASER)
+			{
+				UpdateChaserLights();
+			}
 		}
 	}
 
@@ -456,7 +449,17 @@ void SceneGame::ReceiveFromServer()
 		if (despawnId != m_localClientId)
 		{
 			NET_LOG_F("[SceneGame] プレイヤー退出: ID=%u", despawnId);
-			DespawnPlayer(despawnId);
+
+			// ★★★ 鬼が退出したらライトを更新 ★★★
+			if (m_playerRoles[despawnId] == ROLE_CHASER)
+			{
+				DespawnPlayer(despawnId);
+				UpdateChaserLights();
+			}
+			else
+			{
+				DespawnPlayer(despawnId);
+			}
 		}
 	}
 
@@ -468,8 +471,7 @@ void SceneGame::ReceiveFromServer()
 		DWORD now = timeGetTime();
 		if (now - lastLogTime > 3000)
 		{
-			NET_LOG_F("[SceneGame] ワールド状態受信: プレイヤー数=%d Interval=%dms",
-				(int)world.playerCount, WORLD_BROADCAST_INTERVAL);
+			NET_LOG_F("[SceneGame] ワールド状態受信: プレイヤー数=%d", (int)world.playerCount);
 			lastLogTime = now;
 		}
 
@@ -489,7 +491,7 @@ void SceneGame::ReceiveFromServer()
 				// ★★★ プレイヤーが存在しない場合は仮生成 ★★★
 				NET_LOG_F("[SceneGame] 未生成プレイヤーを発見: ID=%u - 仮生成", ps.clientId);
 
-				PlayerRole role = ROLE_RUNNER;  // デフォルト
+				PlayerRole role = ROLE_RUNNER;
 				auto roleIt = m_playerRoles.find(ps.clientId);
 				if (roleIt != m_playerRoles.end())
 				{
@@ -500,6 +502,12 @@ void SceneGame::ReceiveFromServer()
 					D3DXVECTOR3(ps.posX, ps.posY, ps.posZ),
 					role);
 
+				// ★★★ 鬼が追加されたらライトを更新 ★★★
+				if (role == ROLE_CHASER)
+				{
+					UpdateChaserLights();
+				}
+
 				if (m_players.find(ps.clientId) != m_players.end())
 				{
 					m_players[ps.clientId]->UpdateFromNetwork(ps, m_light, m_deltaTime);
@@ -507,6 +515,33 @@ void SceneGame::ReceiveFromServer()
 			}
 		}
 	}
+}
+
+void SceneGame::UpdateChaserLights()
+{
+	NET_LOG("[SceneGame] 鬼のライトを収集開始");
+
+	m_chaserLights.clear();
+
+	for (auto& kv : m_players)
+	{
+		if (kv.second && m_playerRoles[kv.first] == ROLE_CHASER)
+		{
+			Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
+			if (chaser)
+			{
+				SpotLight* light = chaser->GetLights();
+				if (light)
+				{
+					m_chaserLights.push_back(light);
+					NET_LOG_F("[SceneGame] 鬼のライト追加: ID=%u Name=%s",
+						kv.first, kv.second->GetCharacterName().c_str());
+				}
+			}
+		}
+	}
+
+	NET_LOG_F("[SceneGame] 鬼のライト収集完了: %d 個", (int)m_chaserLights.size());
 }
 
 void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name,
@@ -518,7 +553,6 @@ void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name,
 		return;
 	}
 
-	// ★★★ 修正: ROLE_NONEチェックを削除し、常に生成 ★★★
 	CharacterBase* p = nullptr;
 
 	// 役割に応じてRunnerまたはChaserを生成
@@ -534,7 +568,7 @@ void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name,
 	}
 	else
 	{
-		// ★★★ ROLE_NONEの場合もデフォルトでRunnerを生成 ★★★
+		// デフォルトでRunnerを生成
 		p = new Runner();
 		NET_LOG_F("[SceneGame] 役割未定だがRunnerとして仮生成: ID=%u, Name=%s", clientId, name.c_str());
 	}
@@ -613,24 +647,15 @@ void SceneGame::DespawnPlayer(uint32_t clientId)
 
 void SceneGame::Draw()
 {
-	// ★★★ スポットライトを収集 ★★★
+	// ★★★ 修正: 毎フレーム収集せず、保存済みのライトを使用 ★★★
 	std::vector<SpotLight> spotLights;
 
-	// 全プレイヤーからChaserのライトを収集
-	for (auto& kv : m_players)
+	// 保存されているライトポインタからSpotLightをコピー
+	for (SpotLight* light : m_chaserLights)
 	{
-		if (kv.second && m_playerRoles[kv.first] == ROLE_CHASER)
+		if (light)
 		{
-			Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
-			if (chaser)
-			{
-				SpotLight* light = chaser->GetLights();
-				if (light)
-				{
-					spotLights.push_back(*light);
-					NET_LOG_F("[SceneGame] ライト追加: ChaserID=%u", kv.first);
-				}
-			}
+			spotLights.push_back(*light);
 		}
 	}
 
@@ -676,8 +701,8 @@ void SceneGame::Draw()
 	{
 		m_pEngine->DrawPrintf(50, 950, FONT_GOTHIC40, Color::WHITE, "DEL : %f", m_deltaTime);
 		m_pEngine->DrawPrintf(50, 1000, FONT_GOTHIC40, Color::WHITE, "FPS : %f", (float)m_pEngine->GetFPS());
-		m_pEngine->DrawPrintf(50, 900, FONT_GOTHIC40, Color::CYAN, "Players: %d (Drawn: %d)",
-			(int)m_players.size(), drawnCount);
+		m_pEngine->DrawPrintf(50, 900, FONT_GOTHIC40, Color::CYAN, "Players: %d (Drawn: %d) Lights: %d",
+			(int)m_players.size(), drawnCount, (int)m_chaserLights.size());
 
 		if (d_debugFlag & DRAW_PLAYER_STATE && m_pLocalPlayer)
 		{

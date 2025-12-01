@@ -97,7 +97,9 @@ private:
 
 	ClientManager* m_pClient;
 	ServerManager* m_pServer;
+	std::vector<SpotLight*> m_chaserLights;  
 
+	void UpdateChaserLights();
 	static const DWORD NETWORK_SEND_INTERVAL = 16;
 	static const DWORD WORLD_BROADCAST_INTERVAL = 8;
 	bool m_bEnablePrediction;
