@@ -52,7 +52,7 @@ void Chaser::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 	m_deltaTime = deltaTime;
 	SetMouseCursor(pEngine, camera);
 	Input(pEngine);
-	m_speed = f_walkSpeed; //スキルなどで移動速度を変えるなら変える
+	m_speed = f_walkSpeed * m_deltaTime; //スキルなどで移動速度を変えるなら変える
 	Move(map);
 	SetThirdPersonFromBehind(pEngine, camera, map);
 	UpdateMatrix(light);

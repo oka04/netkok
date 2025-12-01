@@ -569,8 +569,8 @@ void ServerManager::AssignRoles()
 {
 	NET_LOG("[ServerManager] 役割割り当て開始");
 
-	// 全プレイヤー数を計算（ホスト + クライアント）
-	int totalPlayers = m_clientCount;
+	// ★★★ 修正: ホストはm_clientsに含まれないため、正しくカウント ★★★
+	int totalPlayers = (int)m_clients.size();
 	if (!m_hostName.empty()) totalPlayers++;
 
 	if (totalPlayers == 0)
@@ -579,7 +579,7 @@ void ServerManager::AssignRoles()
 		return;
 	}
 
-	// 鬼の数を計算（全体の3分の1、最低1人）
+	// ★★★ 修正: 鬼の数を計算（最低1人） ★★★
 	int chaserCount = (std::max)(1, totalPlayers / 3);
 	int runnerCount = totalPlayers - chaserCount;
 
@@ -589,20 +589,23 @@ void ServerManager::AssignRoles()
 	// 全クライアントIDを収集
 	std::vector<uint32_t> allClientIds;
 
-	// ホストを含める
+	// ★★★ 修正: ホストのIDは1（固定） ★★★
 	if (!m_hostName.empty())
 	{
-		allClientIds.push_back(1);  // ホストのIDは常に1
+		allClientIds.push_back(1);
 	}
 
-	// 他のクライアントを追加
+	// 他のクライアントを追加（ホストを除外）
 	for (auto& kv : m_clients)
 	{
-		if (kv.second->name != m_hostName)  // ホスト以外
+		// ★★★ 修正: ID=1はホストなのでスキップ ★★★
+		if (kv.second->id != 1)
 		{
 			allClientIds.push_back(kv.second->id);
 		}
 	}
+
+	NET_LOG_F("[ServerManager] 割り当て対象プレイヤー数: %d", (int)allClientIds.size());
 
 	// ランダムにシャッフル
 	std::random_device rd;
@@ -619,7 +622,7 @@ void ServerManager::AssignRoles()
 		if (clientId == 1)
 		{
 			m_hostRole = role;
-			NET_LOG_F("[ServerManager] ホストの役割: %s",
+			NET_LOG_F("[ServerManager] ホスト(ID=1)の役割: %s",
 				(role == ROLE_CHASER) ? "鬼" : "逃げる側");
 		}
 		else

@@ -349,6 +349,18 @@ void SceneGame::ReceiveFromServer()
 	{
 		m_playerRoles[roleAssign.clientId] = roleAssign.role;
 
+		NET_LOG_F("[SceneGame] 役割受信: ID=%u Role=%s",
+			roleAssign.clientId,
+			(roleAssign.role == ROLE_CHASER) ? "鬼" : "逃げる側");
+
+		// ★★★ 修正: 既にプレイヤーが存在するなら役割を更新するだけ ★★★
+		auto it = m_players.find(roleAssign.clientId);
+		if (it != m_players.end() && it->second)
+		{
+			NET_LOG_F("[SceneGame] 既存プレイヤーの役割を更新: ID=%u", roleAssign.clientId);
+			continue;
+		}
+
 		// 自分の役割が決定したらローカルプレイヤーを生成
 		if (roleAssign.clientId == m_localClientId && !m_pLocalPlayer)
 		{
@@ -377,12 +389,28 @@ void SceneGame::ReceiveFromServer()
 	{
 		if (spawn.clientId != m_localClientId)
 		{
-			NET_LOG_F("[SceneGame] 新規プレイヤー参加: ID=%u, Name=%s, Role=%s",
-				spawn.clientId, spawn.name,
-				(spawn.role == ROLE_CHASER) ? "鬼" : "逃げる側");
+			NET_LOG_F("[SceneGame] 新規プレイヤー参加: ID=%u, Name=%s",
+				spawn.clientId, spawn.name);
+
+			// ★★★ 修正: 役割が決まっていなくても仮で生成 ★★★
+			PlayerRole role = ROLE_RUNNER;  // デフォルトは逃げる側
+
+											// 既に役割情報があればそれを使用
+			auto roleIt = m_playerRoles.find(spawn.clientId);
+			if (roleIt != m_playerRoles.end())
+			{
+				role = roleIt->second;
+				NET_LOG_F("[SceneGame] 役割情報あり: %s",
+					(role == ROLE_CHASER) ? "鬼" : "逃げる側");
+			}
+			else
+			{
+				NET_LOG("[SceneGame] 役割情報なし - 仮でRunnerとして生成");
+			}
+
 			SpawnPlayerWithRole(spawn.clientId, spawn.name,
 				D3DXVECTOR3(spawn.startX, spawn.startY, spawn.startZ),
-				spawn.role);
+				role);
 		}
 	}
 
@@ -423,18 +451,23 @@ void SceneGame::ReceiveFromServer()
 			}
 			else
 			{
-				// 役割情報があれば生成
+				// ★★★ 修正: プレイヤーが存在しない場合は仮生成 ★★★
+				NET_LOG_F("[SceneGame] 未生成プレイヤーを発見: ID=%u - 仮生成", ps.clientId);
+
+				PlayerRole role = ROLE_RUNNER;
 				auto roleIt = m_playerRoles.find(ps.clientId);
 				if (roleIt != m_playerRoles.end())
 				{
-					SpawnPlayerWithRole(ps.clientId, "Player",
-						D3DXVECTOR3(ps.posX, ps.posY, ps.posZ),
-						roleIt->second);
+					role = roleIt->second;
+				}
 
-					if (m_players.find(ps.clientId) != m_players.end())
-					{
-						m_players[ps.clientId]->UpdateFromNetwork(ps, m_light, m_deltaTime);
-					}
+				SpawnPlayerWithRole(ps.clientId, "Player",
+					D3DXVECTOR3(ps.posX, ps.posY, ps.posZ),
+					role);
+
+				if (m_players.find(ps.clientId) != m_players.end())
+				{
+					m_players[ps.clientId]->UpdateFromNetwork(ps, m_light, m_deltaTime);
 				}
 			}
 		}

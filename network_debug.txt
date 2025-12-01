@@ -2,264 +2,3682 @@
 Network Debug Log
 ===========================================
 
-[09:08:56] ========================================
-[09:08:56] ClientManager 初期化開始
-[09:08:56] ========================================
-[09:08:56] [ClientManager] ENet初期化成功
-[09:08:56] [ClientManager] Discovery作成
-[09:08:56] [ClientManager] Discoveryリスナー起動 (ポート:12346)
-[09:08:56] [Discovery/Listener] スレッド開始
-[09:08:56] [Discovery/Listener] WSAStartup成功
-[09:08:56] [Discovery/Listener] ソケット作成成功
-[09:08:56] [Discovery/Listener] bind成功 ポート:12346
-[09:08:56] [Discovery/Listener] 受信ループ開始
-[09:08:59] ========================================
-[09:08:59] [SceneSelectHost] サーバー作成開始: SD
-[09:08:59] [Client] 切断
-[09:08:59] [ServerManager] ホスト名設定: Player648
-[09:08:59] [SceneSelectHost] サーバー名設定: SD
-[09:08:59] [SceneSelectHost] ホスト名設定: Player648
-[09:08:59] [Discovery/Advertiser] スレッド開始
-[09:08:59] [ServerManager] サーバー起動: ポート=12835
-[09:08:59] [Discovery/Advertiser] WSAStartup成功
-[09:08:59] [SceneSelectHost] サーバー起動成功: ポート=12835
-[09:08:59] [Discovery/Advertiser] ソケット作成成功
-[09:08:59] [Discovery/Advertiser] SO_BROADCAST設定成功
-[09:08:59] [Discovery/Advertiser] ブロードキャストループ開始
-[09:08:59] [Discovery/Advertiser] 送信データ: port=12835 player=1/8 state=0 name='SD'
-[09:08:59] [Discovery/Advertiser] ブロードキャスト送信 #1: サイズ=20 bytes (port=12835)
-[09:08:59] [ClientManager] ConnectToServer: 127.0.0.1:12835
-[09:08:59] [ClientManager] クライアントホスト作成成功
-[09:08:59] [Discovery/Listener] パケット受信! サイズ:20 bytes
-[09:08:59] [Discovery/Listener] マジック一致確認
-[09:08:59] [Discovery/Listener] プロトコルバージョン: 256
-[09:08:59] [Discovery/Listener] ポート（変換後）: 12835
-[09:08:59] [Discovery/Listener] プレイヤー数: 1
-[09:08:59] [Discovery/Listener] 最大プレイヤー数: 8
-[09:08:59] [Discovery/Listener] ステート: 0
-[09:08:59] [Discovery/Listener] 名前の長さ: 2
-[09:08:59] [Discovery/Listener] サーバー名: 'SD'
-[09:08:59] [Discovery/Listener] ★サーバー検出★: SD @ 172.20.145.6:12835 (1/8) state=0
-[09:08:59] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[09:08:59] [ClientManager] ホスト接続 - サーバー名は接続後に取得
-[09:08:59] [ClientManager] 接続要求送信 (ホスト判定: true)
-[09:08:59] [SceneSelectHost] ロビーに遷移
-[09:08:59] [SceneLobby] ホストとしてロビー開始: サーバー名='SD'
-[09:08:59] [SceneLobby] Start完了
-[09:08:59] [ClientManager] サーバー接続成功（ENET_EVENT_TYPE_CONNECT受信）
-[09:08:59] [ClientManager] JOIN送信: Player648
-[09:08:59] [ClientManager] JOIN送信完了: Player648
-[09:08:59] [ServerManager] クライアント接続: ID=1 (現在1人)
-[09:08:59] [ServerManager] ProcessJoin: データ長=10
-[09:08:59] [ServerManager] 名前長さ: 9
-[09:08:59] [ServerManager] 受信した名前: 'Player648'
-[09:08:59] [ServerManager] ホストのJOIN受信: Player648 (ID=1)
-[09:08:59] [ServerManager] JoinAck送信: ClientID=1
-[09:08:59] [ServerManager] 新規参加者にホスト情報を送信: Player648 Pos=(0.0,0.0,0.0)
-[09:08:59] [ServerManager] 新規参加者情報をブロードキャスト: Player648 (ID=1)
-[09:08:59] [ServerManager] ロビー更新をブロードキャスト
-[09:08:59] [ServerManager] BroadcastLobbyUpdate: 1 人
-[09:08:59] [ServerManager] プレイヤー1: 'Player648' (長さ:9)
-[09:08:59] [ServerManager] 送信データサイズ: 12 bytes
-[09:08:59] [ClientManager] クライアントID割り当て: 1
-[09:08:59] [ClientManager] プレイヤー生成通知: ID=1, Name=Player648
-[09:08:59] [ClientManager] プレイヤー生成通知: ID=1, Name=Player648
-[09:08:59] [ClientManager] ProcessLobbyUpdate: データ長=12
-[09:08:59] [ClientManager] プレイヤー数: 1
-[09:08:59] [ClientManager] プレイヤー1 名前長さ: 9
-[09:08:59] [ClientManager] プレイヤー1: 'Player648'
-[09:08:59] [ClientManager] ロビー更新完了: 1 人
-[09:09:01] [Discovery/Listener] 生存確認 ループ:50
-[09:09:04] [Discovery/Advertiser] 送信データ: port=12835 player=1/8 state=0 name='SD'
-[09:09:04] [Discovery/Advertiser] ブロードキャスト送信 #2: サイズ=20 bytes (port=12835)
-[09:09:04] [Discovery/Listener] パケット受信! サイズ:20 bytes
-[09:09:04] [Discovery/Listener] マジック一致確認
-[09:09:04] [Discovery/Listener] プロトコルバージョン: 256
-[09:09:04] [Discovery/Listener] ポート（変換後）: 12835
-[09:09:04] [Discovery/Listener] プレイヤー数: 1
-[09:09:04] [Discovery/Listener] 最大プレイヤー数: 8
-[09:09:04] [Discovery/Listener] ステート: 0
-[09:09:04] [Discovery/Listener] 名前の長さ: 2
-[09:09:04] [Discovery/Listener] サーバー名: 'SD'
-[09:09:04] [Discovery/Listener] ★サーバー検出★: SD @ 172.20.145.6:12835 (1/8) state=0
-[09:09:04] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[09:09:06] [Discovery/Listener] 生存確認 ループ:100
-[09:09:09] [Discovery/Advertiser] 送信データ: port=12835 player=1/8 state=0 name='SD'
-[09:09:09] [Discovery/Advertiser] ブロードキャスト送信 #3: サイズ=20 bytes (port=12835)
-[09:09:09] [Discovery/Listener] パケット受信! サイズ:20 bytes
-[09:09:09] [Discovery/Listener] マジック一致確認
-[09:09:09] [Discovery/Listener] プロトコルバージョン: 256
-[09:09:09] [Discovery/Listener] ポート（変換後）: 12835
-[09:09:09] [Discovery/Listener] プレイヤー数: 1
-[09:09:09] [Discovery/Listener] 最大プレイヤー数: 8
-[09:09:09] [Discovery/Listener] ステート: 0
-[09:09:09] [Discovery/Listener] 名前の長さ: 2
-[09:09:09] [Discovery/Listener] サーバー名: 'SD'
-[09:09:09] [Discovery/Listener] ★サーバー検出★: SD @ 172.20.145.6:12835 (1/8) state=0
-[09:09:09] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[09:09:11] [Discovery/Listener] 生存確認 ループ:150
-[09:09:14] [Discovery/Advertiser] 送信データ: port=12835 player=1/8 state=0 name='SD'
-[09:09:14] [Discovery/Advertiser] ブロードキャスト送信 #4: サイズ=20 bytes (port=12835)
-[09:09:14] [Discovery/Listener] パケット受信! サイズ:20 bytes
-[09:09:14] [Discovery/Listener] マジック一致確認
-[09:09:14] [Discovery/Listener] プロトコルバージョン: 256
-[09:09:14] [Discovery/Listener] ポート（変換後）: 12835
-[09:09:14] [Discovery/Listener] プレイヤー数: 1
-[09:09:14] [Discovery/Listener] 最大プレイヤー数: 8
-[09:09:14] [Discovery/Listener] ステート: 0
-[09:09:14] [Discovery/Listener] 名前の長さ: 2
-[09:09:14] [Discovery/Listener] サーバー名: 'SD'
-[09:09:14] [Discovery/Listener] ★サーバー検出★: SD @ 172.20.145.6:12835 (1/8) state=0
-[09:09:14] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[09:09:16] [Discovery/Listener] 生存確認 ループ:200
-[09:09:19] [Discovery/Advertiser] 送信データ: port=12835 player=1/8 state=0 name='SD'
-[09:09:19] [Discovery/Advertiser] ブロードキャスト送信 #5: サイズ=20 bytes (port=12835)
-[09:09:19] [Discovery/Listener] パケット受信! サイズ:20 bytes
-[09:09:19] [Discovery/Listener] マジック一致確認
-[09:09:19] [Discovery/Listener] プロトコルバージョン: 256
-[09:09:19] [Discovery/Listener] ポート（変換後）: 12835
-[09:09:19] [Discovery/Listener] プレイヤー数: 1
-[09:09:19] [Discovery/Listener] 最大プレイヤー数: 8
-[09:09:19] [Discovery/Listener] ステート: 0
-[09:09:19] [Discovery/Listener] 名前の長さ: 2
-[09:09:19] [Discovery/Listener] サーバー名: 'SD'
-[09:09:19] [Discovery/Listener] ★サーバー検出★: SD @ 172.20.145.6:12835 (1/8) state=0
-[09:09:19] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[09:09:22] [Discovery/Listener] 生存確認 ループ:250
-[09:09:24] [Discovery/Advertiser] 送信データ: port=12835 player=1/8 state=0 name='SD'
-[09:09:24] [Discovery/Advertiser] ブロードキャスト送信 #6: サイズ=20 bytes (port=12835)
-[09:09:24] [Discovery/Listener] パケット受信! サイズ:20 bytes
-[09:09:24] [Discovery/Listener] マジック一致確認
-[09:09:24] [Discovery/Listener] プロトコルバージョン: 256
-[09:09:24] [Discovery/Listener] ポート（変換後）: 12835
-[09:09:24] [Discovery/Listener] プレイヤー数: 1
-[09:09:24] [Discovery/Listener] 最大プレイヤー数: 8
-[09:09:24] [Discovery/Listener] ステート: 0
-[09:09:24] [Discovery/Listener] 名前の長さ: 2
-[09:09:24] [Discovery/Listener] サーバー名: 'SD'
-[09:09:24] [Discovery/Listener] ★サーバー検出★: SD @ 172.20.145.6:12835 (1/8) state=0
-[09:09:24] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[09:09:27] [Discovery/Listener] 生存確認 ループ:300
-[09:09:29] [Discovery/Advertiser] 送信データ: port=12835 player=1/8 state=0 name='SD'
-[09:09:29] [Discovery/Advertiser] ブロードキャスト送信 #7: サイズ=20 bytes (port=12835)
-[09:09:29] [Discovery/Listener] パケット受信! サイズ:20 bytes
-[09:09:29] [Discovery/Listener] マジック一致確認
-[09:09:29] [Discovery/Listener] プロトコルバージョン: 256
-[09:09:29] [Discovery/Listener] ポート（変換後）: 12835
-[09:09:29] [Discovery/Listener] プレイヤー数: 1
-[09:09:29] [Discovery/Listener] 最大プレイヤー数: 8
-[09:09:29] [Discovery/Listener] ステート: 0
-[09:09:29] [Discovery/Listener] 名前の長さ: 2
-[09:09:29] [Discovery/Listener] サーバー名: 'SD'
-[09:09:29] [Discovery/Listener] ★サーバー検出★: SD @ 172.20.145.6:12835 (1/8) state=0
-[09:09:29] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[09:09:32] [Discovery/Listener] 生存確認 ループ:350
-[09:09:34] [Discovery/Advertiser] 送信データ: port=12835 player=1/8 state=0 name='SD'
-[09:09:34] [Discovery/Advertiser] ブロードキャスト送信 #8: サイズ=20 bytes (port=12835)
-[09:09:34] [Discovery/Listener] パケット受信! サイズ:20 bytes
-[09:09:34] [Discovery/Listener] マジック一致確認
-[09:09:34] [Discovery/Listener] プロトコルバージョン: 256
-[09:09:34] [Discovery/Listener] ポート（変換後）: 12835
-[09:09:34] [Discovery/Listener] プレイヤー数: 1
-[09:09:34] [Discovery/Listener] 最大プレイヤー数: 8
-[09:09:34] [Discovery/Listener] ステート: 0
-[09:09:34] [Discovery/Listener] 名前の長さ: 2
-[09:09:34] [Discovery/Listener] サーバー名: 'SD'
-[09:09:34] [Discovery/Listener] ★サーバー検出★: SD @ 172.20.145.6:12835 (1/8) state=0
-[09:09:34] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[09:09:35] [ServerManager] クライアント接続: ID=2 (現在2人)
-[09:09:35] [ServerManager] ProcessJoin: データ長=10
-[09:09:35] [ServerManager] 名前長さ: 9
-[09:09:35] [ServerManager] 受信した名前: 'Player772'
-[09:09:35] [ServerManager] クライアントのJOIN受信: Player772 (ID=2)
-[09:09:35] [ServerManager] JoinAck送信: ClientID=2
-[09:09:35] [ServerManager] 新規参加者にホスト情報を送信: Player648 Pos=(0.0,0.0,0.0)
-[09:09:35] [ServerManager] 新規参加者情報をブロードキャスト: Player772 (ID=2)
-[09:09:35] [ServerManager] ロビー更新をブロードキャスト
-[09:09:35] [ServerManager] BroadcastLobbyUpdate: 2 人
-[09:09:35] [ServerManager] プレイヤー1: 'Player648' (長さ:9)
-[09:09:35] [ServerManager] プレイヤー2: 'Player772' (長さ:9)
-[09:09:35] [ServerManager] 送信データサイズ: 22 bytes
-[09:09:35] [ClientManager] プレイヤー生成通知: ID=2, Name=Player772
-[09:09:35] [ClientManager] ProcessLobbyUpdate: データ長=22
-[09:09:35] [ClientManager] プレイヤー数: 2
-[09:09:35] [ClientManager] プレイヤー1 名前長さ: 9
-[09:09:35] [ClientManager] プレイヤー1: 'Player648'
-[09:09:35] [ClientManager] プレイヤー2 名前長さ: 9
-[09:09:35] [ClientManager] プレイヤー2: 'Player772'
-[09:09:35] [ClientManager] ロビー更新完了: 2 人
-[09:09:36] [SceneLobby] ゲーム開始ボタン押下
-[09:09:36] [ServerManager] 役割割り当て開始
-[09:09:36] [ServerManager] 総人数=3 鬼=1 逃げる側=2
-[09:09:36] [ServerManager] クライアント Player772 (ID=2) の役割: 鬼
-[09:09:36] [ServerManager] ホストの役割: 逃げる側
-[09:09:36] [ServerManager] 役割割り当て完了
-[09:09:36] [ServerManager] 役割割り当てをブロードキャスト
-[09:09:36] [ServerManager] ホスト(ID=1)の役割送信: 逃げる側
-[09:09:36] [ServerManager] クライアント Player648 (ID=1)の役割送信: 逃げる側
-[09:09:36] [ServerManager] クライアント Player772 (ID=2)の役割送信: 鬼
-[09:09:36] [ServerManager] 役割割り当てブロードキャスト完了
-[09:09:36] [ServerManager] ゲーム開始 - 役割割り当て済み
-[09:09:36] [ClientManager] 自分の役割が決定: 逃げる側 (ID=1)
-[09:09:36] [ClientManager] 自分の役割が決定: 逃げる側 (ID=1)
-[09:09:36] [ClientManager] 他プレイヤーの役割: ID=2 鬼
-[09:09:36] [ClientManager] ゲーム開始通知受信
-[09:09:36] [SceneLobby] ゲーム開始 - ゲームシーンへ遷移
-[09:09:37] [Discovery/Listener] 生存確認 ループ:400
-[09:09:37] [SceneGame] Initialize: IsHost=1, ClientID=1
-[09:09:37] [SceneGame] 初期化完了 - 役割割り当て待機中
-[09:09:37] [SceneGame] ローカルプレイヤー生成: Role=逃げる側
-[09:09:37] [SceneGame] Runnerを生成: ID=1, Name=Player648
-[09:09:38] [SceneGame] プレイヤー生成完了: ID=1, Role=逃げる側, Pos=(7.5,0.5,72.5)
-[09:09:38] [SceneGame] 新規プレイヤー参加: ID=2, Name=Player772, Role=逃げる側
-[09:09:38] [SceneGame] 役割未定: ID=2 - 生成スキップ
-[09:09:38] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
-[09:09:38] [SceneGame] ワールド状態受信: プレイヤー数=1 Interval=8ms
-[09:09:39] [SceneGame] フェードイン完了 - ゲーム開始
-[09:09:39] [Discovery/Advertiser] 送信データ: port=12835 player=2/8 state=1 name='SD'
-[09:09:39] [Discovery/Advertiser] ブロードキャスト送信 #9: サイズ=20 bytes (port=12835)
-[09:09:39] [Discovery/Listener] パケット受信! サイズ:20 bytes
-[09:09:39] [Discovery/Listener] マジック一致確認
-[09:09:39] [Discovery/Listener] プロトコルバージョン: 256
-[09:09:39] [Discovery/Listener] ポート（変換後）: 12835
-[09:09:39] [Discovery/Listener] プレイヤー数: 2
-[09:09:39] [Discovery/Listener] 最大プレイヤー数: 8
-[09:09:39] [Discovery/Listener] ステート: 1
-[09:09:39] [Discovery/Listener] 名前の長さ: 2
-[09:09:39] [Discovery/Listener] サーバー名: 'SD'
-[09:09:39] [Discovery/Listener] ★サーバー検出★: SD @ 172.20.145.6:12835 (2/8) state=1
-[09:09:39] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[09:09:41] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
-[09:09:41] [SceneGame] ワールド状態受信: プレイヤー数=1 Interval=8ms
-[09:09:42] [Discovery/Listener] 生存確認 ループ:450
-[09:09:44] [SceneGame] ワールド状態受信: プレイヤー数=1 Interval=8ms
-[09:09:44] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
-[09:09:44] [Discovery/Advertiser] 送信データ: port=12835 player=2/8 state=1 name='SD'
-[09:09:44] [Discovery/Advertiser] ブロードキャスト送信 #10: サイズ=20 bytes (port=12835)
-[09:09:44] [Discovery/Listener] パケット受信! サイズ:20 bytes
-[09:09:44] [Discovery/Listener] マジック一致確認
-[09:09:44] [Discovery/Listener] プロトコルバージョン: 256
-[09:09:44] [Discovery/Listener] ポート（変換後）: 12835
-[09:09:44] [Discovery/Listener] プレイヤー数: 2
-[09:09:44] [Discovery/Listener] 最大プレイヤー数: 8
-[09:09:44] [Discovery/Listener] ステート: 1
-[09:09:44] [Discovery/Listener] 名前の長さ: 2
-[09:09:44] [Discovery/Listener] サーバー名: 'SD'
-[09:09:44] [Discovery/Listener] ★サーバー検出★: SD @ 172.20.145.6:12835 (2/8) state=1
-[09:09:44] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[09:09:47] [SceneGame] ワールド状態受信: プレイヤー数=1 Interval=8ms
-[09:09:47] [SceneGame] 送信: ID=0 Pos=(10.6,0.5,72.4) Interval=16ms
-[09:09:47] [Discovery/Listener] 生存確認 ループ:500
-[09:09:49] [Discovery/Advertiser] 送信データ: port=12835 player=2/8 state=1 name='SD'
-[09:09:49] [Discovery/Advertiser] ブロードキャスト送信 #11: サイズ=20 bytes (port=12835)
-[09:09:50] [Discovery/Listener] パケット受信! サイズ:20 bytes
-[09:09:50] [Discovery/Listener] マジック一致確認
-[09:09:50] [Discovery/Listener] プロトコルバージョン: 256
-[09:09:50] [Discovery/Listener] ポート（変換後）: 12835
-[09:09:50] [Discovery/Listener] プレイヤー数: 2
-[09:09:50] [Discovery/Listener] 最大プレイヤー数: 8
-[09:09:50] [Discovery/Listener] ステート: 1
-[09:09:50] [Discovery/Listener] 名前の長さ: 2
-[09:09:50] [Discovery/Listener] サーバー名: 'SD'
-[09:09:50] [Discovery/Listener] ★サーバー検出★: SD @ 172.20.145.6:12835 (2/8) state=1
-[09:09:50] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[09:36:34] ========================================
+[09:36:34] ClientManager 初期化開始
+[09:36:34] ========================================
+[09:36:34] [ClientManager] ENet初期化成功
+[09:36:34] [ClientManager] Discovery作成
+[09:36:34] [Discovery/Listener] スレッド開始
+[09:36:34] [Discovery/Listener] WSAStartup成功
+[09:36:34] [ClientManager] Discoveryリスナー起動 (ポート:12346)
+[09:36:34] [Discovery/Listener] ソケット作成成功
+[09:36:34] [Discovery/Listener] bind成功 ポート:12346
+[09:36:34] [Discovery/Listener] 受信ループ開始
+[09:36:36] ========================================
+[09:36:36] [SceneSelectHost] サーバー作成開始: TW
+[09:36:36] [Client] 切断
+[09:36:36] [ServerManager] ホスト名設定: Player075
+[09:36:36] [SceneSelectHost] サーバー名設定: TW
+[09:36:36] [SceneSelectHost] ホスト名設定: Player075
+[09:36:36] [Discovery/Advertiser] スレッド開始
+[09:36:36] [Discovery/Advertiser] WSAStartup成功
+[09:36:36] [ServerManager] サーバー起動: ポート=12126
+[09:36:36] [SceneSelectHost] サーバー起動成功: ポート=12126
+[09:36:36] [Discovery/Advertiser] ソケット作成成功
+[09:36:36] [Discovery/Advertiser] SO_BROADCAST設定成功
+[09:36:36] [Discovery/Advertiser] ブロードキャストループ開始
+[09:36:36] [Discovery/Advertiser] 送信データ: port=12126 player=1/8 state=0 name='TW'
+[09:36:36] [Discovery/Advertiser] ブロードキャスト送信 #1: サイズ=20 bytes (port=12126)
+[09:36:36] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:36:36] [Discovery/Listener] マジック一致確認
+[09:36:36] [Discovery/Listener] プロトコルバージョン: 256
+[09:36:36] [Discovery/Listener] ポート（変換後）: 12126
+[09:36:36] [Discovery/Listener] プレイヤー数: 1
+[09:36:36] [Discovery/Listener] 最大プレイヤー数: 8
+[09:36:36] [Discovery/Listener] ステート: 0
+[09:36:36] [Discovery/Listener] 名前の長さ: 2
+[09:36:36] [Discovery/Listener] サーバー名: 'TW'
+[09:36:36] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (1/8) state=0
+[09:36:36] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[09:36:36] [ClientManager] ConnectToServer: 127.0.0.1:12126
+[09:36:36] [ClientManager] クライアントホスト作成成功
+[09:36:36] [ClientManager] ホスト接続 - サーバー名は接続後に取得
+[09:36:36] [ClientManager] 接続要求送信 (ホスト判定: true)
+[09:36:36] [SceneSelectHost] ロビーに遷移
+[09:36:36] [SceneLobby] ホストとしてロビー開始: サーバー名='TW'
+[09:36:36] [SceneLobby] Start完了
+[09:36:36] [ClientManager] サーバー接続成功（ENET_EVENT_TYPE_CONNECT受信）
+[09:36:36] [ClientManager] JOIN送信: Player075
+[09:36:36] [ClientManager] JOIN送信完了: Player075
+[09:36:36] [ServerManager] クライアント接続: ID=1 (現在1人)
+[09:36:36] [ServerManager] ProcessJoin: データ長=10
+[09:36:36] [ServerManager] 名前長さ: 9
+[09:36:36] [ServerManager] 受信した名前: 'Player075'
+[09:36:36] [ServerManager] ホストのJOIN受信: Player075 (ID=1)
+[09:36:36] [ServerManager] JoinAck送信: ClientID=1
+[09:36:36] [ServerManager] 新規参加者にホスト情報を送信: Player075 Pos=(0.0,0.0,0.0)
+[09:36:36] [ServerManager] 新規参加者情報をブロードキャスト: Player075 (ID=1)
+[09:36:36] [ServerManager] ロビー更新をブロードキャスト
+[09:36:36] [ServerManager] BroadcastLobbyUpdate: 1 人
+[09:36:36] [ServerManager] プレイヤー1: 'Player075' (長さ:9)
+[09:36:36] [ServerManager] 送信データサイズ: 12 bytes
+[09:36:36] [ClientManager] クライアントID割り当て: 1
+[09:36:36] [ClientManager] プレイヤー生成通知: ID=1, Name=Player075
+[09:36:36] [ClientManager] プレイヤー生成通知: ID=1, Name=Player075
+[09:36:36] [ClientManager] ProcessLobbyUpdate: データ長=12
+[09:36:36] [ClientManager] プレイヤー数: 1
+[09:36:36] [ClientManager] プレイヤー1 名前長さ: 9
+[09:36:36] [ClientManager] プレイヤー1: 'Player075'
+[09:36:36] [ClientManager] ロビー更新完了: 1 人
+[09:36:38] [ServerManager] クライアント接続: ID=2 (現在2人)
+[09:36:38] [ServerManager] ProcessJoin: データ長=10
+[09:36:38] [ServerManager] 名前長さ: 9
+[09:36:38] [ServerManager] 受信した名前: 'Player072'
+[09:36:38] [ServerManager] クライアントのJOIN受信: Player072 (ID=2)
+[09:36:38] [ServerManager] JoinAck送信: ClientID=2
+[09:36:38] [ServerManager] 新規参加者にホスト情報を送信: Player075 Pos=(0.0,0.0,0.0)
+[09:36:38] [ServerManager] 新規参加者情報をブロードキャスト: Player072 (ID=2)
+[09:36:38] [ServerManager] ロビー更新をブロードキャスト
+[09:36:38] [ServerManager] BroadcastLobbyUpdate: 2 人
+[09:36:38] [ServerManager] プレイヤー1: 'Player075' (長さ:9)
+[09:36:38] [ServerManager] プレイヤー2: 'Player072' (長さ:9)
+[09:36:38] [ServerManager] 送信データサイズ: 22 bytes
+[09:36:38] [ClientManager] プレイヤー生成通知: ID=2, Name=Player072
+[09:36:38] [ClientManager] ProcessLobbyUpdate: データ長=22
+[09:36:38] [ClientManager] プレイヤー数: 2
+[09:36:38] [ClientManager] プレイヤー1 名前長さ: 9
+[09:36:38] [ClientManager] プレイヤー1: 'Player075'
+[09:36:38] [ClientManager] プレイヤー2 名前長さ: 9
+[09:36:38] [ClientManager] プレイヤー2: 'Player072'
+[09:36:38] [ClientManager] ロビー更新完了: 2 人
+[09:36:39] [Discovery/Listener] 生存確認 ループ:50
+[09:36:39] [SceneLobby] ゲーム開始ボタン押下
+[09:36:39] [ServerManager] 役割割り当て開始
+[09:36:39] [ServerManager] 総人数=3 鬼=1 逃げる側=2
+[09:36:39] [ServerManager] ホストの役割: 鬼
+[09:36:39] [ServerManager] クライアント Player072 (ID=2) の役割: 逃げる側
+[09:36:39] [ServerManager] 役割割り当て完了
+[09:36:39] [ServerManager] 役割割り当てをブロードキャスト
+[09:36:39] [ServerManager] ホスト(ID=1)の役割送信: 鬼
+[09:36:39] [ServerManager] クライアント Player075 (ID=1)の役割送信: 逃げる側
+[09:36:39] [ServerManager] クライアント Player072 (ID=2)の役割送信: 逃げる側
+[09:36:39] [ServerManager] 役割割り当てブロードキャスト完了
+[09:36:39] [ServerManager] ゲーム開始 - 役割割り当て済み
+[09:36:39] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
+[09:36:39] [ClientManager] 自分の役割が決定: 逃げる側 (ID=1)
+[09:36:39] [ClientManager] 他プレイヤーの役割: ID=2 逃げる側
+[09:36:39] [ClientManager] ゲーム開始通知受信
+[09:36:39] [SceneLobby] ゲーム開始 - ゲームシーンへ遷移
+[09:36:40] [SceneGame] Initialize: IsHost=1, ClientID=1
+[09:36:40] [SceneGame] 初期化完了 - 役割割り当て待機中
+[09:36:40] [SceneGame] ローカルプレイヤー生成: Role=鬼
+[09:36:40] [SceneGame] Chaserを生成: ID=1, Name=Player075
+[09:36:40] [SceneGame] プレイヤー生成完了: ID=1, Role=鬼, Pos=(7.5,0.5,72.5)
+[09:36:40] [SceneGame] 新規プレイヤー参加: ID=2, Name=Player072, Role=逃げる側
+[09:36:40] [SceneGame] 役割未定: ID=2 - 生成スキップ
+[09:36:40] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[09:36:40] [SceneGame] ワールド状態受信: プレイヤー数=0 Interval=8ms
+[09:36:40] [SceneGame] Runnerを生成: ID=2, Name=Player
+[09:36:40] [SceneGame] プレイヤー生成完了: ID=2, Role=逃げる側, Pos=(7.5,0.5,72.5)
+[09:36:40] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.00 Speed=0.00
+[09:36:41] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:36:41] [Discovery/Advertiser] ブロードキャスト送信 #2: サイズ=20 bytes (port=12126)
+[09:36:41] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:36:41] [Discovery/Listener] マジック一致確認
+[09:36:41] [Discovery/Listener] プロトコルバージョン: 256
+[09:36:41] [Discovery/Listener] ポート（変換後）: 12126
+[09:36:41] [Discovery/Listener] プレイヤー数: 2
+[09:36:41] [Discovery/Listener] 最大プレイヤー数: 8
+[09:36:41] [Discovery/Listener] ステート: 1
+[09:36:41] [Discovery/Listener] 名前の長さ: 2
+[09:36:41] [Discovery/Listener] サーバー名: 'TW'
+[09:36:41] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:36:41] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[09:36:42] [SceneGame] フェードイン完了 - ゲーム開始
+[09:36:42] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.00 Speed=0.00
+[09:36:43] [SceneGame] 送信: ID=0 Pos=(210.5,0.5,-3.0) Interval=16ms
+[09:36:43] [SceneGame] ワールド状態受信: プレイヤー数=2 Interval=8ms
+[09:36:44] [Discovery/Listener] 生存確認 ループ:100
+[09:36:44] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.00 Speed=0.00
+[09:36:46] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:36:46] [Discovery/Advertiser] ブロードキャスト送信 #3: サイズ=20 bytes (port=12126)
+[09:36:46] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:36:46] [Discovery/Listener] マジック一致確認
+[09:36:46] [Discovery/Listener] プロトコルバージョン: 256
+[09:36:46] [Discovery/Listener] ポート（変換後）: 12126
+[09:36:46] [Discovery/Listener] プレイヤー数: 2
+[09:36:46] [Discovery/Listener] 最大プレイヤー数: 8
+[09:36:46] [Discovery/Listener] ステート: 1
+[09:36:46] [Discovery/Listener] 名前の長さ: 2
+[09:36:46] [Discovery/Listener] サーバー名: 'TW'
+[09:36:46] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:36:46] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[09:36:46] [SceneGame] 送信: ID=0 Pos=(23.6,0.5,58.6) Interval=16ms
+[09:36:46] [SceneGame] ワールド状態受信: プレイヤー数=2 Interval=8ms
+[09:36:46] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.08 Speed=3.82
+[09:36:48] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.00 Speed=0.00
+[09:36:49] [Discovery/Listener] 生存確認 ループ:150
+[09:36:49] [SceneGame] 送信: ID=0 Pos=(115.2,0.5,64.4) Interval=16ms
+[09:36:49] [SceneGame] ワールド状態受信: プレイヤー数=2 Interval=8ms
+[09:36:50] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.00 Speed=0.00
+[09:36:51] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:36:51] [Discovery/Advertiser] ブロードキャスト送信 #4: サイズ=20 bytes (port=12126)
+[09:36:51] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:36:51] [Discovery/Listener] マジック一致確認
+[09:36:51] [Discovery/Listener] プロトコルバージョン: 256
+[09:36:51] [Discovery/Listener] ポート（変換後）: 12126
+[09:36:51] [Discovery/Listener] プレイヤー数: 2
+[09:36:51] [Discovery/Listener] 最大プレイヤー数: 8
+[09:36:51] [Discovery/Listener] ステート: 1
+[09:36:51] [Discovery/Listener] 名前の長さ: 2
+[09:36:51] [Discovery/Listener] サーバー名: 'TW'
+[09:36:51] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:36:51] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[09:36:52] [SceneGame] 送信: ID=0 Pos=(10.1,0.5,49.8) Interval=16ms
+[09:36:52] [SceneGame] ワールド状態受信: プレイヤー数=2 Interval=8ms
+[09:36:52] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.00 Speed=0.00
+[09:36:54] [Discovery/Listener] 生存確認 ループ:200
+[09:36:54] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.00 Speed=0.00
+[09:36:55] [SceneGame] ワールド状態受信: プレイヤー数=2 Interval=8ms
+[09:36:55] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,67.4) Interval=16ms
+[09:36:56] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:36:56] [Discovery/Advertiser] ブロードキャスト送信 #5: サイズ=20 bytes (port=12126)
+[09:36:56] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.00 Speed=0.00
+[09:36:56] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:36:56] [Discovery/Listener] マジック一致確認
+[09:36:56] [Discovery/Listener] プロトコルバージョン: 256
+[09:36:56] [Discovery/Listener] ポート（変換後）: 12126
+[09:36:56] [Discovery/Listener] プレイヤー数: 2
+[09:36:56] [Discovery/Listener] 最大プレイヤー数: 8
+[09:36:56] [Discovery/Listener] ステート: 1
+[09:36:56] [Discovery/Listener] 名前の長さ: 2
+[09:36:56] [Discovery/Listener] サーバー名: 'TW'
+[09:36:56] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:36:56] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[09:36:58] [SceneGame] ワールド状態受信: プレイヤー数=2 Interval=8ms
+[09:36:58] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,67.4) Interval=16ms
+[09:36:58] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.12 Speed=4.91
+[09:36:59] [Discovery/Listener] 生存確認 ループ:250
+[09:37:00] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.06 Speed=2.72
+[09:37:01] [SceneGame] ワールド状態受信: プレイヤー数=2 Interval=8ms
+[09:37:01] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:37:01] [Discovery/Advertiser] ブロードキャスト送信 #6: サイズ=20 bytes (port=12126)
+[09:37:01] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,67.4) Interval=16ms
+[09:37:01] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:37:01] [Discovery/Listener] マジック一致確認
+[09:37:01] [Discovery/Listener] プロトコルバージョン: 256
+[09:37:01] [Discovery/Listener] ポート（変換後）: 12126
+[09:37:01] [Discovery/Listener] プレイヤー数: 2
+[09:37:01] [Discovery/Listener] 最大プレイヤー数: 8
+[09:37:01] [Discovery/Listener] ステート: 1
+[09:37:01] [Discovery/Listener] 名前の長さ: 2
+[09:37:01] [Discovery/Listener] サーバー名: 'TW'
+[09:37:01] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:37:01] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[09:37:02] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.11 Speed=4.32
+[09:37:04] [Discovery/Listener] 生存確認 ループ:300
+[09:37:04] [SceneGame] ワールド状態受信: プレイヤー数=2 Interval=8ms
+[09:37:04] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,67.4) Interval=16ms
+[09:37:04] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.00 Speed=0.00
+[09:37:06] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:37:06] [Discovery/Advertiser] ブロードキャスト送信 #7: サイズ=20 bytes (port=12126)
+[09:37:06] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.00 Speed=0.00
+[09:37:06] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:37:06] [Discovery/Listener] マジック一致確認
+[09:37:06] [Discovery/Listener] プロトコルバージョン: 256
+[09:37:06] [Discovery/Listener] ポート（変換後）: 12126
+[09:37:06] [Discovery/Listener] プレイヤー数: 2
+[09:37:06] [Discovery/Listener] 最大プレイヤー数: 8
+[09:37:06] [Discovery/Listener] ステート: 1
+[09:37:06] [Discovery/Listener] 名前の長さ: 2
+[09:37:06] [Discovery/Listener] サーバー名: 'TW'
+[09:37:06] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:37:06] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[09:37:07] [SceneGame] ワールド状態受信: プレイヤー数=2 Interval=8ms
+[09:37:07] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,67.4) Interval=16ms
+[09:37:08] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.00 Speed=0.00
+[09:37:09] [Discovery/Listener] 生存確認 ループ:350
+[09:37:10] [SceneGame] ワールド状態受信: プレイヤー数=2 Interval=8ms
+[09:37:10] [SceneGame] 送信: ID=0 Pos=(-135.0,0.5,-48.5) Interval=16ms
+[09:37:10] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.00 Speed=0.00
+[09:37:11] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:37:11] [Discovery/Advertiser] ブロードキャスト送信 #8: サイズ=20 bytes (port=12126)
+[09:37:12] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:37:12] [Discovery/Listener] マジック一致確認
+[09:37:12] [Discovery/Listener] プロトコルバージョン: 256
+[09:37:12] [Discovery/Listener] ポート（変換後）: 12126
+[09:37:12] [Discovery/Listener] プレイヤー数: 2
+[09:37:12] [Discovery/Listener] 最大プレイヤー数: 8
+[09:37:12] [Discovery/Listener] ステート: 1
+[09:37:12] [Discovery/Listener] 名前の長さ: 2
+[09:37:12] [Discovery/Listener] サーバー名: 'TW'
+[09:37:12] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:37:12] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[09:37:12] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.00 Speed=0.00
+[09:37:14] [Discovery/Listener] 生存確認 ループ:400
+[09:37:16] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:37:16] [Discovery/Advertiser] ブロードキャスト送信 #9: サイズ=20 bytes (port=12126)
+[09:37:17] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:37:17] [Discovery/Listener] マジック一致確認
+[09:37:17] [Discovery/Listener] プロトコルバージョン: 256
+[09:37:17] [Discovery/Listener] ポート（変換後）: 12126
+[09:37:17] [Discovery/Listener] プレイヤー数: 2
+[09:37:17] [Discovery/Listener] 最大プレイヤー数: 8
+[09:37:17] [Discovery/Listener] ステート: 1
+[09:37:17] [Discovery/Listener] 名前の長さ: 2
+[09:37:17] [Discovery/Listener] サーバー名: 'TW'
+[09:37:17] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:37:17] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[09:37:19] [Discovery/Listener] 生存確認 ループ:450
+[09:37:21] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:37:21] [Discovery/Listener] マジック一致確認
+[09:37:21] [Discovery/Listener] プロトコルバージョン: 256
+[09:37:21] [Discovery/Listener] ポート（変換後）: 12033
+[09:37:21] [Discovery/Listener] プレイヤー数: 1
+[09:37:21] [Discovery/Listener] 最大プレイヤー数: 8
+[09:37:21] [Discovery/Listener] ステート: 0
+[09:37:21] [Discovery/Listener] 名前の長さ: 5
+[09:37:21] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:37:21] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (1/8) state=0
+[09:37:21] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:37:22] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:37:22] [Discovery/Advertiser] ブロードキャスト送信 #10: サイズ=20 bytes (port=12126)
+[09:37:22] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:37:22] [Discovery/Listener] マジック一致確認
+[09:37:22] [Discovery/Listener] プロトコルバージョン: 256
+[09:37:22] [Discovery/Listener] ポート（変換後）: 12126
+[09:37:22] [Discovery/Listener] プレイヤー数: 2
+[09:37:22] [Discovery/Listener] 最大プレイヤー数: 8
+[09:37:22] [Discovery/Listener] ステート: 1
+[09:37:22] [Discovery/Listener] 名前の長さ: 2
+[09:37:22] [Discovery/Listener] サーバー名: 'TW'
+[09:37:22] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:37:22] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:37:24] [Discovery/Listener] 生存確認 ループ:500
+[09:37:24] ========================================
+[09:37:24] SceneSelectClient 開始
+[09:37:24] ========================================
+[09:37:24] [SceneSelectClient] 初回サーバー検索開始
+[09:37:24] [ClientManager] RefreshAvailableServers 開始
+[09:37:24] [Discovery] GetServers呼び出し: 2 サーバー返却
+[09:37:24] [ClientManager] Discovery から 2 サーバー取得
+[09:37:24] [ClientManager] サーバー情報: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:37:24] [ClientManager] スキップ: ゲーム中 (state=1)
+[09:37:24] [ClientManager] サーバー情報: ADSWS @ 172.20.145.8:12033 (1/8) state=0
+[09:37:24] [ClientManager] 追加成功: ADSWS
+[09:37:24] [ClientManager] RefreshAvailableServers 完了: 追加=1 スキップ=1 全体=2
+[09:37:24] [SceneSelectClient] リスト更新: 待機中=1 ゲーム中=1
+[09:37:24] [SceneSelectClient] 初期サーバー数: 待機中=1 ゲーム中=1
+[09:37:25] [SceneSelectClient] サーバー選択: ADSWS @ 172.20.145.8:12033
+[09:37:25] [ClientManager] ConnectToServer: 172.20.145.8:12033
+[09:37:25] [ClientManager] クライアントホスト作成成功
+[09:37:25] [ClientManager] サーバー名をDiscoveryから取得: ADSWS
+[09:37:25] [ClientManager] 接続要求送信 (ホスト判定: false)
+[09:37:25] [SceneSelectClient] Exit
+[09:37:25] [SceneLobby] クライアントとしてロビー開始: サーバー名='ADSWS'
+[09:37:25] [SceneLobby] Start完了
+[09:37:25] [ClientManager] サーバー接続成功（ENET_EVENT_TYPE_CONNECT受信）
+[09:37:25] [ClientManager] JOIN送信: Player219
+[09:37:25] [ClientManager] JOIN送信完了: Player219
+[09:37:25] [ClientManager] クライアントID割り当て: 2
+[09:37:25] [ClientManager] プレイヤー生成通知: ID=1, Name=Player225
+[09:37:25] [ClientManager] プレイヤー生成通知: ID=2, Name=Player219
+[09:37:25] [ClientManager] ProcessLobbyUpdate: データ長=22
+[09:37:25] [ClientManager] プレイヤー数: 2
+[09:37:25] [ClientManager] プレイヤー1 名前長さ: 9
+[09:37:25] [ClientManager] プレイヤー1: 'Player225'
+[09:37:25] [ClientManager] プレイヤー2 名前長さ: 9
+[09:37:25] [ClientManager] プレイヤー2: 'Player219'
+[09:37:25] [ClientManager] ロビー更新完了: 2 人
+[09:37:26] [SceneLobby] サーバーに接続しました
+[09:37:26] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:37:26] [Discovery/Listener] マジック一致確認
+[09:37:26] [Discovery/Listener] プロトコルバージョン: 256
+[09:37:26] [Discovery/Listener] ポート（変換後）: 12033
+[09:37:26] [Discovery/Listener] プレイヤー数: 2
+[09:37:26] [Discovery/Listener] 最大プレイヤー数: 8
+[09:37:26] [Discovery/Listener] ステート: 0
+[09:37:26] [Discovery/Listener] 名前の長さ: 5
+[09:37:26] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:37:26] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=0
+[09:37:26] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:37:27] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:37:27] [Discovery/Advertiser] ブロードキャスト送信 #11: サイズ=20 bytes (port=12126)
+[09:37:27] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:37:27] [Discovery/Listener] マジック一致確認
+[09:37:27] [Discovery/Listener] プロトコルバージョン: 256
+[09:37:27] [Discovery/Listener] ポート（変換後）: 12126
+[09:37:27] [Discovery/Listener] プレイヤー数: 2
+[09:37:27] [Discovery/Listener] 最大プレイヤー数: 8
+[09:37:27] [Discovery/Listener] ステート: 1
+[09:37:27] [Discovery/Listener] 名前の長さ: 2
+[09:37:27] [Discovery/Listener] サーバー名: 'TW'
+[09:37:27] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:37:27] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:37:27] [ClientManager] 他プレイヤーの役割: ID=1 鬼
+[09:37:27] [ClientManager] 他プレイヤーの役割: ID=1 逃げる側
+[09:37:27] [ClientManager] 自分の役割が決定: 逃げる側 (ID=2)
+[09:37:27] [ClientManager] ゲーム開始通知受信
+[09:37:27] [SceneLobby] ゲーム開始 - ゲームシーンへ遷移
+[09:37:28] [SceneGame] Initialize: IsHost=0, ClientID=2
+[09:37:28] [SceneGame] 初期化完了 - 役割割り当て待機中
+[09:37:28] [SceneGame] ローカルプレイヤー生成: Role=逃げる側
+[09:37:28] [SceneGame] Runnerを生成: ID=2, Name=Player219
+[09:37:28] [SceneGame] プレイヤー生成完了: ID=2, Role=逃げる側, Pos=(7.5,0.5,72.5)
+[09:37:28] [SceneGame] 新規プレイヤー参加: ID=1, Name=Player225, Role=逃げる側
+[09:37:28] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:28] [SceneGame] ワールド状態受信: プレイヤー数=1 Interval=8ms
+[09:37:28] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:28] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[09:37:28] [ClientManager] 状態送信: ID=0 Pos=(7.5,0.5,72.5) Size=39 bytes
+[09:37:28] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:28] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:28] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:28] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:28] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:28] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:28] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:28] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:28] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:28] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:28] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:28] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:28] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:28] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:28] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:28] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:28] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:28] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:28] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:28] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:28] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:28] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:28] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:28] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:28] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [Discovery/Listener] 生存確認 ループ:550
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [ClientManager] 状態送信: ID=0 Pos=(7.5,0.5,72.5) Size=39 bytes
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:29] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] フェードイン完了 - ゲーム開始
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [ClientManager] 状態送信: ID=0 Pos=(8.0,0.5,72.5) Size=39 bytes
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:30] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:37:31] [Discovery/Listener] マジック一致確認
+[09:37:31] [Discovery/Listener] プロトコルバージョン: 256
+[09:37:31] [Discovery/Listener] ポート（変換後）: 12033
+[09:37:31] [Discovery/Listener] プレイヤー数: 2
+[09:37:31] [Discovery/Listener] 最大プレイヤー数: 8
+[09:37:31] [Discovery/Listener] ステート: 1
+[09:37:31] [Discovery/Listener] 名前の長さ: 5
+[09:37:31] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:37:31] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:37:31] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] ワールド状態受信: プレイヤー数=2 Interval=8ms
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 送信: ID=0 Pos=(8.7,0.5,70.3) Interval=16ms
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [ClientManager] 状態送信: ID=0 Pos=(8.7,0.5,70.3) Size=39 bytes
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:31] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:37:32] [Discovery/Advertiser] ブロードキャスト送信 #12: サイズ=20 bytes (port=12126)
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:37:32] [Discovery/Listener] マジック一致確認
+[09:37:32] [Discovery/Listener] プロトコルバージョン: 256
+[09:37:32] [Discovery/Listener] ポート（変換後）: 12126
+[09:37:32] [Discovery/Listener] プレイヤー数: 2
+[09:37:32] [Discovery/Listener] 最大プレイヤー数: 8
+[09:37:32] [Discovery/Listener] ステート: 1
+[09:37:32] [Discovery/Listener] 名前の長さ: 2
+[09:37:32] [Discovery/Listener] サーバー名: 'TW'
+[09:37:32] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:37:32] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [ClientManager] 状態送信: ID=0 Pos=(8.0,0.5,70.3) Size=39 bytes
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:32] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [ClientManager] 状態送信: ID=0 Pos=(8.0,0.5,70.3) Size=39 bytes
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:33] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [Discovery/Listener] 生存確認 ループ:600
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] ワールド状態受信: プレイヤー数=2 Interval=8ms
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 送信: ID=0 Pos=(8.0,0.5,70.3) Interval=16ms
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [ClientManager] 状態送信: ID=0 Pos=(8.0,0.5,70.3) Size=39 bytes
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:34] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [ClientManager] 状態送信: ID=0 Pos=(8.0,0.5,70.3) Size=39 bytes
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:35] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:37:36] [Discovery/Listener] マジック一致確認
+[09:37:36] [Discovery/Listener] プロトコルバージョン: 256
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [Discovery/Listener] ポート（変換後）: 12033
+[09:37:36] [Discovery/Listener] プレイヤー数: 2
+[09:37:36] [Discovery/Listener] 最大プレイヤー数: 8
+[09:37:36] [Discovery/Listener] ステート: 1
+[09:37:36] [Discovery/Listener] 名前の長さ: 5
+[09:37:36] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:37:36] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:37:36] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [ClientManager] 状態送信: ID=0 Pos=(8.0,0.5,70.3) Size=39 bytes
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:36] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:37:37] [Discovery/Advertiser] ブロードキャスト送信 #13: サイズ=20 bytes (port=12126)
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:37:37] [Discovery/Listener] マジック一致確認
+[09:37:37] [Discovery/Listener] プロトコルバージョン: 256
+[09:37:37] [Discovery/Listener] ポート（変換後）: 12126
+[09:37:37] [Discovery/Listener] プレイヤー数: 2
+[09:37:37] [Discovery/Listener] 最大プレイヤー数: 8
+[09:37:37] [Discovery/Listener] ステート: 1
+[09:37:37] [Discovery/Listener] 名前の長さ: 2
+[09:37:37] [Discovery/Listener] サーバー名: 'TW'
+[09:37:37] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:37:37] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] ワールド状態受信: プレイヤー数=2 Interval=8ms
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 送信: ID=0 Pos=(8.0,0.5,70.3) Interval=16ms
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [ClientManager] 状態送信: ID=0 Pos=(8.0,0.5,70.3) Size=39 bytes
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:37] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [ClientManager] 状態送信: ID=0 Pos=(8.0,0.5,70.3) Size=39 bytes
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:38] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [Discovery/Listener] 生存確認 ループ:650
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [SceneGame] 役割未定: ID=1 - 生成スキップ
+[09:37:39] [ClientManager] 状態送信: ID=0 Pos=(8.0,0.5,70.3) Size=39 bytes
+[09:37:40] [SceneGame] 送信: ID=0 Pos=(8.0,0.5,70.3) Interval=16ms
+[09:37:40] [ClientManager] 状態送信: ID=0 Pos=(8.0,0.5,70.3) Size=39 bytes
+[09:37:41] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:37:41] [Discovery/Listener] マジック一致確認
+[09:37:41] [Discovery/Listener] プロトコルバージョン: 256
+[09:37:41] [Discovery/Listener] ポート（変換後）: 12033
+[09:37:41] [Discovery/Listener] プレイヤー数: 2
+[09:37:41] [Discovery/Listener] 最大プレイヤー数: 8
+[09:37:41] [Discovery/Listener] ステート: 1
+[09:37:41] [Discovery/Listener] 名前の長さ: 5
+[09:37:41] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:37:41] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:37:41] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:37:42] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:37:42] [Discovery/Advertiser] ブロードキャスト送信 #14: サイズ=20 bytes (port=12126)
+[09:37:42] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:37:42] [Discovery/Listener] マジック一致確認
+[09:37:42] [Discovery/Listener] プロトコルバージョン: 256
+[09:37:42] [Discovery/Listener] ポート（変換後）: 12126
+[09:37:42] [Discovery/Listener] プレイヤー数: 2
+[09:37:42] [Discovery/Listener] 最大プレイヤー数: 8
+[09:37:42] [Discovery/Listener] ステート: 1
+[09:37:42] [Discovery/Listener] 名前の長さ: 2
+[09:37:42] [Discovery/Listener] サーバー名: 'TW'
+[09:37:42] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:37:42] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:37:44] [Discovery/Listener] 生存確認 ループ:700
+[09:37:46] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:37:46] [Discovery/Listener] マジック一致確認
+[09:37:46] [Discovery/Listener] プロトコルバージョン: 256
+[09:37:46] [Discovery/Listener] ポート（変換後）: 12033
+[09:37:46] [Discovery/Listener] プレイヤー数: 2
+[09:37:46] [Discovery/Listener] 最大プレイヤー数: 8
+[09:37:46] [Discovery/Listener] ステート: 1
+[09:37:46] [Discovery/Listener] 名前の長さ: 5
+[09:37:46] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:37:46] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:37:46] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:37:47] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:37:47] [Discovery/Advertiser] ブロードキャスト送信 #15: サイズ=20 bytes (port=12126)
+[09:37:47] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:37:47] [Discovery/Listener] マジック一致確認
+[09:37:47] [Discovery/Listener] プロトコルバージョン: 256
+[09:37:47] [Discovery/Listener] ポート（変換後）: 12126
+[09:37:47] [Discovery/Listener] プレイヤー数: 2
+[09:37:47] [Discovery/Listener] 最大プレイヤー数: 8
+[09:37:47] [Discovery/Listener] ステート: 1
+[09:37:47] [Discovery/Listener] 名前の長さ: 2
+[09:37:47] [Discovery/Listener] サーバー名: 'TW'
+[09:37:47] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:37:47] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:37:49] [Discovery/Listener] 生存確認 ループ:750
+[09:37:51] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:37:51] [Discovery/Listener] マジック一致確認
+[09:37:51] [Discovery/Listener] プロトコルバージョン: 256
+[09:37:51] [Discovery/Listener] ポート（変換後）: 12033
+[09:37:51] [Discovery/Listener] プレイヤー数: 2
+[09:37:51] [Discovery/Listener] 最大プレイヤー数: 8
+[09:37:51] [Discovery/Listener] ステート: 1
+[09:37:51] [Discovery/Listener] 名前の長さ: 5
+[09:37:51] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:37:51] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:37:51] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:37:52] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:37:52] [Discovery/Advertiser] ブロードキャスト送信 #16: サイズ=20 bytes (port=12126)
+[09:37:52] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:37:52] [Discovery/Listener] マジック一致確認
+[09:37:52] [Discovery/Listener] プロトコルバージョン: 256
+[09:37:52] [Discovery/Listener] ポート（変換後）: 12126
+[09:37:52] [Discovery/Listener] プレイヤー数: 2
+[09:37:52] [Discovery/Listener] 最大プレイヤー数: 8
+[09:37:52] [Discovery/Listener] ステート: 1
+[09:37:52] [Discovery/Listener] 名前の長さ: 2
+[09:37:52] [Discovery/Listener] サーバー名: 'TW'
+[09:37:52] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:37:52] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:37:54] [Discovery/Listener] 生存確認 ループ:800
+[09:37:56] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:37:56] [Discovery/Listener] マジック一致確認
+[09:37:56] [Discovery/Listener] プロトコルバージョン: 256
+[09:37:56] [Discovery/Listener] ポート（変換後）: 12033
+[09:37:56] [Discovery/Listener] プレイヤー数: 2
+[09:37:56] [Discovery/Listener] 最大プレイヤー数: 8
+[09:37:56] [Discovery/Listener] ステート: 1
+[09:37:56] [Discovery/Listener] 名前の長さ: 5
+[09:37:56] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:37:56] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:37:56] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:37:57] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:37:57] [Discovery/Advertiser] ブロードキャスト送信 #17: サイズ=20 bytes (port=12126)
+[09:37:57] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:37:57] [Discovery/Listener] マジック一致確認
+[09:37:57] [Discovery/Listener] プロトコルバージョン: 256
+[09:37:57] [Discovery/Listener] ポート（変換後）: 12126
+[09:37:57] [Discovery/Listener] プレイヤー数: 2
+[09:37:57] [Discovery/Listener] 最大プレイヤー数: 8
+[09:37:57] [Discovery/Listener] ステート: 1
+[09:37:57] [Discovery/Listener] 名前の長さ: 2
+[09:37:57] [Discovery/Listener] サーバー名: 'TW'
+[09:37:57] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:37:57] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:37:59] [Discovery/Listener] 生存確認 ループ:850
+[09:38:01] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:38:01] [Discovery/Listener] マジック一致確認
+[09:38:01] [Discovery/Listener] プロトコルバージョン: 256
+[09:38:01] [Discovery/Listener] ポート（変換後）: 12033
+[09:38:01] [Discovery/Listener] プレイヤー数: 2
+[09:38:01] [Discovery/Listener] 最大プレイヤー数: 8
+[09:38:01] [Discovery/Listener] ステート: 1
+[09:38:01] [Discovery/Listener] 名前の長さ: 5
+[09:38:01] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:38:01] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:38:01] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:38:02] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:38:02] [Discovery/Advertiser] ブロードキャスト送信 #18: サイズ=20 bytes (port=12126)
+[09:38:02] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:38:02] [Discovery/Listener] マジック一致確認
+[09:38:02] [Discovery/Listener] プロトコルバージョン: 256
+[09:38:02] [Discovery/Listener] ポート（変換後）: 12126
+[09:38:02] [Discovery/Listener] プレイヤー数: 2
+[09:38:02] [Discovery/Listener] 最大プレイヤー数: 8
+[09:38:02] [Discovery/Listener] ステート: 1
+[09:38:02] [Discovery/Listener] 名前の長さ: 2
+[09:38:02] [Discovery/Listener] サーバー名: 'TW'
+[09:38:02] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:38:02] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:38:04] [Discovery/Listener] 生存確認 ループ:900
+[09:38:06] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:38:06] [Discovery/Listener] マジック一致確認
+[09:38:06] [Discovery/Listener] プロトコルバージョン: 256
+[09:38:06] [Discovery/Listener] ポート（変換後）: 12033
+[09:38:06] [Discovery/Listener] プレイヤー数: 2
+[09:38:06] [Discovery/Listener] 最大プレイヤー数: 8
+[09:38:06] [Discovery/Listener] ステート: 1
+[09:38:06] [Discovery/Listener] 名前の長さ: 5
+[09:38:06] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:38:06] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:38:06] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:38:07] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:38:07] [Discovery/Advertiser] ブロードキャスト送信 #19: サイズ=20 bytes (port=12126)
+[09:38:07] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:38:07] [Discovery/Listener] マジック一致確認
+[09:38:07] [Discovery/Listener] プロトコルバージョン: 256
+[09:38:07] [Discovery/Listener] ポート（変換後）: 12126
+[09:38:07] [Discovery/Listener] プレイヤー数: 2
+[09:38:07] [Discovery/Listener] 最大プレイヤー数: 8
+[09:38:07] [Discovery/Listener] ステート: 1
+[09:38:07] [Discovery/Listener] 名前の長さ: 2
+[09:38:07] [Discovery/Listener] サーバー名: 'TW'
+[09:38:07] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:38:07] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:38:09] [Discovery/Listener] 生存確認 ループ:950
+[09:38:11] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:38:11] [Discovery/Listener] マジック一致確認
+[09:38:11] [Discovery/Listener] プロトコルバージョン: 256
+[09:38:11] [Discovery/Listener] ポート（変換後）: 12033
+[09:38:11] [Discovery/Listener] プレイヤー数: 2
+[09:38:11] [Discovery/Listener] 最大プレイヤー数: 8
+[09:38:11] [Discovery/Listener] ステート: 1
+[09:38:11] [Discovery/Listener] 名前の長さ: 5
+[09:38:11] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:38:11] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:38:11] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:38:12] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:38:12] [Discovery/Advertiser] ブロードキャスト送信 #20: サイズ=20 bytes (port=12126)
+[09:38:12] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:38:12] [Discovery/Listener] マジック一致確認
+[09:38:12] [Discovery/Listener] プロトコルバージョン: 256
+[09:38:12] [Discovery/Listener] ポート（変換後）: 12126
+[09:38:12] [Discovery/Listener] プレイヤー数: 2
+[09:38:12] [Discovery/Listener] 最大プレイヤー数: 8
+[09:38:12] [Discovery/Listener] ステート: 1
+[09:38:12] [Discovery/Listener] 名前の長さ: 2
+[09:38:12] [Discovery/Listener] サーバー名: 'TW'
+[09:38:12] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:38:12] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:38:14] [Discovery/Listener] 生存確認 ループ:1000
+[09:38:16] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:38:16] [Discovery/Listener] マジック一致確認
+[09:38:16] [Discovery/Listener] プロトコルバージョン: 256
+[09:38:16] [Discovery/Listener] ポート（変換後）: 12033
+[09:38:16] [Discovery/Listener] プレイヤー数: 2
+[09:38:16] [Discovery/Listener] 最大プレイヤー数: 8
+[09:38:16] [Discovery/Listener] ステート: 1
+[09:38:16] [Discovery/Listener] 名前の長さ: 5
+[09:38:16] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:38:16] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:38:16] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:38:17] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:38:17] [Discovery/Advertiser] ブロードキャスト送信 #21: サイズ=20 bytes (port=12126)
+[09:38:17] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:38:17] [Discovery/Listener] マジック一致確認
+[09:38:17] [Discovery/Listener] プロトコルバージョン: 256
+[09:38:17] [Discovery/Listener] ポート（変換後）: 12126
+[09:38:17] [Discovery/Listener] プレイヤー数: 2
+[09:38:17] [Discovery/Listener] 最大プレイヤー数: 8
+[09:38:17] [Discovery/Listener] ステート: 1
+[09:38:17] [Discovery/Listener] 名前の長さ: 2
+[09:38:17] [Discovery/Listener] サーバー名: 'TW'
+[09:38:17] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:38:17] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:38:19] [Discovery/Listener] 生存確認 ループ:1050
+[09:38:21] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:38:21] [Discovery/Listener] マジック一致確認
+[09:38:21] [Discovery/Listener] プロトコルバージョン: 256
+[09:38:21] [Discovery/Listener] ポート（変換後）: 12033
+[09:38:21] [Discovery/Listener] プレイヤー数: 2
+[09:38:21] [Discovery/Listener] 最大プレイヤー数: 8
+[09:38:21] [Discovery/Listener] ステート: 1
+[09:38:21] [Discovery/Listener] 名前の長さ: 5
+[09:38:21] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:38:21] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:38:21] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:38:22] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:38:22] [Discovery/Advertiser] ブロードキャスト送信 #22: サイズ=20 bytes (port=12126)
+[09:38:22] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:38:22] [Discovery/Listener] マジック一致確認
+[09:38:22] [Discovery/Listener] プロトコルバージョン: 256
+[09:38:22] [Discovery/Listener] ポート（変換後）: 12126
+[09:38:22] [Discovery/Listener] プレイヤー数: 2
+[09:38:22] [Discovery/Listener] 最大プレイヤー数: 8
+[09:38:22] [Discovery/Listener] ステート: 1
+[09:38:22] [Discovery/Listener] 名前の長さ: 2
+[09:38:22] [Discovery/Listener] サーバー名: 'TW'
+[09:38:22] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:38:22] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:38:24] [Discovery/Listener] 生存確認 ループ:1100
+[09:38:26] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:38:26] [Discovery/Listener] マジック一致確認
+[09:38:26] [Discovery/Listener] プロトコルバージョン: 256
+[09:38:26] [Discovery/Listener] ポート（変換後）: 12033
+[09:38:26] [Discovery/Listener] プレイヤー数: 2
+[09:38:26] [Discovery/Listener] 最大プレイヤー数: 8
+[09:38:26] [Discovery/Listener] ステート: 1
+[09:38:26] [Discovery/Listener] 名前の長さ: 5
+[09:38:26] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:38:26] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:38:26] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:38:27] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:38:27] [Discovery/Advertiser] ブロードキャスト送信 #23: サイズ=20 bytes (port=12126)
+[09:38:27] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:38:27] [Discovery/Listener] マジック一致確認
+[09:38:27] [Discovery/Listener] プロトコルバージョン: 256
+[09:38:27] [Discovery/Listener] ポート（変換後）: 12126
+[09:38:27] [Discovery/Listener] プレイヤー数: 2
+[09:38:27] [Discovery/Listener] 最大プレイヤー数: 8
+[09:38:27] [Discovery/Listener] ステート: 1
+[09:38:27] [Discovery/Listener] 名前の長さ: 2
+[09:38:27] [Discovery/Listener] サーバー名: 'TW'
+[09:38:27] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:38:27] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:38:29] [Discovery/Listener] 生存確認 ループ:1150
+[09:38:31] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:38:31] [Discovery/Listener] マジック一致確認
+[09:38:31] [Discovery/Listener] プロトコルバージョン: 256
+[09:38:31] [Discovery/Listener] ポート（変換後）: 12033
+[09:38:31] [Discovery/Listener] プレイヤー数: 2
+[09:38:31] [Discovery/Listener] 最大プレイヤー数: 8
+[09:38:31] [Discovery/Listener] ステート: 1
+[09:38:31] [Discovery/Listener] 名前の長さ: 5
+[09:38:31] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:38:31] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:38:31] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:38:32] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:38:32] [Discovery/Advertiser] ブロードキャスト送信 #24: サイズ=20 bytes (port=12126)
+[09:38:32] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:38:32] [Discovery/Listener] マジック一致確認
+[09:38:32] [Discovery/Listener] プロトコルバージョン: 256
+[09:38:32] [Discovery/Listener] ポート（変換後）: 12126
+[09:38:32] [Discovery/Listener] プレイヤー数: 2
+[09:38:32] [Discovery/Listener] 最大プレイヤー数: 8
+[09:38:32] [Discovery/Listener] ステート: 1
+[09:38:32] [Discovery/Listener] 名前の長さ: 2
+[09:38:32] [Discovery/Listener] サーバー名: 'TW'
+[09:38:32] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:38:32] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:38:34] [Discovery/Listener] 生存確認 ループ:1200
+[09:38:36] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:38:36] [Discovery/Listener] マジック一致確認
+[09:38:36] [Discovery/Listener] プロトコルバージョン: 256
+[09:38:36] [Discovery/Listener] ポート（変換後）: 12033
+[09:38:36] [Discovery/Listener] プレイヤー数: 2
+[09:38:36] [Discovery/Listener] 最大プレイヤー数: 8
+[09:38:36] [Discovery/Listener] ステート: 1
+[09:38:36] [Discovery/Listener] 名前の長さ: 5
+[09:38:36] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:38:36] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:38:36] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:38:37] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:38:37] [Discovery/Advertiser] ブロードキャスト送信 #25: サイズ=20 bytes (port=12126)
+[09:38:37] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:38:37] [Discovery/Listener] マジック一致確認
+[09:38:37] [Discovery/Listener] プロトコルバージョン: 256
+[09:38:37] [Discovery/Listener] ポート（変換後）: 12126
+[09:38:37] [Discovery/Listener] プレイヤー数: 2
+[09:38:37] [Discovery/Listener] 最大プレイヤー数: 8
+[09:38:37] [Discovery/Listener] ステート: 1
+[09:38:37] [Discovery/Listener] 名前の長さ: 2
+[09:38:37] [Discovery/Listener] サーバー名: 'TW'
+[09:38:37] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:38:37] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:38:39] [Discovery/Listener] 生存確認 ループ:1250
+[09:38:42] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:38:42] [Discovery/Listener] マジック一致確認
+[09:38:42] [Discovery/Listener] プロトコルバージョン: 256
+[09:38:42] [Discovery/Listener] ポート（変換後）: 12033
+[09:38:42] [Discovery/Listener] プレイヤー数: 2
+[09:38:42] [Discovery/Listener] 最大プレイヤー数: 8
+[09:38:42] [Discovery/Listener] ステート: 1
+[09:38:42] [Discovery/Listener] 名前の長さ: 5
+[09:38:42] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:38:42] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:38:42] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:38:42] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:38:42] [Discovery/Advertiser] ブロードキャスト送信 #26: サイズ=20 bytes (port=12126)
+[09:38:42] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:38:42] [Discovery/Listener] マジック一致確認
+[09:38:42] [Discovery/Listener] プロトコルバージョン: 256
+[09:38:42] [Discovery/Listener] ポート（変換後）: 12126
+[09:38:42] [Discovery/Listener] プレイヤー数: 2
+[09:38:42] [Discovery/Listener] 最大プレイヤー数: 8
+[09:38:42] [Discovery/Listener] ステート: 1
+[09:38:42] [Discovery/Listener] 名前の長さ: 2
+[09:38:42] [Discovery/Listener] サーバー名: 'TW'
+[09:38:42] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:38:42] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:38:45] [Discovery/Listener] 生存確認 ループ:1300
+[09:38:47] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:38:47] [Discovery/Listener] マジック一致確認
+[09:38:47] [Discovery/Listener] プロトコルバージョン: 256
+[09:38:47] [Discovery/Listener] ポート（変換後）: 12033
+[09:38:47] [Discovery/Listener] プレイヤー数: 2
+[09:38:47] [Discovery/Listener] 最大プレイヤー数: 8
+[09:38:47] [Discovery/Listener] ステート: 1
+[09:38:47] [Discovery/Listener] 名前の長さ: 5
+[09:38:47] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:38:47] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:38:47] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:38:47] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:38:47] [Discovery/Advertiser] ブロードキャスト送信 #27: サイズ=20 bytes (port=12126)
+[09:38:47] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:38:47] [Discovery/Listener] マジック一致確認
+[09:38:47] [Discovery/Listener] プロトコルバージョン: 256
+[09:38:47] [Discovery/Listener] ポート（変換後）: 12126
+[09:38:47] [Discovery/Listener] プレイヤー数: 2
+[09:38:47] [Discovery/Listener] 最大プレイヤー数: 8
+[09:38:47] [Discovery/Listener] ステート: 1
+[09:38:47] [Discovery/Listener] 名前の長さ: 2
+[09:38:47] [Discovery/Listener] サーバー名: 'TW'
+[09:38:47] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:38:47] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:38:50] [Discovery/Listener] 生存確認 ループ:1350
+[09:38:52] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:38:52] [Discovery/Listener] マジック一致確認
+[09:38:52] [Discovery/Listener] プロトコルバージョン: 256
+[09:38:52] [Discovery/Listener] ポート（変換後）: 12033
+[09:38:52] [Discovery/Listener] プレイヤー数: 2
+[09:38:52] [Discovery/Listener] 最大プレイヤー数: 8
+[09:38:52] [Discovery/Listener] ステート: 1
+[09:38:52] [Discovery/Listener] 名前の長さ: 5
+[09:38:52] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:38:52] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:38:52] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:38:52] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:38:52] [Discovery/Advertiser] ブロードキャスト送信 #28: サイズ=20 bytes (port=12126)
+[09:38:52] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:38:52] [Discovery/Listener] マジック一致確認
+[09:38:52] [Discovery/Listener] プロトコルバージョン: 256
+[09:38:52] [Discovery/Listener] ポート（変換後）: 12126
+[09:38:52] [Discovery/Listener] プレイヤー数: 2
+[09:38:52] [Discovery/Listener] 最大プレイヤー数: 8
+[09:38:52] [Discovery/Listener] ステート: 1
+[09:38:52] [Discovery/Listener] 名前の長さ: 2
+[09:38:52] [Discovery/Listener] サーバー名: 'TW'
+[09:38:52] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:38:52] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:38:55] [Discovery/Listener] 生存確認 ループ:1400
+[09:38:57] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:38:57] [Discovery/Listener] マジック一致確認
+[09:38:57] [Discovery/Listener] プロトコルバージョン: 256
+[09:38:57] [Discovery/Listener] ポート（変換後）: 12033
+[09:38:57] [Discovery/Listener] プレイヤー数: 2
+[09:38:57] [Discovery/Listener] 最大プレイヤー数: 8
+[09:38:57] [Discovery/Listener] ステート: 1
+[09:38:57] [Discovery/Listener] 名前の長さ: 5
+[09:38:57] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:38:57] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:38:57] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:38:57] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:38:57] [Discovery/Advertiser] ブロードキャスト送信 #29: サイズ=20 bytes (port=12126)
+[09:38:57] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:38:57] [Discovery/Listener] マジック一致確認
+[09:38:57] [Discovery/Listener] プロトコルバージョン: 256
+[09:38:57] [Discovery/Listener] ポート（変換後）: 12126
+[09:38:57] [Discovery/Listener] プレイヤー数: 2
+[09:38:57] [Discovery/Listener] 最大プレイヤー数: 8
+[09:38:57] [Discovery/Listener] ステート: 1
+[09:38:57] [Discovery/Listener] 名前の長さ: 2
+[09:38:57] [Discovery/Listener] サーバー名: 'TW'
+[09:38:57] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:38:57] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:39:00] [Discovery/Listener] 生存確認 ループ:1450
+[09:39:02] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:39:02] [Discovery/Listener] マジック一致確認
+[09:39:02] [Discovery/Listener] プロトコルバージョン: 256
+[09:39:02] [Discovery/Listener] ポート（変換後）: 12033
+[09:39:02] [Discovery/Listener] プレイヤー数: 2
+[09:39:02] [Discovery/Listener] 最大プレイヤー数: 8
+[09:39:02] [Discovery/Listener] ステート: 1
+[09:39:02] [Discovery/Listener] 名前の長さ: 5
+[09:39:02] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:39:02] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:39:02] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:39:02] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:39:02] [Discovery/Advertiser] ブロードキャスト送信 #30: サイズ=20 bytes (port=12126)
+[09:39:02] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:39:02] [Discovery/Listener] マジック一致確認
+[09:39:02] [Discovery/Listener] プロトコルバージョン: 256
+[09:39:02] [Discovery/Listener] ポート（変換後）: 12126
+[09:39:02] [Discovery/Listener] プレイヤー数: 2
+[09:39:02] [Discovery/Listener] 最大プレイヤー数: 8
+[09:39:02] [Discovery/Listener] ステート: 1
+[09:39:02] [Discovery/Listener] 名前の長さ: 2
+[09:39:02] [Discovery/Listener] サーバー名: 'TW'
+[09:39:02] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:39:02] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:39:05] [Discovery/Listener] 生存確認 ループ:1500
+[09:39:07] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:39:07] [Discovery/Listener] マジック一致確認
+[09:39:07] [Discovery/Listener] プロトコルバージョン: 256
+[09:39:07] [Discovery/Listener] ポート（変換後）: 12033
+[09:39:07] [Discovery/Listener] プレイヤー数: 2
+[09:39:07] [Discovery/Listener] 最大プレイヤー数: 8
+[09:39:07] [Discovery/Listener] ステート: 1
+[09:39:07] [Discovery/Listener] 名前の長さ: 5
+[09:39:07] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:39:07] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:39:07] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:39:07] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:39:07] [Discovery/Advertiser] ブロードキャスト送信 #31: サイズ=20 bytes (port=12126)
+[09:39:07] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:39:07] [Discovery/Listener] マジック一致確認
+[09:39:07] [Discovery/Listener] プロトコルバージョン: 256
+[09:39:07] [Discovery/Listener] ポート（変換後）: 12126
+[09:39:07] [Discovery/Listener] プレイヤー数: 2
+[09:39:07] [Discovery/Listener] 最大プレイヤー数: 8
+[09:39:07] [Discovery/Listener] ステート: 1
+[09:39:07] [Discovery/Listener] 名前の長さ: 2
+[09:39:07] [Discovery/Listener] サーバー名: 'TW'
+[09:39:07] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:39:07] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:39:10] [Discovery/Listener] 生存確認 ループ:1550
+[09:39:12] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:39:12] [Discovery/Listener] マジック一致確認
+[09:39:12] [Discovery/Listener] プロトコルバージョン: 256
+[09:39:12] [Discovery/Listener] ポート（変換後）: 12033
+[09:39:12] [Discovery/Listener] プレイヤー数: 2
+[09:39:12] [Discovery/Listener] 最大プレイヤー数: 8
+[09:39:12] [Discovery/Listener] ステート: 1
+[09:39:12] [Discovery/Listener] 名前の長さ: 5
+[09:39:12] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:39:12] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:39:12] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:39:12] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:39:12] [Discovery/Advertiser] ブロードキャスト送信 #32: サイズ=20 bytes (port=12126)
+[09:39:12] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:39:12] [Discovery/Listener] マジック一致確認
+[09:39:12] [Discovery/Listener] プロトコルバージョン: 256
+[09:39:12] [Discovery/Listener] ポート（変換後）: 12126
+[09:39:12] [Discovery/Listener] プレイヤー数: 2
+[09:39:12] [Discovery/Listener] 最大プレイヤー数: 8
+[09:39:12] [Discovery/Listener] ステート: 1
+[09:39:12] [Discovery/Listener] 名前の長さ: 2
+[09:39:12] [Discovery/Listener] サーバー名: 'TW'
+[09:39:12] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:39:12] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:39:15] [Discovery/Listener] 生存確認 ループ:1600
+[09:39:17] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:39:17] [Discovery/Listener] マジック一致確認
+[09:39:17] [Discovery/Listener] プロトコルバージョン: 256
+[09:39:17] [Discovery/Listener] ポート（変換後）: 12033
+[09:39:17] [Discovery/Listener] プレイヤー数: 2
+[09:39:17] [Discovery/Listener] 最大プレイヤー数: 8
+[09:39:17] [Discovery/Listener] ステート: 1
+[09:39:17] [Discovery/Listener] 名前の長さ: 5
+[09:39:17] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:39:17] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:39:17] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:39:17] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:39:17] [Discovery/Advertiser] ブロードキャスト送信 #33: サイズ=20 bytes (port=12126)
+[09:39:17] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:39:17] [Discovery/Listener] マジック一致確認
+[09:39:17] [Discovery/Listener] プロトコルバージョン: 256
+[09:39:17] [Discovery/Listener] ポート（変換後）: 12126
+[09:39:17] [Discovery/Listener] プレイヤー数: 2
+[09:39:17] [Discovery/Listener] 最大プレイヤー数: 8
+[09:39:17] [Discovery/Listener] ステート: 1
+[09:39:17] [Discovery/Listener] 名前の長さ: 2
+[09:39:17] [Discovery/Listener] サーバー名: 'TW'
+[09:39:17] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:39:17] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:39:20] [Discovery/Listener] 生存確認 ループ:1650
+[09:39:22] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:39:22] [Discovery/Listener] マジック一致確認
+[09:39:22] [Discovery/Listener] プロトコルバージョン: 256
+[09:39:22] [Discovery/Listener] ポート（変換後）: 12033
+[09:39:22] [Discovery/Listener] プレイヤー数: 2
+[09:39:22] [Discovery/Listener] 最大プレイヤー数: 8
+[09:39:22] [Discovery/Listener] ステート: 1
+[09:39:22] [Discovery/Listener] 名前の長さ: 5
+[09:39:22] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:39:22] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:39:22] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:39:22] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:39:22] [Discovery/Advertiser] ブロードキャスト送信 #34: サイズ=20 bytes (port=12126)
+[09:39:22] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:39:22] [Discovery/Listener] マジック一致確認
+[09:39:22] [Discovery/Listener] プロトコルバージョン: 256
+[09:39:22] [Discovery/Listener] ポート（変換後）: 12126
+[09:39:22] [Discovery/Listener] プレイヤー数: 2
+[09:39:22] [Discovery/Listener] 最大プレイヤー数: 8
+[09:39:22] [Discovery/Listener] ステート: 1
+[09:39:22] [Discovery/Listener] 名前の長さ: 2
+[09:39:22] [Discovery/Listener] サーバー名: 'TW'
+[09:39:22] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:39:22] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:39:25] [Discovery/Listener] 生存確認 ループ:1700
+[09:39:27] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:39:27] [Discovery/Listener] マジック一致確認
+[09:39:27] [Discovery/Listener] プロトコルバージョン: 256
+[09:39:27] [Discovery/Listener] ポート（変換後）: 12033
+[09:39:27] [Discovery/Listener] プレイヤー数: 2
+[09:39:27] [Discovery/Listener] 最大プレイヤー数: 8
+[09:39:27] [Discovery/Listener] ステート: 1
+[09:39:27] [Discovery/Listener] 名前の長さ: 5
+[09:39:27] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:39:27] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:39:27] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:39:27] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:39:27] [Discovery/Advertiser] ブロードキャスト送信 #35: サイズ=20 bytes (port=12126)
+[09:39:27] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:39:27] [Discovery/Listener] マジック一致確認
+[09:39:27] [Discovery/Listener] プロトコルバージョン: 256
+[09:39:27] [Discovery/Listener] ポート（変換後）: 12126
+[09:39:27] [Discovery/Listener] プレイヤー数: 2
+[09:39:27] [Discovery/Listener] 最大プレイヤー数: 8
+[09:39:27] [Discovery/Listener] ステート: 1
+[09:39:27] [Discovery/Listener] 名前の長さ: 2
+[09:39:27] [Discovery/Listener] サーバー名: 'TW'
+[09:39:27] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:39:27] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:39:30] [Discovery/Listener] 生存確認 ループ:1750
+[09:39:32] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:39:32] [Discovery/Listener] マジック一致確認
+[09:39:32] [Discovery/Listener] プロトコルバージョン: 256
+[09:39:32] [Discovery/Listener] ポート（変換後）: 12033
+[09:39:32] [Discovery/Listener] プレイヤー数: 2
+[09:39:32] [Discovery/Listener] 最大プレイヤー数: 8
+[09:39:32] [Discovery/Listener] ステート: 1
+[09:39:32] [Discovery/Listener] 名前の長さ: 5
+[09:39:32] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:39:32] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:39:32] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:39:32] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:39:32] [Discovery/Advertiser] ブロードキャスト送信 #36: サイズ=20 bytes (port=12126)
+[09:39:32] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:39:32] [Discovery/Listener] マジック一致確認
+[09:39:32] [Discovery/Listener] プロトコルバージョン: 256
+[09:39:32] [Discovery/Listener] ポート（変換後）: 12126
+[09:39:32] [Discovery/Listener] プレイヤー数: 2
+[09:39:32] [Discovery/Listener] 最大プレイヤー数: 8
+[09:39:32] [Discovery/Listener] ステート: 1
+[09:39:32] [Discovery/Listener] 名前の長さ: 2
+[09:39:32] [Discovery/Listener] サーバー名: 'TW'
+[09:39:32] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:39:32] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:39:35] [Discovery/Listener] 生存確認 ループ:1800
+[09:39:37] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:39:37] [Discovery/Listener] マジック一致確認
+[09:39:37] [Discovery/Listener] プロトコルバージョン: 256
+[09:39:37] [Discovery/Listener] ポート（変換後）: 12033
+[09:39:37] [Discovery/Listener] プレイヤー数: 2
+[09:39:37] [Discovery/Listener] 最大プレイヤー数: 8
+[09:39:37] [Discovery/Listener] ステート: 1
+[09:39:37] [Discovery/Listener] 名前の長さ: 5
+[09:39:37] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:39:37] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:39:37] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:39:37] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:39:37] [Discovery/Advertiser] ブロードキャスト送信 #37: サイズ=20 bytes (port=12126)
+[09:39:37] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:39:37] [Discovery/Listener] マジック一致確認
+[09:39:37] [Discovery/Listener] プロトコルバージョン: 256
+[09:39:37] [Discovery/Listener] ポート（変換後）: 12126
+[09:39:37] [Discovery/Listener] プレイヤー数: 2
+[09:39:37] [Discovery/Listener] 最大プレイヤー数: 8
+[09:39:37] [Discovery/Listener] ステート: 1
+[09:39:37] [Discovery/Listener] 名前の長さ: 2
+[09:39:37] [Discovery/Listener] サーバー名: 'TW'
+[09:39:37] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:39:37] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:39:40] [Discovery/Listener] 生存確認 ループ:1850
+[09:39:42] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:39:42] [Discovery/Listener] マジック一致確認
+[09:39:42] [Discovery/Listener] プロトコルバージョン: 256
+[09:39:42] [Discovery/Listener] ポート（変換後）: 12033
+[09:39:42] [Discovery/Listener] プレイヤー数: 2
+[09:39:42] [Discovery/Listener] 最大プレイヤー数: 8
+[09:39:42] [Discovery/Listener] ステート: 1
+[09:39:42] [Discovery/Listener] 名前の長さ: 5
+[09:39:42] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:39:42] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:39:42] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:39:42] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:39:42] [Discovery/Advertiser] ブロードキャスト送信 #38: サイズ=20 bytes (port=12126)
+[09:39:42] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:39:42] [Discovery/Listener] マジック一致確認
+[09:39:42] [Discovery/Listener] プロトコルバージョン: 256
+[09:39:42] [Discovery/Listener] ポート（変換後）: 12126
+[09:39:42] [Discovery/Listener] プレイヤー数: 2
+[09:39:42] [Discovery/Listener] 最大プレイヤー数: 8
+[09:39:42] [Discovery/Listener] ステート: 1
+[09:39:42] [Discovery/Listener] 名前の長さ: 2
+[09:39:42] [Discovery/Listener] サーバー名: 'TW'
+[09:39:42] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:39:42] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:39:45] [Discovery/Listener] 生存確認 ループ:1900
+[09:39:47] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:39:47] [Discovery/Listener] マジック一致確認
+[09:39:47] [Discovery/Listener] プロトコルバージョン: 256
+[09:39:47] [Discovery/Listener] ポート（変換後）: 12033
+[09:39:47] [Discovery/Listener] プレイヤー数: 2
+[09:39:47] [Discovery/Listener] 最大プレイヤー数: 8
+[09:39:47] [Discovery/Listener] ステート: 1
+[09:39:47] [Discovery/Listener] 名前の長さ: 5
+[09:39:47] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:39:47] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:39:47] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:39:47] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:39:47] [Discovery/Advertiser] ブロードキャスト送信 #39: サイズ=20 bytes (port=12126)
+[09:39:47] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:39:47] [Discovery/Listener] マジック一致確認
+[09:39:47] [Discovery/Listener] プロトコルバージョン: 256
+[09:39:47] [Discovery/Listener] ポート（変換後）: 12126
+[09:39:47] [Discovery/Listener] プレイヤー数: 2
+[09:39:47] [Discovery/Listener] 最大プレイヤー数: 8
+[09:39:47] [Discovery/Listener] ステート: 1
+[09:39:47] [Discovery/Listener] 名前の長さ: 2
+[09:39:47] [Discovery/Listener] サーバー名: 'TW'
+[09:39:47] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:39:47] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:39:50] [Discovery/Listener] 生存確認 ループ:1950
+[09:39:52] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:39:52] [Discovery/Listener] マジック一致確認
+[09:39:52] [Discovery/Listener] プロトコルバージョン: 256
+[09:39:52] [Discovery/Listener] ポート（変換後）: 12033
+[09:39:52] [Discovery/Listener] プレイヤー数: 2
+[09:39:52] [Discovery/Listener] 最大プレイヤー数: 8
+[09:39:52] [Discovery/Listener] ステート: 1
+[09:39:52] [Discovery/Listener] 名前の長さ: 5
+[09:39:52] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:39:52] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:39:52] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:39:52] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:39:52] [Discovery/Advertiser] ブロードキャスト送信 #40: サイズ=20 bytes (port=12126)
+[09:39:52] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:39:52] [Discovery/Listener] マジック一致確認
+[09:39:52] [Discovery/Listener] プロトコルバージョン: 256
+[09:39:52] [Discovery/Listener] ポート（変換後）: 12126
+[09:39:52] [Discovery/Listener] プレイヤー数: 2
+[09:39:52] [Discovery/Listener] 最大プレイヤー数: 8
+[09:39:52] [Discovery/Listener] ステート: 1
+[09:39:52] [Discovery/Listener] 名前の長さ: 2
+[09:39:52] [Discovery/Listener] サーバー名: 'TW'
+[09:39:52] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:39:52] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:39:55] [Discovery/Listener] 生存確認 ループ:2000
+[09:39:57] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:39:57] [Discovery/Listener] マジック一致確認
+[09:39:57] [Discovery/Listener] プロトコルバージョン: 256
+[09:39:57] [Discovery/Listener] ポート（変換後）: 12033
+[09:39:57] [Discovery/Listener] プレイヤー数: 2
+[09:39:57] [Discovery/Listener] 最大プレイヤー数: 8
+[09:39:57] [Discovery/Listener] ステート: 1
+[09:39:57] [Discovery/Listener] 名前の長さ: 5
+[09:39:57] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:39:57] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:39:57] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:39:57] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:39:57] [Discovery/Advertiser] ブロードキャスト送信 #41: サイズ=20 bytes (port=12126)
+[09:39:57] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:39:57] [Discovery/Listener] マジック一致確認
+[09:39:57] [Discovery/Listener] プロトコルバージョン: 256
+[09:39:57] [Discovery/Listener] ポート（変換後）: 12126
+[09:39:57] [Discovery/Listener] プレイヤー数: 2
+[09:39:57] [Discovery/Listener] 最大プレイヤー数: 8
+[09:39:57] [Discovery/Listener] ステート: 1
+[09:39:57] [Discovery/Listener] 名前の長さ: 2
+[09:39:57] [Discovery/Listener] サーバー名: 'TW'
+[09:39:57] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:39:57] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:40:00] [Discovery/Listener] 生存確認 ループ:2050
+[09:40:02] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:40:02] [Discovery/Listener] マジック一致確認
+[09:40:02] [Discovery/Listener] プロトコルバージョン: 256
+[09:40:02] [Discovery/Listener] ポート（変換後）: 12033
+[09:40:02] [Discovery/Listener] プレイヤー数: 2
+[09:40:02] [Discovery/Listener] 最大プレイヤー数: 8
+[09:40:02] [Discovery/Listener] ステート: 1
+[09:40:02] [Discovery/Listener] 名前の長さ: 5
+[09:40:02] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:40:02] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:40:02] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:40:02] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:40:02] [Discovery/Advertiser] ブロードキャスト送信 #42: サイズ=20 bytes (port=12126)
+[09:40:02] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:40:02] [Discovery/Listener] マジック一致確認
+[09:40:02] [Discovery/Listener] プロトコルバージョン: 256
+[09:40:03] [Discovery/Listener] ポート（変換後）: 12126
+[09:40:03] [Discovery/Listener] プレイヤー数: 2
+[09:40:03] [Discovery/Listener] 最大プレイヤー数: 8
+[09:40:03] [Discovery/Listener] ステート: 1
+[09:40:03] [Discovery/Listener] 名前の長さ: 2
+[09:40:03] [Discovery/Listener] サーバー名: 'TW'
+[09:40:03] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:40:03] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:40:05] [Discovery/Listener] 生存確認 ループ:2100
+[09:40:07] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:40:07] [Discovery/Listener] マジック一致確認
+[09:40:07] [Discovery/Listener] プロトコルバージョン: 256
+[09:40:07] [Discovery/Listener] ポート（変換後）: 12033
+[09:40:07] [Discovery/Listener] プレイヤー数: 2
+[09:40:07] [Discovery/Listener] 最大プレイヤー数: 8
+[09:40:07] [Discovery/Listener] ステート: 1
+[09:40:07] [Discovery/Listener] 名前の長さ: 5
+[09:40:07] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:40:07] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:40:07] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:40:07] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:40:07] [Discovery/Advertiser] ブロードキャスト送信 #43: サイズ=20 bytes (port=12126)
+[09:40:08] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:40:08] [Discovery/Listener] マジック一致確認
+[09:40:08] [Discovery/Listener] プロトコルバージョン: 256
+[09:40:08] [Discovery/Listener] ポート（変換後）: 12126
+[09:40:08] [Discovery/Listener] プレイヤー数: 2
+[09:40:08] [Discovery/Listener] 最大プレイヤー数: 8
+[09:40:08] [Discovery/Listener] ステート: 1
+[09:40:08] [Discovery/Listener] 名前の長さ: 2
+[09:40:08] [Discovery/Listener] サーバー名: 'TW'
+[09:40:08] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:40:08] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:40:10] [Discovery/Listener] 生存確認 ループ:2150
+[09:40:12] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:40:12] [Discovery/Listener] マジック一致確認
+[09:40:12] [Discovery/Listener] プロトコルバージョン: 256
+[09:40:12] [Discovery/Listener] ポート（変換後）: 12033
+[09:40:12] [Discovery/Listener] プレイヤー数: 2
+[09:40:12] [Discovery/Listener] 最大プレイヤー数: 8
+[09:40:12] [Discovery/Listener] ステート: 1
+[09:40:12] [Discovery/Listener] 名前の長さ: 5
+[09:40:12] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:40:12] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:40:12] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:40:12] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:40:12] [Discovery/Advertiser] ブロードキャスト送信 #44: サイズ=20 bytes (port=12126)
+[09:40:13] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:40:13] [Discovery/Listener] マジック一致確認
+[09:40:13] [Discovery/Listener] プロトコルバージョン: 256
+[09:40:13] [Discovery/Listener] ポート（変換後）: 12126
+[09:40:13] [Discovery/Listener] プレイヤー数: 2
+[09:40:13] [Discovery/Listener] 最大プレイヤー数: 8
+[09:40:13] [Discovery/Listener] ステート: 1
+[09:40:13] [Discovery/Listener] 名前の長さ: 2
+[09:40:13] [Discovery/Listener] サーバー名: 'TW'
+[09:40:13] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:40:13] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:40:15] [Discovery/Listener] 生存確認 ループ:2200
+[09:40:17] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:40:17] [Discovery/Listener] マジック一致確認
+[09:40:17] [Discovery/Listener] プロトコルバージョン: 256
+[09:40:17] [Discovery/Listener] ポート（変換後）: 12033
+[09:40:17] [Discovery/Listener] プレイヤー数: 2
+[09:40:17] [Discovery/Listener] 最大プレイヤー数: 8
+[09:40:17] [Discovery/Listener] ステート: 1
+[09:40:17] [Discovery/Listener] 名前の長さ: 5
+[09:40:17] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:40:17] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:40:17] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:40:18] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:40:18] [Discovery/Advertiser] ブロードキャスト送信 #45: サイズ=20 bytes (port=12126)
+[09:40:18] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:40:18] [Discovery/Listener] マジック一致確認
+[09:40:18] [Discovery/Listener] プロトコルバージョン: 256
+[09:40:18] [Discovery/Listener] ポート（変換後）: 12126
+[09:40:18] [Discovery/Listener] プレイヤー数: 2
+[09:40:18] [Discovery/Listener] 最大プレイヤー数: 8
+[09:40:18] [Discovery/Listener] ステート: 1
+[09:40:18] [Discovery/Listener] 名前の長さ: 2
+[09:40:18] [Discovery/Listener] サーバー名: 'TW'
+[09:40:18] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:40:18] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:40:20] [Discovery/Listener] 生存確認 ループ:2250
+[09:40:22] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:40:22] [Discovery/Listener] マジック一致確認
+[09:40:22] [Discovery/Listener] プロトコルバージョン: 256
+[09:40:22] [Discovery/Listener] ポート（変換後）: 12033
+[09:40:22] [Discovery/Listener] プレイヤー数: 2
+[09:40:22] [Discovery/Listener] 最大プレイヤー数: 8
+[09:40:22] [Discovery/Listener] ステート: 1
+[09:40:22] [Discovery/Listener] 名前の長さ: 5
+[09:40:22] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:40:22] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:40:22] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:40:23] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:40:23] [Discovery/Advertiser] ブロードキャスト送信 #46: サイズ=20 bytes (port=12126)
+[09:40:23] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:40:23] [Discovery/Listener] マジック一致確認
+[09:40:23] [Discovery/Listener] プロトコルバージョン: 256
+[09:40:23] [Discovery/Listener] ポート（変換後）: 12126
+[09:40:23] [Discovery/Listener] プレイヤー数: 2
+[09:40:23] [Discovery/Listener] 最大プレイヤー数: 8
+[09:40:23] [Discovery/Listener] ステート: 1
+[09:40:23] [Discovery/Listener] 名前の長さ: 2
+[09:40:23] [Discovery/Listener] サーバー名: 'TW'
+[09:40:23] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:40:23] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:40:25] [Discovery/Listener] 生存確認 ループ:2300
+[09:40:27] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:40:27] [Discovery/Listener] マジック一致確認
+[09:40:27] [Discovery/Listener] プロトコルバージョン: 256
+[09:40:27] [Discovery/Listener] ポート（変換後）: 12033
+[09:40:27] [Discovery/Listener] プレイヤー数: 2
+[09:40:27] [Discovery/Listener] 最大プレイヤー数: 8
+[09:40:27] [Discovery/Listener] ステート: 1
+[09:40:27] [Discovery/Listener] 名前の長さ: 5
+[09:40:27] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:40:27] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:40:27] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:40:28] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:40:28] [Discovery/Advertiser] ブロードキャスト送信 #47: サイズ=20 bytes (port=12126)
+[09:40:28] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:40:28] [Discovery/Listener] マジック一致確認
+[09:40:28] [Discovery/Listener] プロトコルバージョン: 256
+[09:40:28] [Discovery/Listener] ポート（変換後）: 12126
+[09:40:28] [Discovery/Listener] プレイヤー数: 2
+[09:40:28] [Discovery/Listener] 最大プレイヤー数: 8
+[09:40:28] [Discovery/Listener] ステート: 1
+[09:40:28] [Discovery/Listener] 名前の長さ: 2
+[09:40:28] [Discovery/Listener] サーバー名: 'TW'
+[09:40:28] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:40:28] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:40:30] [Discovery/Listener] 生存確認 ループ:2350
+[09:40:32] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:40:32] [Discovery/Listener] マジック一致確認
+[09:40:32] [Discovery/Listener] プロトコルバージョン: 256
+[09:40:32] [Discovery/Listener] ポート（変換後）: 12033
+[09:40:32] [Discovery/Listener] プレイヤー数: 2
+[09:40:32] [Discovery/Listener] 最大プレイヤー数: 8
+[09:40:32] [Discovery/Listener] ステート: 1
+[09:40:32] [Discovery/Listener] 名前の長さ: 5
+[09:40:32] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:40:32] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:40:32] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:40:33] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:40:33] [Discovery/Advertiser] ブロードキャスト送信 #48: サイズ=20 bytes (port=12126)
+[09:40:33] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:40:33] [Discovery/Listener] マジック一致確認
+[09:40:33] [Discovery/Listener] プロトコルバージョン: 256
+[09:40:33] [Discovery/Listener] ポート（変換後）: 12126
+[09:40:33] [Discovery/Listener] プレイヤー数: 2
+[09:40:33] [Discovery/Listener] 最大プレイヤー数: 8
+[09:40:33] [Discovery/Listener] ステート: 1
+[09:40:33] [Discovery/Listener] 名前の長さ: 2
+[09:40:33] [Discovery/Listener] サーバー名: 'TW'
+[09:40:33] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:40:33] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:40:35] [Discovery/Listener] 生存確認 ループ:2400
+[09:40:37] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:40:37] [Discovery/Listener] マジック一致確認
+[09:40:37] [Discovery/Listener] プロトコルバージョン: 256
+[09:40:37] [Discovery/Listener] ポート（変換後）: 12033
+[09:40:37] [Discovery/Listener] プレイヤー数: 2
+[09:40:37] [Discovery/Listener] 最大プレイヤー数: 8
+[09:40:37] [Discovery/Listener] ステート: 1
+[09:40:37] [Discovery/Listener] 名前の長さ: 5
+[09:40:37] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:40:37] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:40:37] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:40:38] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:40:38] [Discovery/Advertiser] ブロードキャスト送信 #49: サイズ=20 bytes (port=12126)
+[09:40:38] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:40:38] [Discovery/Listener] マジック一致確認
+[09:40:38] [Discovery/Listener] プロトコルバージョン: 256
+[09:40:38] [Discovery/Listener] ポート（変換後）: 12126
+[09:40:38] [Discovery/Listener] プレイヤー数: 2
+[09:40:38] [Discovery/Listener] 最大プレイヤー数: 8
+[09:40:38] [Discovery/Listener] ステート: 1
+[09:40:38] [Discovery/Listener] 名前の長さ: 2
+[09:40:38] [Discovery/Listener] サーバー名: 'TW'
+[09:40:38] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:40:38] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:40:40] [Discovery/Listener] 生存確認 ループ:2450
+[09:40:42] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:40:42] [Discovery/Listener] マジック一致確認
+[09:40:42] [Discovery/Listener] プロトコルバージョン: 256
+[09:40:42] [Discovery/Listener] ポート（変換後）: 12033
+[09:40:42] [Discovery/Listener] プレイヤー数: 2
+[09:40:42] [Discovery/Listener] 最大プレイヤー数: 8
+[09:40:42] [Discovery/Listener] ステート: 1
+[09:40:42] [Discovery/Listener] 名前の長さ: 5
+[09:40:42] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:40:42] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:40:42] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:40:43] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:40:43] [Discovery/Advertiser] ブロードキャスト送信 #50: サイズ=20 bytes (port=12126)
+[09:40:43] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:40:43] [Discovery/Listener] マジック一致確認
+[09:40:43] [Discovery/Listener] プロトコルバージョン: 256
+[09:40:43] [Discovery/Listener] ポート（変換後）: 12126
+[09:40:43] [Discovery/Listener] プレイヤー数: 2
+[09:40:43] [Discovery/Listener] 最大プレイヤー数: 8
+[09:40:43] [Discovery/Listener] ステート: 1
+[09:40:43] [Discovery/Listener] 名前の長さ: 2
+[09:40:43] [Discovery/Listener] サーバー名: 'TW'
+[09:40:43] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:40:43] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:40:45] [Discovery/Listener] 生存確認 ループ:2500
+[09:40:47] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:40:47] [Discovery/Listener] マジック一致確認
+[09:40:47] [Discovery/Listener] プロトコルバージョン: 256
+[09:40:47] [Discovery/Listener] ポート（変換後）: 12033
+[09:40:47] [Discovery/Listener] プレイヤー数: 2
+[09:40:47] [Discovery/Listener] 最大プレイヤー数: 8
+[09:40:47] [Discovery/Listener] ステート: 1
+[09:40:47] [Discovery/Listener] 名前の長さ: 5
+[09:40:47] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:40:47] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:40:47] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:40:48] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:40:48] [Discovery/Advertiser] ブロードキャスト送信 #51: サイズ=20 bytes (port=12126)
+[09:40:48] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:40:48] [Discovery/Listener] マジック一致確認
+[09:40:48] [Discovery/Listener] プロトコルバージョン: 256
+[09:40:48] [Discovery/Listener] ポート（変換後）: 12126
+[09:40:48] [Discovery/Listener] プレイヤー数: 2
+[09:40:48] [Discovery/Listener] 最大プレイヤー数: 8
+[09:40:48] [Discovery/Listener] ステート: 1
+[09:40:48] [Discovery/Listener] 名前の長さ: 2
+[09:40:48] [Discovery/Listener] サーバー名: 'TW'
+[09:40:48] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:40:48] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:40:50] [Discovery/Listener] 生存確認 ループ:2550
+[09:40:52] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:40:52] [Discovery/Listener] マジック一致確認
+[09:40:52] [Discovery/Listener] プロトコルバージョン: 256
+[09:40:52] [Discovery/Listener] ポート（変換後）: 12033
+[09:40:52] [Discovery/Listener] プレイヤー数: 2
+[09:40:52] [Discovery/Listener] 最大プレイヤー数: 8
+[09:40:52] [Discovery/Listener] ステート: 1
+[09:40:52] [Discovery/Listener] 名前の長さ: 5
+[09:40:52] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:40:52] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:40:52] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:40:53] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:40:53] [Discovery/Advertiser] ブロードキャスト送信 #52: サイズ=20 bytes (port=12126)
+[09:40:53] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:40:53] [Discovery/Listener] マジック一致確認
+[09:40:53] [Discovery/Listener] プロトコルバージョン: 256
+[09:40:53] [Discovery/Listener] ポート（変換後）: 12126
+[09:40:53] [Discovery/Listener] プレイヤー数: 2
+[09:40:53] [Discovery/Listener] 最大プレイヤー数: 8
+[09:40:53] [Discovery/Listener] ステート: 1
+[09:40:53] [Discovery/Listener] 名前の長さ: 2
+[09:40:53] [Discovery/Listener] サーバー名: 'TW'
+[09:40:53] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:40:53] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:40:55] [Discovery/Listener] 生存確認 ループ:2600
+[09:40:57] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:40:57] [Discovery/Listener] マジック一致確認
+[09:40:57] [Discovery/Listener] プロトコルバージョン: 256
+[09:40:57] [Discovery/Listener] ポート（変換後）: 12033
+[09:40:57] [Discovery/Listener] プレイヤー数: 2
+[09:40:57] [Discovery/Listener] 最大プレイヤー数: 8
+[09:40:57] [Discovery/Listener] ステート: 1
+[09:40:57] [Discovery/Listener] 名前の長さ: 5
+[09:40:57] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:40:57] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:40:57] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:40:58] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:40:58] [Discovery/Advertiser] ブロードキャスト送信 #53: サイズ=20 bytes (port=12126)
+[09:40:58] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:40:58] [Discovery/Listener] マジック一致確認
+[09:40:58] [Discovery/Listener] プロトコルバージョン: 256
+[09:40:58] [Discovery/Listener] ポート（変換後）: 12126
+[09:40:58] [Discovery/Listener] プレイヤー数: 2
+[09:40:58] [Discovery/Listener] 最大プレイヤー数: 8
+[09:40:58] [Discovery/Listener] ステート: 1
+[09:40:58] [Discovery/Listener] 名前の長さ: 2
+[09:40:58] [Discovery/Listener] サーバー名: 'TW'
+[09:40:58] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:40:58] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:41:01] [Discovery/Listener] 生存確認 ループ:2650
+[09:41:02] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:41:02] [Discovery/Listener] マジック一致確認
+[09:41:02] [Discovery/Listener] プロトコルバージョン: 256
+[09:41:02] [Discovery/Listener] ポート（変換後）: 12033
+[09:41:02] [Discovery/Listener] プレイヤー数: 2
+[09:41:02] [Discovery/Listener] 最大プレイヤー数: 8
+[09:41:02] [Discovery/Listener] ステート: 1
+[09:41:02] [Discovery/Listener] 名前の長さ: 5
+[09:41:02] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:41:02] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:41:02] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:41:03] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:41:03] [Discovery/Advertiser] ブロードキャスト送信 #54: サイズ=20 bytes (port=12126)
+[09:41:03] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:41:03] [Discovery/Listener] マジック一致確認
+[09:41:03] [Discovery/Listener] プロトコルバージョン: 256
+[09:41:03] [Discovery/Listener] ポート（変換後）: 12126
+[09:41:03] [Discovery/Listener] プレイヤー数: 2
+[09:41:03] [Discovery/Listener] 最大プレイヤー数: 8
+[09:41:03] [Discovery/Listener] ステート: 1
+[09:41:03] [Discovery/Listener] 名前の長さ: 2
+[09:41:03] [Discovery/Listener] サーバー名: 'TW'
+[09:41:03] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:41:03] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:41:06] [Discovery/Listener] 生存確認 ループ:2700
+[09:41:07] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:41:07] [Discovery/Listener] マジック一致確認
+[09:41:07] [Discovery/Listener] プロトコルバージョン: 256
+[09:41:07] [Discovery/Listener] ポート（変換後）: 12033
+[09:41:07] [Discovery/Listener] プレイヤー数: 2
+[09:41:07] [Discovery/Listener] 最大プレイヤー数: 8
+[09:41:07] [Discovery/Listener] ステート: 1
+[09:41:07] [Discovery/Listener] 名前の長さ: 5
+[09:41:07] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:41:07] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:41:07] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:41:08] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:41:08] [Discovery/Advertiser] ブロードキャスト送信 #55: サイズ=20 bytes (port=12126)
+[09:41:08] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:41:08] [Discovery/Listener] マジック一致確認
+[09:41:08] [Discovery/Listener] プロトコルバージョン: 256
+[09:41:08] [Discovery/Listener] ポート（変換後）: 12126
+[09:41:08] [Discovery/Listener] プレイヤー数: 2
+[09:41:08] [Discovery/Listener] 最大プレイヤー数: 8
+[09:41:08] [Discovery/Listener] ステート: 1
+[09:41:08] [Discovery/Listener] 名前の長さ: 2
+[09:41:08] [Discovery/Listener] サーバー名: 'TW'
+[09:41:08] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:41:08] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:41:11] [Discovery/Listener] 生存確認 ループ:2750
+[09:41:12] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:41:12] [Discovery/Listener] マジック一致確認
+[09:41:12] [Discovery/Listener] プロトコルバージョン: 256
+[09:41:12] [Discovery/Listener] ポート（変換後）: 12033
+[09:41:12] [Discovery/Listener] プレイヤー数: 2
+[09:41:12] [Discovery/Listener] 最大プレイヤー数: 8
+[09:41:12] [Discovery/Listener] ステート: 1
+[09:41:12] [Discovery/Listener] 名前の長さ: 5
+[09:41:12] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:41:12] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:41:12] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:41:13] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:41:13] [Discovery/Advertiser] ブロードキャスト送信 #56: サイズ=20 bytes (port=12126)
+[09:41:13] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:41:13] [Discovery/Listener] マジック一致確認
+[09:41:13] [Discovery/Listener] プロトコルバージョン: 256
+[09:41:13] [Discovery/Listener] ポート（変換後）: 12126
+[09:41:13] [Discovery/Listener] プレイヤー数: 2
+[09:41:13] [Discovery/Listener] 最大プレイヤー数: 8
+[09:41:13] [Discovery/Listener] ステート: 1
+[09:41:13] [Discovery/Listener] 名前の長さ: 2
+[09:41:13] [Discovery/Listener] サーバー名: 'TW'
+[09:41:13] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:41:13] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:41:16] [Discovery/Listener] 生存確認 ループ:2800
+[09:41:17] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:41:17] [Discovery/Listener] マジック一致確認
+[09:41:17] [Discovery/Listener] プロトコルバージョン: 256
+[09:41:17] [Discovery/Listener] ポート（変換後）: 12033
+[09:41:17] [Discovery/Listener] プレイヤー数: 2
+[09:41:17] [Discovery/Listener] 最大プレイヤー数: 8
+[09:41:17] [Discovery/Listener] ステート: 1
+[09:41:17] [Discovery/Listener] 名前の長さ: 5
+[09:41:17] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:41:17] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:41:17] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:41:18] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:41:18] [Discovery/Advertiser] ブロードキャスト送信 #57: サイズ=20 bytes (port=12126)
+[09:41:18] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:41:18] [Discovery/Listener] マジック一致確認
+[09:41:18] [Discovery/Listener] プロトコルバージョン: 256
+[09:41:18] [Discovery/Listener] ポート（変換後）: 12126
+[09:41:18] [Discovery/Listener] プレイヤー数: 2
+[09:41:18] [Discovery/Listener] 最大プレイヤー数: 8
+[09:41:18] [Discovery/Listener] ステート: 1
+[09:41:18] [Discovery/Listener] 名前の長さ: 2
+[09:41:18] [Discovery/Listener] サーバー名: 'TW'
+[09:41:18] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:41:18] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:41:21] [Discovery/Listener] 生存確認 ループ:2850
+[09:41:22] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:41:22] [Discovery/Listener] マジック一致確認
+[09:41:22] [Discovery/Listener] プロトコルバージョン: 256
+[09:41:22] [Discovery/Listener] ポート（変換後）: 12033
+[09:41:22] [Discovery/Listener] プレイヤー数: 2
+[09:41:22] [Discovery/Listener] 最大プレイヤー数: 8
+[09:41:22] [Discovery/Listener] ステート: 1
+[09:41:22] [Discovery/Listener] 名前の長さ: 5
+[09:41:22] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:41:22] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:41:22] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:41:23] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:41:23] [Discovery/Advertiser] ブロードキャスト送信 #58: サイズ=20 bytes (port=12126)
+[09:41:23] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:41:23] [Discovery/Listener] マジック一致確認
+[09:41:23] [Discovery/Listener] プロトコルバージョン: 256
+[09:41:23] [Discovery/Listener] ポート（変換後）: 12126
+[09:41:23] [Discovery/Listener] プレイヤー数: 2
+[09:41:23] [Discovery/Listener] 最大プレイヤー数: 8
+[09:41:23] [Discovery/Listener] ステート: 1
+[09:41:23] [Discovery/Listener] 名前の長さ: 2
+[09:41:23] [Discovery/Listener] サーバー名: 'TW'
+[09:41:23] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:41:23] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:41:26] [Discovery/Listener] 生存確認 ループ:2900
+[09:41:27] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:41:27] [Discovery/Listener] マジック一致確認
+[09:41:27] [Discovery/Listener] プロトコルバージョン: 256
+[09:41:27] [Discovery/Listener] ポート（変換後）: 12033
+[09:41:27] [Discovery/Listener] プレイヤー数: 2
+[09:41:27] [Discovery/Listener] 最大プレイヤー数: 8
+[09:41:27] [Discovery/Listener] ステート: 1
+[09:41:27] [Discovery/Listener] 名前の長さ: 5
+[09:41:27] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:41:27] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:41:27] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:41:28] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:41:28] [Discovery/Advertiser] ブロードキャスト送信 #59: サイズ=20 bytes (port=12126)
+[09:41:28] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:41:28] [Discovery/Listener] マジック一致確認
+[09:41:28] [Discovery/Listener] プロトコルバージョン: 256
+[09:41:28] [Discovery/Listener] ポート（変換後）: 12126
+[09:41:28] [Discovery/Listener] プレイヤー数: 2
+[09:41:28] [Discovery/Listener] 最大プレイヤー数: 8
+[09:41:28] [Discovery/Listener] ステート: 1
+[09:41:28] [Discovery/Listener] 名前の長さ: 2
+[09:41:28] [Discovery/Listener] サーバー名: 'TW'
+[09:41:28] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:41:28] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:41:31] [Discovery/Listener] 生存確認 ループ:2950
+[09:41:32] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:41:32] [Discovery/Listener] マジック一致確認
+[09:41:32] [Discovery/Listener] プロトコルバージョン: 256
+[09:41:32] [Discovery/Listener] ポート（変換後）: 12033
+[09:41:32] [Discovery/Listener] プレイヤー数: 2
+[09:41:32] [Discovery/Listener] 最大プレイヤー数: 8
+[09:41:32] [Discovery/Listener] ステート: 1
+[09:41:32] [Discovery/Listener] 名前の長さ: 5
+[09:41:32] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:41:32] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:41:32] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:41:33] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:41:33] [Discovery/Advertiser] ブロードキャスト送信 #60: サイズ=20 bytes (port=12126)
+[09:41:33] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:41:33] [Discovery/Listener] マジック一致確認
+[09:41:33] [Discovery/Listener] プロトコルバージョン: 256
+[09:41:33] [Discovery/Listener] ポート（変換後）: 12126
+[09:41:33] [Discovery/Listener] プレイヤー数: 2
+[09:41:33] [Discovery/Listener] 最大プレイヤー数: 8
+[09:41:33] [Discovery/Listener] ステート: 1
+[09:41:33] [Discovery/Listener] 名前の長さ: 2
+[09:41:33] [Discovery/Listener] サーバー名: 'TW'
+[09:41:33] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:41:33] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:41:36] [Discovery/Listener] 生存確認 ループ:3000
+[09:41:37] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:41:37] [Discovery/Listener] マジック一致確認
+[09:41:37] [Discovery/Listener] プロトコルバージョン: 256
+[09:41:37] [Discovery/Listener] ポート（変換後）: 12033
+[09:41:37] [Discovery/Listener] プレイヤー数: 2
+[09:41:37] [Discovery/Listener] 最大プレイヤー数: 8
+[09:41:37] [Discovery/Listener] ステート: 1
+[09:41:37] [Discovery/Listener] 名前の長さ: 5
+[09:41:37] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:41:37] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:41:37] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:41:38] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:41:38] [Discovery/Advertiser] ブロードキャスト送信 #61: サイズ=20 bytes (port=12126)
+[09:41:38] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:41:38] [Discovery/Listener] マジック一致確認
+[09:41:38] [Discovery/Listener] プロトコルバージョン: 256
+[09:41:38] [Discovery/Listener] ポート（変換後）: 12126
+[09:41:38] [Discovery/Listener] プレイヤー数: 2
+[09:41:38] [Discovery/Listener] 最大プレイヤー数: 8
+[09:41:38] [Discovery/Listener] ステート: 1
+[09:41:38] [Discovery/Listener] 名前の長さ: 2
+[09:41:38] [Discovery/Listener] サーバー名: 'TW'
+[09:41:38] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:41:38] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:41:41] [Discovery/Listener] 生存確認 ループ:3050
+[09:41:43] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:41:43] [Discovery/Listener] マジック一致確認
+[09:41:43] [Discovery/Listener] プロトコルバージョン: 256
+[09:41:43] [Discovery/Listener] ポート（変換後）: 12033
+[09:41:43] [Discovery/Listener] プレイヤー数: 2
+[09:41:43] [Discovery/Listener] 最大プレイヤー数: 8
+[09:41:43] [Discovery/Listener] ステート: 1
+[09:41:43] [Discovery/Listener] 名前の長さ: 5
+[09:41:43] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:41:43] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:41:43] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:41:43] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:41:43] [Discovery/Advertiser] ブロードキャスト送信 #62: サイズ=20 bytes (port=12126)
+[09:41:43] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:41:43] [Discovery/Listener] マジック一致確認
+[09:41:43] [Discovery/Listener] プロトコルバージョン: 256
+[09:41:43] [Discovery/Listener] ポート（変換後）: 12126
+[09:41:43] [Discovery/Listener] プレイヤー数: 2
+[09:41:43] [Discovery/Listener] 最大プレイヤー数: 8
+[09:41:43] [Discovery/Listener] ステート: 1
+[09:41:43] [Discovery/Listener] 名前の長さ: 2
+[09:41:43] [Discovery/Listener] サーバー名: 'TW'
+[09:41:43] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:41:43] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:41:46] [Discovery/Listener] 生存確認 ループ:3100
+[09:41:48] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:41:48] [Discovery/Listener] マジック一致確認
+[09:41:48] [Discovery/Listener] プロトコルバージョン: 256
+[09:41:48] [Discovery/Listener] ポート（変換後）: 12033
+[09:41:48] [Discovery/Listener] プレイヤー数: 2
+[09:41:48] [Discovery/Listener] 最大プレイヤー数: 8
+[09:41:48] [Discovery/Listener] ステート: 1
+[09:41:48] [Discovery/Listener] 名前の長さ: 5
+[09:41:48] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:41:48] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:41:48] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:41:48] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:41:48] [Discovery/Advertiser] ブロードキャスト送信 #63: サイズ=20 bytes (port=12126)
+[09:41:48] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:41:48] [Discovery/Listener] マジック一致確認
+[09:41:48] [Discovery/Listener] プロトコルバージョン: 256
+[09:41:48] [Discovery/Listener] ポート（変換後）: 12126
+[09:41:48] [Discovery/Listener] プレイヤー数: 2
+[09:41:48] [Discovery/Listener] 最大プレイヤー数: 8
+[09:41:48] [Discovery/Listener] ステート: 1
+[09:41:48] [Discovery/Listener] 名前の長さ: 2
+[09:41:48] [Discovery/Listener] サーバー名: 'TW'
+[09:41:48] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:41:48] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:41:51] [Discovery/Listener] 生存確認 ループ:3150
+[09:41:53] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:41:53] [Discovery/Listener] マジック一致確認
+[09:41:53] [Discovery/Listener] プロトコルバージョン: 256
+[09:41:53] [Discovery/Listener] ポート（変換後）: 12033
+[09:41:53] [Discovery/Listener] プレイヤー数: 2
+[09:41:53] [Discovery/Listener] 最大プレイヤー数: 8
+[09:41:53] [Discovery/Listener] ステート: 1
+[09:41:53] [Discovery/Listener] 名前の長さ: 5
+[09:41:53] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:41:53] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:41:53] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:41:53] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:41:53] [Discovery/Advertiser] ブロードキャスト送信 #64: サイズ=20 bytes (port=12126)
+[09:41:53] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:41:53] [Discovery/Listener] マジック一致確認
+[09:41:53] [Discovery/Listener] プロトコルバージョン: 256
+[09:41:53] [Discovery/Listener] ポート（変換後）: 12126
+[09:41:53] [Discovery/Listener] プレイヤー数: 2
+[09:41:53] [Discovery/Listener] 最大プレイヤー数: 8
+[09:41:53] [Discovery/Listener] ステート: 1
+[09:41:53] [Discovery/Listener] 名前の長さ: 2
+[09:41:53] [Discovery/Listener] サーバー名: 'TW'
+[09:41:53] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:41:53] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:41:56] [Discovery/Listener] 生存確認 ループ:3200
+[09:41:58] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:41:58] [Discovery/Listener] マジック一致確認
+[09:41:58] [Discovery/Listener] プロトコルバージョン: 256
+[09:41:58] [Discovery/Listener] ポート（変換後）: 12033
+[09:41:58] [Discovery/Listener] プレイヤー数: 2
+[09:41:58] [Discovery/Listener] 最大プレイヤー数: 8
+[09:41:58] [Discovery/Listener] ステート: 1
+[09:41:58] [Discovery/Listener] 名前の長さ: 5
+[09:41:58] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:41:58] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:41:58] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:41:58] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:41:58] [Discovery/Advertiser] ブロードキャスト送信 #65: サイズ=20 bytes (port=12126)
+[09:41:58] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:41:58] [Discovery/Listener] マジック一致確認
+[09:41:58] [Discovery/Listener] プロトコルバージョン: 256
+[09:41:58] [Discovery/Listener] ポート（変換後）: 12126
+[09:41:58] [Discovery/Listener] プレイヤー数: 2
+[09:41:58] [Discovery/Listener] 最大プレイヤー数: 8
+[09:41:58] [Discovery/Listener] ステート: 1
+[09:41:58] [Discovery/Listener] 名前の長さ: 2
+[09:41:58] [Discovery/Listener] サーバー名: 'TW'
+[09:41:58] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:41:58] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:42:01] [Discovery/Listener] 生存確認 ループ:3250
+[09:42:03] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:42:03] [Discovery/Listener] マジック一致確認
+[09:42:03] [Discovery/Listener] プロトコルバージョン: 256
+[09:42:03] [Discovery/Listener] ポート（変換後）: 12033
+[09:42:03] [Discovery/Listener] プレイヤー数: 2
+[09:42:03] [Discovery/Listener] 最大プレイヤー数: 8
+[09:42:03] [Discovery/Listener] ステート: 1
+[09:42:03] [Discovery/Listener] 名前の長さ: 5
+[09:42:03] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:42:03] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:42:03] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:42:03] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:42:03] [Discovery/Advertiser] ブロードキャスト送信 #66: サイズ=20 bytes (port=12126)
+[09:42:03] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:42:03] [Discovery/Listener] マジック一致確認
+[09:42:03] [Discovery/Listener] プロトコルバージョン: 256
+[09:42:03] [Discovery/Listener] ポート（変換後）: 12126
+[09:42:03] [Discovery/Listener] プレイヤー数: 2
+[09:42:03] [Discovery/Listener] 最大プレイヤー数: 8
+[09:42:03] [Discovery/Listener] ステート: 1
+[09:42:03] [Discovery/Listener] 名前の長さ: 2
+[09:42:03] [Discovery/Listener] サーバー名: 'TW'
+[09:42:03] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:42:03] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:42:06] [Discovery/Listener] 生存確認 ループ:3300
+[09:42:08] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:42:08] [Discovery/Listener] マジック一致確認
+[09:42:08] [Discovery/Listener] プロトコルバージョン: 256
+[09:42:08] [Discovery/Listener] ポート（変換後）: 12033
+[09:42:08] [Discovery/Listener] プレイヤー数: 2
+[09:42:08] [Discovery/Listener] 最大プレイヤー数: 8
+[09:42:08] [Discovery/Listener] ステート: 1
+[09:42:08] [Discovery/Listener] 名前の長さ: 5
+[09:42:08] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:42:08] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:42:08] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:42:08] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:42:08] [Discovery/Advertiser] ブロードキャスト送信 #67: サイズ=20 bytes (port=12126)
+[09:42:08] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:42:08] [Discovery/Listener] マジック一致確認
+[09:42:08] [Discovery/Listener] プロトコルバージョン: 256
+[09:42:08] [Discovery/Listener] ポート（変換後）: 12126
+[09:42:08] [Discovery/Listener] プレイヤー数: 2
+[09:42:08] [Discovery/Listener] 最大プレイヤー数: 8
+[09:42:08] [Discovery/Listener] ステート: 1
+[09:42:08] [Discovery/Listener] 名前の長さ: 2
+[09:42:08] [Discovery/Listener] サーバー名: 'TW'
+[09:42:08] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:42:08] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:42:11] [Discovery/Listener] 生存確認 ループ:3350
+[09:42:13] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:42:13] [Discovery/Listener] マジック一致確認
+[09:42:13] [Discovery/Listener] プロトコルバージョン: 256
+[09:42:13] [Discovery/Listener] ポート（変換後）: 12033
+[09:42:13] [Discovery/Listener] プレイヤー数: 2
+[09:42:13] [Discovery/Listener] 最大プレイヤー数: 8
+[09:42:13] [Discovery/Listener] ステート: 1
+[09:42:13] [Discovery/Listener] 名前の長さ: 5
+[09:42:13] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:42:13] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:42:13] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:42:13] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:42:13] [Discovery/Advertiser] ブロードキャスト送信 #68: サイズ=20 bytes (port=12126)
+[09:42:13] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:42:13] [Discovery/Listener] マジック一致確認
+[09:42:13] [Discovery/Listener] プロトコルバージョン: 256
+[09:42:13] [Discovery/Listener] ポート（変換後）: 12126
+[09:42:13] [Discovery/Listener] プレイヤー数: 2
+[09:42:13] [Discovery/Listener] 最大プレイヤー数: 8
+[09:42:13] [Discovery/Listener] ステート: 1
+[09:42:13] [Discovery/Listener] 名前の長さ: 2
+[09:42:13] [Discovery/Listener] サーバー名: 'TW'
+[09:42:13] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:42:13] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:42:16] [Discovery/Listener] 生存確認 ループ:3400
+[09:42:18] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:42:18] [Discovery/Listener] マジック一致確認
+[09:42:18] [Discovery/Listener] プロトコルバージョン: 256
+[09:42:18] [Discovery/Listener] ポート（変換後）: 12033
+[09:42:18] [Discovery/Listener] プレイヤー数: 2
+[09:42:18] [Discovery/Listener] 最大プレイヤー数: 8
+[09:42:18] [Discovery/Listener] ステート: 1
+[09:42:18] [Discovery/Listener] 名前の長さ: 5
+[09:42:18] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:42:18] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:42:18] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:42:18] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:42:18] [Discovery/Advertiser] ブロードキャスト送信 #69: サイズ=20 bytes (port=12126)
+[09:42:18] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:42:18] [Discovery/Listener] マジック一致確認
+[09:42:18] [Discovery/Listener] プロトコルバージョン: 256
+[09:42:18] [Discovery/Listener] ポート（変換後）: 12126
+[09:42:18] [Discovery/Listener] プレイヤー数: 2
+[09:42:18] [Discovery/Listener] 最大プレイヤー数: 8
+[09:42:18] [Discovery/Listener] ステート: 1
+[09:42:18] [Discovery/Listener] 名前の長さ: 2
+[09:42:18] [Discovery/Listener] サーバー名: 'TW'
+[09:42:18] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:42:18] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:42:21] [Discovery/Listener] 生存確認 ループ:3450
+[09:42:23] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:42:23] [Discovery/Listener] マジック一致確認
+[09:42:23] [Discovery/Listener] プロトコルバージョン: 256
+[09:42:23] [Discovery/Listener] ポート（変換後）: 12033
+[09:42:23] [Discovery/Listener] プレイヤー数: 2
+[09:42:23] [Discovery/Listener] 最大プレイヤー数: 8
+[09:42:23] [Discovery/Listener] ステート: 1
+[09:42:23] [Discovery/Listener] 名前の長さ: 5
+[09:42:23] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:42:23] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:42:23] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:42:23] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:42:23] [Discovery/Advertiser] ブロードキャスト送信 #70: サイズ=20 bytes (port=12126)
+[09:42:23] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:42:23] [Discovery/Listener] マジック一致確認
+[09:42:23] [Discovery/Listener] プロトコルバージョン: 256
+[09:42:23] [Discovery/Listener] ポート（変換後）: 12126
+[09:42:23] [Discovery/Listener] プレイヤー数: 2
+[09:42:23] [Discovery/Listener] 最大プレイヤー数: 8
+[09:42:23] [Discovery/Listener] ステート: 1
+[09:42:23] [Discovery/Listener] 名前の長さ: 2
+[09:42:23] [Discovery/Listener] サーバー名: 'TW'
+[09:42:23] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:42:23] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:42:26] [Discovery/Listener] 生存確認 ループ:3500
+[09:42:28] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:42:28] [Discovery/Listener] マジック一致確認
+[09:42:28] [Discovery/Listener] プロトコルバージョン: 256
+[09:42:28] [Discovery/Listener] ポート（変換後）: 12033
+[09:42:28] [Discovery/Listener] プレイヤー数: 2
+[09:42:28] [Discovery/Listener] 最大プレイヤー数: 8
+[09:42:28] [Discovery/Listener] ステート: 1
+[09:42:28] [Discovery/Listener] 名前の長さ: 5
+[09:42:28] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:42:28] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:42:28] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:42:28] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:42:28] [Discovery/Advertiser] ブロードキャスト送信 #71: サイズ=20 bytes (port=12126)
+[09:42:28] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:42:28] [Discovery/Listener] マジック一致確認
+[09:42:28] [Discovery/Listener] プロトコルバージョン: 256
+[09:42:28] [Discovery/Listener] ポート（変換後）: 12126
+[09:42:28] [Discovery/Listener] プレイヤー数: 2
+[09:42:28] [Discovery/Listener] 最大プレイヤー数: 8
+[09:42:28] [Discovery/Listener] ステート: 1
+[09:42:28] [Discovery/Listener] 名前の長さ: 2
+[09:42:28] [Discovery/Listener] サーバー名: 'TW'
+[09:42:28] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:42:28] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:42:31] [Discovery/Listener] 生存確認 ループ:3550
+[09:42:33] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:42:33] [Discovery/Listener] マジック一致確認
+[09:42:33] [Discovery/Listener] プロトコルバージョン: 256
+[09:42:33] [Discovery/Listener] ポート（変換後）: 12033
+[09:42:33] [Discovery/Listener] プレイヤー数: 2
+[09:42:33] [Discovery/Listener] 最大プレイヤー数: 8
+[09:42:33] [Discovery/Listener] ステート: 1
+[09:42:33] [Discovery/Listener] 名前の長さ: 5
+[09:42:33] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:42:33] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:42:33] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:42:33] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:42:33] [Discovery/Advertiser] ブロードキャスト送信 #72: サイズ=20 bytes (port=12126)
+[09:42:33] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:42:33] [Discovery/Listener] マジック一致確認
+[09:42:33] [Discovery/Listener] プロトコルバージョン: 256
+[09:42:33] [Discovery/Listener] ポート（変換後）: 12126
+[09:42:33] [Discovery/Listener] プレイヤー数: 2
+[09:42:33] [Discovery/Listener] 最大プレイヤー数: 8
+[09:42:33] [Discovery/Listener] ステート: 1
+[09:42:33] [Discovery/Listener] 名前の長さ: 2
+[09:42:33] [Discovery/Listener] サーバー名: 'TW'
+[09:42:33] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:42:33] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:42:36] [Discovery/Listener] 生存確認 ループ:3600
+[09:42:38] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:42:38] [Discovery/Listener] マジック一致確認
+[09:42:38] [Discovery/Listener] プロトコルバージョン: 256
+[09:42:38] [Discovery/Listener] ポート（変換後）: 12033
+[09:42:38] [Discovery/Listener] プレイヤー数: 2
+[09:42:38] [Discovery/Listener] 最大プレイヤー数: 8
+[09:42:38] [Discovery/Listener] ステート: 1
+[09:42:38] [Discovery/Listener] 名前の長さ: 5
+[09:42:38] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:42:38] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:42:38] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:42:38] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:42:38] [Discovery/Advertiser] ブロードキャスト送信 #73: サイズ=20 bytes (port=12126)
+[09:42:38] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:42:38] [Discovery/Listener] マジック一致確認
+[09:42:38] [Discovery/Listener] プロトコルバージョン: 256
+[09:42:38] [Discovery/Listener] ポート（変換後）: 12126
+[09:42:38] [Discovery/Listener] プレイヤー数: 2
+[09:42:38] [Discovery/Listener] 最大プレイヤー数: 8
+[09:42:38] [Discovery/Listener] ステート: 1
+[09:42:38] [Discovery/Listener] 名前の長さ: 2
+[09:42:38] [Discovery/Listener] サーバー名: 'TW'
+[09:42:38] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:42:38] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:42:41] [Discovery/Listener] 生存確認 ループ:3650
+[09:42:43] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:42:43] [Discovery/Listener] マジック一致確認
+[09:42:43] [Discovery/Listener] プロトコルバージョン: 256
+[09:42:43] [Discovery/Listener] ポート（変換後）: 12033
+[09:42:43] [Discovery/Listener] プレイヤー数: 2
+[09:42:43] [Discovery/Listener] 最大プレイヤー数: 8
+[09:42:43] [Discovery/Listener] ステート: 1
+[09:42:43] [Discovery/Listener] 名前の長さ: 5
+[09:42:43] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:42:43] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:42:43] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:42:43] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:42:43] [Discovery/Advertiser] ブロードキャスト送信 #74: サイズ=20 bytes (port=12126)
+[09:42:43] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:42:43] [Discovery/Listener] マジック一致確認
+[09:42:43] [Discovery/Listener] プロトコルバージョン: 256
+[09:42:43] [Discovery/Listener] ポート（変換後）: 12126
+[09:42:43] [Discovery/Listener] プレイヤー数: 2
+[09:42:43] [Discovery/Listener] 最大プレイヤー数: 8
+[09:42:43] [Discovery/Listener] ステート: 1
+[09:42:43] [Discovery/Listener] 名前の長さ: 2
+[09:42:43] [Discovery/Listener] サーバー名: 'TW'
+[09:42:43] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:42:43] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:42:46] [Discovery/Listener] 生存確認 ループ:3700
+[09:42:48] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:42:48] [Discovery/Listener] マジック一致確認
+[09:42:48] [Discovery/Listener] プロトコルバージョン: 256
+[09:42:48] [Discovery/Listener] ポート（変換後）: 12033
+[09:42:48] [Discovery/Listener] プレイヤー数: 2
+[09:42:48] [Discovery/Listener] 最大プレイヤー数: 8
+[09:42:48] [Discovery/Listener] ステート: 1
+[09:42:48] [Discovery/Listener] 名前の長さ: 5
+[09:42:48] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:42:48] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:42:48] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:42:48] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:42:48] [Discovery/Advertiser] ブロードキャスト送信 #75: サイズ=20 bytes (port=12126)
+[09:42:49] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:42:49] [Discovery/Listener] マジック一致確認
+[09:42:49] [Discovery/Listener] プロトコルバージョン: 256
+[09:42:49] [Discovery/Listener] ポート（変換後）: 12126
+[09:42:49] [Discovery/Listener] プレイヤー数: 2
+[09:42:49] [Discovery/Listener] 最大プレイヤー数: 8
+[09:42:49] [Discovery/Listener] ステート: 1
+[09:42:49] [Discovery/Listener] 名前の長さ: 2
+[09:42:49] [Discovery/Listener] サーバー名: 'TW'
+[09:42:49] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:42:49] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:42:51] [Discovery/Listener] 生存確認 ループ:3750
+[09:42:53] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:42:53] [Discovery/Listener] マジック一致確認
+[09:42:53] [Discovery/Listener] プロトコルバージョン: 256
+[09:42:53] [Discovery/Listener] ポート（変換後）: 12033
+[09:42:53] [Discovery/Listener] プレイヤー数: 2
+[09:42:53] [Discovery/Listener] 最大プレイヤー数: 8
+[09:42:53] [Discovery/Listener] ステート: 1
+[09:42:53] [Discovery/Listener] 名前の長さ: 5
+[09:42:53] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:42:53] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:42:53] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:42:53] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:42:53] [Discovery/Advertiser] ブロードキャスト送信 #76: サイズ=20 bytes (port=12126)
+[09:42:54] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:42:54] [Discovery/Listener] マジック一致確認
+[09:42:54] [Discovery/Listener] プロトコルバージョン: 256
+[09:42:54] [Discovery/Listener] ポート（変換後）: 12126
+[09:42:54] [Discovery/Listener] プレイヤー数: 2
+[09:42:54] [Discovery/Listener] 最大プレイヤー数: 8
+[09:42:54] [Discovery/Listener] ステート: 1
+[09:42:54] [Discovery/Listener] 名前の長さ: 2
+[09:42:54] [Discovery/Listener] サーバー名: 'TW'
+[09:42:54] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:42:54] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:42:56] [Discovery/Listener] 生存確認 ループ:3800
+[09:42:58] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:42:58] [Discovery/Listener] マジック一致確認
+[09:42:58] [Discovery/Listener] プロトコルバージョン: 256
+[09:42:58] [Discovery/Listener] ポート（変換後）: 12033
+[09:42:58] [Discovery/Listener] プレイヤー数: 2
+[09:42:58] [Discovery/Listener] 最大プレイヤー数: 8
+[09:42:58] [Discovery/Listener] ステート: 1
+[09:42:58] [Discovery/Listener] 名前の長さ: 5
+[09:42:58] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:42:58] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:42:58] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:42:58] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:42:58] [Discovery/Advertiser] ブロードキャスト送信 #77: サイズ=20 bytes (port=12126)
+[09:42:58] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:42:58] [Discovery/Listener] マジック一致確認
+[09:42:58] [Discovery/Listener] プロトコルバージョン: 256
+[09:42:58] [Discovery/Listener] ポート（変換後）: 12126
+[09:42:58] [Discovery/Listener] プレイヤー数: 2
+[09:42:58] [Discovery/Listener] 最大プレイヤー数: 8
+[09:42:58] [Discovery/Listener] ステート: 1
+[09:42:58] [Discovery/Listener] 名前の長さ: 2
+[09:42:58] [Discovery/Listener] サーバー名: 'TW'
+[09:42:58] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:42:58] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:43:01] [Discovery/Listener] 生存確認 ループ:3850
+[09:43:03] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:43:03] [Discovery/Listener] マジック一致確認
+[09:43:03] [Discovery/Listener] プロトコルバージョン: 256
+[09:43:03] [Discovery/Listener] ポート（変換後）: 12033
+[09:43:03] [Discovery/Listener] プレイヤー数: 2
+[09:43:03] [Discovery/Listener] 最大プレイヤー数: 8
+[09:43:03] [Discovery/Listener] ステート: 1
+[09:43:03] [Discovery/Listener] 名前の長さ: 5
+[09:43:03] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:43:03] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:43:03] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:43:04] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:43:04] [Discovery/Advertiser] ブロードキャスト送信 #78: サイズ=20 bytes (port=12126)
+[09:43:04] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:43:04] [Discovery/Listener] マジック一致確認
+[09:43:04] [Discovery/Listener] プロトコルバージョン: 256
+[09:43:04] [Discovery/Listener] ポート（変換後）: 12126
+[09:43:04] [Discovery/Listener] プレイヤー数: 2
+[09:43:04] [Discovery/Listener] 最大プレイヤー数: 8
+[09:43:04] [Discovery/Listener] ステート: 1
+[09:43:04] [Discovery/Listener] 名前の長さ: 2
+[09:43:04] [Discovery/Listener] サーバー名: 'TW'
+[09:43:04] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:43:04] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:43:06] [Discovery/Listener] 生存確認 ループ:3900
+[09:43:08] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:43:08] [Discovery/Listener] マジック一致確認
+[09:43:08] [Discovery/Listener] プロトコルバージョン: 256
+[09:43:08] [Discovery/Listener] ポート（変換後）: 12033
+[09:43:08] [Discovery/Listener] プレイヤー数: 2
+[09:43:08] [Discovery/Listener] 最大プレイヤー数: 8
+[09:43:08] [Discovery/Listener] ステート: 1
+[09:43:08] [Discovery/Listener] 名前の長さ: 5
+[09:43:08] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:43:08] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:43:08] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:43:09] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:43:09] [Discovery/Advertiser] ブロードキャスト送信 #79: サイズ=20 bytes (port=12126)
+[09:43:09] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:43:09] [Discovery/Listener] マジック一致確認
+[09:43:09] [Discovery/Listener] プロトコルバージョン: 256
+[09:43:09] [Discovery/Listener] ポート（変換後）: 12126
+[09:43:09] [Discovery/Listener] プレイヤー数: 2
+[09:43:09] [Discovery/Listener] 最大プレイヤー数: 8
+[09:43:09] [Discovery/Listener] ステート: 1
+[09:43:09] [Discovery/Listener] 名前の長さ: 2
+[09:43:09] [Discovery/Listener] サーバー名: 'TW'
+[09:43:09] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:43:09] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:43:11] [Discovery/Listener] 生存確認 ループ:3950
+[09:43:13] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:43:13] [Discovery/Listener] マジック一致確認
+[09:43:13] [Discovery/Listener] プロトコルバージョン: 256
+[09:43:13] [Discovery/Listener] ポート（変換後）: 12033
+[09:43:13] [Discovery/Listener] プレイヤー数: 2
+[09:43:13] [Discovery/Listener] 最大プレイヤー数: 8
+[09:43:13] [Discovery/Listener] ステート: 1
+[09:43:13] [Discovery/Listener] 名前の長さ: 5
+[09:43:13] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:43:13] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:43:13] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:43:14] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:43:14] [Discovery/Advertiser] ブロードキャスト送信 #80: サイズ=20 bytes (port=12126)
+[09:43:14] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:43:14] [Discovery/Listener] マジック一致確認
+[09:43:14] [Discovery/Listener] プロトコルバージョン: 256
+[09:43:14] [Discovery/Listener] ポート（変換後）: 12126
+[09:43:14] [Discovery/Listener] プレイヤー数: 2
+[09:43:14] [Discovery/Listener] 最大プレイヤー数: 8
+[09:43:14] [Discovery/Listener] ステート: 1
+[09:43:14] [Discovery/Listener] 名前の長さ: 2
+[09:43:14] [Discovery/Listener] サーバー名: 'TW'
+[09:43:14] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:43:14] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:43:17] [Discovery/Listener] 生存確認 ループ:4000
+[09:43:18] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:43:18] [Discovery/Listener] マジック一致確認
+[09:43:18] [Discovery/Listener] プロトコルバージョン: 256
+[09:43:18] [Discovery/Listener] ポート（変換後）: 12033
+[09:43:18] [Discovery/Listener] プレイヤー数: 2
+[09:43:18] [Discovery/Listener] 最大プレイヤー数: 8
+[09:43:18] [Discovery/Listener] ステート: 1
+[09:43:18] [Discovery/Listener] 名前の長さ: 5
+[09:43:18] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:43:18] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:43:18] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:43:19] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:43:19] [Discovery/Advertiser] ブロードキャスト送信 #81: サイズ=20 bytes (port=12126)
+[09:43:19] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:43:19] [Discovery/Listener] マジック一致確認
+[09:43:19] [Discovery/Listener] プロトコルバージョン: 256
+[09:43:19] [Discovery/Listener] ポート（変換後）: 12126
+[09:43:19] [Discovery/Listener] プレイヤー数: 2
+[09:43:19] [Discovery/Listener] 最大プレイヤー数: 8
+[09:43:19] [Discovery/Listener] ステート: 1
+[09:43:19] [Discovery/Listener] 名前の長さ: 2
+[09:43:19] [Discovery/Listener] サーバー名: 'TW'
+[09:43:19] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:43:19] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:43:22] [Discovery/Listener] 生存確認 ループ:4050
+[09:43:23] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:43:23] [Discovery/Listener] マジック一致確認
+[09:43:23] [Discovery/Listener] プロトコルバージョン: 256
+[09:43:23] [Discovery/Listener] ポート（変換後）: 12033
+[09:43:23] [Discovery/Listener] プレイヤー数: 2
+[09:43:23] [Discovery/Listener] 最大プレイヤー数: 8
+[09:43:23] [Discovery/Listener] ステート: 1
+[09:43:23] [Discovery/Listener] 名前の長さ: 5
+[09:43:23] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:43:23] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:43:23] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:43:24] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:43:24] [Discovery/Advertiser] ブロードキャスト送信 #82: サイズ=20 bytes (port=12126)
+[09:43:24] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:43:24] [Discovery/Listener] マジック一致確認
+[09:43:24] [Discovery/Listener] プロトコルバージョン: 256
+[09:43:24] [Discovery/Listener] ポート（変換後）: 12126
+[09:43:24] [Discovery/Listener] プレイヤー数: 2
+[09:43:24] [Discovery/Listener] 最大プレイヤー数: 8
+[09:43:24] [Discovery/Listener] ステート: 1
+[09:43:24] [Discovery/Listener] 名前の長さ: 2
+[09:43:24] [Discovery/Listener] サーバー名: 'TW'
+[09:43:24] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:43:24] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:43:27] [Discovery/Listener] 生存確認 ループ:4100
+[09:43:28] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:43:28] [Discovery/Listener] マジック一致確認
+[09:43:28] [Discovery/Listener] プロトコルバージョン: 256
+[09:43:28] [Discovery/Listener] ポート（変換後）: 12033
+[09:43:28] [Discovery/Listener] プレイヤー数: 2
+[09:43:28] [Discovery/Listener] 最大プレイヤー数: 8
+[09:43:28] [Discovery/Listener] ステート: 1
+[09:43:28] [Discovery/Listener] 名前の長さ: 5
+[09:43:28] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:43:28] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:43:28] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:43:29] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:43:29] [Discovery/Advertiser] ブロードキャスト送信 #83: サイズ=20 bytes (port=12126)
+[09:43:29] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:43:29] [Discovery/Listener] マジック一致確認
+[09:43:29] [Discovery/Listener] プロトコルバージョン: 256
+[09:43:29] [Discovery/Listener] ポート（変換後）: 12126
+[09:43:29] [Discovery/Listener] プレイヤー数: 2
+[09:43:29] [Discovery/Listener] 最大プレイヤー数: 8
+[09:43:29] [Discovery/Listener] ステート: 1
+[09:43:29] [Discovery/Listener] 名前の長さ: 2
+[09:43:29] [Discovery/Listener] サーバー名: 'TW'
+[09:43:29] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:43:29] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:43:32] [Discovery/Listener] 生存確認 ループ:4150
+[09:43:33] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:43:33] [Discovery/Listener] マジック一致確認
+[09:43:33] [Discovery/Listener] プロトコルバージョン: 256
+[09:43:33] [Discovery/Listener] ポート（変換後）: 12033
+[09:43:33] [Discovery/Listener] プレイヤー数: 2
+[09:43:33] [Discovery/Listener] 最大プレイヤー数: 8
+[09:43:33] [Discovery/Listener] ステート: 1
+[09:43:33] [Discovery/Listener] 名前の長さ: 5
+[09:43:33] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:43:33] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:43:33] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:43:34] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:43:34] [Discovery/Advertiser] ブロードキャスト送信 #84: サイズ=20 bytes (port=12126)
+[09:43:34] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:43:34] [Discovery/Listener] マジック一致確認
+[09:43:34] [Discovery/Listener] プロトコルバージョン: 256
+[09:43:34] [Discovery/Listener] ポート（変換後）: 12126
+[09:43:34] [Discovery/Listener] プレイヤー数: 2
+[09:43:34] [Discovery/Listener] 最大プレイヤー数: 8
+[09:43:34] [Discovery/Listener] ステート: 1
+[09:43:34] [Discovery/Listener] 名前の長さ: 2
+[09:43:34] [Discovery/Listener] サーバー名: 'TW'
+[09:43:34] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:43:34] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:43:37] [Discovery/Listener] 生存確認 ループ:4200
+[09:43:38] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:43:38] [Discovery/Listener] マジック一致確認
+[09:43:38] [Discovery/Listener] プロトコルバージョン: 256
+[09:43:38] [Discovery/Listener] ポート（変換後）: 12033
+[09:43:38] [Discovery/Listener] プレイヤー数: 2
+[09:43:38] [Discovery/Listener] 最大プレイヤー数: 8
+[09:43:38] [Discovery/Listener] ステート: 1
+[09:43:38] [Discovery/Listener] 名前の長さ: 5
+[09:43:38] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:43:38] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:43:38] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:43:39] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:43:39] [Discovery/Advertiser] ブロードキャスト送信 #85: サイズ=20 bytes (port=12126)
+[09:43:39] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:43:39] [Discovery/Listener] マジック一致確認
+[09:43:39] [Discovery/Listener] プロトコルバージョン: 256
+[09:43:39] [Discovery/Listener] ポート（変換後）: 12126
+[09:43:39] [Discovery/Listener] プレイヤー数: 2
+[09:43:39] [Discovery/Listener] 最大プレイヤー数: 8
+[09:43:39] [Discovery/Listener] ステート: 1
+[09:43:39] [Discovery/Listener] 名前の長さ: 2
+[09:43:39] [Discovery/Listener] サーバー名: 'TW'
+[09:43:39] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:43:39] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:43:42] [Discovery/Listener] 生存確認 ループ:4250
+[09:43:43] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:43:43] [Discovery/Listener] マジック一致確認
+[09:43:43] [Discovery/Listener] プロトコルバージョン: 256
+[09:43:43] [Discovery/Listener] ポート（変換後）: 12033
+[09:43:43] [Discovery/Listener] プレイヤー数: 2
+[09:43:43] [Discovery/Listener] 最大プレイヤー数: 8
+[09:43:43] [Discovery/Listener] ステート: 1
+[09:43:43] [Discovery/Listener] 名前の長さ: 5
+[09:43:43] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:43:43] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:43:43] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:43:44] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:43:44] [Discovery/Advertiser] ブロードキャスト送信 #86: サイズ=20 bytes (port=12126)
+[09:43:44] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:43:44] [Discovery/Listener] マジック一致確認
+[09:43:44] [Discovery/Listener] プロトコルバージョン: 256
+[09:43:44] [Discovery/Listener] ポート（変換後）: 12126
+[09:43:44] [Discovery/Listener] プレイヤー数: 2
+[09:43:44] [Discovery/Listener] 最大プレイヤー数: 8
+[09:43:44] [Discovery/Listener] ステート: 1
+[09:43:44] [Discovery/Listener] 名前の長さ: 2
+[09:43:44] [Discovery/Listener] サーバー名: 'TW'
+[09:43:44] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:43:44] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:43:47] [Discovery/Listener] 生存確認 ループ:4300
+[09:43:48] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:43:48] [Discovery/Listener] マジック一致確認
+[09:43:48] [Discovery/Listener] プロトコルバージョン: 256
+[09:43:48] [Discovery/Listener] ポート（変換後）: 12033
+[09:43:48] [Discovery/Listener] プレイヤー数: 2
+[09:43:48] [Discovery/Listener] 最大プレイヤー数: 8
+[09:43:48] [Discovery/Listener] ステート: 1
+[09:43:48] [Discovery/Listener] 名前の長さ: 5
+[09:43:48] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:43:48] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:43:48] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:43:49] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:43:49] [Discovery/Advertiser] ブロードキャスト送信 #87: サイズ=20 bytes (port=12126)
+[09:43:49] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:43:49] [Discovery/Listener] マジック一致確認
+[09:43:49] [Discovery/Listener] プロトコルバージョン: 256
+[09:43:49] [Discovery/Listener] ポート（変換後）: 12126
+[09:43:49] [Discovery/Listener] プレイヤー数: 2
+[09:43:49] [Discovery/Listener] 最大プレイヤー数: 8
+[09:43:49] [Discovery/Listener] ステート: 1
+[09:43:49] [Discovery/Listener] 名前の長さ: 2
+[09:43:49] [Discovery/Listener] サーバー名: 'TW'
+[09:43:49] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:43:49] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:43:52] [Discovery/Listener] 生存確認 ループ:4350
+[09:43:53] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:43:53] [Discovery/Listener] マジック一致確認
+[09:43:53] [Discovery/Listener] プロトコルバージョン: 256
+[09:43:53] [Discovery/Listener] ポート（変換後）: 12033
+[09:43:53] [Discovery/Listener] プレイヤー数: 2
+[09:43:53] [Discovery/Listener] 最大プレイヤー数: 8
+[09:43:53] [Discovery/Listener] ステート: 1
+[09:43:53] [Discovery/Listener] 名前の長さ: 5
+[09:43:53] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:43:53] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:43:53] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:43:54] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:43:54] [Discovery/Advertiser] ブロードキャスト送信 #88: サイズ=20 bytes (port=12126)
+[09:43:54] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:43:54] [Discovery/Listener] マジック一致確認
+[09:43:54] [Discovery/Listener] プロトコルバージョン: 256
+[09:43:54] [Discovery/Listener] ポート（変換後）: 12126
+[09:43:54] [Discovery/Listener] プレイヤー数: 2
+[09:43:54] [Discovery/Listener] 最大プレイヤー数: 8
+[09:43:54] [Discovery/Listener] ステート: 1
+[09:43:54] [Discovery/Listener] 名前の長さ: 2
+[09:43:54] [Discovery/Listener] サーバー名: 'TW'
+[09:43:54] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:43:54] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:43:57] [Discovery/Listener] 生存確認 ループ:4400
+[09:43:58] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:43:58] [Discovery/Listener] マジック一致確認
+[09:43:58] [Discovery/Listener] プロトコルバージョン: 256
+[09:43:58] [Discovery/Listener] ポート（変換後）: 12033
+[09:43:58] [Discovery/Listener] プレイヤー数: 2
+[09:43:58] [Discovery/Listener] 最大プレイヤー数: 8
+[09:43:58] [Discovery/Listener] ステート: 1
+[09:43:58] [Discovery/Listener] 名前の長さ: 5
+[09:43:58] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:43:58] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:43:58] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:43:59] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:43:59] [Discovery/Advertiser] ブロードキャスト送信 #89: サイズ=20 bytes (port=12126)
+[09:43:59] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:43:59] [Discovery/Listener] マジック一致確認
+[09:43:59] [Discovery/Listener] プロトコルバージョン: 256
+[09:43:59] [Discovery/Listener] ポート（変換後）: 12126
+[09:43:59] [Discovery/Listener] プレイヤー数: 2
+[09:43:59] [Discovery/Listener] 最大プレイヤー数: 8
+[09:43:59] [Discovery/Listener] ステート: 1
+[09:43:59] [Discovery/Listener] 名前の長さ: 2
+[09:43:59] [Discovery/Listener] サーバー名: 'TW'
+[09:43:59] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:43:59] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:44:02] [Discovery/Listener] 生存確認 ループ:4450
+[09:44:03] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:44:03] [Discovery/Listener] マジック一致確認
+[09:44:03] [Discovery/Listener] プロトコルバージョン: 256
+[09:44:03] [Discovery/Listener] ポート（変換後）: 12033
+[09:44:03] [Discovery/Listener] プレイヤー数: 2
+[09:44:03] [Discovery/Listener] 最大プレイヤー数: 8
+[09:44:03] [Discovery/Listener] ステート: 1
+[09:44:03] [Discovery/Listener] 名前の長さ: 5
+[09:44:03] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:44:03] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:44:03] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:44:04] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:44:04] [Discovery/Advertiser] ブロードキャスト送信 #90: サイズ=20 bytes (port=12126)
+[09:44:04] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:44:04] [Discovery/Listener] マジック一致確認
+[09:44:04] [Discovery/Listener] プロトコルバージョン: 256
+[09:44:04] [Discovery/Listener] ポート（変換後）: 12126
+[09:44:04] [Discovery/Listener] プレイヤー数: 2
+[09:44:04] [Discovery/Listener] 最大プレイヤー数: 8
+[09:44:04] [Discovery/Listener] ステート: 1
+[09:44:04] [Discovery/Listener] 名前の長さ: 2
+[09:44:04] [Discovery/Listener] サーバー名: 'TW'
+[09:44:04] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:44:04] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:44:07] [Discovery/Listener] 生存確認 ループ:4500
+[09:44:08] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:44:08] [Discovery/Listener] マジック一致確認
+[09:44:08] [Discovery/Listener] プロトコルバージョン: 256
+[09:44:08] [Discovery/Listener] ポート（変換後）: 12033
+[09:44:08] [Discovery/Listener] プレイヤー数: 2
+[09:44:08] [Discovery/Listener] 最大プレイヤー数: 8
+[09:44:08] [Discovery/Listener] ステート: 1
+[09:44:08] [Discovery/Listener] 名前の長さ: 5
+[09:44:08] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:44:08] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:44:08] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:44:09] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:44:09] [Discovery/Advertiser] ブロードキャスト送信 #91: サイズ=20 bytes (port=12126)
+[09:44:09] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:44:09] [Discovery/Listener] マジック一致確認
+[09:44:09] [Discovery/Listener] プロトコルバージョン: 256
+[09:44:09] [Discovery/Listener] ポート（変換後）: 12126
+[09:44:09] [Discovery/Listener] プレイヤー数: 2
+[09:44:09] [Discovery/Listener] 最大プレイヤー数: 8
+[09:44:09] [Discovery/Listener] ステート: 1
+[09:44:09] [Discovery/Listener] 名前の長さ: 2
+[09:44:09] [Discovery/Listener] サーバー名: 'TW'
+[09:44:09] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:44:09] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:44:12] [Discovery/Listener] 生存確認 ループ:4550
+[09:44:13] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:44:13] [Discovery/Listener] マジック一致確認
+[09:44:13] [Discovery/Listener] プロトコルバージョン: 256
+[09:44:13] [Discovery/Listener] ポート（変換後）: 12033
+[09:44:13] [Discovery/Listener] プレイヤー数: 2
+[09:44:13] [Discovery/Listener] 最大プレイヤー数: 8
+[09:44:13] [Discovery/Listener] ステート: 1
+[09:44:13] [Discovery/Listener] 名前の長さ: 5
+[09:44:13] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:44:13] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:44:13] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:44:14] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:44:14] [Discovery/Advertiser] ブロードキャスト送信 #92: サイズ=20 bytes (port=12126)
+[09:44:14] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:44:14] [Discovery/Listener] マジック一致確認
+[09:44:14] [Discovery/Listener] プロトコルバージョン: 256
+[09:44:14] [Discovery/Listener] ポート（変換後）: 12126
+[09:44:14] [Discovery/Listener] プレイヤー数: 2
+[09:44:14] [Discovery/Listener] 最大プレイヤー数: 8
+[09:44:14] [Discovery/Listener] ステート: 1
+[09:44:14] [Discovery/Listener] 名前の長さ: 2
+[09:44:14] [Discovery/Listener] サーバー名: 'TW'
+[09:44:14] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:44:14] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:44:17] [Discovery/Listener] 生存確認 ループ:4600
+[09:44:18] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:44:18] [Discovery/Listener] マジック一致確認
+[09:44:18] [Discovery/Listener] プロトコルバージョン: 256
+[09:44:18] [Discovery/Listener] ポート（変換後）: 12033
+[09:44:18] [Discovery/Listener] プレイヤー数: 2
+[09:44:18] [Discovery/Listener] 最大プレイヤー数: 8
+[09:44:18] [Discovery/Listener] ステート: 1
+[09:44:18] [Discovery/Listener] 名前の長さ: 5
+[09:44:18] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:44:18] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:44:18] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:44:19] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:44:19] [Discovery/Advertiser] ブロードキャスト送信 #93: サイズ=20 bytes (port=12126)
+[09:44:19] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:44:19] [Discovery/Listener] マジック一致確認
+[09:44:19] [Discovery/Listener] プロトコルバージョン: 256
+[09:44:19] [Discovery/Listener] ポート（変換後）: 12126
+[09:44:19] [Discovery/Listener] プレイヤー数: 2
+[09:44:19] [Discovery/Listener] 最大プレイヤー数: 8
+[09:44:19] [Discovery/Listener] ステート: 1
+[09:44:19] [Discovery/Listener] 名前の長さ: 2
+[09:44:19] [Discovery/Listener] サーバー名: 'TW'
+[09:44:19] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:44:19] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:44:22] [Discovery/Listener] 生存確認 ループ:4650
+[09:44:23] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:44:23] [Discovery/Listener] マジック一致確認
+[09:44:23] [Discovery/Listener] プロトコルバージョン: 256
+[09:44:23] [Discovery/Listener] ポート（変換後）: 12033
+[09:44:23] [Discovery/Listener] プレイヤー数: 2
+[09:44:23] [Discovery/Listener] 最大プレイヤー数: 8
+[09:44:23] [Discovery/Listener] ステート: 1
+[09:44:23] [Discovery/Listener] 名前の長さ: 5
+[09:44:23] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:44:23] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:44:23] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:44:24] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:44:24] [Discovery/Advertiser] ブロードキャスト送信 #94: サイズ=20 bytes (port=12126)
+[09:44:24] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:44:24] [Discovery/Listener] マジック一致確認
+[09:44:24] [Discovery/Listener] プロトコルバージョン: 256
+[09:44:24] [Discovery/Listener] ポート（変換後）: 12126
+[09:44:24] [Discovery/Listener] プレイヤー数: 2
+[09:44:24] [Discovery/Listener] 最大プレイヤー数: 8
+[09:44:24] [Discovery/Listener] ステート: 1
+[09:44:24] [Discovery/Listener] 名前の長さ: 2
+[09:44:24] [Discovery/Listener] サーバー名: 'TW'
+[09:44:24] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:44:24] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:44:27] [Discovery/Listener] 生存確認 ループ:4700
+[09:44:28] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:44:28] [Discovery/Listener] マジック一致確認
+[09:44:28] [Discovery/Listener] プロトコルバージョン: 256
+[09:44:28] [Discovery/Listener] ポート（変換後）: 12033
+[09:44:28] [Discovery/Listener] プレイヤー数: 2
+[09:44:28] [Discovery/Listener] 最大プレイヤー数: 8
+[09:44:28] [Discovery/Listener] ステート: 1
+[09:44:28] [Discovery/Listener] 名前の長さ: 5
+[09:44:28] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:44:28] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:44:28] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:44:29] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:44:29] [Discovery/Advertiser] ブロードキャスト送信 #95: サイズ=20 bytes (port=12126)
+[09:44:29] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:44:29] [Discovery/Listener] マジック一致確認
+[09:44:29] [Discovery/Listener] プロトコルバージョン: 256
+[09:44:29] [Discovery/Listener] ポート（変換後）: 12126
+[09:44:29] [Discovery/Listener] プレイヤー数: 2
+[09:44:29] [Discovery/Listener] 最大プレイヤー数: 8
+[09:44:29] [Discovery/Listener] ステート: 1
+[09:44:29] [Discovery/Listener] 名前の長さ: 2
+[09:44:29] [Discovery/Listener] サーバー名: 'TW'
+[09:44:29] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:44:29] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:44:32] [Discovery/Listener] 生存確認 ループ:4750
+[09:44:33] [Discovery/Listener] パケット受信! サイズ:23 bytes
+[09:44:33] [Discovery/Listener] マジック一致確認
+[09:44:33] [Discovery/Listener] プロトコルバージョン: 256
+[09:44:33] [Discovery/Listener] ポート（変換後）: 12033
+[09:44:33] [Discovery/Listener] プレイヤー数: 2
+[09:44:33] [Discovery/Listener] 最大プレイヤー数: 8
+[09:44:33] [Discovery/Listener] ステート: 1
+[09:44:33] [Discovery/Listener] 名前の長さ: 5
+[09:44:33] [Discovery/Listener] サーバー名: 'ADSWS'
+[09:44:33] [Discovery/Listener] ★サーバー検出★: ADSWS @ 172.20.145.8:12033 (2/8) state=1
+[09:44:33] [Discovery/Listener] サーバーリストに追加 (合計:2)
+[09:44:34] [Discovery/Advertiser] 送信データ: port=12126 player=2/8 state=1 name='TW'
+[09:44:34] [Discovery/Advertiser] ブロードキャスト送信 #96: サイズ=20 bytes (port=12126)
+[09:44:34] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[09:44:34] [Discovery/Listener] マジック一致確認
+[09:44:34] [Discovery/Listener] プロトコルバージョン: 256
+[09:44:34] [Discovery/Listener] ポート（変換後）: 12126
+[09:44:34] [Discovery/Listener] プレイヤー数: 2
+[09:44:34] [Discovery/Listener] 最大プレイヤー数: 8
+[09:44:34] [Discovery/Listener] ステート: 1
+[09:44:34] [Discovery/Listener] 名前の長さ: 2
+[09:44:34] [Discovery/Listener] サーバー名: 'TW'
+[09:44:34] [Discovery/Listener] ★サーバー検出★: TW @ 172.20.145.6:12126 (2/8) state=1
+[09:44:34] [Discovery/Listener] サーバーリストに追加 (合計:2)
