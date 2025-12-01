@@ -348,7 +348,6 @@ void SceneGame::SyncToServer()
 		m_pClient->SendPlayerState(state);
 	}
 }
-
 void SceneGame::ReceiveFromServer()
 {
 	if (!m_pClient) return;
@@ -363,7 +362,7 @@ void SceneGame::ReceiveFromServer()
 			roleAssign.clientId,
 			(roleAssign.role == ROLE_CHASER) ? "鬼" : "逃げる側");
 
-		// ★★★ 修正: 既存プレイヤーがいたら役割変更して再生成 ★★★
+		// ★★★ 既存プレイヤーがいたら役割変更して再生成 ★★★
 		auto it = m_players.find(roleAssign.clientId);
 		if (it != m_players.end() && it->second)
 		{
@@ -432,19 +431,16 @@ void SceneGame::ReceiveFromServer()
 				continue;
 			}
 
-			PlayerRole role = ROLE_RUNNER;  // デフォルトは逃げる側
+			// ★★★ デフォルトはRUNNERで生成（後で役割更新） ★★★
+			PlayerRole role = ROLE_RUNNER;
 
-											// 既に役割情報があればそれを使用
+			// 既に役割情報があればそれを使用
 			auto roleIt = m_playerRoles.find(spawn.clientId);
 			if (roleIt != m_playerRoles.end())
 			{
 				role = roleIt->second;
 				NET_LOG_F("[SceneGame] 役割情報あり: %s",
 					(role == ROLE_CHASER) ? "鬼" : "逃げる側");
-			}
-			else
-			{
-				NET_LOG("[SceneGame] 役割情報なし - 仮でRunnerとして生成");
 			}
 
 			SpawnPlayerWithRole(spawn.clientId, spawn.name,
@@ -493,7 +489,7 @@ void SceneGame::ReceiveFromServer()
 				// ★★★ プレイヤーが存在しない場合は仮生成 ★★★
 				NET_LOG_F("[SceneGame] 未生成プレイヤーを発見: ID=%u - 仮生成", ps.clientId);
 
-				PlayerRole role = ROLE_RUNNER;
+				PlayerRole role = ROLE_RUNNER;  // デフォルト
 				auto roleIt = m_playerRoles.find(ps.clientId);
 				if (roleIt != m_playerRoles.end())
 				{
@@ -522,6 +518,7 @@ void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name,
 		return;
 	}
 
+	// ★★★ 修正: ROLE_NONEチェックを削除し、常に生成 ★★★
 	CharacterBase* p = nullptr;
 
 	// 役割に応じてRunnerまたはChaserを生成
@@ -537,8 +534,9 @@ void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name,
 	}
 	else
 	{
-		NET_LOG_F("[SceneGame] 役割未定: ID=%u - 生成スキップ", clientId);
-		return;
+		// ★★★ ROLE_NONEの場合もデフォルトでRunnerを生成 ★★★
+		p = new Runner();
+		NET_LOG_F("[SceneGame] 役割未定だがRunnerとして仮生成: ID=%u, Name=%s", clientId, name.c_str());
 	}
 
 	bool isLocal = (clientId == m_localClientId);
@@ -582,7 +580,7 @@ void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name,
 	m_playerRoles[clientId] = role;
 
 	NET_LOG_F("[SceneGame] プレイヤー生成完了: ID=%u, Role=%s, Pos=(%.1f,%.1f,%.1f)",
-		clientId, (role == ROLE_CHASER) ? "鬼" : "逃げる側",
+		clientId, (role == ROLE_CHASER) ? "鬼" : (role == ROLE_RUNNER) ? "逃げる側" : "未定",
 		spawnPos.x, spawnPos.y, spawnPos.z);
 }
 
@@ -615,7 +613,29 @@ void SceneGame::DespawnPlayer(uint32_t clientId)
 
 void SceneGame::Draw()
 {
-	vector<SpotLight>* lights = nullptr;
+	// ★★★ スポットライトを収集 ★★★
+	std::vector<SpotLight> spotLights;
+
+	// 全プレイヤーからChaserのライトを収集
+	for (auto& kv : m_players)
+	{
+		if (kv.second && m_playerRoles[kv.first] == ROLE_CHASER)
+		{
+			Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
+			if (chaser)
+			{
+				SpotLight* light = chaser->GetLights();
+				if (light)
+				{
+					spotLights.push_back(*light);
+					NET_LOG_F("[SceneGame] ライト追加: ChaserID=%u", kv.first);
+				}
+			}
+		}
+	}
+
+	// ライトポインタ（nullptrまたは有効なvector）
+	std::vector<SpotLight>* lights = spotLights.empty() ? nullptr : &spotLights;
 
 	m_map.DrawMap(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light, lights);
 	m_map.DrawGoalEffect(&m_camera, &m_projection);
@@ -704,13 +724,13 @@ void SceneGame::Draw()
 		switch (d_viewPointCount)
 		{
 		case VIEW_GAME:
-			m_pEngine->DrawPrintf(1400, 230, FONT_GOTHIC40, Color::BLUE, "現在の視点：ゲーム画面");
+			m_pEngine->DrawPrintf(1400, 230, FONT_GOTHIC40, Color::BLUE, "現在の視点:ゲーム画面");
 			break;
 		case VIEW_FIRST:
-			m_pEngine->DrawPrintf(1400, 230, FONT_GOTHIC40, Color::BLUE, "現在の視点：一人称固定");
+			m_pEngine->DrawPrintf(1400, 230, FONT_GOTHIC40, Color::BLUE, "現在の視点:一人称固定");
 			break;
 		case VIEW_THIRD:
-			m_pEngine->DrawPrintf(1400, 230, FONT_GOTHIC40, Color::BLUE, "現在の視点：三人称固定");
+			m_pEngine->DrawPrintf(1400, 230, FONT_GOTHIC40, Color::BLUE, "現在の視点:三人称固定");
 			break;
 		}
 
@@ -740,7 +760,6 @@ void SceneGame::Draw()
 	m_fade.Draw(m_pEngine);
 	m_pEngine->SpriteEnd();
 }
-
 void SceneGame::PostEffect()
 {
 }
