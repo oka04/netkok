@@ -101,7 +101,7 @@ protected:
 	float f_headSize;
 	float f_baseHAngle;
 	float f_baseVAngle;
-
+	float f_eyePsoitionY;
 	D3DXVECTOR3 f_standEyePosition;
 	D3DXVECTOR3 f_crouchEyePosition;
 	//ここまで

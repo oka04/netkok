@@ -55,6 +55,7 @@ void Chaser::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 	m_speed = f_walkSpeed * m_deltaTime; //スキルなどで移動速度を変えるなら変える
 	Move(map);
 	SetThirdPersonFromBehind(pEngine, camera, map);
+	UpdateLight(pEngine);
 	UpdateMatrix(light);
 }
 
@@ -95,6 +96,19 @@ SpotLight * Chaser::GetLights()
 	return &m_spotLight;
 }
 
+void Chaser::UpdateLight(Engine* pEngine)
+{
+	m_direction.x = sinf(m_angle);
+	m_direction.y = 0.0f;
+	m_direction.z = cosf(m_angle);
+	D3DXVec3Normalize(&m_direction, &m_direction);
+
+	m_eyePosition = D3DXVECTOR3(m_position.x, m_position.y + f_eyePsoitionY, m_position.z);
+	m_spotLight.SetPosition(m_eyePosition);
+	m_spotLight.SetDirection(m_direction);
+	m_spotLight.SetDevice(pEngine, 0);
+}
+
 void Chaser::LoadParameter()
 {
 	std::ifstream file(JSON_CHASER_PARAMETER);
@@ -116,7 +130,7 @@ void Chaser::LoadParameter()
 	f_baseVAngle = config["baseAngleV"];
 	f_headSize = config["headSize"];
 	f_radius = config["radius"];
-	
+	f_eyePsoitionY = config["eyePsoitionY"];
 	for (int i = 0; i < 3; i++)
 	{
 		f_standEyePosition[i] = config["standEyePosition"][i];

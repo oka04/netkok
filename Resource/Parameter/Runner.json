@@ -23,6 +23,7 @@
   "rotateSpeed": 1.5,   
   "minRotateSpeed": 0.3, 
   "rotateFinishAngle": 0.2,
+  "eyePsoitionY": 1.3,
   "gaugeColorThresholds": [0.6,0.3], 
   "gaugeSourSize": [100.0, 25], 
   "gaugeDestSize": [400, 40], 

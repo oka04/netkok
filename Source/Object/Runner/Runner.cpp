@@ -226,7 +226,7 @@ void Runner::LoadParameter()
 	f_fatigueSpeed = config["fatigueSpeed"];
 	f_fatigueRecoveryThreshold = config["fatigueRecoveryThreshold"];
 	f_gaugeColorThresholds = config["gaugeColorThresholds"].get<std::vector<float>>();
-
+	f_eyePsoitionY = config["eyePsoitionY"];
 	for (int i = 0; i < 2; i++)
 	{
 		f_gaugeSourSize[i] = config["gaugeSourSize"][i];
