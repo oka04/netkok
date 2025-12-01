@@ -80,7 +80,6 @@ namespace KeyString
 	constexpr char* JSON_CHASER_PARAMETER = "Resource\\Parameter\\Chaser.json";
 	constexpr char* JSON_RUNNER_PARAMETER = "Resource\\Parameter\\Runner.json";
 	constexpr char* JSON_MAP_PARAMETER = "Resource\\Parameter\\Map.json";
-	constexpr char* JSON_PATROLLER_PARAMETER = "Resource\\Parameter\\Patroller.json";
 	constexpr char* JSON_MENU_PARAMETER = "Resource\\Parameter\\Menu.json";
 	constexpr char* JSON_GOAL_EFFECT_PARAMETER = "Resource\\Parameter\\GoalEffect.json";
 	constexpr char* JSON_FADE_PARAMETER = "Resource\\Parameter\\Fade.json";

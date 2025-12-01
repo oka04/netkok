@@ -114,7 +114,6 @@ void Chaser::LoadParameter()
 	f_defaultSenseH = config["defaultSenseH"];
 	f_baseHAngle = config["baseAngleH"];
 	f_baseVAngle = config["baseAngleV"];
-	f_stickAngleH = config["stickAngleH"];
 	f_headSize = config["headSize"];
 	f_radius = config["radius"];
 	
