@@ -217,6 +217,7 @@ void SceneGame::UpdateNetwork()
 
 	DWORD now = timeGetTime();
 
+	// ★★★ 修正: 初期同期で役割がなくても仮生成する ★★★
 	if (!m_bInitialSyncDone && now - m_lastTime > 500)
 	{
 		NET_LOG("[SceneGame] 初期同期開始");
@@ -228,12 +229,22 @@ void SceneGame::UpdateNetwork()
 			{
 				if (spawn.clientId != m_localClientId)
 				{
-					NET_LOG_F("[SceneGame] 既存プレイヤーを生成: ID=%u, Name=%s, Role=%s",
-						spawn.clientId, spawn.name,
-						(spawn.role == ROLE_CHASER) ? "鬼" : "逃げる側");
+					NET_LOG_F("[SceneGame] 既存プレイヤーを仮生成: ID=%u, Name=%s",
+						spawn.clientId, spawn.name);
+
+					// ★★★ 役割がなくてもRUNNERとして仮生成 ★★★
+					PlayerRole role = ROLE_RUNNER;  // デフォルト
+					auto roleIt = m_playerRoles.find(spawn.clientId);
+					if (roleIt != m_playerRoles.end())
+					{
+						role = roleIt->second;
+						NET_LOG_F("[SceneGame] 役割情報あり: %s",
+							(role == ROLE_CHASER) ? "鬼" : "逃げる側");
+					}
+
 					SpawnPlayerWithRole(spawn.clientId, spawn.name,
 						D3DXVECTOR3(spawn.startX, spawn.startY, spawn.startZ),
-						spawn.role);
+						role);
 				}
 			}
 		}
@@ -256,7 +267,6 @@ void SceneGame::UpdateNetwork()
 
 	ReceiveFromServer();
 }
-
 void SceneGame::UpdateLocalPlayer()
 {
 	if (!m_pLocalPlayer) return;
@@ -353,11 +363,34 @@ void SceneGame::ReceiveFromServer()
 			roleAssign.clientId,
 			(roleAssign.role == ROLE_CHASER) ? "鬼" : "逃げる側");
 
-		// ★★★ 修正: 既にプレイヤーが存在するなら役割を更新するだけ ★★★
+		// ★★★ 修正: 既存プレイヤーがいたら役割変更して再生成 ★★★
 		auto it = m_players.find(roleAssign.clientId);
 		if (it != m_players.end() && it->second)
 		{
-			NET_LOG_F("[SceneGame] 既存プレイヤーの役割を更新: ID=%u", roleAssign.clientId);
+			PlayerRole oldRole = m_playerRoles[roleAssign.clientId];
+
+			// 役割が変わった場合のみ再生成
+			if (oldRole != roleAssign.role)
+			{
+				NET_LOG_F("[SceneGame] 役割変更を検出: ID=%u %s→%s - 再生成",
+					roleAssign.clientId,
+					(oldRole == ROLE_CHASER) ? "鬼" : "逃げる側",
+					(roleAssign.role == ROLE_CHASER) ? "鬼" : "逃げる側");
+
+				// 現在位置を保存
+				D3DXVECTOR3 currentPos = it->second->GetPosition();
+				std::string name = it->second->GetCharacterName();
+
+				// 削除
+				DespawnPlayer(roleAssign.clientId);
+
+				// 新しい役割で再生成
+				SpawnPlayerWithRole(roleAssign.clientId, name, currentPos, roleAssign.role);
+			}
+			else
+			{
+				NET_LOG_F("[SceneGame] 既存プレイヤーの役割確認: ID=%u", roleAssign.clientId);
+			}
 			continue;
 		}
 
@@ -392,7 +425,13 @@ void SceneGame::ReceiveFromServer()
 			NET_LOG_F("[SceneGame] 新規プレイヤー参加: ID=%u, Name=%s",
 				spawn.clientId, spawn.name);
 
-			// ★★★ 修正: 役割が決まっていなくても仮で生成 ★★★
+			// ★★★ 既に存在する場合はスキップ ★★★
+			if (m_players.find(spawn.clientId) != m_players.end())
+			{
+				NET_LOG_F("[SceneGame] プレイヤー %u は既に存在 - スキップ", spawn.clientId);
+				continue;
+			}
+
 			PlayerRole role = ROLE_RUNNER;  // デフォルトは逃げる側
 
 											// 既に役割情報があればそれを使用
@@ -451,7 +490,7 @@ void SceneGame::ReceiveFromServer()
 			}
 			else
 			{
-				// ★★★ 修正: プレイヤーが存在しない場合は仮生成 ★★★
+				// ★★★ プレイヤーが存在しない場合は仮生成 ★★★
 				NET_LOG_F("[SceneGame] 未生成プレイヤーを発見: ID=%u - 仮生成", ps.clientId);
 
 				PlayerRole role = ROLE_RUNNER;
