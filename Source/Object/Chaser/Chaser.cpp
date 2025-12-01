@@ -95,18 +95,32 @@ SpotLight * Chaser::GetLights()
 {
 	return &m_spotLight;
 }
-
 void Chaser::UpdateLight(Engine* pEngine)
 {
-	m_direction.x = sinf(m_angle);
-	m_direction.y = 0.0f;
-	m_direction.z = cosf(m_angle);
+	// ★★★ 修正: m_depthを直接使用（ネットワーク同期済み） ★★★
+	m_direction = m_depth;
 	D3DXVec3Normalize(&m_direction, &m_direction);
 
+	// 目の位置を計算
 	m_eyePosition = D3DXVECTOR3(m_position.x, m_position.y + f_eyePsoitionY, m_position.z);
+
+	// ライトの位置と方向を設定
 	m_spotLight.SetPosition(m_eyePosition);
 	m_spotLight.SetDirection(m_direction);
 	m_spotLight.SetDevice(pEngine, 0);
+
+	// ★★★ デバッグログ（頻度を下げる） ★★★
+	static std::map<uint32_t, DWORD> lastLogPerChaser;
+	DWORD now = timeGetTime();
+	if (now - lastLogPerChaser[m_clientId] > 2000)
+	{
+		NET_LOG_F("[Chaser::UpdateLight] ID=%u Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f) IsLocal=%s",
+			m_clientId,
+			m_eyePosition.x, m_eyePosition.y, m_eyePosition.z,
+			m_direction.x, m_direction.y, m_direction.z,
+			m_bIsLocal ? "Yes" : "No");
+		lastLogPerChaser[m_clientId] = now;
+	}
 }
 
 void Chaser::LoadParameter()

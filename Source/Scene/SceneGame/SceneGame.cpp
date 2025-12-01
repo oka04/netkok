@@ -319,11 +319,39 @@ void SceneGame::UpdateRemotePlayers()
 			if (kv.second && !kv.second->IsLocal())
 			{
 				kv.second->PredictMovement(m_deltaTime);
+
+				// ★★★ 追加: リモートの鬼のライトを更新 ★★★
+				if (m_playerRoles[kv.first] == ROLE_CHASER)
+				{
+					Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
+					if (chaser)
+					{
+						// ネットワーク経由で受け取った位置・方向でライトを更新
+						chaser->UpdateLight(m_pEngine);
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		// ★★★ 予測なしの場合もライトは更新 ★★★
+		for (auto& kv : m_players)
+		{
+			if (kv.second && !kv.second->IsLocal())
+			{
+				if (m_playerRoles[kv.first] == ROLE_CHASER)
+				{
+					Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
+					if (chaser)
+					{
+						chaser->UpdateLight(m_pEngine);
+					}
+				}
 			}
 		}
 	}
 }
-
 void SceneGame::SyncToServer()
 {
 	if (!m_pLocalPlayer || !m_pClient) return;
@@ -365,8 +393,7 @@ void SceneGame::ReceiveFromServer()
 			roleAssign.clientId,
 			(roleAssign.role == ROLE_CHASER) ? "鬼" : "逃げる側");
 
-		// ★★★ 修正: 既存プレイヤーの役割変更は行わない ★★★
-		// 役割は一度決まったら変更しない
+		// 既存プレイヤーの役割変更は行わない
 		auto it = m_players.find(roleAssign.clientId);
 		if (it != m_players.end() && it->second)
 		{
@@ -396,7 +423,7 @@ void SceneGame::ReceiveFromServer()
 		}
 	}
 
-	// ★★★ 役割が更新されたらライトを再収集 ★★★
+	// 役割が更新されたらライトを再収集
 	if (roleUpdated)
 	{
 		UpdateChaserLights();
@@ -411,17 +438,13 @@ void SceneGame::ReceiveFromServer()
 			NET_LOG_F("[SceneGame] 新規プレイヤー参加: ID=%u, Name=%s",
 				spawn.clientId, spawn.name);
 
-			// ★★★ 既に存在する場合はスキップ ★★★
 			if (m_players.find(spawn.clientId) != m_players.end())
 			{
 				NET_LOG_F("[SceneGame] プレイヤー %u は既に存在 - スキップ", spawn.clientId);
 				continue;
 			}
 
-			// ★★★ デフォルトはRUNNERで生成（後で役割更新） ★★★
 			PlayerRole role = ROLE_RUNNER;
-
-			// 既に役割情報があればそれを使用
 			auto roleIt = m_playerRoles.find(spawn.clientId);
 			if (roleIt != m_playerRoles.end())
 			{
@@ -434,7 +457,7 @@ void SceneGame::ReceiveFromServer()
 				D3DXVECTOR3(spawn.startX, spawn.startY, spawn.startZ),
 				role);
 
-			// ★★★ 鬼が追加されたらライトを更新 ★★★
+			// 鬼が追加されたらライトを更新
 			if (role == ROLE_CHASER)
 			{
 				UpdateChaserLights();
@@ -450,7 +473,7 @@ void SceneGame::ReceiveFromServer()
 		{
 			NET_LOG_F("[SceneGame] プレイヤー退出: ID=%u", despawnId);
 
-			// ★★★ 鬼が退出したらライトを更新 ★★★
+			// 鬼が退出したらライトを更新
 			if (m_playerRoles[despawnId] == ROLE_CHASER)
 			{
 				DespawnPlayer(despawnId);
@@ -485,10 +508,19 @@ void SceneGame::ReceiveFromServer()
 			if (it != m_players.end() && it->second)
 			{
 				it->second->UpdateFromNetwork(ps, m_light, m_deltaTime);
+
+				// ★★★ 追加: ネットワーク更新後もライトを更新 ★★★
+				if (m_playerRoles[ps.clientId] == ROLE_CHASER)
+				{
+					Chaser* chaser = dynamic_cast<Chaser*>(it->second);
+					if (chaser)
+					{
+						chaser->UpdateLight(m_pEngine);
+					}
+				}
 			}
 			else
 			{
-				// ★★★ プレイヤーが存在しない場合は仮生成 ★★★
 				NET_LOG_F("[SceneGame] 未生成プレイヤーを発見: ID=%u - 仮生成", ps.clientId);
 
 				PlayerRole role = ROLE_RUNNER;
@@ -502,7 +534,6 @@ void SceneGame::ReceiveFromServer()
 					D3DXVECTOR3(ps.posX, ps.posY, ps.posZ),
 					role);
 
-				// ★★★ 鬼が追加されたらライトを更新 ★★★
 				if (role == ROLE_CHASER)
 				{
 					UpdateChaserLights();
@@ -511,12 +542,21 @@ void SceneGame::ReceiveFromServer()
 				if (m_players.find(ps.clientId) != m_players.end())
 				{
 					m_players[ps.clientId]->UpdateFromNetwork(ps, m_light, m_deltaTime);
+
+					// ★★★ 新規生成直後もライトを更新 ★★★
+					if (role == ROLE_CHASER)
+					{
+						Chaser* chaser = dynamic_cast<Chaser*>(m_players[ps.clientId]);
+						if (chaser)
+						{
+							chaser->UpdateLight(m_pEngine);
+						}
+					}
 				}
 			}
 		}
 	}
 }
-
 void SceneGame::UpdateChaserLights()
 {
 	NET_LOG("[SceneGame] 鬼のライトを収集開始");
@@ -530,6 +570,9 @@ void SceneGame::UpdateChaserLights()
 			Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
 			if (chaser)
 			{
+				// ★★★ 追加: ライト収集時に一度更新 ★★★
+				chaser->UpdateLight(m_pEngine);
+
 				SpotLight* light = chaser->GetLights();
 				if (light)
 				{
@@ -644,19 +687,25 @@ void SceneGame::DespawnPlayer(uint32_t clientId)
 
 	NET_LOG_F("[SceneGame] プレイヤー削除完了: ID=%u", clientId);
 }
-
 void SceneGame::Draw()
 {
-	// ★★★ 修正: 毎フレーム収集せず、保存済みのライトを使用 ★★★
+	// 保存されているライトポインタからSpotLightをコピー
 	std::vector<SpotLight> spotLights;
 
-	// 保存されているライトポインタからSpotLightをコピー
 	for (SpotLight* light : m_chaserLights)
 	{
 		if (light)
 		{
 			spotLights.push_back(*light);
 		}
+	}
+
+	// ★★★ デバッグ: ライトの情報を出力 ★★★
+	static DWORD lastLightLog = 0;
+	DWORD now = timeGetTime();
+	if (now - lastLightLog > 2000)
+	{
+		NET_LOG_F("[SceneGame] Draw: ライト数=%d", (int)spotLights.size());
 	}
 
 	// ライトポインタ（nullptrまたは有効なvector）

@@ -30,9 +30,9 @@ public:
 	virtual NetPlayerState GetNetState() const override;
 
 	virtual void UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& light, float deltaTime) override;
+	void UpdateLight(Engine* pEngine);
 
 private:
-	void UpdateLight(Engine* pEngine);
 	void LoadParameter() override;
 	SpotLight m_spotLight;
 	float m_lightFov;

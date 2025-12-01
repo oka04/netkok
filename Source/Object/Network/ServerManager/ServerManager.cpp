@@ -564,6 +564,7 @@ void ServerManager::SendJoinAck(ENetPeer* peer, uint32_t clientId)
 
 	NET_LOG_F("[ServerManager] JoinAck送信: ClientID=%u", clientId);
 }
+
 void ServerManager::AssignRoles()
 {
 	NET_LOG("[ServerManager] 役割割り当て開始");
