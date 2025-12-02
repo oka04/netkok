@@ -994,6 +994,195 @@ void Primitive::Draw(Engine* pEngine, Camera* pCamera, Projection* pProj, Ambien
 	m_pEffect->EndPass();
 	m_pEffect->End();
 }
+void Primitive::DrawWithShadow(Engine * pEngine, Camera * pCamera, Projection * pProj, AmbientLight * pAmbient, DirectionalLight * pLight, std::vector<SpotLight>* pSpotLights, std::vector<LPDIRECT3DTEXTURE9>* pShadowTextures, std::vector<D3DXMATRIX>* pLightViewProj)
+{
+	if (!pAmbient) {
+		if (m_type != TRIANGLE_XYZ) {
+			return;
+		}
+	}
+
+	LPDIRECT3DDEVICE9 pDevice = pEngine->GetDevice();
+	pDevice->SetVertexDeclaration(m_pVertexDeclaration);
+
+	// アンビエントライトの色を渡す
+	if (pAmbient) {
+		D3DCOLORVALUE ambientColor = pAmbient->GetColorValue();
+		m_pEffect->SetValue("gAmbientColor", &ambientColor, sizeof(D3DCOLORVALUE));
+	}
+
+	D3DXMATRIX matView = pCamera->GetViewMatrix();
+	D3DXMATRIX matProj = pProj->GetProjectionMatrix();
+	D3DXMATRIX matWorld = m_matWorld * matView * matProj;
+
+	// ワールド座標変換行列を渡す
+	m_pEffect->SetMatrix("gMatW", &m_matWorld);
+
+	// ワールドビュー射影変換行列を渡す
+	m_pEffect->SetMatrix("gMatWVP", &matWorld);
+
+	// マテリアルのディフューズとアンビエントを渡す
+	m_pEffect->SetValue("gMaterialDiffuse", &m_material.Diffuse, sizeof(D3DCOLORVALUE));
+	m_pEffect->SetValue("gMaterialAmbient", &m_material.Ambient, sizeof(D3DCOLORVALUE));
+
+	UINT numPass;
+	m_pEffect->Begin(&numPass, 0);
+
+	// スポットライトに必要な設定の初期化
+	D3DXVECTOR3 positions[MAX_SPOT_LIGHTS] = {};
+	D3DXVECTOR3 directions[MAX_SPOT_LIGHTS] = {};
+	D3DCOLORVALUE colors[MAX_SPOT_LIGHTS] = {};
+	float ranges[MAX_SPOT_LIGHTS] = {};
+	float outerAngles[MAX_SPOT_LIGHTS] = {};
+	float innerAngles[MAX_SPOT_LIGHTS] = {};
+	float falloffs[MAX_SPOT_LIGHTS] = {};
+	float attn0s[MAX_SPOT_LIGHTS] = {};
+	float attn1s[MAX_SPOT_LIGHTS] = {};
+	float attn2s[MAX_SPOT_LIGHTS] = {};
+
+	// スポットライトがある場合はここで受け取る
+	int spotCount = 0;
+	if (pSpotLights) {
+		spotCount = min((int)pSpotLights->size(), MAX_SPOT_LIGHTS);
+		for (int i = 0; i < spotCount; ++i) {
+			const D3DLIGHT9& light = (*pSpotLights)[i].GetLight();
+			positions[i] = light.Position;
+			directions[i] = light.Direction;
+			colors[i] = light.Diffuse;
+			outerAngles[i] = cosf(light.Phi);
+			innerAngles[i] = cosf(light.Theta);
+			falloffs[i] = light.Falloff;
+			attn0s[i] = light.Attenuation0;
+			attn1s[i] = light.Attenuation1;
+			attn2s[i] = light.Attenuation2;
+			ranges[i] = light.Range;
+		}
+	}
+
+	// シェーダーに値を渡す
+	m_pEffect->SetValue("gSpotLightCount", &spotCount, sizeof(INT));
+	m_pEffect->SetValue("gSpotLightPos", positions, sizeof(D3DVECTOR) * MAX_SPOT_LIGHTS);
+	m_pEffect->SetValue("gSpotLightDir", directions, sizeof(D3DVECTOR) * MAX_SPOT_LIGHTS);
+	m_pEffect->SetValue("gSpotLightColor", colors, sizeof(D3DCOLORVALUE) * MAX_SPOT_LIGHTS);
+	m_pEffect->SetValue("gSpotLightOuterAngle", outerAngles, sizeof(FLOAT) * MAX_SPOT_LIGHTS);
+	m_pEffect->SetValue("gSpotLightInnerAngle", innerAngles, sizeof(FLOAT) * MAX_SPOT_LIGHTS);
+	m_pEffect->SetValue("gSpotLightFalloff", falloffs, sizeof(FLOAT) * MAX_SPOT_LIGHTS);
+	m_pEffect->SetValue("gSpotLightAttn0", attn0s, sizeof(FLOAT) * MAX_SPOT_LIGHTS);
+	m_pEffect->SetValue("gSpotLightAttn1", attn1s, sizeof(FLOAT) * MAX_SPOT_LIGHTS);
+	m_pEffect->SetValue("gSpotLightAttn2", attn2s, sizeof(FLOAT) * MAX_SPOT_LIGHTS);
+	m_pEffect->SetValue("gSpotLightRange", ranges, sizeof(FLOAT) * MAX_SPOT_LIGHTS);
+
+	// ★★★ シャドウマップ関連のパラメータを設定 ★★★
+	bool useShadow = false;
+	if (pShadowTextures && pLightViewProj &&
+		!pShadowTextures->empty() && !pLightViewProj->empty())
+	{
+		useShadow = true;
+
+		// ライトのビュー・プロジェクション行列を設定
+		D3DXMATRIX lightViewProjMatrices[MAX_SPOT_LIGHTS];
+		for (int i = 0; i < MAX_SPOT_LIGHTS; ++i) {
+			if (i < (int)pLightViewProj->size()) {
+				// ワールド座標からライト空間への変換行列
+				lightViewProjMatrices[i] = m_matWorld * (*pLightViewProj)[i];
+			}
+			else {
+				D3DXMatrixIdentity(&lightViewProjMatrices[i]);
+			}
+		}
+		m_pEffect->SetMatrixArray("gLightViewProj", lightViewProjMatrices, MAX_SPOT_LIGHTS);
+
+		// シャドウマップテクスチャを設定
+		for (int i = 0; i < min((int)pShadowTextures->size(), MAX_SPOT_LIGHTS); ++i) {
+			char paramName[32];
+			sprintf_s(paramName, "gShadowMap[%d]", i);
+			m_pEffect->SetTexture(paramName, (*pShadowTextures)[i]);
+		}
+	}
+
+	// シャドウ使用フラグを設定
+	m_pEffect->SetBool("gUseShadow", useShadow);
+
+	switch (m_type) {
+	case TRIANGLE_XYZ:
+		pDevice->SetRenderState(D3DRS_WRAP0, 0);
+		m_pEffect->SetTechnique("PrimitivePosOnlyTec");
+		m_pEffect->BeginPass(0);
+		break;
+
+	case TRIANGLE_XYZ_NORMAL:
+	{
+		pDevice->SetRenderState(D3DRS_WRAP0, 0);
+		D3DLIGHT9 light = pLight->GetLight();
+		m_pEffect->SetValue("gLightColor", &light.Diffuse, sizeof(D3DCOLORVALUE));
+		m_pEffect->SetValue("gLightDir", &light.Direction, sizeof(D3DVECTOR));
+		m_pEffect->SetTechnique("PrimitiveNormalTec");
+		m_pEffect->BeginPass(0);
+		break;
+	}
+
+	case TRIANGLE_XYZ_NORMAL_UV:
+	case RECTANGLE:
+	case BOX:
+	{
+		pDevice->SetRenderState(D3DRS_WRAP0, 0);
+		D3DLIGHT9 light = pLight->GetLight();
+		m_pEffect->SetValue("gLightColor", &light.Diffuse, sizeof(D3DCOLORVALUE));
+		m_pEffect->SetValue("gLightDir", &light.Direction, sizeof(D3DVECTOR));
+		m_pEffect->SetTexture("gTexture", m_pTexture);
+		m_pEffect->SetTechnique("PrimitiveTextureTec");
+
+		// ★★★ シャドウ対応パスを使用 ★★★
+		if (useShadow && m_pTexture) {
+			m_pEffect->BeginPass(2); // Pass 2: テクスチャあり + シャドウ
+		}
+		else if (m_pTexture) {
+			m_pEffect->BeginPass(0); // Pass 0: テクスチャあり（通常）
+		}
+		else {
+			m_pEffect->BeginPass(1); // Pass 1: テクスチャなし（通常）
+		}
+		break;
+	}
+
+	case SPHERE:
+	{
+		if (m_pTexture) {
+			pDevice->SetRenderState(D3DRS_WRAP0, D3DWRAPCOORD_0);
+		}
+		else {
+			pDevice->SetRenderState(D3DRS_WRAP0, 0);
+		}
+		D3DLIGHT9 light = pLight->GetLight();
+		m_pEffect->SetValue("gLightColor", &light.Diffuse, sizeof(D3DCOLORVALUE));
+		m_pEffect->SetValue("gLightDir", &light.Direction, sizeof(D3DVECTOR));
+		m_pEffect->SetTexture("gTexture", m_pTexture);
+		m_pEffect->SetTechnique("PrimitiveTextureTec");
+
+		// ★★★ シャドウ対応パスを使用 ★★★
+		if (useShadow && m_pTexture) {
+			m_pEffect->BeginPass(2); // Pass 2: テクスチャあり + シャドウ
+		}
+		else if (m_pTexture) {
+			m_pEffect->BeginPass(0); // Pass 0: テクスチャあり（通常）
+		}
+		else {
+			m_pEffect->BeginPass(1); // Pass 1: テクスチャなし（通常）
+		}
+		break;
+	}
+
+	default:
+		assert(0);
+		break;
+	}
+
+	m_pMesh->DrawSubset(0);
+
+	m_pEffect->EndPass();
+	m_pEffect->End();
+}
+
 //=============================================================================
 //　バウンディングスフィア半径の取得
 //　戻り値：バウンディングスフィアの半径
@@ -1086,6 +1275,42 @@ void Primitive::DrawForDepthPass(Engine * pEngine)
 	// D3DXCreateBoxなどで生成されたプリミティブは通常1つのサブセットを持つ
 	for (DWORD i = 0; i < 1; ++i) { // サブセット数を1と仮定して修正
 		m_pMesh->DrawSubset(i);
+	}
+}
+
+void Primitive::DrawForDepthPass(Engine* pEngine, const D3DXMATRIX* pMatLightVP)
+{
+	if (!m_pMesh) return;
+
+	LPDIRECT3DDEVICE9 pDevice = pEngine->GetDevice();
+
+	// ★★★ シェーダーを使用して深度のみ描画 ★★★
+	if (pMatLightVP && m_pEffect)
+	{
+		// ライト空間でのワールドビュー射影変換行列
+		D3DXMATRIX matLightSpace = m_matWorld * (*pMatLightVP);
+
+		// シェーダーに行列を設定
+		m_pEffect->SetMatrix("gMatWVP", &matLightSpace);
+
+		// テクニックを設定（深度のみ描画用）
+		// PrimitivePosOnlyTec は位置のみを扱うので深度描画に適している
+		m_pEffect->SetTechnique("PrimitivePosOnlyTec");
+
+		UINT numPass;
+		m_pEffect->Begin(&numPass, 0);
+		m_pEffect->BeginPass(0);
+
+		m_pMesh->DrawSubset(0);
+
+		m_pEffect->EndPass();
+		m_pEffect->End();
+	}
+	else
+	{
+		// ★★★ フォールバック: 固定機能パイプライン ★★★
+		pDevice->SetTransform(D3DTS_WORLD, &m_matWorld);
+		m_pMesh->DrawSubset(0);
 	}
 }
 

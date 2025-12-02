@@ -557,6 +557,107 @@ void SceneGame::ReceiveFromServer()
 		}
 	}
 }
+void SceneGame::RenderShadowMaps()
+{
+	LPDIRECT3DDEVICE9 pDevice = m_pEngine->GetDevice();
+
+	// 現在のレンダーターゲットと深度バッファを退避
+	LPDIRECT3DSURFACE9 pOldBackBuffer = nullptr;
+	LPDIRECT3DSURFACE9 pOldDepthBuffer = nullptr;
+	pDevice->GetRenderTarget(0, &pOldBackBuffer);
+	pDevice->GetDepthStencilSurface(&pOldDepthBuffer);
+
+	// シャドウテクスチャと行列をクリア
+	m_shadowTextures.clear();
+	m_lightViewProjMatrices.clear();
+
+	// 各鬼のシャドウマップを生成
+	for (auto& kv : m_players)
+	{
+		if (!kv.second || m_playerRoles[kv.first] != ROLE_CHASER)
+			continue;
+
+		Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
+		if (!chaser || !chaser->IsShadowMapEnabled())
+			continue;
+
+		// シャドウマップ用のレンダーターゲットに切り替え
+		LPDIRECT3DTEXTURE9 pShadowTex = chaser->GetShadowTexture();
+		LPDIRECT3DSURFACE9 pShadowSurface = nullptr;
+
+		HRESULT hr = pShadowTex->GetSurfaceLevel(0, &pShadowSurface);
+		if (FAILED(hr)) {
+			NET_LOG("[SceneGame] シャドウサーフェス取得失敗");
+			continue;
+		}
+
+		// レンダーターゲットを設定
+		pDevice->SetRenderTarget(0, pShadowSurface);
+		// 注意: Chaserが保持する深度バッファを設定する必要がありますが、
+		// 現在の実装では取得できないため、既存の深度バッファを流用します
+
+		// ビューポートをシャドウマップサイズに設定
+		D3DVIEWPORT9 shadowViewport;
+		shadowViewport.X = 0;
+		shadowViewport.Y = 0;
+		shadowViewport.Width = 512;
+		shadowViewport.Height = 512;
+		shadowViewport.MinZ = 0.0f;
+		shadowViewport.MaxZ = 1.0f;
+		pDevice->SetViewport(&shadowViewport);
+
+		// クリア（白で塗りつぶす = 影なし）
+		pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0);
+
+		// ライトのビュー・プロジェクション行列を取得
+		D3DXMATRIX matLightVP = chaser->GetLightViewProjectionMatrix();
+
+		// ★★★ マップの深度レンダリング ★★★
+		m_map.DrawMapForDepth(m_pEngine, &matLightVP);
+
+		// ★★★ 他のプレイヤーも影を落とす ★★★
+		for (auto& kv2 : m_players)
+		{
+			if (kv2.second && kv2.first != kv.first)
+			{
+				// プレイヤーモデルの深度描画
+				// 注意: Model クラスにも DrawForDepthPass を実装する必要があります
+				// ここでは簡易的にスキップします
+			}
+		}
+
+		// シャドウテクスチャと行列を保存
+		m_shadowTextures.push_back(pShadowTex);
+		m_lightViewProjMatrices.push_back(matLightVP);
+
+		// サーフェスを解放
+		if (pShadowSurface) pShadowSurface->Release();
+	}
+
+	// 元のレンダーターゲットに戻す
+	pDevice->SetRenderTarget(0, pOldBackBuffer);
+	pDevice->SetDepthStencilSurface(pOldDepthBuffer);
+
+	// ビューポートを元に戻す
+	D3DVIEWPORT9 mainViewport;
+	mainViewport.X = 0;
+	mainViewport.Y = 0;
+	mainViewport.Width = WINDOW_WIDTH;
+	mainViewport.Height = WINDOW_HEIGHT;
+	mainViewport.MinZ = 0.0f;
+	mainViewport.MaxZ = 1.0f;
+	pDevice->SetViewport(&mainViewport);
+
+	if (pOldBackBuffer) pOldBackBuffer->Release();
+	if (pOldDepthBuffer) pOldDepthBuffer->Release();
+
+	static DWORD lastLog = 0;
+	DWORD now = timeGetTime();
+	if (now - lastLog > 2000) {
+		NET_LOG_F("[SceneGame] シャドウマップ生成完了: %d 個", (int)m_shadowTextures.size());
+		lastLog = now;
+	}
+}
 void SceneGame::UpdateChaserLights()
 {
 	NET_LOG("[SceneGame] 鬼のライトを収集開始");

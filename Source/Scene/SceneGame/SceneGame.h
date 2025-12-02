@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿// SceneGame.h - シャドウマップ管理機能追加
+#pragma once
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include "..\\..\\GameBase.h"
@@ -36,8 +37,12 @@ private:
 	void UpdateRemotePlayers();
 	void SyncToServer();
 	void ReceiveFromServer();
-	void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name,	const D3DXVECTOR3& pos, PlayerRole role);
+	void SpawnPlayerWithRole(uint32_t clientId, const std::string& name, const D3DXVECTOR3& pos, PlayerRole role);
 	void DespawnPlayer(uint32_t clientId);
+
+	// ★★★ シャドウマップ関連 ★★★
+	void RenderShadowMaps();  // 全スポットライトのシャドウマップを生成
+	void UpdateChaserLights();
 
 	enum DEBUG_FLAG
 	{
@@ -78,9 +83,9 @@ private:
 
 	uint32_t m_localClientId;
 	bool m_bIsHost;
-	bool m_bInitialSyncDone;  
+	bool m_bInitialSyncDone;
 	bool m_bFirstPerson;
-	CharacterBase* m_pLocalPlayer; 
+	CharacterBase* m_pLocalPlayer;
 	std::map<uint32_t, CharacterBase*> m_players;
 	PlayerRole m_localRole;
 	std::map<uint32_t, PlayerRole> m_playerRoles;
@@ -97,12 +102,14 @@ private:
 
 	ClientManager* m_pClient;
 	ServerManager* m_pServer;
-	std::vector<SpotLight*> m_chaserLights;  
+	std::vector<SpotLight*> m_chaserLights;
 
-	void UpdateChaserLights();
+	// ★★★ シャドウマップ用 ★★★
+	std::vector<LPDIRECT3DTEXTURE9> m_shadowTextures;  // 各鬼のシャドウテクスチャ
+	std::vector<D3DXMATRIX> m_lightViewProjMatrices;   // 各ライトのビュー・プロジェクション行列
+
 	static const DWORD NETWORK_SEND_INTERVAL = 16;
 	static const DWORD WORLD_BROADCAST_INTERVAL = 8;
 	bool m_bEnablePrediction;
 	bool m_bEnableJitterReduction;
-
 };
