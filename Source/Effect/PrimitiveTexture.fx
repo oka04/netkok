@@ -185,19 +185,25 @@ float CalculateShadow(int lightIndex, float4 lightSpacePos)
 
 	// シャドウマップから深度値を取得（ライト毎にサンプラを切り替え）
 	float shadowDepth = 1.0f;
+
+	// ★ 修正: if文をコンパイル時に最適化できる形に変更
+	[branch]
 	if (lightIndex == 0)
 	{
 		shadowDepth = tex2D(shadowSampler0, projCoords.xy).r;
 	}
-	else if (lightIndex == 1)
+	[branch]
+	if (lightIndex == 1)
 	{
 		shadowDepth = tex2D(shadowSampler1, projCoords.xy).r;
 	}
-	else if (lightIndex == 2)
+	[branch]
+	if (lightIndex == 2)
 	{
 		shadowDepth = tex2D(shadowSampler2, projCoords.xy).r;
 	}
-	else if (lightIndex == 3)
+	[branch]
+	if (lightIndex == 3)
 	{
 		shadowDepth = tex2D(shadowSampler3, projCoords.xy).r;
 	}
@@ -296,7 +302,11 @@ VS_OUTPUT TextureVS(VS_INPUT In)
 	Out.texCoord = In.texCoord;
 
 	// 各ライト空間での座標を個別に計算して代入（配列参照を使わず明示的に）
+
+	// 各ライト空間での座標を個別に計算して代入（配列参照を使わず明示的に）
 	float4 worldPos4 = float4(Out.worldPos, 1.0f);
+
+	// ★ 修正: 条件分岐を避けて常に計算
 	Out.lightSpacePos0 = mul(worldPos4, gLightViewProj[0]);
 	Out.lightSpacePos1 = mul(worldPos4, gLightViewProj[1]);
 	Out.lightSpacePos2 = mul(worldPos4, gLightViewProj[2]);
@@ -344,7 +354,11 @@ VS_OUTPUT NonTextureVS(VS_INPUT In)
 	// UV座標の設定（未使用でも埋めておく）
 	Out.texCoord = In.texCoord;
 
+
+	// 各ライト空間での座標を個別に計算して代入（配列参照を使わず明示的に）
 	float4 worldPos4 = float4(Out.worldPos, 1.0f);
+
+	// ★ 修正: 条件分岐を避けて常に計算
 	Out.lightSpacePos0 = mul(worldPos4, gLightViewProj[0]);
 	Out.lightSpacePos1 = mul(worldPos4, gLightViewProj[1]);
 	Out.lightSpacePos2 = mul(worldPos4, gLightViewProj[2]);

@@ -801,18 +801,18 @@ void SceneGame::Draw()
 	// ★★★ 1. シャドウマップを生成 ★★★
 	RenderShadowMaps();
 
-	// ★★★ 2. シャドウマップとライト情報を収集 ★★★
 	std::vector<SpotLight> spotLights;
 	std::vector<LPDIRECT3DTEXTURE9> shadowMaps;
 	std::vector<D3DXMATRIX> lightViewProjs;
 
+	// スポットライトとシャドウマップを収集
 	for (auto& kv : m_players)
 	{
 		if (!kv.second || m_playerRoles[kv.first] != ROLE_CHASER)
 			continue;
 
 		Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
-		if (!chaser || !chaser->IsShadowMapEnabled())
+		if (!chaser)
 			continue;
 
 		// ライト情報を追加
@@ -820,12 +820,17 @@ void SceneGame::Draw()
 		if (light)
 		{
 			spotLights.push_back(*light);
-			shadowMaps.push_back(chaser->GetShadowTexture());
-			lightViewProjs.push_back(chaser->GetLightViewProjectionMatrix());
+
+			// シャドウマップが有効な場合のみ追加
+			if (chaser->IsShadowMapEnabled())
+			{
+				shadowMaps.push_back(chaser->GetShadowTexture());
+				lightViewProjs.push_back(chaser->GetLightViewProjectionMatrix());
+			}
 		}
 	}
 
-	// ★★★ 3. メイン描画（シャドウマップを使用） ★★★
+	// ★★★ 修正: シャドウマップが無い場合はnullptrを渡す ★★★
 	std::vector<SpotLight>* pLights = spotLights.empty() ? nullptr : &spotLights;
 	std::vector<LPDIRECT3DTEXTURE9>* pShadowMaps = shadowMaps.empty() ? nullptr : &shadowMaps;
 	std::vector<D3DXMATRIX>* pLightViewProjs = lightViewProjs.empty() ? nullptr : &lightViewProjs;

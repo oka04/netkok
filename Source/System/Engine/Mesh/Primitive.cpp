@@ -919,22 +919,35 @@ void Primitive::Draw(Engine* pEngine, Camera* pCamera, Projection* pProj, Ambien
 	m_pEffect->SetValue("gSpotLightAttn2", attn2s, sizeof(FLOAT) * MAX_SPOT_LIGHTS);
 	m_pEffect->SetValue("gSpotLightRange", ranges, sizeof(FLOAT) * MAX_SPOT_LIGHTS);
 
-	// ★★★ シャドウマップの設定 ★★★
 	if (pShadowMaps && pShadowMaps->size() > 0) {
-		for (int i = 0; i < min(MAX_SPOT_LIGHTS, (int)pShadowMaps->size()); ++i) {
-			char paramName[32];
-			sprintf_s(paramName, "gShadowMap[%d]", i);
-			m_pEffect->SetTexture(paramName, (*pShadowMaps)[i]);
+		// 個別のサンプラーに直接設定
+		if (pShadowMaps->size() >= 1) {
+			m_pEffect->SetTexture("gShadowMap0", (*pShadowMaps)[0]);
+		}
+		if (pShadowMaps->size() >= 2) {
+			m_pEffect->SetTexture("gShadowMap1", (*pShadowMaps)[1]);
+		}
+		if (pShadowMaps->size() >= 3) {
+			m_pEffect->SetTexture("gShadowMap2", (*pShadowMaps)[2]);
+		}
+		if (pShadowMaps->size() >= 4) {
+			m_pEffect->SetTexture("gShadowMap3", (*pShadowMaps)[3]);
 		}
 	}
 
-	// ★★★ ライトビュー射影行列の設定 ★★★
+	// ★★★ ライトビュー射影行列の設定 - 配列として一括設定 ★★★
 	if (pLightViewProj && pLightViewProj->size() > 0) {
-		for (int i = 0; i < min(MAX_SPOT_LIGHTS, (int)pLightViewProj->size()); ++i) {
-			char paramName[32];
-			sprintf_s(paramName, "gLightViewProj[%d]", i);
-			m_pEffect->SetMatrix(paramName, &(*pLightViewProj)[i]);
+		// 配列全体を一度に設定
+		D3DXMATRIX lightMatrices[MAX_SPOT_LIGHTS];
+		for (int i = 0; i < MAX_SPOT_LIGHTS; ++i) {
+			if (i < (int)pLightViewProj->size()) {
+				lightMatrices[i] = (*pLightViewProj)[i];
+			}
+			else {
+				D3DXMatrixIdentity(&lightMatrices[i]);
+			}
 		}
+		m_pEffect->SetMatrixArray("gLightViewProj", lightMatrices, MAX_SPOT_LIGHTS);
 	}
 
 	switch (m_type) {
