@@ -68,7 +68,7 @@ void SceneGame::Start()
 
 void SceneGame::Initialize()
 {
-	SetBackColor(0x00000000);
+	SetBackColor(0x00008000);
 	d_debugFlag = 0;
 	d_viewPointCount = 0;
 	d_fpsCount = 60;
@@ -798,62 +798,52 @@ void SceneGame::DespawnPlayer(uint32_t clientId)
 
 void SceneGame::Draw()
 {
-	// ★★★ 1. シャドウマップを生成 ★★★
-	RenderShadowMaps();
+	// ★★★ デバッグ: まずシャドウマップ生成をコメントアウト ★★★
+	// RenderShadowMaps();
 
+	// ★★★ デバッグ: スポットライトと影を完全に無効化してテスト ★★★
 	std::vector<SpotLight> spotLights;
 	std::vector<LPDIRECT3DTEXTURE9> shadowMaps;
 	std::vector<D3DXMATRIX> lightViewProjs;
 
-	// スポットライトとシャドウマップを収集
+	// ★★★ 一旦コメントアウト - ライト収集を無効化 ★★★
+	/*
 	for (auto& kv : m_players)
 	{
-		if (!kv.second || m_playerRoles[kv.first] != ROLE_CHASER)
-			continue;
+	if (!kv.second || m_playerRoles[kv.first] != ROLE_CHASER)
+	continue;
 
-		Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
-		if (!chaser)
-			continue;
+	Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
+	if (!chaser)
+	continue;
 
-		// ライト情報を追加
-		SpotLight* light = chaser->GetLights();
-		if (light)
-		{
-			spotLights.push_back(*light);
+	SpotLight* light = chaser->GetLights();
+	if (light)
+	{
+	spotLights.push_back(*light);
 
-			// ★★★ 修正: シャドウマップが有効な場合のみ追加（ライト数と一致させる） ★★★
-			if (chaser->IsShadowMapEnabled())
-			{
-				shadowMaps.push_back(chaser->GetShadowTexture());
-				lightViewProjs.push_back(chaser->GetLightViewProjectionMatrix());
-			}
-			else
-			{
-				// シャドウマップが無効でもnullptrを追加してライト数と一致させる
-				shadowMaps.push_back(nullptr);
-				D3DXMATRIX identity;
-				D3DXMatrixIdentity(&identity);
-				lightViewProjs.push_back(identity);
-			}
-		}
+	if (chaser->IsShadowMapEnabled())
+	{
+	shadowMaps.push_back(chaser->GetShadowTexture());
+	lightViewProjs.push_back(chaser->GetLightViewProjectionMatrix());
 	}
-
-	// ★★★ 修正: nullptrのチェックを追加 ★★★
-	std::vector<SpotLight>* pLights = spotLights.empty() ? nullptr : &spotLights;
-
-	// シャドウマップ配列に有効なテクスチャが1つでもあるかチェック
-	bool hasValidShadowMaps = false;
-	for (auto tex : shadowMaps) {
-		if (tex != nullptr) {
-			hasValidShadowMaps = true;
-			break;
-		}
+	else
+	{
+	shadowMaps.push_back(nullptr);
+	D3DXMATRIX identity;
+	D3DXMatrixIdentity(&identity);
+	lightViewProjs.push_back(identity);
 	}
+	}
+	}
+	*/
 
-	std::vector<LPDIRECT3DTEXTURE9>* pShadowMaps = (shadowMaps.empty() || !hasValidShadowMaps) ? nullptr : &shadowMaps;
-	std::vector<D3DXMATRIX>* pLightViewProjs = (lightViewProjs.empty() || !hasValidShadowMaps) ? nullptr : &lightViewProjs;
+	// ★★★ 全てnullptrで渡す ★★★
+	std::vector<SpotLight>* pLights = nullptr;
+	std::vector<LPDIRECT3DTEXTURE9>* pShadowMaps = nullptr;
+	std::vector<D3DXMATRIX>* pLightViewProjs = nullptr;
 
-	// マップ描画（影付き）
+	// マップ描画（影なし）
 	m_map.DrawMap(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light,
 		pLights, pShadowMaps, pLightViewProjs);
 
@@ -901,8 +891,8 @@ void SceneGame::Draw()
 	{
 		m_pEngine->DrawPrintf(50, 950, FONT_GOTHIC40, Color::WHITE, "DEL : %f", m_deltaTime);
 		m_pEngine->DrawPrintf(50, 1000, FONT_GOTHIC40, Color::WHITE, "FPS : %f", (float)m_pEngine->GetFPS());
-		m_pEngine->DrawPrintf(50, 900, FONT_GOTHIC40, Color::CYAN, "Players: %d (Drawn: %d) Lights: %d Shadows: %d",
-			(int)m_players.size(), drawnCount, (int)spotLights.size(), hasValidShadowMaps ? (int)shadowMaps.size() : 0);
+		m_pEngine->DrawPrintf(50, 900, FONT_GOTHIC40, Color::CYAN, "Players: %d (Drawn: %d) DEBUG: LIGHTS DISABLED",
+			(int)m_players.size(), drawnCount);
 
 		if (d_debugFlag & DRAW_PLAYER_STATE && m_pLocalPlayer)
 		{
@@ -918,7 +908,6 @@ void SceneGame::Draw()
 			}
 		}
 
-		// 全プレイヤー情報を表示
 		int yOffset = 500;
 		for (auto& kv : m_players)
 		{
