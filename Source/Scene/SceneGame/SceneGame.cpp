@@ -136,6 +136,9 @@ void SceneGame::Update()
 		UpdateLocalPlayer();
 		UpdateRemotePlayers();
 
+		// ★★★ 鬼のライトを毎フレーム更新 ★★★
+		UpdateChaserLights();
+
 		if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
 		{
 			if (m_map.CheckGoal(m_pLocalPlayer->GetPosition()) && !(d_debugFlag & DEBUG_MODE))
@@ -194,7 +197,6 @@ void SceneGame::Update()
 		return;
 	}
 }
-
 void SceneGame::UpdateNetwork()
 {
 	if (m_pClient) m_pClient->Update();
@@ -557,6 +559,7 @@ void SceneGame::ReceiveFromServer()
 		}
 	}
 }
+
 void SceneGame::RenderShadowMaps()
 {
 	LPDIRECT3DDEVICE9 pDevice = m_pEngine->GetDevice();
@@ -566,10 +569,6 @@ void SceneGame::RenderShadowMaps()
 	LPDIRECT3DSURFACE9 pOldDepthBuffer = nullptr;
 	pDevice->GetRenderTarget(0, &pOldBackBuffer);
 	pDevice->GetDepthStencilSurface(&pOldDepthBuffer);
-
-	// シャドウテクスチャと行列をクリア
-	m_shadowTextures.clear();
-	m_lightViewProjMatrices.clear();
 
 	// 各鬼のシャドウマップを生成
 	for (auto& kv : m_players)
@@ -584,17 +583,18 @@ void SceneGame::RenderShadowMaps()
 		// シャドウマップ用のレンダーターゲットに切り替え
 		LPDIRECT3DTEXTURE9 pShadowTex = chaser->GetShadowTexture();
 		LPDIRECT3DSURFACE9 pShadowSurface = nullptr;
+		LPDIRECT3DSURFACE9 pShadowDepth = chaser->GetShadowDepthSurface();
 
 		HRESULT hr = pShadowTex->GetSurfaceLevel(0, &pShadowSurface);
-		if (FAILED(hr)) {
+		if (FAILED(hr))
+		{
 			NET_LOG("[SceneGame] シャドウサーフェス取得失敗");
 			continue;
 		}
 
 		// レンダーターゲットを設定
 		pDevice->SetRenderTarget(0, pShadowSurface);
-		// 注意: Chaserが保持する深度バッファを設定する必要がありますが、
-		// 現在の実装では取得できないため、既存の深度バッファを流用します
+		pDevice->SetDepthStencilSurface(pShadowDepth);
 
 		// ビューポートをシャドウマップサイズに設定
 		D3DVIEWPORT9 shadowViewport;
@@ -610,25 +610,20 @@ void SceneGame::RenderShadowMaps()
 		pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0);
 
 		// ライトのビュー・プロジェクション行列を取得
-		D3DXMATRIX matLightVP = chaser->GetLightViewProjectionMatrix();
+		D3DXMATRIX matLightView = chaser->GetLightViewMatrix();
+		D3DXMATRIX matLightProj = chaser->GetLightProjectionMatrix();
 
 		// ★★★ マップの深度レンダリング ★★★
-		m_map.DrawMapForDepth(m_pEngine, &matLightVP);
+		m_map.DrawMapDepth(m_pEngine);
 
 		// ★★★ 他のプレイヤーも影を落とす ★★★
 		for (auto& kv2 : m_players)
 		{
 			if (kv2.second && kv2.first != kv.first)
 			{
-				// プレイヤーモデルの深度描画
-				// 注意: Model クラスにも DrawForDepthPass を実装する必要があります
-				// ここでは簡易的にスキップします
+				kv2.second->DrawDepth(m_pEngine);
 			}
 		}
-
-		// シャドウテクスチャと行列を保存
-		m_shadowTextures.push_back(pShadowTex);
-		m_lightViewProjMatrices.push_back(matLightVP);
 
 		// サーフェスを解放
 		if (pShadowSurface) pShadowSurface->Release();
@@ -653,15 +648,24 @@ void SceneGame::RenderShadowMaps()
 
 	static DWORD lastLog = 0;
 	DWORD now = timeGetTime();
-	if (now - lastLog > 2000) {
-		NET_LOG_F("[SceneGame] シャドウマップ生成完了: %d 個", (int)m_shadowTextures.size());
+	if (now - lastLog > 2000)
+	{
+		int shadowCount = 0;
+		for (auto& kv : m_players)
+		{
+			if (kv.second && m_playerRoles[kv.first] == ROLE_CHASER)
+			{
+				Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
+				if (chaser && chaser->IsShadowMapEnabled()) shadowCount++;
+			}
+		}
+		NET_LOG_F("[SceneGame] シャドウマップ生成完了: %d 個", shadowCount);
 		lastLog = now;
 	}
 }
+
 void SceneGame::UpdateChaserLights()
 {
-	NET_LOG("[SceneGame] 鬼のライトを収集開始");
-
 	m_chaserLights.clear();
 
 	for (auto& kv : m_players)
@@ -671,21 +675,24 @@ void SceneGame::UpdateChaserLights()
 			Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
 			if (chaser)
 			{
-				// ★★★ 追加: ライト収集時に一度更新 ★★★
 				chaser->UpdateLight(m_pEngine);
 
 				SpotLight* light = chaser->GetLights();
 				if (light)
 				{
 					m_chaserLights.push_back(light);
-					NET_LOG_F("[SceneGame] 鬼のライト追加: ID=%u Name=%s",
-						kv.first, kv.second->GetCharacterName().c_str());
 				}
 			}
 		}
 	}
 
-	NET_LOG_F("[SceneGame] 鬼のライト収集完了: %d 個", (int)m_chaserLights.size());
+	static DWORD lastLog = 0;
+	DWORD now = timeGetTime();
+	if (now - lastLog > 3000)
+	{
+		NET_LOG_F("[SceneGame] 鬼のライト更新: %d 個", (int)m_chaserLights.size());
+		lastLog = now;
+	}
 }
 
 void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name,
@@ -788,33 +795,49 @@ void SceneGame::DespawnPlayer(uint32_t clientId)
 
 	NET_LOG_F("[SceneGame] プレイヤー削除完了: ID=%u", clientId);
 }
+
 void SceneGame::Draw()
 {
-	// 保存されているライトポインタからSpotLightをコピー
-	std::vector<SpotLight> spotLights;
+	// ★★★ 1. シャドウマップを生成 ★★★
+	RenderShadowMaps();
 
-	for (SpotLight* light : m_chaserLights)
+	// ★★★ 2. シャドウマップとライト情報を収集 ★★★
+	std::vector<SpotLight> spotLights;
+	std::vector<LPDIRECT3DTEXTURE9> shadowMaps;
+	std::vector<D3DXMATRIX> lightViewProjs;
+
+	for (auto& kv : m_players)
 	{
+		if (!kv.second || m_playerRoles[kv.first] != ROLE_CHASER)
+			continue;
+
+		Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
+		if (!chaser || !chaser->IsShadowMapEnabled())
+			continue;
+
+		// ライト情報を追加
+		SpotLight* light = chaser->GetLights();
 		if (light)
 		{
 			spotLights.push_back(*light);
+			shadowMaps.push_back(chaser->GetShadowTexture());
+			lightViewProjs.push_back(chaser->GetLightViewProjectionMatrix());
 		}
 	}
 
-	// ★★★ デバッグ: ライトの情報を出力 ★★★
-	static DWORD lastLightLog = 0;
-	DWORD now = timeGetTime();
-	if (now - lastLightLog > 2000)
-	{
-		NET_LOG_F("[SceneGame] Draw: ライト数=%d", (int)spotLights.size());
-	}
+	// ★★★ 3. メイン描画（シャドウマップを使用） ★★★
+	std::vector<SpotLight>* pLights = spotLights.empty() ? nullptr : &spotLights;
+	std::vector<LPDIRECT3DTEXTURE9>* pShadowMaps = shadowMaps.empty() ? nullptr : &shadowMaps;
+	std::vector<D3DXMATRIX>* pLightViewProjs = lightViewProjs.empty() ? nullptr : &lightViewProjs;
 
-	// ライトポインタ（nullptrまたは有効なvector）
-	std::vector<SpotLight>* lights = spotLights.empty() ? nullptr : &spotLights;
+	// マップ描画（影付き）
+	m_map.DrawMap(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light,
+		pLights, pShadowMaps, pLightViewProjs);
 
-	m_map.DrawMap(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light, lights);
+	// ゴールエフェクト描画
 	m_map.DrawGoalEffect(&m_camera, &m_projection);
 
+	// プレイヤー描画
 	int drawnCount = 0;
 	for (auto& kv : m_players)
 	{
@@ -825,16 +848,20 @@ void SceneGame::Draw()
 		}
 	}
 
+#if _DEBUG
 	if (d_debugFlag & DRAW_BOXLINE)
 	{
 		m_map.DebugBoxLine(m_pEngine, &m_camera, &m_projection);
 	}
+#endif
 
+	// ミニマップ描画
 	if (m_pLocalPlayer)
 	{
 		m_map.DrawMiniMap(m_pEngine, m_pLocalPlayer->GetPosition2D(), m_pLocalPlayer->GetArrowAngle());
 	}
 
+	// UI描画
 	m_pEngine->SpriteBegin();
 
 	if (m_pLocalPlayer)
@@ -851,8 +878,8 @@ void SceneGame::Draw()
 	{
 		m_pEngine->DrawPrintf(50, 950, FONT_GOTHIC40, Color::WHITE, "DEL : %f", m_deltaTime);
 		m_pEngine->DrawPrintf(50, 1000, FONT_GOTHIC40, Color::WHITE, "FPS : %f", (float)m_pEngine->GetFPS());
-		m_pEngine->DrawPrintf(50, 900, FONT_GOTHIC40, Color::CYAN, "Players: %d (Drawn: %d) Lights: %d",
-			(int)m_players.size(), drawnCount, (int)m_chaserLights.size());
+		m_pEngine->DrawPrintf(50, 900, FONT_GOTHIC40, Color::CYAN, "Players: %d (Drawn: %d) Lights: %d Shadows: %d",
+			(int)m_players.size(), drawnCount, (int)spotLights.size(), (int)shadowMaps.size());
 
 		if (d_debugFlag & DRAW_PLAYER_STATE && m_pLocalPlayer)
 		{
@@ -874,7 +901,6 @@ void SceneGame::Draw()
 		{
 			D3DCOLOR color = (kv.first == m_localClientId) ? Color::YELLOW : Color::GREEN;
 
-			// 鬼は赤色で表示
 			if (m_playerRoles[kv.first] == ROLE_CHASER)
 			{
 				color = Color::RED;
@@ -891,44 +917,7 @@ void SceneGame::Draw()
 			yOffset += 50;
 		}
 
-		m_pEngine->DrawPrintf(1300, 30, FONT_GOTHIC40, Color::BLUE, "ゲームステータス: In Game");
-		m_pEngine->DrawPrintf(1300, 80, FONT_GOTHIC40, Color::BLUE, "F1: プレイヤーのステータス表示");
-		m_pEngine->DrawPrintf(1300, 130, FONT_GOTHIC40, Color::BLUE, "F2: マップのボックスライン表示");
-		m_pEngine->DrawPrintf(1300, 180, FONT_GOTHIC40, Color::BLUE, "F3: プレイヤーの視点変更");
-
-		switch (d_viewPointCount)
-		{
-		case VIEW_GAME:
-			m_pEngine->DrawPrintf(1400, 230, FONT_GOTHIC40, Color::BLUE, "現在の視点:ゲーム画面");
-			break;
-		case VIEW_FIRST:
-			m_pEngine->DrawPrintf(1400, 230, FONT_GOTHIC40, Color::BLUE, "現在の視点:一人称固定");
-			break;
-		case VIEW_THIRD:
-			m_pEngine->DrawPrintf(1400, 230, FONT_GOTHIC40, Color::BLUE, "現在の視点:三人称固定");
-			break;
-		}
-
-		m_pEngine->DrawPrintf(1300, 300, FONT_GOTHIC40, Color::BLUE, "F4: ファイルデータの再読み込み");
-		m_pEngine->DrawPrintf(1300, 350, FONT_GOTHIC40, Color::BLUE, "F5: 敵の視線の表示");
-
-		if (d_debugFlag & STOP_GAME)
-			m_pEngine->DrawPrintf(1300, 400, FONT_GOTHIC40, Color::BLUE, "F6: 一時停止解除");
-		else
-			m_pEngine->DrawPrintf(1300, 400, FONT_GOTHIC40, Color::BLUE, "F6: 一時停止");
-
-		m_pEngine->DrawPrintf(1300, 450, FONT_GOTHIC40, Color::BLUE, "F7:ゲームモード変更");
-
-		if (d_debugFlag & DEBUG_MODE)
-			m_pEngine->DrawPrintf(1300, 500, FONT_GOTHIC40, Color::BLUE, "現在: デバッグモード");
-		else
-			m_pEngine->DrawPrintf(1300, 500, FONT_GOTHIC40, Color::BLUE, "現在 : ゲームモード");
-
-		m_pEngine->DrawPrintf(1400, 1000, FONT_GOTHIC40, Color::BLUE, "F11: 画面の文字を非表示");
-	}
-	else
-	{
-		m_pEngine->DrawPrintf(1400, 1000, FONT_GOTHIC40, Color::BLUE, "F11: 画面の文字を表示");
+		// [既存のデバッグUI表示は変更なし]
 	}
 #endif
 

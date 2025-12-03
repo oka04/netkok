@@ -136,7 +136,24 @@ public:
 	// 戻り値：ルートフレーム内のメッシュへのポインタ
 	//=============================================================================
 	LPD3DXMESH GetRootMesh() const;
+	//=============================================================================
+	// フレームの深度描画
+	// 引　数：LPD3DXFRAME  フレームへのポインタ
+	// 　　　　LPD3DXMATRIX ワールドビュープロジェクション変換マトリックスへのポインタ
+	//         ID3DXEffect* エフェクトへのポインタ
+	//=============================================================================
+	void DrawFrameDepth(LPD3DXFRAME pFrame, LPD3DXMATRIX pMatWVP, ID3DXEffect* pEffect);
 
+	// privateメソッドの後に以下を追加
+
+	//-----------------------------------------------------------------------------
+	// メッシュの深度描画
+	// 引　数：LPD3DXMESHCONTAINER メッシュコンテナのポインタ
+	// 　　　　LPD3DXFRAME         フレームのポインタ
+	// 　　　　LPD3DXMATRIX        ワールドビュープロジェクション変換マトリックスへのポインタ
+	//         ID3DXEffect*        エフェクトへのポインタ
+	//-----------------------------------------------------------------------------
+	void DrawMeshContainerDepth(LPD3DXMESHCONTAINER pMeshContainerBase, LPD3DXFRAME pFrameBase, LPD3DXMATRIX pMatWVP, ID3DXEffect* pEffect);
 private:
 
 	//ルートフレーム

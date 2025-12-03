@@ -136,6 +136,26 @@ void Model::Draw(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, Dir
 	m_pModelBase->Draw(&m_matWorld, &matVP, &ambient, &light);
 }
 
+void Model::DrawDepth(Engine* pEngine)
+{
+	if (!m_pModelBase) return;
+
+	LPDIRECT3DDEVICE9 pDevice = pEngine->GetDevice();
+
+	// ワールド変換行列を設定
+	pDevice->SetTransform(D3DTS_WORLD, &m_matWorld);
+
+	// ビュー・プロジェクション行列を取得
+	D3DXMATRIX matView, matProj;
+	pDevice->GetTransform(D3DTS_VIEW, &matView);
+	pDevice->GetTransform(D3DTS_PROJECTION, &matProj);
+
+	D3DXMATRIX matWVP = m_matWorld * matView * matProj;
+
+	// モデルベースに深度描画を委譲
+	m_pModelBase->DrawDepth(&matWVP);
+}
+
 //=============================================================================
 // ワールド座標変換行列の設定
 // 引　数：const LPD3DXMATRIX ﾜｰﾙﾄﾞ座標変換行列へのポインタ

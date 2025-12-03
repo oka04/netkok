@@ -96,6 +96,12 @@ void Runner::Draw(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, Di
 	CharacterBase::Draw(pCamera, pProj, pAmbient, pLight);
 }
 
+void Runner::DrawDepth(Engine* pEngine)
+{
+	// モデルの深度描画
+	m_model.DrawDepth(pEngine);
+}
+
 void Runner::DrawStaminaGauge(Engine* pEngine)
 {
 	if (!m_bIsLocal) return;

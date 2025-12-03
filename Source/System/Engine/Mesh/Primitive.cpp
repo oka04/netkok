@@ -1083,53 +1083,43 @@ void Primitive::SetMaterial(const D3DMATERIAL9 material)
 	m_material = material;
 }
 
-void Primitive::DrawForDepthPass(Engine * pEngine)
-{
-	if (!m_pMesh) return; // メッシュがロードされていなければ何もしない
-
-						  // ワールド行列を設定
-	pEngine->GetDevice()->SetTransform(D3DTS_WORLD, &m_matWorld);
-
-	// D3DXMESH は自身の描画メソッドを持っているのでそれを利用
-	// 深度パスではマテリアルやテクスチャ、ライトは不要
-	// D3DXCreateBoxなどで生成されたプリミティブは通常1つのサブセットを持つ
-	for (DWORD i = 0; i < 1; ++i) { // サブセット数を1と仮定して修正
-		m_pMesh->DrawSubset(i);
-	}
-}
-
 //=============================================================================
 // 深度パス用の描画
 //=============================================================================
 void Primitive::DrawForDepthPass(Engine* pEngine)
 {
-	if (!m_pMesh) return;
+	if (!m_pMesh || !m_pEffect) return;
 
 	LPDIRECT3DDEVICE9 pDevice = pEngine->GetDevice();
 
+	// 頂点宣言を設定
 	pDevice->SetVertexDeclaration(m_pVertexDeclaration);
 
-	m_pEffect->SetMatrix("gMatW", &m_matWorld);
-
+	// ビュー・プロジェクション行列を取得
 	D3DXMATRIX matView, matProj;
 	pDevice->GetTransform(D3DTS_VIEW, &matView);
 	pDevice->GetTransform(D3DTS_PROJECTION, &matProj);
 
+	// ワールドビュープロジェクション行列を計算
 	D3DXMATRIX matWVP = m_matWorld * matView * matProj;
+
+	// エフェクトに行列を設定
+	m_pEffect->SetMatrix("gMatW", &m_matWorld);
 	m_pEffect->SetMatrix("gMatWVP", &matWVP);
 
+	// 深度パステクニックを設定
 	m_pEffect->SetTechnique("DepthPass");
 
 	UINT numPass;
 	m_pEffect->Begin(&numPass, 0);
 	m_pEffect->BeginPass(0);
 
+	// メッシュを描画
 	m_pMesh->DrawSubset(0);
 
 	m_pEffect->EndPass();
 	m_pEffect->End();
 }
-
 
 //*****************************************************************************
 // private関数

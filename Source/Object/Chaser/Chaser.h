@@ -37,6 +37,11 @@ public:
 
 private:
 	void LoadParameter() override;
+
+	void CreateShadowMap(Engine* pEngine);
+	void ReleaseShadowMap();
+	void UpdateLightMatrices();
+
 	SpotLight m_spotLight;
 	float m_lightFov;
 	float m_lightRange;

@@ -203,6 +203,19 @@ void ModelBase::Draw(LPD3DXMATRIX pMatWorld, LPD3DXMATRIX pMatVP, D3DCOLORVALUE*
 	m_pFrame->DrawFrame(*(m_pFrame->GetRootFramePointerAddress()), pMatVP, m_pEffect);
 }
 
+void ModelBase::DrawDepth(LPD3DXMATRIX pMatWVP)
+{
+	if (!m_bLoaded || !m_pEffect) return;
+
+	// 深度描画用のテクニックを設定
+	m_pEffect->SetTechnique("DepthPass");
+
+	// ワールドビュープロジェクション行列を設定
+	m_pEffect->SetMatrix("gMatWVP", pMatWVP);
+
+	// フレームの深度描画
+	m_pFrame->DrawFrameDepth(*(m_pFrame->GetRootFramePointerAddress()), pMatWVP, m_pEffect);
+}
 //=============================================================================
 // ルートフレームの変換マトリックスを取得
 // 引　数：LPD3DXMATRIX 変換マトリックスのポインタ
