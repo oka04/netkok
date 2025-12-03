@@ -51,48 +51,24 @@ void Map::UpdateGoalEffect()
 	m_goalEffect.Update();
 }
 	
-void Map::DrawMap(Engine* pEngine, Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight, vector<SpotLight>* lights)
+void Map::DrawMap(Engine* pEngine, Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight, std::vector<SpotLight>* lights, std::vector<LPDIRECT3DTEXTURE9>* pShadowMaps, std::vector<D3DXMATRIX>* pLightViewProj)
 {
-	for (const auto& wall : m_wall) 
-	{
-		wall->Draw(pEngine, pCamera, pProj, pAmbient, pLight, lights);
-	}
-
-	m_ground.Draw(pEngine, pCamera, pProj, pAmbient, pLight, lights);
-}
-
-void Map::DrawMapWithShadow(Engine* pEngine, Camera* pCamera, Projection* pProj,
-	AmbientLight* pAmbient, DirectionalLight* pLight,
-	std::vector<SpotLight>* lights,
-	std::vector<LPDIRECT3DTEXTURE9>* pShadowTextures,
-	std::vector<D3DXMATRIX>* pLightViewProj)
-{
-	// 壁の描画（シャドウ対応）
 	for (const auto& wall : m_wall)
 	{
-		wall->DrawWithShadow(pEngine, pCamera, pProj, pAmbient, pLight, lights,
-			pShadowTextures, pLightViewProj);
+		wall->Draw(pEngine, pCamera, pProj, pAmbient, pLight, lights, pShadowMaps, pLightViewProj);
 	}
 
-	// 地面の描画（シャドウ対応）
-	m_ground.DrawWithShadow(pEngine, pCamera, pProj, pAmbient, pLight, lights,
-		pShadowTextures, pLightViewProj);
+	m_ground.Draw(pEngine, pCamera, pProj, pAmbient, pLight, lights, pShadowMaps, pLightViewProj);
 }
-
-void Map::DrawMapForDepth(Engine* pEngine, const D3DXMATRIX* pMatLightVP)
+void Map::DrawMapDepth(Engine* pEngine)
 {
-	if (!pMatLightVP) return;
-
-	// 壁の深度描画
 	for (const auto& wall : m_wall)
 	{
-		wall->DrawForDepthPass(pEngine, pMatLightVP);
+		wall->DrawForDepthPass(pEngine);
 	}
 
-	// 地面の深度描画
-	m_ground.DrawForDepthPass(pEngine, pMatLightVP);
+	m_ground.DrawForDepthPass(pEngine);
 }
-
 void Map::DrawGoalEffect(Camera * pCamera, Projection * pProj)
 {
 	m_goalEffect.Draw(pCamera, pProj);

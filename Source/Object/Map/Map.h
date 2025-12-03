@@ -14,38 +14,33 @@
 #include "..\\..\\Scene\\Scene\\Scene.h"
 #include "..\\GoalEffect\\GoalEffect.h"
 
-class Map 
+class Map
 {
 public:
 	void Initialize(Engine * pEngine, Camera * pCamera, Projection * pProj, AmbientLight * pAmbient, DirectionalLight * pLight, const int mapNumber);
 	void Release(Engine * pEngine);
 	void UpdateGoalEffect();
-
-	// 既存の描画メソッド
-	void DrawMap(Engine* pEngine, Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight, std::vector<SpotLight>* lights);
-
-	// ★★★ シャドウマップ対応の描画メソッド（新規追加） ★★★
-	void DrawMapWithShadow(Engine* pEngine, Camera* pCamera, Projection* pProj,
-		AmbientLight* pAmbient, DirectionalLight* pLight,
-		std::vector<SpotLight>* lights,
-		std::vector<LPDIRECT3DTEXTURE9>* pShadowTextures,
-		std::vector<D3DXMATRIX>* pLightViewProj);
-
-	// ★★★ 深度パス用の描画（シャドウマップ生成用） ★★★
-	void DrawMapForDepth(Engine* pEngine, const D3DXMATRIX* pMatLightVP);
-
-	void DrawGoalEffect(Camera * pCamera, Projection * pProj);
+	void DrawMap(Engine* pEngine, Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight, std::vector<SpotLight>* lights, std::vector<LPDIRECT3DTEXTURE9>* pShadowMaps = nullptr, std::vector<D3DXMATRIX>* pLightViewProj = nullptr);
+	void DrawGoalEffect(Camera* pCamera, Projection* pProj);
 	void DrawMiniMap(Engine * pEngine, const D3DXVECTOR2 & playerPosition, const float arrowAngle);
 	void DebugBoxLine(Engine * pEngine, Camera * pCamera, Projection * pProj);
 
+	// ★★★ 深度パス用の描画メソッドを追加 ★★★
+	void DrawMapDepth(Engine* pEngine);
+
+	//移動できるかの確認(移動はこの関数内で行う）
 	void MoveCheck(D3DXVECTOR3 &position, const D3DXVECTOR3 &vector, const float &radius);
+
+	//壁の張り付きの確認
 	bool StickWallCheck(D3DXVECTOR3& position, float radius, float checkDist, D3DXVECTOR3* outNormal);
 	bool RayToWallIntersection(const D3DXVECTOR3& rayOrigin, const D3DXVECTOR3& rayEnd, D3DXVECTOR3* outIntersection);
 	bool CheckGoal(const D3DXVECTOR3& playerPosition);
+
 	const D3DXVECTOR3 AdjustCameraPosition(const D3DXVECTOR3& playerPosition, const D3DXVECTOR3& desiredCameraPosition);
 	const D3DXVECTOR3& GetPlayerStartPosition();
-	const std::vector<D3DXVECTOR3> FindPath(const D3DXVECTOR3& startPos, const D3DXVECTOR3& targetPos);
 
+	// A*アルゴリズムで目的地までの最短経路を調べる
+	const std::vector<D3DXVECTOR3> FindPath(const D3DXVECTOR3& startPos, const D3DXVECTOR3& targetPos);
 private:
 	struct Node
 	{

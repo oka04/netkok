@@ -4,14 +4,6 @@
 //
 // Primitive.h
 //
-// K_Yamaoka
-//
-// 2013/03/04
-//
-// 2020/08/25 Draw関数の引数を変更
-//
-// 2021/10/10 Draw関数にデフォルト引数を追加（ライト無し三角形を描画するため）
-//
 //*****************************************************************************
 
 #pragma once
@@ -38,9 +30,9 @@ struct Coord {
 	float u; //水平方向座標（０～１）
 	float v; //垂直方向座標（０～１）
 
-	//=============================================================================
-	//コンストラクタ
-	//=============================================================================
+			 //=============================================================================
+			 //コンストラクタ
+			 //=============================================================================
 	Coord() : u(0), v(0) {}
 
 	//=============================================================================
@@ -140,15 +132,12 @@ public:
 	// 　　　　Projection*       プロジェクションクラスのポインタ
 	// 　　　　AmbientLight*     アンビエントライトクラスのポインタ
 	// 　　　　DirectionalLight* ディレクショナルライトのポインタ
+	// 　　　　std::vector<SpotLight>* スポットライトのポインタ
+	// 　　　　std::vector<LPDIRECT3DTEXTURE9>* シャドウマップテクスチャ
+	// 　　　　std::vector<D3DXMATRIX>* ライトビュー射影行列
 	//=============================================================================
-	void Draw(Engine* pEngine, Camera* pCamera, Projection* pProj, AmbientLight* pAmbient = nullptr, DirectionalLight* pLight = nullptr, std::vector<SpotLight>* pSpotLights = nullptr);
+	void Draw(Engine* pEngine, Camera* pCamera, Projection* pProj, AmbientLight* pAmbient = nullptr, DirectionalLight* pLight = nullptr, std::vector<SpotLight>* pSpotLights = nullptr, std::vector<LPDIRECT3DTEXTURE9>* pShadowMaps = nullptr, std::vector<D3DXMATRIX>* pLightViewProj = nullptr);
 
-	//=============================================================================
-	// 引数:
-	//   pShadowTextures - 各スポットライトのシャドウマップテクスチャ配列
-	//   pLightViewProj  - 各スポットライトのビュー・プロジェクション行列配列
-	//=============================================================================
-	void DrawWithShadow(Engine* pEngine, Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight, std::vector<SpotLight>* pSpotLights,	std::vector<LPDIRECT3DTEXTURE9>* pShadowTextures, std::vector<D3DXMATRIX>* pLightViewProj);
 	//=============================================================================
 	//　バウンディングスフィア半径の取得
 	//　戻り値：バウンディングスフィアの半径
@@ -173,17 +162,16 @@ public:
 	//=============================================================================
 	void SetMaterial(const D3DMATERIAL9 material);
 
+	//=============================================================================
+	// 深度パス用の描画
+	//=============================================================================
 	void DrawForDepthPass(Engine* pEngine);
-	//=============================================================================
-	// 深度パス用の描画（シャドウマップ生成用）
-	// 引数:
-	//   pMatLightVP - ライトのビュー・プロジェクション行列
-	//=============================================================================
-	void DrawForDepthPass(Engine* pEngine, const D3DXMATRIX* pMatLightVP = nullptr);
+
 private:
 
 	static const int MAX_SPOT_LIGHTS;
 
+	//プリミティブタイプ列挙体
 	enum PRIMITIVE_TYPE {
 		NONE,
 		TRIANGLE_XYZ,
@@ -194,18 +182,38 @@ private:
 		SPHERE,
 	};
 
+	//プリミティブの型
 	PRIMITIVE_TYPE m_type;
+
+	//メッシュクラスへのポインタ
 	LPD3DXMESH m_pMesh;
+
+	//マテリアル構造体
 	D3DMATERIAL9 m_material;
+
+	//テクスチャクラス
 	LPDIRECT3DTEXTURE9 m_pTexture;
+
+	//ワールド座標変換行列
 	D3DXMATRIX m_matWorld;
+
+	//エフェクト（シェーダー）
 	ID3DXEffect* m_pEffect;
+
+	//頂点宣言
 	LPDIRECT3DVERTEXDECLARATION9 m_pVertexDeclaration;
 
+	//-----------------------------------------------------------------------------
+	// メッシュの削除
+	//-----------------------------------------------------------------------------
 	void DeleteMesh();
+
+	//-----------------------------------------------------------------------------
+	// テクスチャの削除
+	//-----------------------------------------------------------------------------
 	void DeleteTexture();
 
-	// コピー防止
+	//コピー防止
 	Primitive& operator=(const Primitive&);
 	Primitive(const Primitive&);
 };

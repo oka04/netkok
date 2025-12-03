@@ -1,5 +1,4 @@
-﻿// SceneGame.h - シャドウマップ管理機能追加
-#pragma once
+﻿#pragma once
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include "..\\..\\GameBase.h"
@@ -37,12 +36,13 @@ private:
 	void UpdateRemotePlayers();
 	void SyncToServer();
 	void ReceiveFromServer();
-	void SpawnPlayerWithRole(uint32_t clientId, const std::string& name, const D3DXVECTOR3& pos, PlayerRole role);
+	void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name, const D3DXVECTOR3& pos, PlayerRole role);
 	void DespawnPlayer(uint32_t clientId);
 
-	// ★★★ シャドウマップ関連 ★★★
-	void RenderShadowMaps();  // 全スポットライトのシャドウマップを生成
-	void UpdateChaserLights();
+	// ★★★ シャドウマップ関連のメソッドを追加 ★★★
+	void CreateShadowMaps();
+	void RenderShadowMaps();
+	void ReleaseShadowMaps();
 
 	enum DEBUG_FLAG
 	{
@@ -104,10 +104,15 @@ private:
 	ServerManager* m_pServer;
 	std::vector<SpotLight*> m_chaserLights;
 
-	// ★★★ シャドウマップ用 ★★★
-	std::vector<LPDIRECT3DTEXTURE9> m_shadowTextures;  // 各鬼のシャドウテクスチャ
-	std::vector<D3DXMATRIX> m_lightViewProjMatrices;   // 各ライトのビュー・プロジェクション行列
+	// ★★★ シャドウマップ関連のメンバー変数を追加 ★★★
+	std::vector<LPDIRECT3DTEXTURE9> m_shadowMaps;
+	std::vector<LPDIRECT3DSURFACE9> m_shadowSurfaces;
+	std::vector<LPDIRECT3DSURFACE9> m_shadowDepthSurfaces;
+	std::vector<D3DXMATRIX> m_lightViewProjMatrices;
+	static const int SHADOW_MAP_SIZE = 1024;
+	static const int MAX_SPOT_LIGHTS = 4;
 
+	void UpdateChaserLights();
 	static const DWORD NETWORK_SEND_INTERVAL = 16;
 	static const DWORD WORLD_BROADCAST_INTERVAL = 8;
 	bool m_bEnablePrediction;
