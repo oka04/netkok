@@ -2,137 +2,216 @@
 Network Debug Log
 ===========================================
 
-[13:04:23] ========================================
-[13:04:23] ClientManager 初期化開始
-[13:04:23] ========================================
-[13:04:23] [ClientManager] ENet初期化成功
-[13:04:23] [ClientManager] Discovery作成
-[13:04:23] [Discovery/Listener] スレッド開始
-[13:04:23] [ClientManager] Discoveryリスナー起動 (ポート:12346)
-[13:04:23] [Discovery/Listener] WSAStartup成功
-[13:04:23] [Discovery/Listener] ソケット作成成功
-[13:04:23] [Discovery/Listener] bind成功 ポート:12346
-[13:04:23] [Discovery/Listener] 受信ループ開始
-[13:04:25] ========================================
-[13:04:25] [SceneSelectHost] サーバー作成開始: J
-[13:04:25] [Client] 切断
-[13:04:25] [ServerManager] ホスト名設定: Player497
-[13:04:25] [SceneSelectHost] サーバー名設定: J
-[13:04:25] [SceneSelectHost] ホスト名設定: Player497
-[13:04:25] [Discovery/Advertiser] スレッド開始
-[13:04:25] [Discovery/Advertiser] WSAStartup成功
-[13:04:25] [ServerManager] サーバー起動: ポート=12249
-[13:04:25] [Discovery/Advertiser] ソケット作成成功
-[13:04:25] [SceneSelectHost] サーバー起動成功: ポート=12249
-[13:04:25] [Discovery/Advertiser] SO_BROADCAST設定成功
-[13:04:25] [Discovery/Advertiser] ブロードキャストループ開始
-[13:04:25] [Discovery/Advertiser] 送信データ: port=12249 player=1/8 state=0 name='J'
-[13:04:25] [Discovery/Advertiser] ブロードキャスト送信 #1: サイズ=19 bytes (port=12249)
-[13:04:25] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[13:04:25] [Discovery/Listener] マジック一致確認
-[13:04:25] [Discovery/Listener] プロトコルバージョン: 256
-[13:04:25] [Discovery/Listener] ポート（変換後）: 12249
-[13:04:25] [Discovery/Listener] プレイヤー数: 1
-[13:04:25] [Discovery/Listener] 最大プレイヤー数: 8
-[13:04:25] [Discovery/Listener] ステート: 0
-[13:04:25] [Discovery/Listener] 名前の長さ: 1
-[13:04:25] [Discovery/Listener] サーバー名: 'J'
-[13:04:25] [Discovery/Listener] ★サーバー検出★: J @ 172.20.145.6:12249 (1/8) state=0
-[13:04:25] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[13:04:25] [ClientManager] ConnectToServer: 127.0.0.1:12249
-[13:04:25] [ClientManager] クライアントホスト作成成功
-[13:04:25] [ClientManager] ホスト接続 - サーバー名は接続後に取得
-[13:04:25] [ClientManager] 接続要求送信 (ホスト判定: true)
-[13:04:25] [SceneSelectHost] ロビーに遷移
-[13:04:25] [SceneLobby] ホストとしてロビー開始: サーバー名='J'
-[13:04:25] [SceneLobby] Start完了
-[13:04:25] [ClientManager] サーバー接続成功（ENET_EVENT_TYPE_CONNECT受信）
-[13:04:25] [ClientManager] JOIN送信: Player497
-[13:04:25] [ClientManager] JOIN送信完了: Player497
-[13:04:25] [ServerManager] クライアント接続: ID=1 (現在1人)
-[13:04:25] [ServerManager] ProcessJoin: データ長=10
-[13:04:25] [ServerManager] 名前長さ: 9
-[13:04:25] [ServerManager] 受信した名前: 'Player497'
-[13:04:25] [ServerManager] ホストのJOIN受信: Player497 (ID=1)
-[13:04:25] [ServerManager] JoinAck送信: ClientID=1
-[13:04:25] [ServerManager] 新規参加者にホスト情報を送信: Player497 Pos=(0.0,0.0,0.0)
-[13:04:25] [ServerManager] 新規参加者情報をブロードキャスト: Player497 (ID=1)
-[13:04:25] [ServerManager] ロビー更新をブロードキャスト
-[13:04:25] [ServerManager] BroadcastLobbyUpdate: 1 人
-[13:04:25] [ServerManager] プレイヤー1: 'Player497' (長さ:9)
-[13:04:25] [ServerManager] 送信データサイズ: 12 bytes
-[13:04:25] [ClientManager] クライアントID割り当て: 1
-[13:04:25] [ClientManager] プレイヤー生成通知: ID=1, Name=Player497
-[13:04:25] [ClientManager] プレイヤー生成通知: ID=1, Name=Player497
-[13:04:25] [ClientManager] ProcessLobbyUpdate: データ長=12
-[13:04:25] [ClientManager] プレイヤー数: 1
-[13:04:25] [ClientManager] プレイヤー1 名前長さ: 9
-[13:04:25] [ClientManager] プレイヤー1: 'Player497'
-[13:04:25] [ClientManager] ロビー更新完了: 1 人
-[13:04:25] [SceneLobby] ゲーム開始ボタン押下
-[13:04:25] [ServerManager] 役割割り当て開始
-[13:04:25] [ServerManager] ホストをリストに追加: ID=1
-[13:04:25] [ServerManager] 総プレイヤー数: 1
-[13:04:25] [ServerManager] 総人数=1 鬼=0 逃げる側=1
-[13:04:25] [ServerManager] シャッフル後のID順:
-[13:04:25]   位置0: ID=1
-[13:04:25] [ServerManager] ホスト(ID=1 Name=Player497)の役割: 逃げる側
-[13:04:25] [ServerManager] クライアント Player497 (ID=1) の役割: 逃げる側
-[13:04:25] [ServerManager] 役割割り当て完了
-[13:04:25] [ServerManager] 割り当て結果確認: 鬼=0 逃げる側=1
-[13:04:25] [ServerManager] 警告: 鬼が0人です！
-[13:04:25] [ServerManager] 役割割り当てをブロードキャスト
-[13:04:25] [ServerManager] ホスト(ID=1)の役割送信: 逃げる側
-[13:04:25] [ServerManager] クライアント Player497 (ID=1)の役割送信: 逃げる側
-[13:04:25] [ServerManager] 役割割り当てブロードキャスト完了
-[13:04:25] [ServerManager] ゲーム開始 - 役割割り当て済み
-[13:04:25] [ClientManager] 自分の役割が決定: 逃げる側 (ID=1)
-[13:04:25] [ClientManager] 自分の役割が決定: 逃げる側 (ID=1)
-[13:04:25] [ClientManager] ゲーム開始通知受信
-[13:04:25] [SceneLobby] ゲーム開始 - ゲームシーンへ遷移
-[13:04:28] [Discovery/Listener] 生存確認 ループ:50
-[13:04:30] [Discovery/Advertiser] 送信データ: port=12249 player=1/8 state=1 name='J'
-[13:04:30] [Discovery/Advertiser] ブロードキャスト送信 #2: サイズ=19 bytes (port=12249)
-[13:04:30] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[13:04:30] [Discovery/Listener] マジック一致確認
-[13:04:30] [Discovery/Listener] プロトコルバージョン: 256
-[13:04:30] [Discovery/Listener] ポート（変換後）: 12249
-[13:04:30] [Discovery/Listener] プレイヤー数: 1
-[13:04:30] [Discovery/Listener] 最大プレイヤー数: 8
-[13:04:30] [Discovery/Listener] ステート: 1
-[13:04:30] [Discovery/Listener] 名前の長さ: 1
-[13:04:30] [Discovery/Listener] サーバー名: 'J'
-[13:04:30] [Discovery/Listener] ★サーバー検出★: J @ 172.20.145.6:12249 (1/8) state=1
-[13:04:30] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[13:04:30] [SceneGame] Initialize: IsHost=1, ClientID=1
-[13:04:30] [SceneGame] 初期化完了 - 役割割り当て待機中
-[13:04:30] [SceneGame] 役割受信: ID=1 Role=逃げる側
-[13:04:30] [SceneGame] ローカルプレイヤー生成: Role=逃げる側
-[13:04:30] [SceneGame] Runnerを生成: ID=1, Name=Player497
-[13:04:30] [SceneGame] プレイヤー生成完了: ID=1, Role=逃げる側, Pos=(7.5,0.5,72.5)
-[13:04:30] [SceneGame] 役割受信: ID=1 Role=逃げる側
-[13:04:30] [SceneGame] プレイヤー 1 は既に生成済み
-[13:04:30] [SceneGame] 鬼のライト更新: 0 個
-[13:04:30] [SceneGame] シャドウマップ生成完了: 0 個
-[13:04:30] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
-[13:04:30] [SceneGame] ワールド状態受信: プレイヤー数=0
-[13:04:32] [SceneGame] フェードイン完了 - ゲーム開始
-[13:04:32] [SceneGame] シャドウマップ生成完了: 0 個
-[13:04:33] [SceneGame] 鬼のライト更新: 0 個
-[13:04:33] [SceneGame] 送信: ID=0 Pos=(9.6,0.5,71.7) Interval=16ms
-[13:04:33] [SceneGame] ワールド状態受信: プレイヤー数=1
-[13:04:33] [Discovery/Listener] 生存確認 ループ:100
-[13:04:34] [SceneGame] シャドウマップ生成完了: 0 個
-[13:04:35] [Discovery/Advertiser] 送信データ: port=12249 player=1/8 state=1 name='J'
-[13:04:35] [Discovery/Advertiser] ブロードキャスト送信 #3: サイズ=19 bytes (port=12249)
-[13:04:35] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[13:04:35] [Discovery/Listener] マジック一致確認
-[13:04:35] [Discovery/Listener] プロトコルバージョン: 256
-[13:04:35] [Discovery/Listener] ポート（変換後）: 12249
-[13:04:35] [Discovery/Listener] プレイヤー数: 1
-[13:04:35] [Discovery/Listener] 最大プレイヤー数: 8
-[13:04:35] [Discovery/Listener] ステート: 1
-[13:04:35] [Discovery/Listener] 名前の長さ: 1
-[13:04:35] [Discovery/Listener] サーバー名: 'J'
-[13:04:35] [Discovery/Listener] ★サーバー検出★: J @ 172.20.145.6:12249 (1/8) state=1
-[13:04:35] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[13:16:27] ========================================
+[13:16:27] ClientManager 初期化開始
+[13:16:27] ========================================
+[13:16:27] [ClientManager] ENet初期化成功
+[13:16:27] [ClientManager] Discovery作成
+[13:16:27] [Discovery/Listener] スレッド開始
+[13:16:27] [Discovery/Listener] WSAStartup成功
+[13:16:27] [ClientManager] Discoveryリスナー起動 (ポート:12346)
+[13:16:27] [Discovery/Listener] ソケット作成成功
+[13:16:27] [Discovery/Listener] bind成功 ポート:12346
+[13:16:27] [Discovery/Listener] 受信ループ開始
+[13:16:32] [Discovery/Listener] 生存確認 ループ:50
+[13:16:34] ========================================
+[13:16:34] [SceneSelectHost] サーバー作成開始: DR
+[13:16:34] [Client] 切断
+[13:16:34] [ServerManager] ホスト名設定: Player858
+[13:16:34] [SceneSelectHost] サーバー名設定: DR
+[13:16:34] [SceneSelectHost] ホスト名設定: Player858
+[13:16:34] [Discovery/Advertiser] スレッド開始
+[13:16:34] [ServerManager] サーバー起動: ポート=12563
+[13:16:34] [Discovery/Advertiser] WSAStartup成功
+[13:16:34] [SceneSelectHost] サーバー起動成功: ポート=12563
+[13:16:34] [Discovery/Advertiser] ソケット作成成功
+[13:16:34] [Discovery/Advertiser] SO_BROADCAST設定成功
+[13:16:34] [Discovery/Advertiser] ブロードキャストループ開始
+[13:16:34] [Discovery/Advertiser] 送信データ: port=12563 player=1/8 state=0 name='DR'
+[13:16:34] [Discovery/Advertiser] ブロードキャスト送信 #1: サイズ=20 bytes (port=12563)
+[13:16:34] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[13:16:34] [Discovery/Listener] マジック一致確認
+[13:16:34] [Discovery/Listener] プロトコルバージョン: 256
+[13:16:34] [Discovery/Listener] ポート（変換後）: 12563
+[13:16:34] [Discovery/Listener] プレイヤー数: 1
+[13:16:34] [Discovery/Listener] 最大プレイヤー数: 8
+[13:16:34] [Discovery/Listener] ステート: 0
+[13:16:34] [Discovery/Listener] 名前の長さ: 2
+[13:16:34] [Discovery/Listener] サーバー名: 'DR'
+[13:16:34] [Discovery/Listener] ★サーバー検出★: DR @ 172.20.145.6:12563 (1/8) state=0
+[13:16:34] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[13:16:34] [ClientManager] ConnectToServer: 127.0.0.1:12563
+[13:16:34] [ClientManager] クライアントホスト作成成功
+[13:16:34] [ClientManager] ホスト接続 - サーバー名は接続後に取得
+[13:16:34] [ClientManager] 接続要求送信 (ホスト判定: true)
+[13:16:34] [SceneSelectHost] ロビーに遷移
+[13:16:34] [SceneLobby] ホストとしてロビー開始: サーバー名='DR'
+[13:16:34] [SceneLobby] Start完了
+[13:16:34] [ClientManager] サーバー接続成功（ENET_EVENT_TYPE_CONNECT受信）
+[13:16:34] [ClientManager] JOIN送信: Player858
+[13:16:34] [ClientManager] JOIN送信完了: Player858
+[13:16:34] [ServerManager] クライアント接続: ID=1 (現在1人)
+[13:16:34] [ServerManager] ProcessJoin: データ長=10
+[13:16:34] [ServerManager] 名前長さ: 9
+[13:16:34] [ServerManager] 受信した名前: 'Player858'
+[13:16:34] [ServerManager] ホストのJOIN受信: Player858 (ID=1)
+[13:16:34] [ServerManager] JoinAck送信: ClientID=1
+[13:16:34] [ServerManager] 新規参加者にホスト情報を送信: Player858 Pos=(0.0,0.0,0.0)
+[13:16:34] [ServerManager] 新規参加者情報をブロードキャスト: Player858 (ID=1)
+[13:16:34] [ServerManager] ロビー更新をブロードキャスト
+[13:16:34] [ServerManager] BroadcastLobbyUpdate: 1 人
+[13:16:34] [ServerManager] プレイヤー1: 'Player858' (長さ:9)
+[13:16:34] [ServerManager] 送信データサイズ: 12 bytes
+[13:16:34] [ClientManager] クライアントID割り当て: 1
+[13:16:34] [ClientManager] プレイヤー生成通知: ID=1, Name=Player858
+[13:16:34] [ClientManager] プレイヤー生成通知: ID=1, Name=Player858
+[13:16:34] [ClientManager] ProcessLobbyUpdate: データ長=12
+[13:16:34] [ClientManager] プレイヤー数: 1
+[13:16:34] [ClientManager] プレイヤー1 名前長さ: 9
+[13:16:34] [ClientManager] プレイヤー1: 'Player858'
+[13:16:34] [ClientManager] ロビー更新完了: 1 人
+[13:16:37] [Discovery/Listener] 生存確認 ループ:100
+[13:16:39] [Discovery/Advertiser] 送信データ: port=12563 player=1/8 state=0 name='DR'
+[13:16:39] [Discovery/Advertiser] ブロードキャスト送信 #2: サイズ=20 bytes (port=12563)
+[13:16:39] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[13:16:39] [Discovery/Listener] マジック一致確認
+[13:16:39] [Discovery/Listener] プロトコルバージョン: 256
+[13:16:39] [Discovery/Listener] ポート（変換後）: 12563
+[13:16:39] [Discovery/Listener] プレイヤー数: 1
+[13:16:39] [Discovery/Listener] 最大プレイヤー数: 8
+[13:16:39] [Discovery/Listener] ステート: 0
+[13:16:39] [Discovery/Listener] 名前の長さ: 2
+[13:16:39] [Discovery/Listener] サーバー名: 'DR'
+[13:16:39] [Discovery/Listener] ★サーバー検出★: DR @ 172.20.145.6:12563 (1/8) state=0
+[13:16:39] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[13:16:41] [ServerManager] クライアント接続: ID=2 (現在2人)
+[13:16:41] [ServerManager] ProcessJoin: データ長=10
+[13:16:41] [ServerManager] 名前長さ: 9
+[13:16:41] [ServerManager] 受信した名前: 'Player884'
+[13:16:41] [ServerManager] クライアントのJOIN受信: Player884 (ID=2)
+[13:16:41] [ServerManager] JoinAck送信: ClientID=2
+[13:16:41] [ServerManager] 新規参加者にホスト情報を送信: Player858 Pos=(0.0,0.0,0.0)
+[13:16:41] [ServerManager] 新規参加者情報をブロードキャスト: Player884 (ID=2)
+[13:16:41] [ServerManager] ロビー更新をブロードキャスト
+[13:16:41] [ServerManager] BroadcastLobbyUpdate: 2 人
+[13:16:41] [ServerManager] プレイヤー1: 'Player858' (長さ:9)
+[13:16:41] [ServerManager] プレイヤー2: 'Player884' (長さ:9)
+[13:16:41] [ServerManager] 送信データサイズ: 22 bytes
+[13:16:41] [ClientManager] プレイヤー生成通知: ID=2, Name=Player884
+[13:16:41] [ClientManager] ProcessLobbyUpdate: データ長=22
+[13:16:41] [ClientManager] プレイヤー数: 2
+[13:16:41] [ClientManager] プレイヤー1 名前長さ: 9
+[13:16:41] [ClientManager] プレイヤー1: 'Player858'
+[13:16:41] [ClientManager] プレイヤー2 名前長さ: 9
+[13:16:41] [ClientManager] プレイヤー2: 'Player884'
+[13:16:41] [ClientManager] ロビー更新完了: 2 人
+[13:16:42] [Discovery/Listener] 生存確認 ループ:150
+[13:16:42] [SceneLobby] ゲーム開始ボタン押下
+[13:16:42] [ServerManager] 役割割り当て開始
+[13:16:42] [ServerManager] ホストをリストに追加: ID=1
+[13:16:42] [ServerManager] クライアントをリストに追加: ID=2 Name=Player884
+[13:16:42] [ServerManager] 総プレイヤー数: 2
+[13:16:42] [ServerManager] 総人数=2 鬼=1 逃げる側=1
+[13:16:42] [ServerManager] シャッフル後のID順:
+[13:16:42]   位置0: ID=2
+[13:16:42]   位置1: ID=1
+[13:16:42] [ServerManager] クライアント Player884 (ID=2) の役割: 鬼
+[13:16:42] [ServerManager] ホスト(ID=1 Name=Player858)の役割: 逃げる側
+[13:16:42] [ServerManager] クライアント Player858 (ID=1) の役割: 逃げる側
+[13:16:42] [ServerManager] 役割割り当て完了
+[13:16:42] [ServerManager] 割り当て結果確認: 鬼=1 逃げる側=1
+[13:16:42] [ServerManager] 役割割り当てをブロードキャスト
+[13:16:42] [ServerManager] ホスト(ID=1)の役割送信: 逃げる側
+[13:16:42] [ServerManager] クライアント Player858 (ID=1)の役割送信: 逃げる側
+[13:16:42] [ServerManager] クライアント Player884 (ID=2)の役割送信: 鬼
+[13:16:42] [ServerManager] 役割割り当てブロードキャスト完了
+[13:16:42] [ServerManager] ゲーム開始 - 役割割り当て済み
+[13:16:42] [ClientManager] 自分の役割が決定: 逃げる側 (ID=1)
+[13:16:42] [ClientManager] 自分の役割が決定: 逃げる側 (ID=1)
+[13:16:42] [ClientManager] 他プレイヤーの役割: ID=2 鬼
+[13:16:42] [ClientManager] ゲーム開始通知受信
+[13:16:42] [SceneLobby] ゲーム開始 - ゲームシーンへ遷移
+[13:16:44] [Discovery/Advertiser] 送信データ: port=12563 player=2/8 state=1 name='DR'
+[13:16:44] [Discovery/Advertiser] ブロードキャスト送信 #3: サイズ=20 bytes (port=12563)
+[13:16:44] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[13:16:44] [Discovery/Listener] マジック一致確認
+[13:16:44] [Discovery/Listener] プロトコルバージョン: 256
+[13:16:44] [Discovery/Listener] ポート（変換後）: 12563
+[13:16:44] [Discovery/Listener] プレイヤー数: 2
+[13:16:44] [Discovery/Listener] 最大プレイヤー数: 8
+[13:16:44] [Discovery/Listener] ステート: 1
+[13:16:44] [Discovery/Listener] 名前の長さ: 2
+[13:16:44] [Discovery/Listener] サーバー名: 'DR'
+[13:16:44] [Discovery/Listener] ★サーバー検出★: DR @ 172.20.145.6:12563 (2/8) state=1
+[13:16:44] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[13:16:47] [Discovery/Listener] 生存確認 ループ:200
+[13:16:47] [SceneGame] Initialize: IsHost=1, ClientID=1
+[13:16:47] [SceneGame] 初期化完了 - 役割割り当て待機中
+[13:16:47] [SceneGame] 役割受信: ID=1 Role=逃げる側
+[13:16:47] [SceneGame] ローカルプレイヤー生成: Role=逃げる側
+[13:16:47] [SceneGame] Runnerを生成: ID=1, Name=Player858
+[13:16:47] [SceneGame] プレイヤー生成完了: ID=1, Role=逃げる側, Pos=(7.5,0.5,72.5)
+[13:16:47] [SceneGame] 役割受信: ID=1 Role=逃げる側
+[13:16:47] [SceneGame] プレイヤー 1 は既に生成済み
+[13:16:47] [SceneGame] 役割受信: ID=2 Role=鬼
+[13:16:47] [SceneGame] 鬼のライト更新: 0 個
+[13:16:47] [SceneGame] 新規プレイヤー参加: ID=2, Name=Player884
+[13:16:47] [SceneGame] 役割情報あり: 鬼
+[13:16:47] [SceneGame] Chaserを生成: ID=2, Name=Player884
+[13:16:47] [Chaser] シャドウマップ作成成功: ID=0
+[13:16:47] [SceneGame] プレイヤー生成完了: ID=2, Role=鬼, Pos=(7.5,0.5,72.5)
+[13:16:47] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[13:16:47] [SceneGame] シャドウマップ生成完了: 1 個
+[13:16:47] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[13:16:47] [SceneGame] ワールド状態受信: プレイヤー数=1
+[13:16:47] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.00 Speed=0.00
+[13:16:49] [SceneGame] フェードイン完了 - ゲーム開始
+[13:16:49] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[13:16:49] [SceneGame] シャドウマップ生成完了: 1 個
+[13:16:49] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.00 Speed=0.00
+[13:16:49] [Discovery/Advertiser] 送信データ: port=12563 player=2/8 state=1 name='DR'
+[13:16:49] [Discovery/Advertiser] ブロードキャスト送信 #4: サイズ=20 bytes (port=12563)
+[13:16:49] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[13:16:49] [Discovery/Listener] マジック一致確認
+[13:16:49] [Discovery/Listener] プロトコルバージョン: 256
+[13:16:49] [Discovery/Listener] ポート（変換後）: 12563
+[13:16:49] [Discovery/Listener] プレイヤー数: 2
+[13:16:49] [Discovery/Listener] 最大プレイヤー数: 8
+[13:16:49] [Discovery/Listener] ステート: 1
+[13:16:49] [Discovery/Listener] 名前の長さ: 2
+[13:16:49] [Discovery/Listener] サーバー名: 'DR'
+[13:16:49] [Discovery/Listener] ★サーバー検出★: DR @ 172.20.145.6:12563 (2/8) state=1
+[13:16:49] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[13:16:50] [SceneGame] 鬼のライト更新: 1 個
+[13:16:50] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[13:16:50] [SceneGame] ワールド状態受信: プレイヤー数=2
+[13:16:51] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[13:16:51] [SceneGame] シャドウマップ生成完了: 1 個
+[13:16:51] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.00 Speed=0.00
+[13:16:52] [Discovery/Listener] 生存確認 ループ:250
+[13:16:53] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[13:16:53] [SceneGame] 鬼のライト更新: 1 個
+[13:16:53] [SceneGame] シャドウマップ生成完了: 1 個
+[13:16:53] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[13:16:53] [SceneGame] ワールド状態受信: プレイヤー数=2
+[13:16:53] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.00 Speed=0.00
+[13:16:54] [Discovery/Advertiser] 送信データ: port=12563 player=2/8 state=1 name='DR'
+[13:16:54] [Discovery/Advertiser] ブロードキャスト送信 #5: サイズ=20 bytes (port=12563)
+[13:16:54] [Discovery/Listener] パケット受信! サイズ:20 bytes
+[13:16:54] [Discovery/Listener] マジック一致確認
+[13:16:54] [Discovery/Listener] プロトコルバージョン: 256
+[13:16:54] [Discovery/Listener] ポート（変換後）: 12563
+[13:16:54] [Discovery/Listener] プレイヤー数: 2
+[13:16:54] [Discovery/Listener] 最大プレイヤー数: 8
+[13:16:54] [Discovery/Listener] ステート: 1
+[13:16:54] [Discovery/Listener] 名前の長さ: 2
+[13:16:54] [Discovery/Listener] サーバー名: 'DR'
+[13:16:54] [Discovery/Listener] ★サーバー検出★: DR @ 172.20.145.6:12563 (2/8) state=1
+[13:16:54] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[13:16:55] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[13:16:55] [SceneGame] シャドウマップ生成完了: 1 個
+[13:16:55] [CharacterBase] UpdateFromNetwork: ID=0 Dist=0.00 Speed=0.00
+[13:16:56] [SceneGame] 鬼のライト更新: 1 個
+[13:16:56] [SceneGame] 送信: ID=0 Pos=(5.8,0.5,72.3) Interval=16ms
+[13:16:56] [SceneGame] ワールド状態受信: プレイヤー数=2
+[13:16:57] [Discovery/Listener] 生存確認 ループ:300

@@ -821,19 +821,37 @@ void SceneGame::Draw()
 		{
 			spotLights.push_back(*light);
 
-			// シャドウマップが有効な場合のみ追加
+			// ★★★ 修正: シャドウマップが有効な場合のみ追加（ライト数と一致させる） ★★★
 			if (chaser->IsShadowMapEnabled())
 			{
 				shadowMaps.push_back(chaser->GetShadowTexture());
 				lightViewProjs.push_back(chaser->GetLightViewProjectionMatrix());
 			}
+			else
+			{
+				// シャドウマップが無効でもnullptrを追加してライト数と一致させる
+				shadowMaps.push_back(nullptr);
+				D3DXMATRIX identity;
+				D3DXMatrixIdentity(&identity);
+				lightViewProjs.push_back(identity);
+			}
 		}
 	}
 
-	// ★★★ 修正: シャドウマップが無い場合はnullptrを渡す ★★★
+	// ★★★ 修正: nullptrのチェックを追加 ★★★
 	std::vector<SpotLight>* pLights = spotLights.empty() ? nullptr : &spotLights;
-	std::vector<LPDIRECT3DTEXTURE9>* pShadowMaps = shadowMaps.empty() ? nullptr : &shadowMaps;
-	std::vector<D3DXMATRIX>* pLightViewProjs = lightViewProjs.empty() ? nullptr : &lightViewProjs;
+
+	// シャドウマップ配列に有効なテクスチャが1つでもあるかチェック
+	bool hasValidShadowMaps = false;
+	for (auto tex : shadowMaps) {
+		if (tex != nullptr) {
+			hasValidShadowMaps = true;
+			break;
+		}
+	}
+
+	std::vector<LPDIRECT3DTEXTURE9>* pShadowMaps = (shadowMaps.empty() || !hasValidShadowMaps) ? nullptr : &shadowMaps;
+	std::vector<D3DXMATRIX>* pLightViewProjs = (lightViewProjs.empty() || !hasValidShadowMaps) ? nullptr : &lightViewProjs;
 
 	// マップ描画（影付き）
 	m_map.DrawMap(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light,
@@ -884,7 +902,7 @@ void SceneGame::Draw()
 		m_pEngine->DrawPrintf(50, 950, FONT_GOTHIC40, Color::WHITE, "DEL : %f", m_deltaTime);
 		m_pEngine->DrawPrintf(50, 1000, FONT_GOTHIC40, Color::WHITE, "FPS : %f", (float)m_pEngine->GetFPS());
 		m_pEngine->DrawPrintf(50, 900, FONT_GOTHIC40, Color::CYAN, "Players: %d (Drawn: %d) Lights: %d Shadows: %d",
-			(int)m_players.size(), drawnCount, (int)spotLights.size(), (int)shadowMaps.size());
+			(int)m_players.size(), drawnCount, (int)spotLights.size(), hasValidShadowMaps ? (int)shadowMaps.size() : 0);
 
 		if (d_debugFlag & DRAW_PLAYER_STATE && m_pLocalPlayer)
 		{
@@ -921,8 +939,6 @@ void SceneGame::Draw()
 				pos.x, pos.y, pos.z);
 			yOffset += 50;
 		}
-
-		// [既存のデバッグUI表示は変更なし]
 	}
 #endif
 
