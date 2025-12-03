@@ -19,7 +19,7 @@ float4 gMaterialDiffuse;
 // マテリアルのアンビエント
 float4 gMaterialAmbient;
 
-// スポットライトの最大数
+// スポットライトの最大数（アプリ側でこれに合わせる）
 #define MAX_SPOT_LIGHTS 4
 
 // スポットライトの数
@@ -37,7 +37,7 @@ float4 gSpotLightColor[MAX_SPOT_LIGHTS];
 // スポットライトの照射距離
 float gSpotLightRange[MAX_SPOT_LIGHTS];
 
-// スポットライトのパラメータ
+// スポットライトのパラメータ（Outer, Inner, Falloff)
 float gSpotLightOuterAngle[MAX_SPOT_LIGHTS];
 float gSpotLightInnerAngle[MAX_SPOT_LIGHTS];
 float gSpotLightFalloff[MAX_SPOT_LIGHTS];
@@ -47,42 +47,47 @@ float gSpotLightAttn0[MAX_SPOT_LIGHTS];
 float gSpotLightAttn1[MAX_SPOT_LIGHTS];
 float gSpotLightAttn2[MAX_SPOT_LIGHTS];
 
-// ★★★ シャドウマップ用の追加パラメータ ★★★
-// ライト視点のビュー射影行列
+// --- ライト視点のビュー射影行列（配列は OK） ---
 float4x4 gLightViewProj[MAX_SPOT_LIGHTS];
 
-// シャドウマップテクスチャ
-texture gShadowMap[MAX_SPOT_LIGHTS];
+// --- シャドウマップ（個別に宣言） ---
+texture gShadowMap0;
 sampler shadowSampler0 = sampler_state
 {
-	Texture = <gShadowMap[0]>;
+	Texture = <gShadowMap0>;
 	MinFilter = POINT;
 	MagFilter = POINT;
 	MipFilter = NONE;
 	AddressU = CLAMP;
 	AddressV = CLAMP;
 };
+
+texture gShadowMap1;
 sampler shadowSampler1 = sampler_state
 {
-	Texture = <gShadowMap[1]>;
+	Texture = <gShadowMap1>;
 	MinFilter = POINT;
 	MagFilter = POINT;
 	MipFilter = NONE;
 	AddressU = CLAMP;
 	AddressV = CLAMP;
 };
+
+texture gShadowMap2;
 sampler shadowSampler2 = sampler_state
 {
-	Texture = <gShadowMap[2]>;
+	Texture = <gShadowMap2>;
 	MinFilter = POINT;
 	MagFilter = POINT;
 	MipFilter = NONE;
 	AddressU = CLAMP;
 	AddressV = CLAMP;
 };
+
+texture gShadowMap3;
 sampler shadowSampler3 = sampler_state
 {
-	Texture = <gShadowMap[3]>;
+	Texture = <gShadowMap3>;
 	MinFilter = POINT;
 	MagFilter = POINT;
 	MipFilter = NONE;
@@ -98,11 +103,9 @@ texture gTexture;
 sampler texSampler = sampler_state
 {
 	Texture = <gTexture>;
-
 	MinFilter = LINEAR;
 	MagFilter = LINEAR;
 	MipFilter = LINEAR;
-
 	AddressU = WRAP;
 	AddressV = WRAP;
 };
@@ -115,14 +118,18 @@ struct VS_INPUT
 	float2 texCoord : TEXCOORD0;
 };
 
-// 頂点シェーダー出力用
+// 頂点シェーダー出力用（lightSpacePos を個別 TEXCOORD に分解）
 struct VS_OUTPUT
 {
 	float4 position : POSITION;
 	float3 worldPos : TEXCOORD1;
 	float3 worldNormal : TEXCOORD2;
 	float2 texCoord : TEXCOORD0;
-	float4 lightSpacePos[MAX_SPOT_LIGHTS] : TEXCOORD3;  // ライト空間座標
+
+	float4 lightSpacePos0 : TEXCOORD3;
+	float4 lightSpacePos1 : TEXCOORD4;
+	float4 lightSpacePos2 : TEXCOORD5;
+	float4 lightSpacePos3 : TEXCOORD6;
 };
 
 // ピクセルシェーダー入力用
@@ -132,7 +139,11 @@ struct PS_INPUT
 	float3 worldPos : TEXCOORD1;
 	float3 worldNormal : TEXCOORD2;
 	float2 texCoord : TEXCOORD0;
-	float4 lightSpacePos[MAX_SPOT_LIGHTS] : TEXCOORD3;
+
+	float4 lightSpacePos0 : TEXCOORD3;
+	float4 lightSpacePos1 : TEXCOORD4;
+	float4 lightSpacePos2 : TEXCOORD5;
+	float4 lightSpacePos3 : TEXCOORD6;
 };
 
 // ピクセルシェーダー出力用
@@ -155,11 +166,11 @@ struct PS_DEPTH_OUTPUT
 };
 
 //=============================================================================
-// シャドウマップから影を判定
+// シャドウマップから影を判定（ライトインデックスでサンプラを選択）
 //=============================================================================
 float CalculateShadow(int lightIndex, float4 lightSpacePos)
 {
-	// ライト空間座標を正規化（-1～1 → 0～1）
+	// ライト空間座標を正規化（-1～1 -> 0～1）
 	float3 projCoords = lightSpacePos.xyz / lightSpacePos.w;
 	projCoords.x = projCoords.x * 0.5f + 0.5f;
 	projCoords.y = -projCoords.y * 0.5f + 0.5f;
@@ -172,30 +183,37 @@ float CalculateShadow(int lightIndex, float4 lightSpacePos)
 		return 1.0f;
 	}
 
-	// シャドウマップから深度値を取得
-	float shadowDepth = 0.0f;
+	// シャドウマップから深度値を取得（ライト毎にサンプラを切り替え）
+	float shadowDepth = 1.0f;
 	if (lightIndex == 0)
+	{
 		shadowDepth = tex2D(shadowSampler0, projCoords.xy).r;
+	}
 	else if (lightIndex == 1)
+	{
 		shadowDepth = tex2D(shadowSampler1, projCoords.xy).r;
+	}
 	else if (lightIndex == 2)
+	{
 		shadowDepth = tex2D(shadowSampler2, projCoords.xy).r;
+	}
 	else if (lightIndex == 3)
+	{
 		shadowDepth = tex2D(shadowSampler3, projCoords.xy).r;
+	}
 
-	// 現在のピクセルの深度
 	float currentDepth = projCoords.z;
 
-	// 影判定（バイアスを加えてアーティファクトを防止）
+	// 影判定（バイアスを加える）
 	float shadow = (currentDepth - gShadowBias) > shadowDepth ? 0.0f : 1.0f;
-
 	return shadow;
 }
 
 //=============================================================================
 // ライティング計算（ディレクショナルライト＋スポットライト + 影）
 //=============================================================================
-float4 CalculateLighting(float3 worldPos, float3 normal, float4 lightSpacePos[MAX_SPOT_LIGHTS])
+float4 CalculateLighting(float3 worldPos, float3 normal,
+	float4 ls0, float4 ls1, float4 ls2, float4 ls3)
 {
 	// 最終的なライトの結果
 	float4 lightResult = float4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -236,8 +254,12 @@ float4 CalculateLighting(float3 worldPos, float3 normal, float4 lightSpacePos[MA
 		// ディフューズ（拡散光）成分を計算
 		float diffuseFactor = saturate(dot(normal, toLight));
 
-		// ★★★ 影の判定を追加 ★★★
-		float shadow = CalculateShadow(i, lightSpacePos[i]);
+		// ★★ 影判定：ライトに応じて対応する lightSpacePos を渡す
+		float shadow = 1.0f;
+		if (i == 0) shadow = CalculateShadow(0, ls0);
+		else if (i == 1) shadow = CalculateShadow(1, ls1);
+		else if (i == 2) shadow = CalculateShadow(2, ls2);
+		else if (i == 3) shadow = CalculateShadow(3, ls3);
 
 		// スポットライトの色と減衰、拡散光成分、影を掛け合わせる
 		lightResult += gSpotLightColor[i] * attenuation * spotFactor * diffuseFactor * shadow;
@@ -273,12 +295,12 @@ VS_OUTPUT TextureVS(VS_INPUT In)
 	// UV座標の設定
 	Out.texCoord = In.texCoord;
 
-	// ★★★ 各ライト空間での座標を計算 ★★★
+	// 各ライト空間での座標を個別に計算して代入（配列参照を使わず明示的に）
 	float4 worldPos4 = float4(Out.worldPos, 1.0f);
-	for (int i = 0; i < MAX_SPOT_LIGHTS; i++)
-	{
-		Out.lightSpacePos[i] = mul(worldPos4, gLightViewProj[i]);
-	}
+	Out.lightSpacePos0 = mul(worldPos4, gLightViewProj[0]);
+	Out.lightSpacePos1 = mul(worldPos4, gLightViewProj[1]);
+	Out.lightSpacePos2 = mul(worldPos4, gLightViewProj[2]);
+	Out.lightSpacePos3 = mul(worldPos4, gLightViewProj[3]);
 
 	return Out;
 }
@@ -294,7 +316,8 @@ PS_OUTPUT TexturePS(PS_INPUT In)
 	float4 texColor = tex2D(texSampler, In.texCoord);
 
 	// ライティング結果を計算（影を含む）
-	float4 lightingColor = CalculateLighting(In.worldPos, In.worldNormal, In.lightSpacePos);
+	float4 lightingColor = CalculateLighting(In.worldPos, In.worldNormal,
+		In.lightSpacePos0, In.lightSpacePos1, In.lightSpacePos2, In.lightSpacePos3);
 
 	// 最終的な色を計算
 	Out.color = texColor * gMaterialDiffuse * lightingColor;
@@ -318,15 +341,14 @@ VS_OUTPUT NonTextureVS(VS_INPUT In)
 	// ワールド空間の法線ベクトルをピクセルシェーダーに渡す
 	Out.worldNormal = normalize(mul(float4(In.normal, 0.0f), gMatW).xyz);
 
-	// UV座標の設定
+	// UV座標の設定（未使用でも埋めておく）
 	Out.texCoord = In.texCoord;
 
-	// ★★★ 各ライト空間での座標を計算 ★★★
 	float4 worldPos4 = float4(Out.worldPos, 1.0f);
-	for (int i = 0; i < MAX_SPOT_LIGHTS; i++)
-	{
-		Out.lightSpacePos[i] = mul(worldPos4, gLightViewProj[i]);
-	}
+	Out.lightSpacePos0 = mul(worldPos4, gLightViewProj[0]);
+	Out.lightSpacePos1 = mul(worldPos4, gLightViewProj[1]);
+	Out.lightSpacePos2 = mul(worldPos4, gLightViewProj[2]);
+	Out.lightSpacePos3 = mul(worldPos4, gLightViewProj[3]);
 
 	return Out;
 }
@@ -339,7 +361,8 @@ PS_OUTPUT NonTexturePS(PS_INPUT In)
 	PS_OUTPUT Out;
 
 	// ライティング結果を計算（影を含む）
-	float4 lightingColor = CalculateLighting(In.worldPos, In.worldNormal, In.lightSpacePos);
+	float4 lightingColor = CalculateLighting(In.worldPos, In.worldNormal,
+		In.lightSpacePos0, In.lightSpacePos1, In.lightSpacePos2, In.lightSpacePos3);
 
 	// 最終的な色を計算
 	Out.color = gMaterialDiffuse * lightingColor;
@@ -354,7 +377,7 @@ VS_DEPTH_OUTPUT DepthVS(VS_INPUT In)
 {
 	VS_DEPTH_OUTPUT Out;
 
-	// 頂点に変換行列を乗算する
+	// 頂点に変換行列を乗算する（深度レンダー用）
 	Out.position = mul(float4(In.position, 1.0f), gMatWVP);
 
 	// 深度値を計算（0.0～1.0の範囲）
@@ -381,14 +404,12 @@ PS_DEPTH_OUTPUT DepthPS(VS_DEPTH_OUTPUT In)
 //=============================================================================
 technique PrimitiveTextureTec
 {
-	// パス0：テクスチャあり
 	pass P0
 	{
 		VertexShader = compile vs_3_0 TextureVS();
 		PixelShader = compile ps_3_0 TexturePS();
 	}
 
-	// パス1：テクスチャなし
 	pass P1
 	{
 		VertexShader = compile vs_3_0 NonTextureVS();
