@@ -10,11 +10,18 @@ using namespace WindowSetting;
 using namespace Common;
 
 Chaser::Chaser()
+	: m_bShadowMapEnabled(false)
+	, m_pShadowTexture(nullptr)
+	, m_pShadowSurface(nullptr)
+	, m_pShadowDepthSurface(nullptr)
 {
+	D3DXMatrixIdentity(&m_matLightView);
+	D3DXMatrixIdentity(&m_matLightProj);
 }
 
 Chaser::~Chaser()
 {
+	ReleaseShadowMap();
 }
 
 void Chaser::Initialize(Engine* pEngine, Map& map, Projection* projection, Camera& camera, DirectionalLight& light)
@@ -26,6 +33,10 @@ void Chaser::Initialize(Engine* pEngine, Map& map, Projection* projection, Camer
 	CharacterBase::Initialize(pEngine, MODEL_CHARACTER, projection, camera, light);
 	m_position = map.GetPlayerStartPosition();
 	m_targetPosition = m_position;
+
+	// ★★★ シャドウマップの作成 ★★★
+	CreateShadowMap(pEngine);
+
 	UpdateMatrix(light);
 }
 
@@ -38,11 +49,17 @@ void Chaser::InitializeAtPosition(Engine* pEngine, const D3DXVECTOR3& startPos, 
 	CharacterBase::Initialize(pEngine, MODEL_CHARACTER, projection, camera, light);
 	m_position = startPos;
 	m_targetPosition = m_position;
+
+	// ★★★ シャドウマップの作成 ★★★
+	CreateShadowMap(pEngine);
+
 	UpdateMatrix(light);
 }
 
 void Chaser::Release(Engine* pEngine)
 {
+	ReleaseShadowMap();
+
 	if (m_bIsLocal)
 		SoundManager::UnregisterGameObject(ID_PALYER);
 }
@@ -56,6 +73,7 @@ void Chaser::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 	Move(map);
 	SetThirdPersonFromBehind(pEngine, camera, map);
 	UpdateLight(pEngine);
+	UpdateLightMatrices();  // ★★★ ライト行列の更新 ★★★
 	UpdateMatrix(light);
 }
 
@@ -122,6 +140,93 @@ void Chaser::UpdateLight(Engine* pEngine)
 void Chaser::DrawDepth(Engine* pEngine)
 {
 	m_model.DrawDepth(pEngine);
+}
+
+// ★★★ シャドウマップの作成 ★★★
+void Chaser::CreateShadowMap(Engine* pEngine)
+{
+	LPDIRECT3DDEVICE9 pDevice = pEngine->GetDevice();
+
+	// シャドウマップテクスチャの作成
+	HRESULT hr = pDevice->CreateTexture(
+		SHADOW_MAP_SIZE, SHADOW_MAP_SIZE,
+		1,
+		D3DUSAGE_RENDERTARGET,
+		D3DFMT_R32F,
+		D3DPOOL_DEFAULT,
+		&m_pShadowTexture,
+		NULL
+	);
+
+	if (FAILED(hr))
+	{
+		NET_LOG("[Chaser] シャドウマップテクスチャ作成失敗");
+		m_bShadowMapEnabled = false;
+		return;
+	}
+
+	// 深度バッファの作成
+	hr = pDevice->CreateDepthStencilSurface(
+		SHADOW_MAP_SIZE, SHADOW_MAP_SIZE,
+		D3DFMT_D24S8,
+		D3DMULTISAMPLE_NONE,
+		0,
+		TRUE,
+		&m_pShadowDepthSurface,
+		NULL
+	);
+
+	if (FAILED(hr))
+	{
+		NET_LOG("[Chaser] シャドウマップ深度バッファ作成失敗");
+		m_pShadowTexture->Release();
+		m_pShadowTexture = nullptr;
+		m_bShadowMapEnabled = false;
+		return;
+	}
+
+	m_bShadowMapEnabled = true;
+	NET_LOG_F("[Chaser] シャドウマップ作成成功: ID=%u", m_clientId);
+}
+
+// ★★★ シャドウマップの解放 ★★★
+void Chaser::ReleaseShadowMap()
+{
+	if (m_pShadowDepthSurface)
+	{
+		m_pShadowDepthSurface->Release();
+		m_pShadowDepthSurface = nullptr;
+	}
+
+	if (m_pShadowSurface)
+	{
+		m_pShadowSurface->Release();
+		m_pShadowSurface = nullptr;
+	}
+
+	if (m_pShadowTexture)
+	{
+		m_pShadowTexture->Release();
+		m_pShadowTexture = nullptr;
+	}
+
+	m_bShadowMapEnabled = false;
+}
+
+// ★★★ ライト行列の更新 ★★★
+void Chaser::UpdateLightMatrices()
+{
+	if (!m_bShadowMapEnabled) return;
+
+	// ライトのビュー行列を作成
+	D3DXVECTOR3 lightPos = m_eyePosition;
+	D3DXVECTOR3 lightTarget = m_eyePosition + m_direction;
+	D3DXVECTOR3 lightUp(0.0f, 1.0f, 0.0f);
+
+	D3DXMatrixLookAtLH(&m_matLightView, &lightPos, &lightTarget, &lightUp);
+
+	// ライトのプロジェクション行列を作成
+	D3DXMatrixPerspectiveFovLH(&m_matLightProj, m_lightFov, 1.0f, 0.1f, m_lightRange);
 }
 
 void Chaser::LoadParameter()
