@@ -186,7 +186,6 @@ float CalculateShadow(int lightIndex, float4 lightSpacePos)
 	// シャドウマップから深度値を取得（ライト毎にサンプラを切り替え）
 	float shadowDepth = 1.0f;
 
-	// ★ 修正: if文をコンパイル時に最適化できる形に変更
 	[branch]
 	if (lightIndex == 0)
 	{
@@ -301,16 +300,35 @@ VS_OUTPUT TextureVS(VS_INPUT In)
 	// UV座標の設定
 	Out.texCoord = In.texCoord;
 
-	// 各ライト空間での座標を個別に計算して代入（配列参照を使わず明示的に）
-
-	// 各ライト空間での座標を個別に計算して代入（配列参照を使わず明示的に）
+	// ★★★ 修正: スポットライトがある場合のみライト空間座標を計算 ★★★
 	float4 worldPos4 = float4(Out.worldPos, 1.0f);
 
-	// ★ 修正: 条件分岐を避けて常に計算
-	Out.lightSpacePos0 = mul(worldPos4, gLightViewProj[0]);
-	Out.lightSpacePos1 = mul(worldPos4, gLightViewProj[1]);
-	Out.lightSpacePos2 = mul(worldPos4, gLightViewProj[2]);
-	Out.lightSpacePos3 = mul(worldPos4, gLightViewProj[3]);
+	if (gSpotLightCount > 0)
+	{
+		Out.lightSpacePos0 = mul(worldPos4, gLightViewProj[0]);
+		if (gSpotLightCount > 1)
+			Out.lightSpacePos1 = mul(worldPos4, gLightViewProj[1]);
+		else
+			Out.lightSpacePos1 = float4(0, 0, 0, 1);
+
+		if (gSpotLightCount > 2)
+			Out.lightSpacePos2 = mul(worldPos4, gLightViewProj[2]);
+		else
+			Out.lightSpacePos2 = float4(0, 0, 0, 1);
+
+		if (gSpotLightCount > 3)
+			Out.lightSpacePos3 = mul(worldPos4, gLightViewProj[3]);
+		else
+			Out.lightSpacePos3 = float4(0, 0, 0, 1);
+	}
+	else
+	{
+		// スポットライトが無い場合はダミー値
+		Out.lightSpacePos0 = float4(0, 0, 0, 1);
+		Out.lightSpacePos1 = float4(0, 0, 0, 1);
+		Out.lightSpacePos2 = float4(0, 0, 0, 1);
+		Out.lightSpacePos3 = float4(0, 0, 0, 1);
+	}
 
 	return Out;
 }
@@ -354,15 +372,35 @@ VS_OUTPUT NonTextureVS(VS_INPUT In)
 	// UV座標の設定（未使用でも埋めておく）
 	Out.texCoord = In.texCoord;
 
-
-	// 各ライト空間での座標を個別に計算して代入（配列参照を使わず明示的に）
+	// ★★★ 修正: スポットライトがある場合のみライト空間座標を計算 ★★★
 	float4 worldPos4 = float4(Out.worldPos, 1.0f);
 
-	// ★ 修正: 条件分岐を避けて常に計算
-	Out.lightSpacePos0 = mul(worldPos4, gLightViewProj[0]);
-	Out.lightSpacePos1 = mul(worldPos4, gLightViewProj[1]);
-	Out.lightSpacePos2 = mul(worldPos4, gLightViewProj[2]);
-	Out.lightSpacePos3 = mul(worldPos4, gLightViewProj[3]);
+	if (gSpotLightCount > 0)
+	{
+		Out.lightSpacePos0 = mul(worldPos4, gLightViewProj[0]);
+		if (gSpotLightCount > 1)
+			Out.lightSpacePos1 = mul(worldPos4, gLightViewProj[1]);
+		else
+			Out.lightSpacePos1 = float4(0, 0, 0, 1);
+
+		if (gSpotLightCount > 2)
+			Out.lightSpacePos2 = mul(worldPos4, gLightViewProj[2]);
+		else
+			Out.lightSpacePos2 = float4(0, 0, 0, 1);
+
+		if (gSpotLightCount > 3)
+			Out.lightSpacePos3 = mul(worldPos4, gLightViewProj[3]);
+		else
+			Out.lightSpacePos3 = float4(0, 0, 0, 1);
+	}
+	else
+	{
+		// スポットライトが無い場合はダミー値
+		Out.lightSpacePos0 = float4(0, 0, 0, 1);
+		Out.lightSpacePos1 = float4(0, 0, 0, 1);
+		Out.lightSpacePos2 = float4(0, 0, 0, 1);
+		Out.lightSpacePos3 = float4(0, 0, 0, 1);
+	}
 
 	return Out;
 }
