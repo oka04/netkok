@@ -570,6 +570,10 @@ void SceneGame::RenderShadowMaps()
 	pDevice->GetRenderTarget(0, &pOldBackBuffer);
 	pDevice->GetDepthStencilSurface(&pOldDepthBuffer);
 
+	// ★★★ 現在のビューポートも退避 ★★★
+	D3DVIEWPORT9 oldViewport;
+	pDevice->GetViewport(&oldViewport);
+
 	// 各鬼のシャドウマップを生成
 	for (auto& kv : m_players)
 	{
@@ -609,9 +613,16 @@ void SceneGame::RenderShadowMaps()
 		// クリア（白で塗りつぶす = 影なし）
 		pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0);
 
-		// ライトのビュー・プロジェクション行列を取得
+		// ★★★ ライトのビュー・プロジェクション行列を取得 ★★★
 		D3DXMATRIX matLightView = chaser->GetLightViewMatrix();
 		D3DXMATRIX matLightProj = chaser->GetLightProjectionMatrix();
+
+		// ★★★ 重要: デバイスにライトのビュー・プロジェクション行列を設定 ★★★
+		pDevice->SetTransform(D3DTS_VIEW, &matLightView);
+		pDevice->SetTransform(D3DTS_PROJECTION, &matLightProj);
+
+		// ★★★ ワールドビュープロジェクション行列を計算（エフェクトに渡す用） ★★★
+		D3DXMATRIX matLightVP = matLightView * matLightProj;
 
 		// ★★★ マップの深度レンダリング ★★★
 		m_map.DrawMapDepth(m_pEngine);
@@ -629,19 +640,16 @@ void SceneGame::RenderShadowMaps()
 		if (pShadowSurface) pShadowSurface->Release();
 	}
 
-	// 元のレンダーターゲットに戻す
+	// ★★★ 元のレンダーターゲットとビューポートに戻す ★★★
 	pDevice->SetRenderTarget(0, pOldBackBuffer);
 	pDevice->SetDepthStencilSurface(pOldDepthBuffer);
+	pDevice->SetViewport(&oldViewport);
 
-	// ビューポートを元に戻す
-	D3DVIEWPORT9 mainViewport;
-	mainViewport.X = 0;
-	mainViewport.Y = 0;
-	mainViewport.Width = WINDOW_WIDTH;
-	mainViewport.Height = WINDOW_HEIGHT;
-	mainViewport.MinZ = 0.0f;
-	mainViewport.MaxZ = 1.0f;
-	pDevice->SetViewport(&mainViewport);
+	// ★★★ 重要: メインカメラのビュー・プロジェクション行列に戻す ★★★
+	D3DXMATRIX matMainView = m_camera.GetViewMatrix();
+	D3DXMATRIX matMainProj = m_projection.GetProjectionMatrix();
+	pDevice->SetTransform(D3DTS_VIEW, &matMainView);
+	pDevice->SetTransform(D3DTS_PROJECTION, &matMainProj);
 
 	if (pOldBackBuffer) pOldBackBuffer->Release();
 	if (pOldDepthBuffer) pOldDepthBuffer->Release();

@@ -153,6 +153,13 @@ void CharacterBase::Input(Engine * pEngine)
 	{
 		m_keyFlag &= ~DASH_KEY;
 	}
+
+	if (pEngine->GetKeyState(DIK_UP)) {
+		m_position.y += 3;
+	}
+	if (pEngine->GetKeyState(DIK_DOWN)) {
+		m_position.y -= 3;
+	}
 }
 
 //m_speedを変えてから呼び出す
