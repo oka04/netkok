@@ -616,9 +616,7 @@ void SceneGame::RenderShadowMaps()
 		// ライトのビュー・プロジェクション行列を取得
 		D3DXMATRIX matLightVP = chaser->GetLightViewProjectionMatrix();
 
-		// ★★★ 重要: BeginSceneを呼ぶ ★★★
-		pDevice->BeginScene();
-
+		// ★★★ BeginScene/EndSceneは呼ばない！★★★
 		// マップの深度レンダリング
 		m_map.DrawMapDepth(m_pEngine, &matLightVP);
 
@@ -630,9 +628,6 @@ void SceneGame::RenderShadowMaps()
 				kv2.second->DrawDepth(m_pEngine, &matLightVP);
 			}
 		}
-
-		// ★★★ EndSceneを呼ぶ ★★★
-		pDevice->EndScene();
 
 		// サーフェスを解放
 		if (pShadowSurface) pShadowSurface->Release();

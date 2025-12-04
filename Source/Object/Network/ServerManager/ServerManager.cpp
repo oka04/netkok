@@ -602,7 +602,6 @@ void ServerManager::AssignRoles()
 
 	// 鬼の数を計算（最低1人、最大でも総人数-1）
 	int chaserCount = max(1, totalPlayers / 3);
-	chaserCount = min(chaserCount, totalPlayers - 1); // 全員が鬼にならないように
 	int runnerCount = totalPlayers - chaserCount;
 
 	NET_LOG_F("[ServerManager] 総人数=%d 鬼=%d 逃げる側=%d",
