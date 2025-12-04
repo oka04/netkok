@@ -799,44 +799,41 @@ void SceneGame::DespawnPlayer(uint32_t clientId)
 void SceneGame::Draw()
 {
 	// ★★★ デバッグ: まずシャドウマップ生成をコメントアウト ★★★
-	// RenderShadowMaps();
+	RenderShadowMaps();
 
 	// ★★★ デバッグ: スポットライトと影を完全に無効化してテスト ★★★
 	std::vector<SpotLight> spotLights;
 	std::vector<LPDIRECT3DTEXTURE9> shadowMaps;
 	std::vector<D3DXMATRIX> lightViewProjs;
 
-	// ★★★ 一旦コメントアウト - ライト収集を無効化 ★★★
-	/*
 	for (auto& kv : m_players)
 	{
-	if (!kv.second || m_playerRoles[kv.first] != ROLE_CHASER)
-	continue;
+		if (!kv.second || m_playerRoles[kv.first] != ROLE_CHASER)
+			continue;
 
-	Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
-	if (!chaser)
-	continue;
+		Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
+		if (!chaser)
+			continue;
 
-	SpotLight* light = chaser->GetLights();
-	if (light)
-	{
-	spotLights.push_back(*light);
+		SpotLight* light = chaser->GetLights();
+		if (light)
+		{
+			spotLights.push_back(*light);
 
-	if (chaser->IsShadowMapEnabled())
-	{
-	shadowMaps.push_back(chaser->GetShadowTexture());
-	lightViewProjs.push_back(chaser->GetLightViewProjectionMatrix());
+			if (chaser->IsShadowMapEnabled())
+			{
+				shadowMaps.push_back(chaser->GetShadowTexture());
+				lightViewProjs.push_back(chaser->GetLightViewProjectionMatrix());
+			}
+			else
+			{
+				shadowMaps.push_back(nullptr);
+				D3DXMATRIX identity;
+				D3DXMatrixIdentity(&identity);
+				lightViewProjs.push_back(identity);
+			}
+		}
 	}
-	else
-	{
-	shadowMaps.push_back(nullptr);
-	D3DXMATRIX identity;
-	D3DXMatrixIdentity(&identity);
-	lightViewProjs.push_back(identity);
-	}
-	}
-	}
-	*/
 
 	// ★★★ 全てnullptrで渡す ★★★
 	std::vector<SpotLight>* pLights = nullptr;
