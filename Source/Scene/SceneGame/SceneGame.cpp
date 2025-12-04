@@ -570,7 +570,7 @@ void SceneGame::RenderShadowMaps()
 	pDevice->GetRenderTarget(0, &pOldBackBuffer);
 	pDevice->GetDepthStencilSurface(&pOldDepthBuffer);
 
-	// ★★★ 現在のビューポートも退避 ★★★
+	// 現在のビューポートも退避
 	D3DVIEWPORT9 oldViewport;
 	pDevice->GetViewport(&oldViewport);
 
@@ -610,20 +610,19 @@ void SceneGame::RenderShadowMaps()
 		shadowViewport.MaxZ = 1.0f;
 		pDevice->SetViewport(&shadowViewport);
 
-		// クリア（白で塗りつぶす = 影なし）
+		// クリア（白で塗りつぶす = 影なし、深度は1.0）
 		pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0);
 
-		// ★★★ ライトのビュー・プロジェクション行列を取得 ★★★
-		D3DXMATRIX matLightView = chaser->GetLightViewMatrix();
-		D3DXMATRIX matLightProj = chaser->GetLightProjectionMatrix();
+		// ライトのビュー・プロジェクション行列を取得
+		D3DXMATRIX matLightVP = chaser->GetLightViewProjectionMatrix();
 
-		// ★★★ ワールドビュープロジェクション行列を計算 ★★★
-		D3DXMATRIX matLightVP = matLightView * matLightProj;
+		// ★★★ 重要: BeginSceneを呼ぶ ★★★
+		pDevice->BeginScene();
 
-		// ★★★ マップの深度レンダリング（行列を直接渡す） ★★★
+		// マップの深度レンダリング
 		m_map.DrawMapDepth(m_pEngine, &matLightVP);
 
-		// ★★★ 他のプレイヤーも影を落とす ★★★
+		// 他のプレイヤーも影を落とす
 		for (auto& kv2 : m_players)
 		{
 			if (kv2.second && kv2.first != kv.first)
@@ -632,11 +631,14 @@ void SceneGame::RenderShadowMaps()
 			}
 		}
 
+		// ★★★ EndSceneを呼ぶ ★★★
+		pDevice->EndScene();
+
 		// サーフェスを解放
 		if (pShadowSurface) pShadowSurface->Release();
 	}
 
-	// ★★★ 元のレンダーターゲットとビューポートに戻す ★★★
+	// 元のレンダーターゲットとビューポートに戻す
 	pDevice->SetRenderTarget(0, pOldBackBuffer);
 	pDevice->SetDepthStencilSurface(pOldDepthBuffer);
 	pDevice->SetViewport(&oldViewport);
@@ -646,7 +648,7 @@ void SceneGame::RenderShadowMaps()
 
 	static DWORD lastLog = 0;
 	DWORD now = timeGetTime();
-	if (now - lastLog > 2000)
+	if (now - lastLog > 5000)
 	{
 		int shadowCount = 0;
 		for (auto& kv : m_players)
@@ -657,7 +659,7 @@ void SceneGame::RenderShadowMaps()
 				if (chaser && chaser->IsShadowMapEnabled()) shadowCount++;
 			}
 		}
-		NET_LOG_F("[SceneGame] シャドウマップ生成完了: %d 個", shadowCount);
+		NET_LOG_F("[SceneGame] シャドウマップ生成: %d個", shadowCount);
 		lastLog = now;
 	}
 }

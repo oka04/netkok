@@ -223,10 +223,18 @@ void Chaser::UpdateLightMatrices()
 	D3DXVECTOR3 lightTarget = m_eyePosition + m_direction;
 	D3DXVECTOR3 lightUp(0.0f, 1.0f, 0.0f);
 
+	// 方向ベクトルが上ベクトルと平行な場合の対策
+	D3DXVECTOR3 normDir;
+	D3DXVec3Normalize(&normDir, &m_direction);
+	if (fabs(D3DXVec3Dot(&normDir, &lightUp)) > 0.99f)
+	{
+		lightUp = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
+	}
+
 	D3DXMatrixLookAtLH(&m_matLightView, &lightPos, &lightTarget, &lightUp);
 
-	// ライトのプロジェクション行列を作成
-	D3DXMatrixPerspectiveFovLH(&m_matLightProj, m_lightFov, 1.0f, 0.1f, m_lightRange);
+	// ライトのプロジェクション行列を作成（アスペクト比を1.0に、ニアプレーンを0.5に）
+	D3DXMatrixPerspectiveFovLH(&m_matLightProj, m_lightFov, 1.0f, 0.5f, m_lightRange);
 }
 
 void Chaser::LoadParameter()

@@ -300,34 +300,30 @@ VS_OUTPUT TextureVS(VS_INPUT In)
 	// UV座標の設定
 	Out.texCoord = In.texCoord;
 
-	// ★★★ 修正: スポットライトがある場合のみライト空間座標を計算 ★★★
+	// ★★★ ライト空間座標の計算（スポットライトがある場合のみ）★★★
 	float4 worldPos4 = float4(Out.worldPos, 1.0f);
+
+	// 初期化（ダミー値）
+	Out.lightSpacePos0 = float4(0, 0, 0, 1);
+	Out.lightSpacePos1 = float4(0, 0, 0, 1);
+	Out.lightSpacePos2 = float4(0, 0, 0, 1);
+	Out.lightSpacePos3 = float4(0, 0, 0, 1);
 
 	if (gSpotLightCount > 0)
 	{
 		Out.lightSpacePos0 = mul(worldPos4, gLightViewProj[0]);
-		if (gSpotLightCount > 1)
-			Out.lightSpacePos1 = mul(worldPos4, gLightViewProj[1]);
-		else
-			Out.lightSpacePos1 = float4(0, 0, 0, 1);
-
-		if (gSpotLightCount > 2)
-			Out.lightSpacePos2 = mul(worldPos4, gLightViewProj[2]);
-		else
-			Out.lightSpacePos2 = float4(0, 0, 0, 1);
-
-		if (gSpotLightCount > 3)
-			Out.lightSpacePos3 = mul(worldPos4, gLightViewProj[3]);
-		else
-			Out.lightSpacePos3 = float4(0, 0, 0, 1);
 	}
-	else
+	if (gSpotLightCount > 1)
 	{
-		// スポットライトが無い場合はダミー値
-		Out.lightSpacePos0 = float4(0, 0, 0, 1);
-		Out.lightSpacePos1 = float4(0, 0, 0, 1);
-		Out.lightSpacePos2 = float4(0, 0, 0, 1);
-		Out.lightSpacePos3 = float4(0, 0, 0, 1);
+		Out.lightSpacePos1 = mul(worldPos4, gLightViewProj[1]);
+	}
+	if (gSpotLightCount > 2)
+	{
+		Out.lightSpacePos2 = mul(worldPos4, gLightViewProj[2]);
+	}
+	if (gSpotLightCount > 3)
+	{
+		Out.lightSpacePos3 = mul(worldPos4, gLightViewProj[3]);
 	}
 
 	return Out;
