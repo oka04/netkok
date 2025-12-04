@@ -1103,8 +1103,7 @@ void Primitive::SetMaterial(const D3DMATERIAL9 material)
 
 //=============================================================================
 // 深度パス用の描画
-//=============================================================================
-void Primitive::DrawForDepthPass(Engine* pEngine, const D3DXMATRIX* pMatLightVP)
+void Primitive::DrawForDepthPass(Engine* pEngine, const D3DXMATRIX* pMatWVP)
 {
 	if (!m_pMesh || !m_pEffect) return;
 
@@ -1113,27 +1112,28 @@ void Primitive::DrawForDepthPass(Engine* pEngine, const D3DXMATRIX* pMatLightVP)
 	// 頂点宣言を設定
 	pDevice->SetVertexDeclaration(m_pVertexDeclaration);
 
-	// ★★★ 引数で渡されたライトビュープロジェクション行列を使用 ★★★
-	D3DXMATRIX matWVP = m_matWorld * (*pMatLightVP);
-
-	// エフェクトに行列を設定
-	m_pEffect->SetMatrix("gMatW", &m_matWorld);
-	m_pEffect->SetMatrix("gMatWVP", &matWVP);
+	// 行列を設定
+	m_pEffect->SetMatrix("gMatWVP", pMatWVP);
 
 	// 深度パステクニックを設定
 	m_pEffect->SetTechnique("DepthPass");
 
 	UINT numPass;
-	m_pEffect->Begin(&numPass, 0);
+	HRESULT hr = m_pEffect->Begin(&numPass, 0);
+	if (FAILED(hr))
+	{
+		return;
+	}
+
 	m_pEffect->BeginPass(0);
-
-	// メッシュを描画
 	m_pMesh->DrawSubset(0);
-
 	m_pEffect->EndPass();
 	m_pEffect->End();
-}
 
+	// ★★★ 重要: エフェクトの状態をリセット ★★★
+	// 次の通常描画のためにテクニックを戻す
+	m_pEffect->SetTechnique("PrimitiveTextureTec");
+}
 //*****************************************************************************
 // private関数
 //*****************************************************************************

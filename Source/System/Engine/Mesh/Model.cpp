@@ -140,7 +140,7 @@ void Model::DrawDepth(Engine* pEngine, const D3DXMATRIX* pMatLightVP)
 {
 	if (!m_pModelBase) return;
 
-	// ★★★ 引数で渡されたライトビュープロジェクション行列を使用 ★★★
+	// ★★★ 修正: モデルのワールド行列とライトVP行列を結合 ★★★
 	D3DXMATRIX matWVP = m_matWorld * (*pMatLightVP);
 
 	// モデルベースに深度描画を委譲

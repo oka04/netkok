@@ -210,7 +210,7 @@ void ModelBase::DrawDepth(LPD3DXMATRIX pMatWVP)
 	// 深度描画用のテクニックを設定
 	m_pEffect->SetTechnique("DepthPass");
 
-	// ワールドビュープロジェクション行列を設定
+	// ★★★ 修正: 引数の行列をそのまま使用 ★★★
 	m_pEffect->SetMatrix("gMatWVP", pMatWVP);
 
 	// フレームの深度描画

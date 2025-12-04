@@ -216,13 +216,11 @@ void Frame::DrawMeshContainerDepth(LPD3DXMESHCONTAINER pMeshContainerBase, LPD3D
 	{
 		// スキンメッシュの深度描画
 		DWORD AttribIdPrev = UNUSED32;
-
 		LPD3DXBONECOMBINATION pBoneComb = reinterpret_cast<LPD3DXBONECOMBINATION>(pMeshContainer->pBoneCombinationTable->GetBufferPointer());
 
 		for (UINT subset = 0; subset < pMeshContainer->numBoneCombinations; subset++)
 		{
 			UINT NumBlend = 0;
-
 			for (DWORD i = 0; i < pMeshContainer->numMaxFaceInfle; i++)
 			{
 				if (pBoneComb[subset].BoneId[i] != UINT_MAX)
@@ -232,7 +230,6 @@ void Frame::DrawMeshContainerDepth(LPD3DXMESHCONTAINER pMeshContainerBase, LPD3D
 			}
 
 			D3DXMATRIX matWorld[4];
-
 			for (int i = 0; i < 4; i++)
 			{
 				D3DXMatrixIdentity(&matWorld[i]);
@@ -241,52 +238,38 @@ void Frame::DrawMeshContainerDepth(LPD3DXMESHCONTAINER pMeshContainerBase, LPD3D
 			for (DWORD i = 0; i < pMeshContainer->numMaxFaceInfle; i++)
 			{
 				UINT boneNo = pBoneComb[subset].BoneId[i];
-
 				if (boneNo != UINT_MAX)
 				{
 					D3DXMATRIXA16 matTemp;
-
 					D3DXMatrixMultiply(&matTemp, &pMeshContainer->pBoneOffsetMatrices[boneNo], pMeshContainer->ppBoneMatrixPtrs[boneNo]);
-
 					matWorld[i] = matTemp;
 				}
 			}
 
-			// ボーンの変換行列を送る
-			pEffect->SetMatrixArray("gMatW", matWorld, 4);
-
-			// ワールドビュープロジェクション行列を送る
+			// ★★★ 修正: ボーン行列とライトVP行列を正しく結合 ★★★
 			D3DXMATRIX matWVP = matWorld[0] * *pMatWVP;
 			pEffect->SetMatrix("gMatWVP", &matWVP);
-
-			// １つの頂点に影響を与えるボーンの数を送る
 			pEffect->SetInt("gNumMaxInfle", pMeshContainer->numMaxFaceInfle);
 
 			UINT numPass;
 			pEffect->Begin(&numPass, 0);
-			pEffect->BeginPass(0);  // 深度パスは常にPass 0
-
-									// サブセットの描画
+			pEffect->BeginPass(0);
 			pMeshContainer->MeshData.pMesh->DrawSubset(subset);
-
 			pEffect->EndPass();
 			pEffect->End();
 		}
 	}
 	else
 	{
-		// スキン情報が無い場合（通常メッシュ）
+		// ★★★ 修正: フレームのワールド行列を考慮 ★★★
 		D3DXMATRIX matWorld = pFrame->CombinedTransformationMatrix;
-		pEffect->SetMatrix("gMatW", &matWorld);
-
 		D3DXMATRIX matWVP = matWorld * *pMatWVP;
 		pEffect->SetMatrix("gMatWVP", &matWVP);
 
 		UINT numPass;
 		pEffect->Begin(&numPass, 0);
-		pEffect->BeginPass(0);  // 深度パスは常にPass 0
+		pEffect->BeginPass(0);
 
-								// 全サブセットを描画
 		for (UINT i = 0; i < pMeshContainer->NumMaterials; i++)
 		{
 			pMeshContainer->MeshData.pMesh->DrawSubset(i);

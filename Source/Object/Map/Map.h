@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include <winsock2.h>
+#include <ws2tcpip.h>
 #include <vector>
 #include <string>
 #include <fstream>
@@ -13,7 +15,7 @@
 #include "..\\..\\GameBase.h"
 #include "..\\..\\Scene\\Scene\\Scene.h"
 #include "..\\GoalEffect\\GoalEffect.h"
-
+#include "Network\\NetworkLogger.h"
 class Map
 {
 public:

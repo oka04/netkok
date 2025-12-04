@@ -425,7 +425,7 @@ VS_DEPTH_OUTPUT DepthVS(VS_INPUT In)
 {
 	VS_DEPTH_OUTPUT Out;
 
-	// 頂点に変換行列を乗算する（深度レンダー用）
+	// ★★★ 修正: ワールドビュープロジェクション行列を正しく適用 ★★★
 	Out.position = mul(float4(In.position, 1.0f), gMatWVP);
 
 	// 深度値を計算（0.0～1.0の範囲）
@@ -441,7 +441,7 @@ PS_DEPTH_OUTPUT DepthPS(VS_DEPTH_OUTPUT In)
 {
 	PS_DEPTH_OUTPUT Out;
 
-	// 深度値をカラーとして出力
+	// ★★★ 修正: 深度値を正しく出力 ★★★
 	Out.color = float4(In.depth, In.depth, In.depth, 1.0f);
 
 	return Out;

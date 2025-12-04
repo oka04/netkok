@@ -861,13 +861,34 @@ bool Map::RayToRectIntersection(const D3DXVECTOR3& rayOrigin, const D3DXVECTOR3&
 
 	return true;
 }
-
 void Map::DrawMapDepth(Engine* pEngine, const D3DXMATRIX* pMatLightVP)
 {
-	for (const auto& wall : m_wall)
+	if (!pMatLightVP)
 	{
-		wall->DrawForDepthPass(pEngine, pMatLightVP);
+		NET_LOG("[Map::DrawMapDepth] エラー: pMatLightVP が nullptr");
+		return;
 	}
 
-	m_ground.DrawForDepthPass(pEngine, pMatLightVP);
+	// デバッグログ
+	static DWORD lastLog = 0;
+	DWORD now = timeGetTime();
+	if (now - lastLog > 5000)
+	{
+		NET_LOG_F("[Map::DrawMapDepth] 壁の数=%d 行列: _41=%.2f, _42=%.2f, _43=%.2f",
+			(int)m_wall.size(), pMatLightVP->_41, pMatLightVP->_42, pMatLightVP->_43);
+		lastLog = now;
+	}
+
+	// 各壁の深度描画
+	for (const auto& wall : m_wall)
+	{
+		D3DXMATRIX matWorld = wall->GetWorldTransformMatrix();
+		D3DXMATRIX matWVP = matWorld * (*pMatLightVP);
+		wall->DrawForDepthPass(pEngine, &matWVP);
+	}
+
+	// 地面の深度描画
+	D3DXMATRIX matGroundWorld = m_ground.GetWorldTransformMatrix();
+	D3DXMATRIX matGroundWVP = matGroundWorld * (*pMatLightVP);
+	m_ground.DrawForDepthPass(pEngine, &matGroundWVP);
 }
