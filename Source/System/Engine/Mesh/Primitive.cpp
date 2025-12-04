@@ -1104,7 +1104,7 @@ void Primitive::SetMaterial(const D3DMATERIAL9 material)
 //=============================================================================
 // 深度パス用の描画
 //=============================================================================
-void Primitive::DrawForDepthPass(Engine* pEngine)
+void Primitive::DrawForDepthPass(Engine* pEngine, const D3DXMATRIX* pMatLightVP)
 {
 	if (!m_pMesh || !m_pEffect) return;
 
@@ -1113,13 +1113,8 @@ void Primitive::DrawForDepthPass(Engine* pEngine)
 	// 頂点宣言を設定
 	pDevice->SetVertexDeclaration(m_pVertexDeclaration);
 
-	// ビュー・プロジェクション行列を取得
-	D3DXMATRIX matView, matProj;
-	pDevice->GetTransform(D3DTS_VIEW, &matView);
-	pDevice->GetTransform(D3DTS_PROJECTION, &matProj);
-
-	// ワールドビュープロジェクション行列を計算
-	D3DXMATRIX matWVP = m_matWorld * matView * matProj;
+	// ★★★ 引数で渡されたライトビュープロジェクション行列を使用 ★★★
+	D3DXMATRIX matWVP = m_matWorld * (*pMatLightVP);
 
 	// エフェクトに行列を設定
 	m_pEffect->SetMatrix("gMatW", &m_matWorld);

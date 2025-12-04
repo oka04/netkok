@@ -32,7 +32,7 @@ public:
 	void UpdateLight(Engine* pEngine);
 
 	// ★★★ 深度パス用の描画を追加 ★★★
-	virtual void DrawDepth(Engine* pEngine) override;
+	virtual void DrawDepth(Engine* pEngine, const D3DXMATRIX* pMatLightVP) override;
 
 	// ★★★ シャドウマップ関連のメソッドを追加 ★★★
 	bool IsShadowMapEnabled() const { return m_bShadowMapEnabled; }

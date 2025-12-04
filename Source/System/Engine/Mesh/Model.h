@@ -79,7 +79,7 @@ public:
 	//=============================================================================
 	void Draw(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight, bool bAnimation = true);
 
-	void DrawDepth(Engine* pEngine);
+	void DrawDepth(Engine* pEngine, const D3DXMATRIX* pMatLightVP);
 	//=============================================================================
 	// ワールド座標変換行列の設定
 	// 引　数：const LPD3DXMATRIX ﾜｰﾙﾄﾞ座標変換行列へのポインタ

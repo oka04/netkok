@@ -617,22 +617,18 @@ void SceneGame::RenderShadowMaps()
 		D3DXMATRIX matLightView = chaser->GetLightViewMatrix();
 		D3DXMATRIX matLightProj = chaser->GetLightProjectionMatrix();
 
-		// ★★★ 重要: デバイスにライトのビュー・プロジェクション行列を設定 ★★★
-		pDevice->SetTransform(D3DTS_VIEW, &matLightView);
-		pDevice->SetTransform(D3DTS_PROJECTION, &matLightProj);
-
-		// ★★★ ワールドビュープロジェクション行列を計算（エフェクトに渡す用） ★★★
+		// ★★★ ワールドビュープロジェクション行列を計算 ★★★
 		D3DXMATRIX matLightVP = matLightView * matLightProj;
 
-		// ★★★ マップの深度レンダリング ★★★
-		m_map.DrawMapDepth(m_pEngine);
+		// ★★★ マップの深度レンダリング（行列を直接渡す） ★★★
+		m_map.DrawMapDepth(m_pEngine, &matLightVP);
 
 		// ★★★ 他のプレイヤーも影を落とす ★★★
 		for (auto& kv2 : m_players)
 		{
 			if (kv2.second && kv2.first != kv.first)
 			{
-				kv2.second->DrawDepth(m_pEngine);
+				kv2.second->DrawDepth(m_pEngine, &matLightVP);
 			}
 		}
 
@@ -644,12 +640,6 @@ void SceneGame::RenderShadowMaps()
 	pDevice->SetRenderTarget(0, pOldBackBuffer);
 	pDevice->SetDepthStencilSurface(pOldDepthBuffer);
 	pDevice->SetViewport(&oldViewport);
-
-	// ★★★ 重要: メインカメラのビュー・プロジェクション行列に戻す ★★★
-	D3DXMATRIX matMainView = m_camera.GetViewMatrix();
-	D3DXMATRIX matMainProj = m_projection.GetProjectionMatrix();
-	pDevice->SetTransform(D3DTS_VIEW, &matMainView);
-	pDevice->SetTransform(D3DTS_PROJECTION, &matMainProj);
 
 	if (pOldBackBuffer) pOldBackBuffer->Release();
 	if (pOldDepthBuffer) pOldDepthBuffer->Release();

@@ -23,7 +23,8 @@ public:
 	void Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight& light, float deltaTime);
 
 	void Draw(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight);
-	virtual void DrawDepth(Engine* pEngine) override;
+
+	virtual void DrawDepth(Engine* pEngine, const D3DXMATRIX* pMatLightVP) override;
 	void DrawStaminaGauge(Engine* pEngine) override;
 	void DebugPrint(Engine* pEngine);
 

@@ -137,9 +137,9 @@ void Chaser::UpdateLight(Engine* pEngine)
 	}
 }
 
-void Chaser::DrawDepth(Engine* pEngine)
+void Chaser::DrawDepth(Engine* pEngine, const D3DXMATRIX* pMatLightVP)
 {
-	m_model.DrawDepth(pEngine);
+	m_model.DrawDepth(pEngine, pMatLightVP);
 }
 
 // ★★★ シャドウマップの作成 ★★★

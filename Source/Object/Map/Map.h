@@ -25,8 +25,7 @@ public:
 	void DrawMiniMap(Engine * pEngine, const D3DXVECTOR2 & playerPosition, const float arrowAngle);
 	void DebugBoxLine(Engine * pEngine, Camera * pCamera, Projection * pProj);
 
-	// ★★★ 深度パス用の描画メソッドを追加 ★★★
-	void DrawMapDepth(Engine* pEngine);
+	void DrawMapDepth(Engine* pEngine, const D3DXMATRIX* pMatLightVP);
 
 	//移動できるかの確認(移動はこの関数内で行う）
 	void MoveCheck(D3DXVECTOR3 &position, const D3DXVECTOR3 &vector, const float &radius);

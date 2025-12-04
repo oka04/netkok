@@ -165,7 +165,7 @@ public:
 	//=============================================================================
 	// 深度パス用の描画
 	//=============================================================================
-	void DrawForDepthPass(Engine* pEngine);
+	void DrawForDepthPass(Engine* pEngine, const D3DXMATRIX* pMatLightVP);
 
 private:
 

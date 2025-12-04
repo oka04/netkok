@@ -60,15 +60,6 @@ void Map::DrawMap(Engine* pEngine, Camera* pCamera, Projection* pProj, AmbientLi
 
 	m_ground.Draw(pEngine, pCamera, pProj, pAmbient, pLight, lights, pShadowMaps, pLightViewProj);
 }
-void Map::DrawMapDepth(Engine* pEngine)
-{
-	for (const auto& wall : m_wall)
-	{
-		wall->DrawForDepthPass(pEngine);
-	}
-
-	m_ground.DrawForDepthPass(pEngine);
-}
 void Map::DrawGoalEffect(Camera * pCamera, Projection * pProj)
 {
 	m_goalEffect.Draw(pCamera, pProj);
@@ -869,4 +860,14 @@ bool Map::RayToRectIntersection(const D3DXVECTOR3& rayOrigin, const D3DXVECTOR3&
 	}
 
 	return true;
+}
+
+void Map::DrawMapDepth(Engine* pEngine, const D3DXMATRIX* pMatLightVP)
+{
+	for (const auto& wall : m_wall)
+	{
+		wall->DrawForDepthPass(pEngine, pMatLightVP);
+	}
+
+	m_ground.DrawForDepthPass(pEngine, pMatLightVP);
 }
