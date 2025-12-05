@@ -55,8 +55,8 @@ texture gShadowMap0;
 sampler shadowSampler0 = sampler_state
 {
 	Texture = <gShadowMap0>;
-	MinFilter = POINT;
-	MagFilter = POINT;
+	MinFilter = LINEAR;  // POINT から LINEAR に変更
+	MagFilter = LINEAR;  // POINT から LINEAR に変更
 	MipFilter = NONE;
 	AddressU = CLAMP;
 	AddressV = CLAMP;
@@ -66,8 +66,8 @@ texture gShadowMap1;
 sampler shadowSampler1 = sampler_state
 {
 	Texture = <gShadowMap1>;
-	MinFilter = POINT;
-	MagFilter = POINT;
+	MinFilter = LINEAR;
+	MagFilter = LINEAR;
 	MipFilter = NONE;
 	AddressU = CLAMP;
 	AddressV = CLAMP;
@@ -77,8 +77,8 @@ texture gShadowMap2;
 sampler shadowSampler2 = sampler_state
 {
 	Texture = <gShadowMap2>;
-	MinFilter = POINT;
-	MagFilter = POINT;
+	MinFilter = LINEAR;
+	MagFilter = LINEAR;
 	MipFilter = NONE;
 	AddressU = CLAMP;
 	AddressV = CLAMP;
@@ -88,15 +88,15 @@ texture gShadowMap3;
 sampler shadowSampler3 = sampler_state
 {
 	Texture = <gShadowMap3>;
-	MinFilter = POINT;
-	MagFilter = POINT;
+	MinFilter = LINEAR;
+	MagFilter = LINEAR;
 	MipFilter = NONE;
 	AddressU = CLAMP;
 	AddressV = CLAMP;
 };
 
 // シャドウバイアス（影のアーティファクト防止）
-float gShadowBias = 0.001f;
+float gShadowBias = 0.002f;
 
 // テクスチャー
 texture gTexture;
@@ -170,48 +170,63 @@ struct PS_DEPTH_OUTPUT
 //=============================================================================
 float CalculateShadow(int lightIndex, float4 lightSpacePos)
 {
-	// ライト空間座標を正規化（-1～1 -> 0～1）
+	// ★★★ 正しい透視除算 ★★★
+	if (lightSpacePos.w <= 0.0f)
+	{
+		return 1.0f; // ライトの後ろは影なし
+	}
+
+	// 透視除算を実行
 	float3 projCoords = lightSpacePos.xyz / lightSpacePos.w;
-	projCoords.x = projCoords.x * 0.5f + 0.5f;
-	projCoords.y = -projCoords.y * 0.5f + 0.5f;
 
-	// テクスチャ範囲外なら影なし
-	if (projCoords.x < 0.0f || projCoords.x > 1.0f ||
-		projCoords.y < 0.0f || projCoords.y > 1.0f ||
-		projCoords.z < 0.0f || projCoords.z > 1.0f)
-	{
-		return 1.0f;
-	}
+	// NDC座標 (-1～1) をテクスチャ座標 (0～1) に変換
+	float2 shadowTexCoord;
+	shadowTexCoord.x = projCoords.x * 0.5f + 0.5f;
+	shadowTexCoord.y = -projCoords.y * 0.5f + 0.5f;
 
-	// シャドウマップから深度値を取得（ライト毎にサンプラを切り替え）
-	float shadowDepth = 1.0f;
-
-	[branch]
-	if (lightIndex == 0)
-	{
-		shadowDepth = tex2D(shadowSampler0, projCoords.xy).r;
-	}
-	[branch]
-	if (lightIndex == 1)
-	{
-		shadowDepth = tex2D(shadowSampler1, projCoords.xy).r;
-	}
-	[branch]
-	if (lightIndex == 2)
-	{
-		shadowDepth = tex2D(shadowSampler2, projCoords.xy).r;
-	}
-	[branch]
-	if (lightIndex == 3)
-	{
-		shadowDepth = tex2D(shadowSampler3, projCoords.xy).r;
-	}
-
+	// 現在のピクセルの深度（0～1）
 	float currentDepth = projCoords.z;
 
-	// 影判定（バイアスを加える）
-	float shadow = (currentDepth - gShadowBias) > shadowDepth ? 0.0f : 1.0f;
-	return shadow;
+	// ★★★ シャドウマップの範囲外チェック ★★★
+	// スポットライトの照射範囲外なら影なし
+	if (shadowTexCoord.x < 0.0f || shadowTexCoord.x > 1.0f ||
+		shadowTexCoord.y < 0.0f || shadowTexCoord.y > 1.0f ||
+		currentDepth < 0.0f || currentDepth > 1.0f)
+	{
+		return 1.0f; // 範囲外は影なし
+	}
+
+	// シャドウマップから記録された深度を取得
+	float shadowMapDepth = 1.0f;
+
+	if (lightIndex == 0)
+	{
+		shadowMapDepth = tex2D(shadowSampler0, shadowTexCoord).r;
+	}
+	else if (lightIndex == 1)
+	{
+		shadowMapDepth = tex2D(shadowSampler1, shadowTexCoord).r;
+	}
+	else if (lightIndex == 2)
+	{
+		shadowMapDepth = tex2D(shadowSampler2, shadowTexCoord).r;
+	}
+	else if (lightIndex == 3)
+	{
+		shadowMapDepth = tex2D(shadowSampler3, shadowTexCoord).r;
+	}
+
+	// ★★★ 影判定: 現在のピクセルが記録された深度より奥にあれば影 ★★★
+	// バイアスを加えてセルフシャドウイングを防ぐ
+	float bias = gShadowBias;
+
+	// 現在の深度が記録された深度より大きければ影（何かに遮られている）
+	if (currentDepth - bias > shadowMapDepth)
+	{
+		return 0.0f; // 影
+	}
+
+	return 1.0f; // 影なし
 }
 
 //=============================================================================
@@ -256,31 +271,35 @@ float4 CalculateLighting(float3 worldPos, float3 normal,
 			}
 		}
 
+		// ★★★ spotFactorが0なら、このライトは影響しないのでスキップ ★★★
+		if (spotFactor <= 0.0f) continue;
+
 		// ディフューズ（拡散光）成分を計算
 		float diffuseFactor = saturate(dot(normal, toLight));
 
-		// ★★ 影判定：ライトに応じて対応する lightSpacePos を渡す
+		// ★★★ 影判定：対応するライト空間座標を渡す ★★★
 		float shadow = 1.0f;
 		if (i == 0) shadow = CalculateShadow(0, ls0);
 		else if (i == 1) shadow = CalculateShadow(1, ls1);
 		else if (i == 2) shadow = CalculateShadow(2, ls2);
 		else if (i == 3) shadow = CalculateShadow(3, ls3);
 
-		// スポットライトの色と減衰、拡散光成分、影を掛け合わせる
+		// ★★★ ライトの色に影を適用 ★★★
+		// shadow=0（完全な影）の場合、このライトの寄与は0になる
+		// shadow=1（影なし）の場合、通常通りライトが当たる
 		lightResult += gSpotLightColor[i] * attenuation * spotFactor * diffuseFactor * shadow;
 	}
 
-	// 環境光を加算
+	// 環境光を加算（影の影響を受けない）
 	lightResult += gAmbientColor;
 
-	// ディレクショナルライトを加算
+	// ディレクショナルライトを加算（影の影響を受けない）
 	float diffuseDirFactor = saturate(dot(normal, -gLightDir));
 	lightResult += gLightColor * diffuseDirFactor;
 
 	// 最終的なライトの色を0-1の範囲にクランプして返す
 	return saturate(lightResult);
 }
-
 //=============================================================================
 // 頂点シェーダ（テクスチャあり）
 //=============================================================================
@@ -300,14 +319,15 @@ VS_OUTPUT TextureVS(VS_INPUT In)
 	// UV座標の設定
 	Out.texCoord = In.texCoord;
 
-	// ★★★ ライト空間座標の計算（スポットライトがある場合のみ）★★★
-	float4 worldPos4 = float4(Out.worldPos, 1.0f);
-
+	// ★★★ 修正: ライト空間座標の計算 ★★★
 	// 初期化（ダミー値）
 	Out.lightSpacePos0 = float4(0, 0, 0, 1);
 	Out.lightSpacePos1 = float4(0, 0, 0, 1);
 	Out.lightSpacePos2 = float4(0, 0, 0, 1);
 	Out.lightSpacePos3 = float4(0, 0, 0, 1);
+
+	// ワールド座標を使ってライト空間座標を計算
+	float4 worldPos4 = float4(Out.worldPos, 1.0f);
 
 	if (gSpotLightCount > 0)
 	{
@@ -339,16 +359,14 @@ PS_OUTPUT TexturePS(PS_INPUT In)
 	// テクスチャーの色を取得
 	float4 texColor = tex2D(texSampler, In.texCoord);
 
-	// ライティング結果を計算（影を含む）
-	float4 lightingColor = CalculateLighting(In.worldPos, In.worldNormal,
-		In.lightSpacePos0, In.lightSpacePos1, In.lightSpacePos2, In.lightSpacePos3);
+	// ★★★ デバッグ：最初のライトの影だけを可視化 ★★★
+	float shadow = CalculateShadow(0, In.lightSpacePos0);
 
-	// 最終的な色を計算
-	Out.color = texColor * gMaterialDiffuse * lightingColor;
+	// 影=0（黒）、影なし=1（白）で表示
+	Out.color = float4(shadow, shadow, shadow, 1.0f);
 
 	return Out;
 }
-
 //=============================================================================
 // 頂点シェーダ（テクスチャなし）
 //=============================================================================

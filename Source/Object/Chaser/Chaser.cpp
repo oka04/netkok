@@ -213,7 +213,6 @@ void Chaser::ReleaseShadowMap()
 	m_bShadowMapEnabled = false;
 }
 
-// ★★★ ライト行列の更新 ★★★
 void Chaser::UpdateLightMatrices()
 {
 	if (!m_bShadowMapEnabled) return;
@@ -233,8 +232,8 @@ void Chaser::UpdateLightMatrices()
 
 	D3DXMatrixLookAtLH(&m_matLightView, &lightPos, &lightTarget, &lightUp);
 
-	// ライトのプロジェクション行列を作成（アスペクト比を1.0に、ニアプレーンを0.5に）
-	D3DXMatrixPerspectiveFovLH(&m_matLightProj, m_lightFov, 1.0f, 0.5f, m_lightRange);
+	// ★★★ 修正: ニアプレーンを0.05に（さらに小さく） ★★★
+	D3DXMatrixPerspectiveFovLH(&m_matLightProj, m_lightFov, 1.0f, 0.05f, m_lightRange);
 }
 
 void Chaser::LoadParameter()

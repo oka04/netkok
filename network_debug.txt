@@ -2,707 +2,843 @@
 Network Debug Log
 ===========================================
 
-[16:46:31] ========================================
-[16:46:31] ClientManager 初期化開始
-[16:46:31] ========================================
-[16:46:31] [ClientManager] ENet初期化成功
-[16:46:31] [ClientManager] Discovery作成
-[16:46:31] [Discovery/Listener] スレッド開始
-[16:46:31] [Discovery/Listener] WSAStartup成功
-[16:46:31] [ClientManager] Discoveryリスナー起動 (ポート:12346)
-[16:46:31] [Discovery/Listener] ソケット作成成功
-[16:46:31] [Discovery/Listener] bind成功 ポート:12346
-[16:46:31] [Discovery/Listener] 受信ループ開始
-[16:46:32] ========================================
-[16:46:32] [SceneSelectHost] サーバー作成開始: G
-[16:46:32] [Client] 切断
-[16:46:32] [ServerManager] ホスト名設定: Player473
-[16:46:32] [SceneSelectHost] サーバー名設定: G
-[16:46:32] [SceneSelectHost] ホスト名設定: Player473
-[16:46:32] [Discovery/Advertiser] スレッド開始
-[16:46:32] [Discovery/Advertiser] WSAStartup成功
-[16:46:32] [ServerManager] サーバー起動: ポート=12280
-[16:46:32] [Discovery/Advertiser] ソケット作成成功
-[16:46:32] [SceneSelectHost] サーバー起動成功: ポート=12280
-[16:46:32] [Discovery/Advertiser] SO_BROADCAST設定成功
-[16:46:32] [Discovery/Advertiser] ブロードキャストループ開始
-[16:46:32] [Discovery/Advertiser] 送信データ: port=12280 player=1/8 state=0 name='G'
-[16:46:32] [Discovery/Advertiser] ブロードキャスト送信 #1: サイズ=19 bytes (port=12280)
-[16:46:32] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[16:46:32] [Discovery/Listener] マジック一致確認
-[16:46:32] [Discovery/Listener] プロトコルバージョン: 256
-[16:46:32] [Discovery/Listener] ポート（変換後）: 12280
-[16:46:32] [Discovery/Listener] プレイヤー数: 1
-[16:46:32] [Discovery/Listener] 最大プレイヤー数: 8
-[16:46:32] [Discovery/Listener] ステート: 0
-[16:46:32] [Discovery/Listener] 名前の長さ: 1
-[16:46:32] [Discovery/Listener] サーバー名: 'G'
-[16:46:32] [Discovery/Listener] ★サーバー検出★: G @ 172.20.145.6:12280 (1/8) state=0
-[16:46:32] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:46:32] [ClientManager] ConnectToServer: 127.0.0.1:12280
-[16:46:32] [ClientManager] クライアントホスト作成成功
-[16:46:32] [ClientManager] ホスト接続 - サーバー名は接続後に取得
-[16:46:32] [ClientManager] 接続要求送信 (ホスト判定: true)
-[16:46:32] [SceneSelectHost] ロビーに遷移
-[16:46:32] [SceneLobby] ホストとしてロビー開始: サーバー名='G'
-[16:46:32] [SceneLobby] Start完了
-[16:46:32] [ClientManager] サーバー接続成功（ENET_EVENT_TYPE_CONNECT受信）
-[16:46:32] [ClientManager] JOIN送信: Player473
-[16:46:32] [ClientManager] JOIN送信完了: Player473
-[16:46:32] [ServerManager] クライアント接続: ID=1 (現在1人)
-[16:46:32] [ServerManager] ProcessJoin: データ長=10
-[16:46:32] [ServerManager] 名前長さ: 9
-[16:46:32] [ServerManager] 受信した名前: 'Player473'
-[16:46:32] [ServerManager] ホストのJOIN受信: Player473 (ID=1)
-[16:46:32] [ServerManager] JoinAck送信: ClientID=1
-[16:46:32] [ServerManager] 新規参加者にホスト情報を送信: Player473 Pos=(0.0,0.0,0.0)
-[16:46:32] [ServerManager] 新規参加者情報をブロードキャスト: Player473 (ID=1)
-[16:46:32] [ServerManager] ロビー更新をブロードキャスト
-[16:46:32] [ServerManager] BroadcastLobbyUpdate: 1 人
-[16:46:32] [ServerManager] プレイヤー1: 'Player473' (長さ:9)
-[16:46:32] [ServerManager] 送信データサイズ: 12 bytes
-[16:46:32] [ClientManager] クライアントID割り当て: 1
-[16:46:32] [ClientManager] プレイヤー生成通知: ID=1, Name=Player473
-[16:46:32] [ClientManager] プレイヤー生成通知: ID=1, Name=Player473
-[16:46:32] [ClientManager] ProcessLobbyUpdate: データ長=12
-[16:46:32] [ClientManager] プレイヤー数: 1
-[16:46:32] [ClientManager] プレイヤー1 名前長さ: 9
-[16:46:32] [ClientManager] プレイヤー1: 'Player473'
-[16:46:32] [ClientManager] ロビー更新完了: 1 人
-[16:46:33] [SceneLobby] ゲーム開始ボタン押下
-[16:46:33] [ServerManager] 役割割り当て開始
-[16:46:33] [ServerManager] ホストをリストに追加: ID=1
-[16:46:33] [ServerManager] 総プレイヤー数: 1
-[16:46:33] [ServerManager] 総人数=1 鬼=1 逃げる側=0
-[16:46:33] [ServerManager] シャッフル後のID順:
-[16:46:33]   位置0: ID=1
-[16:46:33] [ServerManager] ホスト(ID=1 Name=Player473)の役割: 鬼
-[16:46:33] [ServerManager] クライアント Player473 (ID=1) の役割: 鬼
-[16:46:33] [ServerManager] 役割割り当て完了
-[16:46:33] [ServerManager] 割り当て結果確認: 鬼=1 逃げる側=0
-[16:46:33] [ServerManager] 役割割り当てをブロードキャスト
-[16:46:33] [ServerManager] ホスト(ID=1)の役割送信: 鬼
-[16:46:33] [ServerManager] クライアント Player473 (ID=1)の役割送信: 鬼
-[16:46:33] [ServerManager] 役割割り当てブロードキャスト完了
-[16:46:33] [ServerManager] ゲーム開始 - 役割割り当て済み
-[16:46:33] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
-[16:46:33] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
-[16:46:33] [ClientManager] ゲーム開始通知受信
-[16:46:33] [SceneLobby] ゲーム開始 - ゲームシーンへ遷移
-[16:46:36] [Discovery/Listener] 生存確認 ループ:50
-[16:46:37] [Discovery/Advertiser] 送信データ: port=12280 player=1/8 state=1 name='G'
-[16:46:37] [Discovery/Advertiser] ブロードキャスト送信 #2: サイズ=19 bytes (port=12280)
-[16:46:37] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[16:46:37] [Discovery/Listener] マジック一致確認
-[16:46:37] [Discovery/Listener] プロトコルバージョン: 256
-[16:46:37] [Discovery/Listener] ポート（変換後）: 12280
-[16:46:37] [Discovery/Listener] プレイヤー数: 1
-[16:46:37] [Discovery/Listener] 最大プレイヤー数: 8
-[16:46:37] [Discovery/Listener] ステート: 1
-[16:46:37] [Discovery/Listener] 名前の長さ: 1
-[16:46:37] [Discovery/Listener] サーバー名: 'G'
-[16:46:37] [Discovery/Listener] ★サーバー検出★: G @ 172.20.145.6:12280 (1/8) state=1
-[16:46:37] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:46:37] [SceneGame] Initialize: IsHost=1, ClientID=1
-[16:46:37] [SceneGame] 初期化完了 - 役割割り当て待機中
-[16:46:37] [SceneGame] 役割受信: ID=1 Role=鬼
-[16:46:37] [SceneGame] ローカルプレイヤー生成: Role=鬼
-[16:46:37] [SceneGame] Chaserを生成: ID=1, Name=Player473
-[16:46:37] [Chaser] シャドウマップ作成成功: ID=0
-[16:46:37] [SceneGame] プレイヤー生成完了: ID=1, Role=鬼, Pos=(7.5,0.5,72.5)
-[16:46:37] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.04,0.00,-1.00) IsLocal=Yes
-[16:46:37] [SceneGame] 役割受信: ID=1 Role=鬼
-[16:46:37] [SceneGame] プレイヤー 1 は既に生成済み
-[16:46:37] [SceneGame] 鬼のライト更新: 1 個
-[16:46:37] [Map::DrawMapDepth] 壁の数=36 行列: _41=22.98, _42=-3.86, _43=76.37
-[16:46:37] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
-[16:46:37] [SceneGame] ワールド状態受信: プレイヤー数=0
-[16:46:39] [SceneGame] フェードイン完了 - ゲーム開始
-[16:46:39] [Chaser::UpdateLight] ID=0 Pos=(8.5,1.8,71.8) Dir=(0.22,0.00,-0.98) IsLocal=Yes
-[16:46:40] [SceneGame] 鬼のライト更新: 1 個
-[16:46:40] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:46:40] [SceneGame] 送信: ID=0 Pos=(10.6,0.5,71.0) Interval=16ms
-[16:46:41] [Discovery/Listener] 生存確認 ループ:100
-[16:46:41] [Chaser::UpdateLight] ID=0 Pos=(11.6,1.8,71.2) Dir=(0.84,0.00,-0.55) IsLocal=Yes
-[16:46:42] [Discovery/Advertiser] 送信データ: port=12280 player=1/8 state=1 name='G'
-[16:46:42] [Discovery/Advertiser] ブロードキャスト送信 #3: サイズ=19 bytes (port=12280)
-[16:46:42] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[16:46:42] [Discovery/Listener] マジック一致確認
-[16:46:42] [Discovery/Listener] プロトコルバージョン: 256
-[16:46:42] [Discovery/Listener] ポート（変換後）: 12280
-[16:46:42] [Discovery/Listener] プレイヤー数: 1
-[16:46:42] [Discovery/Listener] 最大プレイヤー数: 8
-[16:46:42] [Discovery/Listener] ステート: 1
-[16:46:42] [Discovery/Listener] 名前の長さ: 1
-[16:46:42] [Discovery/Listener] サーバー名: 'G'
-[16:46:42] [Discovery/Listener] ★サーバー検出★: G @ 172.20.145.6:12280 (1/8) state=1
-[16:46:42] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:46:42] [Map::DrawMapDepth] 壁の数=36 行列: _41=111.67, _42=-3.86, _43=54.81
-[16:46:43] [Chaser::UpdateLight] ID=0 Pos=(15.5,1.8,71.8) Dir=(-0.18,0.00,-0.98) IsLocal=Yes
-[16:46:43] [SceneGame] 鬼のライト更新: 1 個
-[16:46:43] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:46:43] [SceneGame] 送信: ID=0 Pos=(15.5,0.5,71.8) Interval=16ms
-[16:46:45] [Chaser::UpdateLight] ID=0 Pos=(15.5,1.8,71.8) Dir=(0.75,0.00,-0.66) IsLocal=Yes
-[16:46:46] [Discovery/Listener] 生存確認 ループ:150
-[16:46:46] [SceneGame] 鬼のライト更新: 1 個
-[16:46:46] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:46:46] [SceneGame] 送信: ID=0 Pos=(16.4,0.5,71.4) Interval=16ms
-[16:46:47] [Discovery/Advertiser] 送信データ: port=12280 player=1/8 state=1 name='G'
-[16:46:47] [Discovery/Advertiser] ブロードキャスト送信 #4: サイズ=19 bytes (port=12280)
-[16:46:47] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[16:46:47] [Discovery/Listener] マジック一致確認
-[16:46:47] [Discovery/Listener] プロトコルバージョン: 256
-[16:46:47] [Discovery/Listener] ポート（変換後）: 12280
-[16:46:47] [Discovery/Listener] プレイヤー数: 1
-[16:46:47] [Discovery/Listener] 最大プレイヤー数: 8
-[16:46:47] [Discovery/Listener] ステート: 1
-[16:46:47] [Discovery/Listener] 名前の長さ: 1
-[16:46:47] [Discovery/Listener] サーバー名: 'G'
-[16:46:47] [Discovery/Listener] ★サーバー検出★: G @ 172.20.145.6:12280 (1/8) state=1
-[16:46:47] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:46:47] [Map::DrawMapDepth] 壁の数=36 行列: _41=-35.60, _42=-3.86, _43=76.14
-[16:46:47] [Chaser::UpdateLight] ID=0 Pos=(17.3,1.8,71.7) Dir=(-0.45,0.00,-0.89) IsLocal=Yes
-[16:46:49] [Chaser::UpdateLight] ID=0 Pos=(15.8,1.8,70.9) Dir=(-0.25,0.00,-0.97) IsLocal=Yes
-[16:46:49] [SceneGame] 鬼のライト更新: 1 個
-[16:46:49] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:46:49] [SceneGame] 送信: ID=0 Pos=(15.8,0.5,70.9) Interval=16ms
-[16:46:51] [Discovery/Listener] 生存確認 ループ:200
-[16:46:51] [Chaser::UpdateLight] ID=0 Pos=(15.8,1.8,70.9) Dir=(-0.23,0.00,-0.97) IsLocal=Yes
-[16:46:52] [Discovery/Advertiser] 送信データ: port=12280 player=1/8 state=1 name='G'
-[16:46:52] [Discovery/Advertiser] ブロードキャスト送信 #5: サイズ=19 bytes (port=12280)
-[16:46:52] [Map::DrawMapDepth] 壁の数=36 行列: _41=-22.33, _42=-3.86, _43=76.13
-[16:46:52] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[16:46:52] [Discovery/Listener] マジック一致確認
-[16:46:52] [Discovery/Listener] プロトコルバージョン: 256
-[16:46:52] [Discovery/Listener] ポート（変換後）: 12280
-[16:46:52] [Discovery/Listener] プレイヤー数: 1
-[16:46:52] [Discovery/Listener] 最大プレイヤー数: 8
-[16:46:52] [Discovery/Listener] ステート: 1
-[16:46:52] [Discovery/Listener] 名前の長さ: 1
-[16:46:52] [Discovery/Listener] サーバー名: 'G'
-[16:46:52] [Discovery/Listener] ★サーバー検出★: G @ 172.20.145.6:12280 (1/8) state=1
-[16:46:52] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:46:52] [SceneGame] 鬼のライト更新: 1 個
-[16:46:52] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:46:52] [SceneGame] 送信: ID=0 Pos=(15.8,0.5,70.9) Interval=16ms
-[16:46:53] [Chaser::UpdateLight] ID=0 Pos=(13.4,1.8,73.5) Dir=(-0.88,0.00,-0.47) IsLocal=Yes
-[16:46:55] [SceneGame] 鬼のライト更新: 1 個
-[16:46:55] [Chaser::UpdateLight] ID=0 Pos=(11.3,1.8,69.8) Dir=(0.15,0.00,-0.99) IsLocal=Yes
-[16:46:55] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:46:55] [SceneGame] 送信: ID=0 Pos=(11.4,0.5,69.8) Interval=16ms
-[16:46:56] [Discovery/Listener] 生存確認 ループ:250
-[16:46:57] [Discovery/Advertiser] 送信データ: port=12280 player=1/8 state=1 name='G'
-[16:46:57] [Discovery/Advertiser] ブロードキャスト送信 #6: サイズ=19 bytes (port=12280)
-[16:46:57] [Map::DrawMapDepth] 壁の数=36 行列: _41=1.27, _42=-3.86, _43=-80.68
-[16:46:57] [Chaser::UpdateLight] ID=0 Pos=(14.9,1.8,73.6) Dir=(0.18,0.00,0.98) IsLocal=Yes
-[16:46:57] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[16:46:57] [Discovery/Listener] マジック一致確認
-[16:46:57] [Discovery/Listener] プロトコルバージョン: 256
-[16:46:57] [Discovery/Listener] ポート（変換後）: 12280
-[16:46:57] [Discovery/Listener] プレイヤー数: 1
-[16:46:57] [Discovery/Listener] 最大プレイヤー数: 8
-[16:46:57] [Discovery/Listener] ステート: 1
-[16:46:57] [Discovery/Listener] 名前の長さ: 1
-[16:46:57] [Discovery/Listener] サーバー名: 'G'
-[16:46:57] [Discovery/Listener] ★サーバー検出★: G @ 172.20.145.6:12280 (1/8) state=1
-[16:46:57] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:46:58] [SceneGame] 鬼のライト更新: 1 個
-[16:46:58] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:46:59] [SceneGame] 送信: ID=0 Pos=(13.7,0.5,71.5) Interval=16ms
-[16:46:59] [Chaser::UpdateLight] ID=0 Pos=(12.8,1.8,68.5) Dir=(-0.89,0.00,0.46) IsLocal=Yes
-[16:47:01] [Discovery/Listener] 生存確認 ループ:300
-[16:47:01] [SceneGame] 鬼のライト更新: 1 個
-[16:47:01] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:47:01] [Chaser::UpdateLight] ID=0 Pos=(11.7,1.8,61.5) Dir=(-0.97,0.00,0.25) IsLocal=Yes
-[16:47:02] [SceneGame] 送信: ID=0 Pos=(11.7,0.5,61.4) Interval=16ms
-[16:47:02] [Map::DrawMapDepth] 壁の数=36 行列: _41=-128.63, _42=-3.86, _43=-6.73
-[16:47:02] [Discovery/Advertiser] 送信データ: port=12280 player=1/8 state=1 name='G'
-[16:47:02] [Discovery/Advertiser] ブロードキャスト送信 #7: サイズ=19 bytes (port=12280)
-[16:47:03] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[16:47:03] [Discovery/Listener] マジック一致確認
-[16:47:03] [Discovery/Listener] プロトコルバージョン: 256
-[16:47:03] [Discovery/Listener] ポート（変換後）: 12280
-[16:47:03] [Discovery/Listener] プレイヤー数: 1
-[16:47:03] [Discovery/Listener] 最大プレイヤー数: 8
-[16:47:03] [Discovery/Listener] ステート: 1
-[16:47:03] [Discovery/Listener] 名前の長さ: 1
-[16:47:03] [Discovery/Listener] サーバー名: 'G'
-[16:47:03] [Discovery/Listener] ★サーバー検出★: G @ 172.20.145.6:12280 (1/8) state=1
-[16:47:03] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:47:03] [Chaser::UpdateLight] ID=0 Pos=(8.2,1.8,56.7) Dir=(-0.94,0.00,0.33) IsLocal=Yes
-[16:47:04] [SceneGame] 鬼のライト更新: 1 個
-[16:47:04] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:47:05] [SceneGame] 送信: ID=0 Pos=(5.9,0.5,56.7) Interval=16ms
-[16:47:05] [Chaser::UpdateLight] ID=0 Pos=(9.8,1.8,56.9) Dir=(-1.00,0.00,-0.07) IsLocal=Yes
-[16:47:06] [Discovery/Listener] 生存確認 ループ:350
-[16:47:07] [Map::DrawMapDepth] 壁の数=36 行列: _41=-124.22, _42=-3.86, _43=6.10
-[16:47:07] [SceneGame] 鬼のライト更新: 1 個
-[16:47:07] [Discovery/Advertiser] 送信データ: port=12280 player=1/8 state=1 name='G'
-[16:47:07] [Discovery/Advertiser] ブロードキャスト送信 #8: サイズ=19 bytes (port=12280)
-[16:47:07] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:47:07] [Chaser::UpdateLight] ID=0 Pos=(12.6,1.8,56.9) Dir=(-0.99,0.00,0.11) IsLocal=Yes
-[16:47:08] [SceneGame] 送信: ID=0 Pos=(12.5,0.5,56.9) Interval=16ms
-[16:47:08] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[16:47:08] [Discovery/Listener] マジック一致確認
-[16:47:08] [Discovery/Listener] プロトコルバージョン: 256
-[16:47:08] [Discovery/Listener] ポート（変換後）: 12280
-[16:47:08] [Discovery/Listener] プレイヤー数: 1
-[16:47:08] [Discovery/Listener] 最大プレイヤー数: 8
-[16:47:08] [Discovery/Listener] ステート: 1
-[16:47:08] [Discovery/Listener] 名前の長さ: 1
-[16:47:08] [Discovery/Listener] サーバー名: 'G'
-[16:47:08] [Discovery/Listener] ★サーバー検出★: G @ 172.20.145.6:12280 (1/8) state=1
-[16:47:08] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:47:10] [Chaser::UpdateLight] ID=0 Pos=(11.4,1.8,57.0) Dir=(-0.99,0.00,0.12) IsLocal=Yes
-[16:47:10] [SceneGame] 鬼のライト更新: 1 個
-[16:47:10] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:47:11] [SceneGame] 送信: ID=0 Pos=(11.4,0.5,57.0) Interval=16ms
-[16:47:11] [Discovery/Listener] 生存確認 ループ:400
-[16:47:12] [Chaser::UpdateLight] ID=0 Pos=(11.4,1.8,57.0) Dir=(-1.00,0.00,0.03) IsLocal=Yes
-[16:47:12] [Map::DrawMapDepth] 壁の数=36 行列: _41=-122.89, _42=-3.86, _43=9.87
-[16:47:13] [Discovery/Advertiser] 送信データ: port=12280 player=1/8 state=1 name='G'
-[16:47:13] [Discovery/Advertiser] ブロードキャスト送信 #9: サイズ=19 bytes (port=12280)
-[16:47:13] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[16:47:13] [Discovery/Listener] マジック一致確認
-[16:47:13] [Discovery/Listener] プロトコルバージョン: 256
-[16:47:13] [Discovery/Listener] ポート（変換後）: 12280
-[16:47:13] [Discovery/Listener] プレイヤー数: 1
-[16:47:13] [Discovery/Listener] 最大プレイヤー数: 8
-[16:47:13] [Discovery/Listener] ステート: 1
-[16:47:13] [Discovery/Listener] 名前の長さ: 1
-[16:47:13] [Discovery/Listener] サーバー名: 'G'
-[16:47:13] [Discovery/Listener] ★サーバー検出★: G @ 172.20.145.6:12280 (1/8) state=1
-[16:47:13] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:47:13] [SceneGame] 鬼のライト更新: 1 個
-[16:47:13] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:47:14] [Chaser::UpdateLight] ID=0 Pos=(11.4,1.8,56.7) Dir=(-0.43,0.00,-0.90) IsLocal=Yes
-[16:47:14] [SceneGame] 送信: ID=0 Pos=(11.4,0.5,56.6) Interval=16ms
-[16:47:16] [Chaser::UpdateLight] ID=0 Pos=(11.4,1.8,55.8) Dir=(-0.82,0.00,-0.57) IsLocal=Yes
-[16:47:16] [SceneGame] 鬼のライト更新: 1 個
-[16:47:16] [Discovery/Listener] 生存確認 ループ:450
-[16:47:16] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:47:17] [SceneGame] 送信: ID=0 Pos=(12.1,0.5,56.3) Interval=16ms
-[16:47:17] [Map::DrawMapDepth] 壁の数=36 行列: _41=-83.97, _42=-3.86, _43=44.51
-[16:47:18] [Chaser::UpdateLight] ID=0 Pos=(12.1,1.8,56.3) Dir=(-0.82,0.00,-0.57) IsLocal=Yes
-[16:47:18] [Discovery/Advertiser] 送信データ: port=12280 player=1/8 state=1 name='G'
-[16:47:18] [Discovery/Advertiser] ブロードキャスト送信 #10: サイズ=19 bytes (port=12280)
-[16:47:18] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[16:47:18] [Discovery/Listener] マジック一致確認
-[16:47:18] [Discovery/Listener] プロトコルバージョン: 256
-[16:47:18] [Discovery/Listener] ポート（変換後）: 12280
-[16:47:18] [Discovery/Listener] プレイヤー数: 1
-[16:47:18] [Discovery/Listener] 最大プレイヤー数: 8
-[16:47:18] [Discovery/Listener] ステート: 1
-[16:47:18] [Discovery/Listener] 名前の長さ: 1
-[16:47:18] [Discovery/Listener] サーバー名: 'G'
-[16:47:18] [Discovery/Listener] ★サーバー検出★: G @ 172.20.145.6:12280 (1/8) state=1
-[16:47:18] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:47:19] [SceneGame] 鬼のライト更新: 1 個
-[16:47:19] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:47:20] [Chaser::UpdateLight] ID=0 Pos=(11.3,1.8,57.3) Dir=(-0.65,0.00,-0.76) IsLocal=Yes
-[16:47:20] [SceneGame] 送信: ID=0 Pos=(11.3,0.5,57.4) Interval=16ms
-[16:47:22] [Discovery/Listener] 生存確認 ループ:500
-[16:47:22] [Chaser::UpdateLight] ID=0 Pos=(11.5,1.8,56.0) Dir=(-0.74,0.00,-0.67) IsLocal=Yes
-[16:47:22] [Map::DrawMapDepth] 壁の数=36 行列: _41=-77.00, _42=-3.86, _43=46.89
-[16:47:22] [SceneGame] 鬼のライト更新: 1 個
-[16:47:23] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:47:23] [Discovery/Advertiser] 送信データ: port=12280 player=1/8 state=1 name='G'
-[16:47:23] [Discovery/Advertiser] ブロードキャスト送信 #11: サイズ=19 bytes (port=12280)
-[16:47:23] [SceneGame] 送信: ID=0 Pos=(11.5,0.5,56.0) Interval=16ms
-[16:47:23] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[16:47:23] [Discovery/Listener] マジック一致確認
-[16:47:23] [Discovery/Listener] プロトコルバージョン: 256
-[16:47:23] [Discovery/Listener] ポート（変換後）: 12280
-[16:47:23] [Discovery/Listener] プレイヤー数: 1
-[16:47:23] [Discovery/Listener] 最大プレイヤー数: 8
-[16:47:23] [Discovery/Listener] ステート: 1
-[16:47:23] [Discovery/Listener] 名前の長さ: 1
-[16:47:23] [Discovery/Listener] サーバー名: 'G'
-[16:47:23] [Discovery/Listener] ★サーバー検出★: G @ 172.20.145.6:12280 (1/8) state=1
-[16:47:23] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:47:24] [Chaser::UpdateLight] ID=0 Pos=(11.5,1.8,56.0) Dir=(-0.84,0.00,-0.54) IsLocal=Yes
-[16:47:25] [SceneGame] 鬼のライト更新: 1 個
-[16:47:26] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:47:26] [Chaser::UpdateLight] ID=0 Pos=(13.2,1.8,50.7) Dir=(0.82,0.00,-0.57) IsLocal=Yes
-[16:47:26] [SceneGame] 送信: ID=0 Pos=(13.2,0.5,50.7) Interval=16ms
-[16:47:27] [Discovery/Listener] 生存確認 ループ:550
-[16:47:27] [Map::DrawMapDepth] 壁の数=36 行列: _41=108.35, _42=-3.86, _43=-16.74
-[16:47:28] [Chaser::UpdateLight] ID=0 Pos=(11.2,1.8,51.6) Dir=(1.00,0.00,0.08) IsLocal=Yes
-[16:47:28] [Discovery/Advertiser] 送信データ: port=12280 player=1/8 state=1 name='G'
-[16:47:28] [Discovery/Advertiser] ブロードキャスト送信 #12: サイズ=19 bytes (port=12280)
-[16:47:28] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[16:47:28] [Discovery/Listener] マジック一致確認
-[16:47:28] [Discovery/Listener] プロトコルバージョン: 256
-[16:47:28] [Discovery/Listener] ポート（変換後）: 12280
-[16:47:28] [Discovery/Listener] プレイヤー数: 1
-[16:47:28] [Discovery/Listener] 最大プレイヤー数: 8
-[16:47:28] [Discovery/Listener] ステート: 1
-[16:47:28] [Discovery/Listener] 名前の長さ: 1
-[16:47:28] [Discovery/Listener] サーバー名: 'G'
-[16:47:28] [Discovery/Listener] ★サーバー検出★: G @ 172.20.145.6:12280 (1/8) state=1
-[16:47:28] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:47:28] [SceneGame] 鬼のライト更新: 1 個
-[16:47:29] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:47:29] [SceneGame] 送信: ID=0 Pos=(11.2,0.5,51.6) Interval=16ms
-[16:47:30] [Chaser::UpdateLight] ID=0 Pos=(12.3,1.8,53.0) Dir=(0.88,0.00,0.48) IsLocal=Yes
-[16:47:31] [SceneGame] 鬼のライト更新: 1 個
-[16:47:32] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:47:32] [Chaser::UpdateLight] ID=0 Pos=(14.1,1.8,60.3) Dir=(0.58,0.00,0.81) IsLocal=Yes
-[16:47:32] [Discovery/Listener] 生存確認 ループ:600
-[16:47:32] [SceneGame] 送信: ID=0 Pos=(14.1,0.5,60.5) Interval=16ms
-[16:47:32] [Map::DrawMapDepth] 壁の数=36 行列: _41=132.12, _42=-3.86, _43=-23.73
-[16:47:33] [Discovery/Advertiser] 送信データ: port=12280 player=1/8 state=1 name='G'
-[16:47:33] [Discovery/Advertiser] ブロードキャスト送信 #13: サイズ=19 bytes (port=12280)
-[16:47:33] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[16:47:33] [Discovery/Listener] マジック一致確認
-[16:47:33] [Discovery/Listener] プロトコルバージョン: 256
-[16:47:33] [Discovery/Listener] ポート（変換後）: 12280
-[16:47:33] [Discovery/Listener] プレイヤー数: 1
-[16:47:33] [Discovery/Listener] 最大プレイヤー数: 8
-[16:47:33] [Discovery/Listener] ステート: 1
-[16:47:33] [Discovery/Listener] 名前の長さ: 1
-[16:47:33] [Discovery/Listener] サーバー名: 'G'
-[16:47:33] [Discovery/Listener] ★サーバー検出★: G @ 172.20.145.6:12280 (1/8) state=1
-[16:47:33] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:47:34] [Chaser::UpdateLight] ID=0 Pos=(11.4,1.8,67.1) Dir=(1.00,0.00,0.06) IsLocal=Yes
-[16:47:34] [SceneGame] 鬼のライト更新: 1 個
-[16:47:35] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:47:35] [SceneGame] 送信: ID=0 Pos=(11.7,0.5,71.2) Interval=16ms
-[16:47:36] [Chaser::UpdateLight] ID=0 Pos=(12.4,1.8,72.6) Dir=(0.65,0.00,-0.76) IsLocal=Yes
-[16:47:37] [Discovery/Listener] 生存確認 ループ:650
-[16:47:37] [Map::DrawMapDepth] 壁の数=36 行列: _41=129.75, _42=-3.86, _43=44.19
-[16:47:38] [SceneGame] 鬼のライト更新: 1 個
-[16:47:38] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:47:38] [Chaser::UpdateLight] ID=0 Pos=(12.4,1.8,72.6) Dir=(0.71,0.00,-0.70) IsLocal=Yes
-[16:47:38] [SceneGame] 送信: ID=0 Pos=(12.4,0.5,72.6) Interval=16ms
-[16:47:38] [Discovery/Advertiser] 送信データ: port=12280 player=1/8 state=1 name='G'
-[16:47:38] [Discovery/Advertiser] ブロードキャスト送信 #14: サイズ=19 bytes (port=12280)
-[16:47:38] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[16:47:38] [Discovery/Listener] マジック一致確認
-[16:47:38] [Discovery/Listener] プロトコルバージョン: 256
-[16:47:38] [Discovery/Listener] ポート（変換後）: 12280
-[16:47:38] [Discovery/Listener] プレイヤー数: 1
-[16:47:38] [Discovery/Listener] 最大プレイヤー数: 8
-[16:47:38] [Discovery/Listener] ステート: 1
-[16:47:38] [Discovery/Listener] 名前の長さ: 1
-[16:47:38] [Discovery/Listener] サーバー名: 'G'
-[16:47:38] [Discovery/Listener] ★サーバー検出★: G @ 172.20.145.6:12280 (1/8) state=1
-[16:47:38] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:47:40] [Chaser::UpdateLight] ID=0 Pos=(12.4,1.8,72.6) Dir=(0.71,0.00,-0.70) IsLocal=Yes
-[16:47:41] [SceneGame] 鬼のライト更新: 1 個
-[16:47:41] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:47:41] [SceneGame] 送信: ID=0 Pos=(12.4,0.5,72.6) Interval=16ms
-[16:47:42] [Chaser::UpdateLight] ID=0 Pos=(12.4,1.8,72.6) Dir=(0.71,0.00,-0.70) IsLocal=Yes
-[16:47:42] [Discovery/Listener] 生存確認 ループ:700
-[16:47:42] [Map::DrawMapDepth] 壁の数=36 行列: _41=129.75, _42=-3.86, _43=44.19
-[16:47:43] [Discovery/Advertiser] 送信データ: port=12280 player=1/8 state=1 name='G'
-[16:47:43] [Discovery/Advertiser] ブロードキャスト送信 #15: サイズ=19 bytes (port=12280)
-[16:47:43] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[16:47:43] [Discovery/Listener] マジック一致確認
-[16:47:43] [Discovery/Listener] プロトコルバージョン: 256
-[16:47:43] [Discovery/Listener] ポート（変換後）: 12280
-[16:47:43] [Discovery/Listener] プレイヤー数: 1
-[16:47:43] [Discovery/Listener] 最大プレイヤー数: 8
-[16:47:43] [Discovery/Listener] ステート: 1
-[16:47:43] [Discovery/Listener] 名前の長さ: 1
-[16:47:43] [Discovery/Listener] サーバー名: 'G'
-[16:47:43] [Discovery/Listener] ★サーバー検出★: G @ 172.20.145.6:12280 (1/8) state=1
-[16:47:43] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:47:44] [SceneGame] 鬼のライト更新: 1 個
-[16:47:44] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:47:44] [Chaser::UpdateLight] ID=0 Pos=(12.4,1.8,72.6) Dir=(0.71,0.00,-0.70) IsLocal=Yes
-[16:47:44] [SceneGame] 送信: ID=0 Pos=(12.4,0.5,72.6) Interval=16ms
-[16:47:46] [Chaser::UpdateLight] ID=0 Pos=(12.4,1.8,72.6) Dir=(0.71,0.00,-0.70) IsLocal=Yes
-[16:47:47] [SceneGame] 鬼のライト更新: 1 個
-[16:47:47] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:47:47] [SceneGame] 送信: ID=0 Pos=(12.4,0.5,72.6) Interval=16ms
-[16:47:47] [Discovery/Listener] 生存確認 ループ:750
-[16:47:47] [Map::DrawMapDepth] 壁の数=36 行列: _41=129.75, _42=-3.86, _43=44.19
-[16:47:48] [Chaser::UpdateLight] ID=0 Pos=(12.4,1.8,72.6) Dir=(0.71,0.00,-0.70) IsLocal=Yes
-[16:47:48] [Discovery/Advertiser] 送信データ: port=12280 player=1/8 state=1 name='G'
-[16:47:48] [Discovery/Advertiser] ブロードキャスト送信 #16: サイズ=19 bytes (port=12280)
-[16:47:48] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[16:47:48] [Discovery/Listener] マジック一致確認
-[16:47:48] [Discovery/Listener] プロトコルバージョン: 256
-[16:47:48] [Discovery/Listener] ポート（変換後）: 12280
-[16:47:48] [Discovery/Listener] プレイヤー数: 1
-[16:47:48] [Discovery/Listener] 最大プレイヤー数: 8
-[16:47:48] [Discovery/Listener] ステート: 1
-[16:47:48] [Discovery/Listener] 名前の長さ: 1
-[16:47:48] [Discovery/Listener] サーバー名: 'G'
-[16:47:48] [Discovery/Listener] ★サーバー検出★: G @ 172.20.145.6:12280 (1/8) state=1
-[16:47:48] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:47:50] [SceneGame] 鬼のライト更新: 1 個
-[16:47:50] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:47:50] [Chaser::UpdateLight] ID=0 Pos=(12.4,1.8,72.6) Dir=(0.71,0.00,-0.70) IsLocal=Yes
-[16:47:50] [SceneGame] 送信: ID=0 Pos=(12.4,0.5,72.6) Interval=16ms
-[16:47:52] [Chaser::UpdateLight] ID=0 Pos=(12.4,1.8,72.6) Dir=(0.71,0.00,-0.70) IsLocal=Yes
-[16:47:52] [Discovery/Listener] 生存確認 ループ:800
-[16:47:52] [Map::DrawMapDepth] 壁の数=36 行列: _41=129.75, _42=-3.86, _43=44.19
-[16:47:53] [SceneGame] 鬼のライト更新: 1 個
-[16:47:53] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:47:53] [SceneGame] 送信: ID=0 Pos=(12.4,0.5,72.6) Interval=16ms
-[16:47:53] [Discovery/Advertiser] 送信データ: port=12280 player=1/8 state=1 name='G'
-[16:47:53] [Discovery/Advertiser] ブロードキャスト送信 #17: サイズ=19 bytes (port=12280)
-[16:47:53] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[16:47:53] [Discovery/Listener] マジック一致確認
-[16:47:53] [Discovery/Listener] プロトコルバージョン: 256
-[16:47:53] [Discovery/Listener] ポート（変換後）: 12280
-[16:47:53] [Discovery/Listener] プレイヤー数: 1
-[16:47:53] [Discovery/Listener] 最大プレイヤー数: 8
-[16:47:53] [Discovery/Listener] ステート: 1
-[16:47:53] [Discovery/Listener] 名前の長さ: 1
-[16:47:53] [Discovery/Listener] サーバー名: 'G'
-[16:47:53] [Discovery/Listener] ★サーバー検出★: G @ 172.20.145.6:12280 (1/8) state=1
-[16:47:53] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:47:54] [Chaser::UpdateLight] ID=0 Pos=(12.4,1.8,72.6) Dir=(0.71,0.00,-0.70) IsLocal=Yes
-[16:47:56] [SceneGame] 鬼のライト更新: 1 個
-[16:47:56] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:47:56] [Chaser::UpdateLight] ID=0 Pos=(12.4,1.8,72.6) Dir=(0.71,0.00,-0.70) IsLocal=Yes
-[16:47:56] [SceneGame] 送信: ID=0 Pos=(12.4,0.5,72.6) Interval=16ms
-[16:47:57] [Discovery/Listener] 生存確認 ループ:850
-[16:47:57] [Map::DrawMapDepth] 壁の数=36 行列: _41=148.38, _42=-3.86, _43=26.27
-[16:47:58] [Chaser::UpdateLight] ID=0 Pos=(12.4,1.8,72.6) Dir=(0.87,0.00,-0.49) IsLocal=Yes
-[16:47:58] [Discovery/Advertiser] 送信データ: port=12280 player=1/8 state=1 name='G'
-[16:47:58] [Discovery/Advertiser] ブロードキャスト送信 #18: サイズ=19 bytes (port=12280)
-[16:47:58] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[16:47:58] [Discovery/Listener] マジック一致確認
-[16:47:58] [Discovery/Listener] プロトコルバージョン: 256
-[16:47:58] [Discovery/Listener] ポート（変換後）: 12280
-[16:47:58] [Discovery/Listener] プレイヤー数: 1
-[16:47:58] [Discovery/Listener] 最大プレイヤー数: 8
-[16:47:58] [Discovery/Listener] ステート: 1
-[16:47:58] [Discovery/Listener] 名前の長さ: 1
-[16:47:58] [Discovery/Listener] サーバー名: 'G'
-[16:47:58] [Discovery/Listener] ★サーバー検出★: G @ 172.20.145.6:12280 (1/8) state=1
-[16:47:58] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:47:59] [SceneGame] 鬼のライト更新: 1 個
-[16:47:59] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:47:59] [SceneGame] 送信: ID=0 Pos=(12.7,0.5,72.9) Interval=16ms
-[16:48:00] [Chaser::UpdateLight] ID=0 Pos=(14.0,1.8,72.6) Dir=(0.55,0.00,-0.83) IsLocal=Yes
-[16:48:02] [SceneGame] 鬼のライト更新: 1 個
-[16:48:02] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:48:02] [Chaser::UpdateLight] ID=0 Pos=(19.7,1.8,70.3) Dir=(0.56,0.00,-0.83) IsLocal=Yes
-[16:48:02] [SceneGame] 送信: ID=0 Pos=(19.9,0.5,70.3) Interval=16ms
-[16:48:02] [Discovery/Listener] 生存確認 ループ:900
-[16:48:02] [Map::DrawMapDepth] 壁の数=36 行列: _41=151.96, _42=-3.86, _43=24.15
-[16:48:03] [Discovery/Advertiser] 送信データ: port=12280 player=1/8 state=1 name='G'
-[16:48:03] [Discovery/Advertiser] ブロードキャスト送信 #19: サイズ=19 bytes (port=12280)
-[16:48:03] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[16:48:03] [Discovery/Listener] マジック一致確認
-[16:48:03] [Discovery/Listener] プロトコルバージョン: 256
-[16:48:03] [Discovery/Listener] ポート（変換後）: 12280
-[16:48:03] [Discovery/Listener] プレイヤー数: 1
-[16:48:03] [Discovery/Listener] 最大プレイヤー数: 8
-[16:48:03] [Discovery/Listener] ステート: 1
-[16:48:03] [Discovery/Listener] 名前の長さ: 1
-[16:48:03] [Discovery/Listener] サーバー名: 'G'
-[16:48:03] [Discovery/Listener] ★サーバー検出★: G @ 172.20.145.6:12280 (1/8) state=1
-[16:48:03] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:48:04] [Chaser::UpdateLight] ID=0 Pos=(23.2,1.8,71.7) Dir=(0.72,0.00,-0.69) IsLocal=Yes
-[16:48:05] [SceneGame] 鬼のライト更新: 1 個
-[16:48:05] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:48:05] [SceneGame] 送信: ID=0 Pos=(23.2,0.5,71.7) Interval=16ms
-[16:48:06] [Chaser::UpdateLight] ID=0 Pos=(23.2,1.8,71.7) Dir=(0.91,0.00,-0.41) IsLocal=Yes
-[16:48:07] [Discovery/Listener] 生存確認 ループ:950
-[16:48:08] [Map::DrawMapDepth] 壁の数=36 行列: _41=160.70, _42=-3.86, _43=7.78
-[16:48:08] [SceneGame] 鬼のライト更新: 1 個
-[16:48:08] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:48:08] [Chaser::UpdateLight] ID=0 Pos=(23.2,1.8,71.7) Dir=(0.92,0.00,-0.40) IsLocal=Yes
-[16:48:08] [SceneGame] 送信: ID=0 Pos=(23.2,0.5,71.7) Interval=16ms
-[16:48:08] [Discovery/Advertiser] 送信データ: port=12280 player=1/8 state=1 name='G'
-[16:48:08] [Discovery/Advertiser] ブロードキャスト送信 #20: サイズ=19 bytes (port=12280)
-[16:48:08] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[16:48:08] [Discovery/Listener] マジック一致確認
-[16:48:08] [Discovery/Listener] プロトコルバージョン: 256
-[16:48:08] [Discovery/Listener] ポート（変換後）: 12280
-[16:48:08] [Discovery/Listener] プレイヤー数: 1
-[16:48:08] [Discovery/Listener] 最大プレイヤー数: 8
-[16:48:08] [Discovery/Listener] ステート: 1
-[16:48:08] [Discovery/Listener] 名前の長さ: 1
-[16:48:08] [Discovery/Listener] サーバー名: 'G'
-[16:48:08] [Discovery/Listener] ★サーバー検出★: G @ 172.20.145.6:12280 (1/8) state=1
-[16:48:08] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:48:10] [Chaser::UpdateLight] ID=0 Pos=(23.1,1.8,71.2) Dir=(0.94,0.00,-0.33) IsLocal=Yes
-[16:48:11] [SceneGame] 鬼のライト更新: 1 個
-[16:48:11] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:48:11] [SceneGame] 送信: ID=0 Pos=(23.1,0.5,71.2) Interval=16ms
-[16:48:12] [Chaser::UpdateLight] ID=0 Pos=(23.1,1.8,71.2) Dir=(0.94,0.00,-0.33) IsLocal=Yes
-[16:48:12] [Discovery/Listener] 生存確認 ループ:1000
-[16:48:13] [Map::DrawMapDepth] 壁の数=36 行列: _41=160.35, _42=-3.86, _43=1.51
-[16:48:13] [Discovery/Advertiser] 送信データ: port=12280 player=1/8 state=1 name='G'
-[16:48:13] [Discovery/Advertiser] ブロードキャスト送信 #21: サイズ=19 bytes (port=12280)
-[16:48:13] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[16:48:13] [Discovery/Listener] マジック一致確認
-[16:48:13] [Discovery/Listener] プロトコルバージョン: 256
-[16:48:13] [Discovery/Listener] ポート（変換後）: 12280
-[16:48:13] [Discovery/Listener] プレイヤー数: 1
-[16:48:13] [Discovery/Listener] 最大プレイヤー数: 8
-[16:48:13] [Discovery/Listener] ステート: 1
-[16:48:13] [Discovery/Listener] 名前の長さ: 1
-[16:48:13] [Discovery/Listener] サーバー名: 'G'
-[16:48:13] [Discovery/Listener] ★サーバー検出★: G @ 172.20.145.6:12280 (1/8) state=1
-[16:48:13] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:48:14] [SceneGame] 鬼のライト更新: 1 個
-[16:48:14] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:48:14] [Chaser::UpdateLight] ID=0 Pos=(23.1,1.8,71.2) Dir=(0.94,0.00,-0.33) IsLocal=Yes
-[16:48:14] [SceneGame] 送信: ID=0 Pos=(23.1,0.5,71.2) Interval=16ms
-[16:48:16] [Chaser::UpdateLight] ID=0 Pos=(23.1,1.8,71.2) Dir=(0.95,0.00,-0.30) IsLocal=Yes
-[16:48:17] [SceneGame] 鬼のライト更新: 1 個
-[16:48:17] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:48:17] [SceneGame] 送信: ID=0 Pos=(23.1,0.5,71.2) Interval=16ms
-[16:48:17] [Discovery/Listener] 生存確認 ループ:1050
-[16:48:18] [Map::DrawMapDepth] 壁の数=36 行列: _41=160.25, _42=-3.86, _43=-4.00
-[16:48:18] [Chaser::UpdateLight] ID=0 Pos=(23.1,1.8,71.2) Dir=(0.96,0.00,-0.27) IsLocal=Yes
-[16:48:18] [Discovery/Advertiser] 送信データ: port=12280 player=1/8 state=1 name='G'
-[16:48:18] [Discovery/Advertiser] ブロードキャスト送信 #22: サイズ=19 bytes (port=12280)
-[16:48:18] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[16:48:18] [Discovery/Listener] マジック一致確認
-[16:48:18] [Discovery/Listener] プロトコルバージョン: 256
-[16:48:18] [Discovery/Listener] ポート（変換後）: 12280
-[16:48:18] [Discovery/Listener] プレイヤー数: 1
-[16:48:18] [Discovery/Listener] 最大プレイヤー数: 8
-[16:48:18] [Discovery/Listener] ステート: 1
-[16:48:18] [Discovery/Listener] 名前の長さ: 1
-[16:48:18] [Discovery/Listener] サーバー名: 'G'
-[16:48:18] [Discovery/Listener] ★サーバー検出★: G @ 172.20.145.6:12280 (1/8) state=1
-[16:48:18] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:48:20] [SceneGame] 鬼のライト更新: 1 個
-[16:48:20] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:48:20] [Chaser::UpdateLight] ID=0 Pos=(23.1,1.8,71.2) Dir=(0.99,0.00,0.10) IsLocal=Yes
-[16:48:20] [SceneGame] 送信: ID=0 Pos=(23.1,0.5,71.2) Interval=16ms
-[16:48:22] [Chaser::UpdateLight] ID=0 Pos=(23.1,1.8,71.2) Dir=(-0.61,0.00,-0.79) IsLocal=Yes
-[16:48:22] [Discovery/Listener] 生存確認 ループ:1100
-[16:48:23] [Map::DrawMapDepth] 壁の数=36 行列: _41=-6.81, _42=-3.86, _43=79.18
-[16:48:23] [SceneGame] 鬼のライト更新: 1 個
-[16:48:23] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:48:23] [SceneGame] 送信: ID=0 Pos=(23.1,0.5,71.2) Interval=16ms
-[16:48:23] [Discovery/Advertiser] 送信データ: port=12280 player=1/8 state=1 name='G'
-[16:48:23] [Discovery/Advertiser] ブロードキャスト送信 #23: サイズ=19 bytes (port=12280)
-[16:48:23] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[16:48:23] [Discovery/Listener] マジック一致確認
-[16:48:23] [Discovery/Listener] プロトコルバージョン: 256
-[16:48:23] [Discovery/Listener] ポート（変換後）: 12280
-[16:48:23] [Discovery/Listener] プレイヤー数: 1
-[16:48:23] [Discovery/Listener] 最大プレイヤー数: 8
-[16:48:23] [Discovery/Listener] ステート: 1
-[16:48:23] [Discovery/Listener] 名前の長さ: 1
-[16:48:23] [Discovery/Listener] サーバー名: 'G'
-[16:48:23] [Discovery/Listener] ★サーバー検出★: G @ 172.20.145.6:12280 (1/8) state=1
-[16:48:23] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:48:24] [Chaser::UpdateLight] ID=0 Pos=(23.1,1.8,71.2) Dir=(-0.39,0.00,-0.92) IsLocal=Yes
-[16:48:26] [SceneGame] 鬼のライト更新: 1 個
-[16:48:26] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:48:26] [Chaser::UpdateLight] ID=0 Pos=(23.1,1.8,71.2) Dir=(-0.36,0.00,-0.93) IsLocal=Yes
-[16:48:26] [SceneGame] 送信: ID=0 Pos=(23.1,0.5,71.2) Interval=16ms
-[16:48:27] [Discovery/Listener] 生存確認 ループ:1150
-[16:48:28] [Map::DrawMapDepth] 壁の数=36 行列: _41=-12.95, _42=-3.86, _43=78.99
-[16:48:28] [Chaser::UpdateLight] ID=0 Pos=(23.1,1.8,71.2) Dir=(-0.38,0.00,-0.92) IsLocal=Yes
-[16:48:28] [Discovery/Advertiser] 送信データ: port=12280 player=1/8 state=1 name='G'
-[16:48:28] [Discovery/Advertiser] ブロードキャスト送信 #24: サイズ=19 bytes (port=12280)
-[16:48:28] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[16:48:28] [Discovery/Listener] マジック一致確認
-[16:48:28] [Discovery/Listener] プロトコルバージョン: 256
-[16:48:28] [Discovery/Listener] ポート（変換後）: 12280
-[16:48:28] [Discovery/Listener] プレイヤー数: 1
-[16:48:28] [Discovery/Listener] 最大プレイヤー数: 8
-[16:48:28] [Discovery/Listener] ステート: 1
-[16:48:28] [Discovery/Listener] 名前の長さ: 1
-[16:48:28] [Discovery/Listener] サーバー名: 'G'
-[16:48:28] [Discovery/Listener] ★サーバー検出★: G @ 172.20.145.6:12280 (1/8) state=1
-[16:48:28] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:48:29] [SceneGame] 鬼のライト更新: 1 個
-[16:48:29] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:48:29] [SceneGame] 送信: ID=0 Pos=(25.4,0.5,72.8) Interval=16ms
-[16:48:30] [Chaser::UpdateLight] ID=0 Pos=(28.2,1.8,74.4) Dir=(0.96,0.00,0.27) IsLocal=Yes
-[16:48:32] [SceneGame] 鬼のライト更新: 1 個
-[16:48:32] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:48:32] [Chaser::UpdateLight] ID=0 Pos=(28.3,1.8,72.3) Dir=(-0.10,0.00,1.00) IsLocal=Yes
-[16:48:32] [SceneGame] 送信: ID=0 Pos=(28.4,0.5,72.0) Interval=16ms
-[16:48:32] [Discovery/Listener] 生存確認 ループ:1200
-[16:48:33] [Map::DrawMapDepth] 壁の数=36 行列: _41=-126.44, _42=-3.86, _43=-50.64
-[16:48:33] [Discovery/Advertiser] 送信データ: port=12280 player=1/8 state=1 name='G'
-[16:48:33] [Discovery/Advertiser] ブロードキャスト送信 #25: サイズ=19 bytes (port=12280)
-[16:48:33] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[16:48:33] [Discovery/Listener] マジック一致確認
-[16:48:33] [Discovery/Listener] プロトコルバージョン: 256
-[16:48:33] [Discovery/Listener] ポート（変換後）: 12280
-[16:48:33] [Discovery/Listener] プレイヤー数: 1
-[16:48:33] [Discovery/Listener] 最大プレイヤー数: 8
-[16:48:33] [Discovery/Listener] ステート: 1
-[16:48:33] [Discovery/Listener] 名前の長さ: 1
-[16:48:33] [Discovery/Listener] サーバー名: 'G'
-[16:48:33] [Discovery/Listener] ★サーバー検出★: G @ 172.20.145.6:12280 (1/8) state=1
-[16:48:33] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:48:34] [Chaser::UpdateLight] ID=0 Pos=(22.2,1.8,71.2) Dir=(-0.66,0.00,0.75) IsLocal=Yes
-[16:48:35] [SceneGame] 鬼のライト更新: 1 個
-[16:48:35] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:48:35] [SceneGame] 送信: ID=0 Pos=(18.5,0.5,73.3) Interval=16ms
-[16:48:36] [Chaser::UpdateLight] ID=0 Pos=(14.9,1.8,73.5) Dir=(-0.99,0.00,-0.11) IsLocal=Yes
-[16:48:37] [Discovery/Listener] 生存確認 ループ:1250
-[16:48:38] [Map::DrawMapDepth] 壁の数=36 行列: _41=-144.75, _42=-3.86, _43=30.63
-[16:48:38] [SceneGame] 鬼のライト更新: 1 個
-[16:48:38] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:48:38] [Chaser::UpdateLight] ID=0 Pos=(13.4,1.8,72.6) Dir=(-0.97,0.00,-0.23) IsLocal=Yes
-[16:48:38] [SceneGame] 送信: ID=0 Pos=(13.4,0.5,72.6) Interval=16ms
-[16:48:38] [Discovery/Advertiser] 送信データ: port=12280 player=1/8 state=1 name='G'
-[16:48:38] [Discovery/Advertiser] ブロードキャスト送信 #26: サイズ=19 bytes (port=12280)
-[16:48:38] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[16:48:38] [Discovery/Listener] マジック一致確認
-[16:48:38] [Discovery/Listener] プロトコルバージョン: 256
-[16:48:38] [Discovery/Listener] ポート（変換後）: 12280
-[16:48:38] [Discovery/Listener] プレイヤー数: 1
-[16:48:38] [Discovery/Listener] 最大プレイヤー数: 8
-[16:48:38] [Discovery/Listener] ステート: 1
-[16:48:38] [Discovery/Listener] 名前の長さ: 1
-[16:48:38] [Discovery/Listener] サーバー名: 'G'
-[16:48:38] [Discovery/Listener] ★サーバー検出★: G @ 172.20.145.6:12280 (1/8) state=1
-[16:48:38] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:48:40] [Chaser::UpdateLight] ID=0 Pos=(11.7,1.8,72.2) Dir=(-0.97,0.00,-0.23) IsLocal=Yes
-[16:48:41] [SceneGame] 鬼のライト更新: 1 個
-[16:48:41] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:48:41] [SceneGame] 送信: ID=0 Pos=(9.9,0.5,71.8) Interval=16ms
-[16:48:42] [Chaser::UpdateLight] ID=0 Pos=(9.7,1.8,71.8) Dir=(-0.97,0.00,-0.23) IsLocal=Yes
-[16:48:42] [Discovery/Listener] 生存確認 ループ:1300
-[16:48:43] [Map::DrawMapDepth] 壁の数=36 行列: _41=-111.83, _42=-3.86, _43=52.35
-[16:48:43] [Discovery/Advertiser] 送信データ: port=12280 player=1/8 state=1 name='G'
-[16:48:43] [Discovery/Advertiser] ブロードキャスト送信 #27: サイズ=19 bytes (port=12280)
-[16:48:43] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[16:48:43] [Discovery/Listener] マジック一致確認
-[16:48:43] [Discovery/Listener] プロトコルバージョン: 256
-[16:48:43] [Discovery/Listener] ポート（変換後）: 12280
-[16:48:43] [Discovery/Listener] プレイヤー数: 1
-[16:48:43] [Discovery/Listener] 最大プレイヤー数: 8
-[16:48:43] [Discovery/Listener] ステート: 1
-[16:48:43] [Discovery/Listener] 名前の長さ: 1
-[16:48:43] [Discovery/Listener] サーバー名: 'G'
-[16:48:43] [Discovery/Listener] ★サーバー検出★: G @ 172.20.145.6:12280 (1/8) state=1
-[16:48:43] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:48:44] [SceneGame] 鬼のライト更新: 1 個
-[16:48:44] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:48:44] [Chaser::UpdateLight] ID=0 Pos=(13.6,1.8,71.1) Dir=(-0.90,0.00,-0.44) IsLocal=Yes
-[16:48:44] [SceneGame] 送信: ID=0 Pos=(14.0,0.5,71.2) Interval=16ms
-[16:48:46] [Chaser::UpdateLight] ID=0 Pos=(15.8,1.8,73.3) Dir=(-0.26,0.00,-0.96) IsLocal=Yes
-[16:48:47] [SceneGame] 鬼のライト更新: 1 個
-[16:48:47] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:48:47] [SceneGame] 送信: ID=0 Pos=(15.4,0.5,72.6) Interval=16ms
-[16:48:47] [Discovery/Listener] 生存確認 ループ:1350
-[16:48:48] [Map::DrawMapDepth] 壁の数=36 行列: _41=-43.06, _42=-3.86, _43=75.68
-[16:48:48] [Chaser::UpdateLight] ID=0 Pos=(15.4,1.8,72.6) Dir=(-0.46,0.00,-0.89) IsLocal=Yes
-[16:48:48] [Discovery/Advertiser] 送信データ: port=12280 player=1/8 state=1 name='G'
-[16:48:48] [Discovery/Advertiser] ブロードキャスト送信 #28: サイズ=19 bytes (port=12280)
-[16:48:48] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[16:48:48] [Discovery/Listener] マジック一致確認
-[16:48:48] [Discovery/Listener] プロトコルバージョン: 256
-[16:48:48] [Discovery/Listener] ポート（変換後）: 12280
-[16:48:48] [Discovery/Listener] プレイヤー数: 1
-[16:48:48] [Discovery/Listener] 最大プレイヤー数: 8
-[16:48:48] [Discovery/Listener] ステート: 1
-[16:48:48] [Discovery/Listener] 名前の長さ: 1
-[16:48:48] [Discovery/Listener] サーバー名: 'G'
-[16:48:48] [Discovery/Listener] ★サーバー検出★: G @ 172.20.145.6:12280 (1/8) state=1
-[16:48:48] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:48:50] [SceneGame] 鬼のライト更新: 1 個
-[16:48:50] [SceneGame] ワールド状態受信: プレイヤー数=1
-[16:48:50] [Chaser::UpdateLight] ID=0 Pos=(15.4,1.8,72.6) Dir=(-0.64,0.00,-0.77) IsLocal=Yes
-[16:48:50] [SceneGame] 送信: ID=0 Pos=(15.4,0.5,72.6) Interval=16ms
+[14:46:05] ========================================
+[14:46:05] ClientManager 初期化開始
+[14:46:05] ========================================
+[14:46:05] [ClientManager] ENet初期化成功
+[14:46:05] [ClientManager] Discovery作成
+[14:46:05] [Discovery/Listener] スレッド開始
+[14:46:05] [ClientManager] Discoveryリスナー起動 (ポート:12346)
+[14:46:05] [Discovery/Listener] WSAStartup成功
+[14:46:05] [Discovery/Listener] ソケット作成成功
+[14:46:05] [Discovery/Listener] bind成功 ポート:12346
+[14:46:05] [Discovery/Listener] 受信ループ開始
+[14:46:09] ========================================
+[14:46:09] [SceneSelectHost] サーバー作成開始: N
+[14:46:09] [Client] 切断
+[14:46:09] [ServerManager] ホスト名設定: Player656
+[14:46:09] [SceneSelectHost] サーバー名設定: N
+[14:46:09] [SceneSelectHost] ホスト名設定: Player656
+[14:46:09] [Discovery/Advertiser] スレッド開始
+[14:46:09] [Discovery/Advertiser] WSAStartup成功
+[14:46:09] [Discovery/Advertiser] ソケット作成成功
+[14:46:09] [Discovery/Advertiser] SO_BROADCAST設定成功
+[14:46:09] [Discovery/Advertiser] ブロードキャストループ開始
+[14:46:09] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=0 name='N'
+[14:46:09] [ServerManager] サーバー起動: ポート=12356
+[14:46:09] [SceneSelectHost] サーバー起動成功: ポート=12356
+[14:46:09] [Discovery/Advertiser] ブロードキャスト送信 #1: サイズ=19 bytes (port=12356)
+[14:46:09] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:46:09] [Discovery/Listener] マジック一致確認
+[14:46:09] [Discovery/Listener] プロトコルバージョン: 256
+[14:46:09] [Discovery/Listener] ポート（変換後）: 12356
+[14:46:09] [Discovery/Listener] プレイヤー数: 1
+[14:46:09] [Discovery/Listener] 最大プレイヤー数: 8
+[14:46:09] [Discovery/Listener] ステート: 0
+[14:46:09] [Discovery/Listener] 名前の長さ: 1
+[14:46:09] [Discovery/Listener] サーバー名: 'N'
+[14:46:09] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=0
+[14:46:09] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:46:09] [ClientManager] ConnectToServer: 127.0.0.1:12356
+[14:46:09] [ClientManager] クライアントホスト作成成功
+[14:46:09] [ClientManager] ホスト接続 - サーバー名は接続後に取得
+[14:46:09] [ClientManager] 接続要求送信 (ホスト判定: true)
+[14:46:09] [SceneSelectHost] ロビーに遷移
+[14:46:09] [SceneLobby] ホストとしてロビー開始: サーバー名='N'
+[14:46:09] [SceneLobby] Start完了
+[14:46:09] [ClientManager] サーバー接続成功（ENET_EVENT_TYPE_CONNECT受信）
+[14:46:09] [ClientManager] JOIN送信: Player656
+[14:46:09] [ClientManager] JOIN送信完了: Player656
+[14:46:09] [ServerManager] クライアント接続: ID=1 (現在1人)
+[14:46:09] [ServerManager] ProcessJoin: データ長=10
+[14:46:09] [ServerManager] 名前長さ: 9
+[14:46:09] [ServerManager] 受信した名前: 'Player656'
+[14:46:09] [ServerManager] ホストのJOIN受信: Player656 (ID=1)
+[14:46:09] [ServerManager] JoinAck送信: ClientID=1
+[14:46:09] [ServerManager] 新規参加者にホスト情報を送信: Player656 Pos=(0.0,0.0,0.0)
+[14:46:09] [ServerManager] 新規参加者情報をブロードキャスト: Player656 (ID=1)
+[14:46:09] [ServerManager] ロビー更新をブロードキャスト
+[14:46:09] [ServerManager] BroadcastLobbyUpdate: 1 人
+[14:46:09] [ServerManager] プレイヤー1: 'Player656' (長さ:9)
+[14:46:09] [ServerManager] 送信データサイズ: 12 bytes
+[14:46:09] [ClientManager] クライアントID割り当て: 1
+[14:46:09] [ClientManager] プレイヤー生成通知: ID=1, Name=Player656
+[14:46:09] [ClientManager] プレイヤー生成通知: ID=1, Name=Player656
+[14:46:09] [ClientManager] ProcessLobbyUpdate: データ長=12
+[14:46:09] [ClientManager] プレイヤー数: 1
+[14:46:09] [ClientManager] プレイヤー1 名前長さ: 9
+[14:46:09] [ClientManager] プレイヤー1: 'Player656'
+[14:46:09] [ClientManager] ロビー更新完了: 1 人
+[14:46:09] [SceneLobby] ゲーム開始ボタン押下
+[14:46:09] [ServerManager] 役割割り当て開始
+[14:46:09] [ServerManager] ホストをリストに追加: ID=1
+[14:46:09] [ServerManager] 総プレイヤー数: 1
+[14:46:09] [ServerManager] 総人数=1 鬼=1 逃げる側=0
+[14:46:09] [ServerManager] シャッフル後のID順:
+[14:46:09]   位置0: ID=1
+[14:46:09] [ServerManager] ホスト(ID=1 Name=Player656)の役割: 鬼
+[14:46:09] [ServerManager] クライアント Player656 (ID=1) の役割: 鬼
+[14:46:09] [ServerManager] 役割割り当て完了
+[14:46:09] [ServerManager] 割り当て結果確認: 鬼=1 逃げる側=0
+[14:46:09] [ServerManager] 役割割り当てをブロードキャスト
+[14:46:09] [ServerManager] ホスト(ID=1)の役割送信: 鬼
+[14:46:09] [ServerManager] クライアント Player656 (ID=1)の役割送信: 鬼
+[14:46:09] [ServerManager] 役割割り当てブロードキャスト完了
+[14:46:09] [ServerManager] ゲーム開始 - 役割割り当て済み
+[14:46:09] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
+[14:46:09] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
+[14:46:09] [ClientManager] ゲーム開始通知受信
+[14:46:09] [SceneLobby] ゲーム開始 - ゲームシーンへ遷移
+[14:46:10] [Discovery/Listener] 生存確認 ループ:50
+[14:46:14] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=1 name='N'
+[14:46:14] [Discovery/Advertiser] ブロードキャスト送信 #2: サイズ=19 bytes (port=12356)
+[14:46:14] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:46:14] [Discovery/Listener] マジック一致確認
+[14:46:14] [Discovery/Listener] プロトコルバージョン: 256
+[14:46:14] [Discovery/Listener] ポート（変換後）: 12356
+[14:46:14] [Discovery/Listener] プレイヤー数: 1
+[14:46:14] [Discovery/Listener] 最大プレイヤー数: 8
+[14:46:14] [Discovery/Listener] ステート: 1
+[14:46:14] [Discovery/Listener] 名前の長さ: 1
+[14:46:14] [Discovery/Listener] サーバー名: 'N'
+[14:46:14] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=1
+[14:46:14] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:46:15] [Discovery/Listener] 生存確認 ループ:100
+[14:46:15] [SceneGame] Initialize: IsHost=1, ClientID=1
+[14:46:15] [SceneGame] 初期化完了 - 役割割り当て待機中
+[14:46:15] [SceneGame] 役割受信: ID=1 Role=鬼
+[14:46:15] [SceneGame] ローカルプレイヤー生成: Role=鬼
+[14:46:15] [SceneGame] Chaserを生成: ID=1, Name=Player656
+[14:46:15] [Chaser] シャドウマップ作成成功: ID=0
+[14:46:15] [SceneGame] プレイヤー生成完了: ID=1, Role=鬼, Pos=(7.5,0.5,72.5)
+[14:46:15] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:46:15] [SceneGame] 役割受信: ID=1 Role=鬼
+[14:46:15] [SceneGame] プレイヤー 1 は既に生成済み
+[14:46:15] [SceneGame] 鬼のライト更新: 1 個
+[14:46:15] [Map::DrawMapDepth] 壁の数=36 行列: _41=16.08, _42=-3.86, _43=72.91
+[14:46:15] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:46:15] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:46:17] [SceneGame] フェードイン完了 - ゲーム開始
+[14:46:17] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:46:18] [SceneGame] 鬼のライト更新: 1 個
+[14:46:18] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:46:18] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:46:19] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=1 name='N'
+[14:46:19] [Discovery/Advertiser] ブロードキャスト送信 #3: サイズ=19 bytes (port=12356)
+[14:46:19] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:46:19] [Discovery/Listener] マジック一致確認
+[14:46:19] [Discovery/Listener] プロトコルバージョン: 256
+[14:46:19] [Discovery/Listener] ポート（変換後）: 12356
+[14:46:19] [Discovery/Listener] プレイヤー数: 1
+[14:46:19] [Discovery/Listener] 最大プレイヤー数: 8
+[14:46:19] [Discovery/Listener] ステート: 1
+[14:46:19] [Discovery/Listener] 名前の長さ: 1
+[14:46:19] [Discovery/Listener] サーバー名: 'N'
+[14:46:19] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=1
+[14:46:19] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:46:19] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:46:20] [Discovery/Listener] 生存確認 ループ:150
+[14:46:20] [Map::DrawMapDepth] 壁の数=36 行列: _41=16.08, _42=-3.86, _43=72.91
+[14:46:21] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:46:21] [SceneGame] 鬼のライト更新: 1 個
+[14:46:21] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:46:21] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:46:23] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:46:24] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=1 name='N'
+[14:46:24] [Discovery/Advertiser] ブロードキャスト送信 #4: サイズ=19 bytes (port=12356)
+[14:46:24] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:46:24] [Discovery/Listener] マジック一致確認
+[14:46:24] [Discovery/Listener] プロトコルバージョン: 256
+[14:46:24] [Discovery/Listener] ポート（変換後）: 12356
+[14:46:24] [Discovery/Listener] プレイヤー数: 1
+[14:46:24] [Discovery/Listener] 最大プレイヤー数: 8
+[14:46:24] [Discovery/Listener] ステート: 1
+[14:46:24] [Discovery/Listener] 名前の長さ: 1
+[14:46:24] [Discovery/Listener] サーバー名: 'N'
+[14:46:24] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=1
+[14:46:24] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:46:24] [SceneGame] 鬼のライト更新: 1 個
+[14:46:24] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:46:24] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:46:25] [Discovery/Listener] 生存確認 ループ:200
+[14:46:25] [Map::DrawMapDepth] 壁の数=36 行列: _41=16.08, _42=-3.86, _43=72.91
+[14:46:25] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:46:27] [SceneGame] 鬼のライト更新: 1 個
+[14:46:27] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:46:27] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:46:27] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:46:29] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=1 name='N'
+[14:46:29] [Discovery/Advertiser] ブロードキャスト送信 #5: サイズ=19 bytes (port=12356)
+[14:46:29] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:46:29] [Discovery/Listener] マジック一致確認
+[14:46:29] [Discovery/Listener] プロトコルバージョン: 256
+[14:46:29] [Discovery/Listener] ポート（変換後）: 12356
+[14:46:29] [Discovery/Listener] プレイヤー数: 1
+[14:46:29] [Discovery/Listener] 最大プレイヤー数: 8
+[14:46:29] [Discovery/Listener] ステート: 1
+[14:46:29] [Discovery/Listener] 名前の長さ: 1
+[14:46:29] [Discovery/Listener] サーバー名: 'N'
+[14:46:29] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=1
+[14:46:29] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:46:29] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:46:30] [Discovery/Listener] 生存確認 ループ:250
+[14:46:30] [Map::DrawMapDepth] 壁の数=36 行列: _41=16.08, _42=-3.86, _43=72.91
+[14:46:30] [SceneGame] 鬼のライト更新: 1 個
+[14:46:30] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:46:30] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:46:31] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:46:33] [SceneGame] 鬼のライト更新: 1 個
+[14:46:33] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:46:33] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:46:33] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:46:34] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=1 name='N'
+[14:46:34] [Discovery/Advertiser] ブロードキャスト送信 #6: サイズ=19 bytes (port=12356)
+[14:46:34] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:46:34] [Discovery/Listener] マジック一致確認
+[14:46:34] [Discovery/Listener] プロトコルバージョン: 256
+[14:46:34] [Discovery/Listener] ポート（変換後）: 12356
+[14:46:34] [Discovery/Listener] プレイヤー数: 1
+[14:46:34] [Discovery/Listener] 最大プレイヤー数: 8
+[14:46:34] [Discovery/Listener] ステート: 1
+[14:46:34] [Discovery/Listener] 名前の長さ: 1
+[14:46:34] [Discovery/Listener] サーバー名: 'N'
+[14:46:34] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=1
+[14:46:34] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:46:35] [Discovery/Listener] 生存確認 ループ:300
+[14:46:35] [Map::DrawMapDepth] 壁の数=36 行列: _41=16.08, _42=-3.86, _43=72.91
+[14:46:35] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:46:36] [SceneGame] 鬼のライト更新: 1 個
+[14:46:36] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:46:36] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:46:37] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:46:39] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=1 name='N'
+[14:46:39] [Discovery/Advertiser] ブロードキャスト送信 #7: サイズ=19 bytes (port=12356)
+[14:46:39] [SceneGame] 鬼のライト更新: 1 個
+[14:46:39] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:46:39] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:46:39] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:46:39] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:46:39] [Discovery/Listener] マジック一致確認
+[14:46:39] [Discovery/Listener] プロトコルバージョン: 256
+[14:46:39] [Discovery/Listener] ポート（変換後）: 12356
+[14:46:39] [Discovery/Listener] プレイヤー数: 1
+[14:46:39] [Discovery/Listener] 最大プレイヤー数: 8
+[14:46:39] [Discovery/Listener] ステート: 1
+[14:46:39] [Discovery/Listener] 名前の長さ: 1
+[14:46:39] [Discovery/Listener] サーバー名: 'N'
+[14:46:39] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=1
+[14:46:39] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:46:40] [Discovery/Listener] 生存確認 ループ:350
+[14:46:40] [Map::DrawMapDepth] 壁の数=36 行列: _41=16.08, _42=-3.86, _43=72.91
+[14:46:41] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:46:42] [SceneGame] 鬼のライト更新: 1 個
+[14:46:42] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:46:42] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:46:43] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:46:44] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=1 name='N'
+[14:46:44] [Discovery/Advertiser] ブロードキャスト送信 #8: サイズ=19 bytes (port=12356)
+[14:46:44] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:46:44] [Discovery/Listener] マジック一致確認
+[14:46:44] [Discovery/Listener] プロトコルバージョン: 256
+[14:46:44] [Discovery/Listener] ポート（変換後）: 12356
+[14:46:44] [Discovery/Listener] プレイヤー数: 1
+[14:46:44] [Discovery/Listener] 最大プレイヤー数: 8
+[14:46:44] [Discovery/Listener] ステート: 1
+[14:46:44] [Discovery/Listener] 名前の長さ: 1
+[14:46:44] [Discovery/Listener] サーバー名: 'N'
+[14:46:44] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=1
+[14:46:44] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:46:45] [Discovery/Listener] 生存確認 ループ:400
+[14:46:45] [Map::DrawMapDepth] 壁の数=36 行列: _41=16.08, _42=-3.86, _43=72.91
+[14:46:45] [SceneGame] 鬼のライト更新: 1 個
+[14:46:45] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:46:45] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:46:45] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:46:47] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:46:48] [SceneGame] 鬼のライト更新: 1 個
+[14:46:48] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:46:48] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:46:49] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=1 name='N'
+[14:46:49] [Discovery/Advertiser] ブロードキャスト送信 #9: サイズ=19 bytes (port=12356)
+[14:46:49] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:46:49] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:46:49] [Discovery/Listener] マジック一致確認
+[14:46:49] [Discovery/Listener] プロトコルバージョン: 256
+[14:46:49] [Discovery/Listener] ポート（変換後）: 12356
+[14:46:49] [Discovery/Listener] プレイヤー数: 1
+[14:46:49] [Discovery/Listener] 最大プレイヤー数: 8
+[14:46:49] [Discovery/Listener] ステート: 1
+[14:46:49] [Discovery/Listener] 名前の長さ: 1
+[14:46:49] [Discovery/Listener] サーバー名: 'N'
+[14:46:49] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=1
+[14:46:49] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:46:50] [Discovery/Listener] 生存確認 ループ:450
+[14:46:50] [Map::DrawMapDepth] 壁の数=36 行列: _41=16.08, _42=-3.86, _43=72.91
+[14:46:51] [SceneGame] 鬼のライト更新: 1 個
+[14:46:51] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:46:51] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:46:51] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:46:53] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:46:54] [SceneGame] 鬼のライト更新: 1 個
+[14:46:54] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=1 name='N'
+[14:46:54] [Discovery/Advertiser] ブロードキャスト送信 #10: サイズ=19 bytes (port=12356)
+[14:46:54] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:46:54] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:46:54] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:46:54] [Discovery/Listener] マジック一致確認
+[14:46:54] [Discovery/Listener] プロトコルバージョン: 256
+[14:46:54] [Discovery/Listener] ポート（変換後）: 12356
+[14:46:54] [Discovery/Listener] プレイヤー数: 1
+[14:46:54] [Discovery/Listener] 最大プレイヤー数: 8
+[14:46:54] [Discovery/Listener] ステート: 1
+[14:46:54] [Discovery/Listener] 名前の長さ: 1
+[14:46:54] [Discovery/Listener] サーバー名: 'N'
+[14:46:54] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=1
+[14:46:54] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:46:55] [Discovery/Listener] 生存確認 ループ:500
+[14:46:55] [Map::DrawMapDepth] 壁の数=36 行列: _41=16.08, _42=-3.86, _43=72.91
+[14:46:55] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:46:57] [SceneGame] 鬼のライト更新: 1 個
+[14:46:57] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:46:57] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:46:57] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:46:59] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:46:59] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=1 name='N'
+[14:46:59] [Discovery/Advertiser] ブロードキャスト送信 #11: サイズ=19 bytes (port=12356)
+[14:46:59] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:46:59] [Discovery/Listener] マジック一致確認
+[14:46:59] [Discovery/Listener] プロトコルバージョン: 256
+[14:46:59] [Discovery/Listener] ポート（変換後）: 12356
+[14:46:59] [Discovery/Listener] プレイヤー数: 1
+[14:46:59] [Discovery/Listener] 最大プレイヤー数: 8
+[14:46:59] [Discovery/Listener] ステート: 1
+[14:46:59] [Discovery/Listener] 名前の長さ: 1
+[14:46:59] [Discovery/Listener] サーバー名: 'N'
+[14:46:59] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=1
+[14:46:59] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:47:00] [Discovery/Listener] 生存確認 ループ:550
+[14:47:00] [Map::DrawMapDepth] 壁の数=36 行列: _41=16.08, _42=-3.86, _43=72.91
+[14:47:00] [SceneGame] 鬼のライト更新: 1 個
+[14:47:00] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:47:00] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:47:01] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:47:03] [SceneGame] 鬼のライト更新: 1 個
+[14:47:03] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:47:03] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:47:03] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:47:04] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=1 name='N'
+[14:47:04] [Discovery/Advertiser] ブロードキャスト送信 #12: サイズ=19 bytes (port=12356)
+[14:47:04] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:47:04] [Discovery/Listener] マジック一致確認
+[14:47:04] [Discovery/Listener] プロトコルバージョン: 256
+[14:47:04] [Discovery/Listener] ポート（変換後）: 12356
+[14:47:04] [Discovery/Listener] プレイヤー数: 1
+[14:47:04] [Discovery/Listener] 最大プレイヤー数: 8
+[14:47:04] [Discovery/Listener] ステート: 1
+[14:47:04] [Discovery/Listener] 名前の長さ: 1
+[14:47:04] [Discovery/Listener] サーバー名: 'N'
+[14:47:04] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=1
+[14:47:04] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:47:05] [Discovery/Listener] 生存確認 ループ:600
+[14:47:05] [Map::DrawMapDepth] 壁の数=36 行列: _41=16.08, _42=-3.86, _43=72.91
+[14:47:05] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:47:06] [SceneGame] 鬼のライト更新: 1 個
+[14:47:06] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:47:06] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:47:07] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:47:09] [SceneGame] 鬼のライト更新: 1 個
+[14:47:09] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:47:09] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:47:09] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:47:09] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=1 name='N'
+[14:47:09] [Discovery/Advertiser] ブロードキャスト送信 #13: サイズ=19 bytes (port=12356)
+[14:47:09] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:47:09] [Discovery/Listener] マジック一致確認
+[14:47:09] [Discovery/Listener] プロトコルバージョン: 256
+[14:47:09] [Discovery/Listener] ポート（変換後）: 12356
+[14:47:09] [Discovery/Listener] プレイヤー数: 1
+[14:47:09] [Discovery/Listener] 最大プレイヤー数: 8
+[14:47:09] [Discovery/Listener] ステート: 1
+[14:47:09] [Discovery/Listener] 名前の長さ: 1
+[14:47:09] [Discovery/Listener] サーバー名: 'N'
+[14:47:09] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=1
+[14:47:09] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:47:10] [Discovery/Listener] 生存確認 ループ:650
+[14:47:10] [Map::DrawMapDepth] 壁の数=36 行列: _41=16.08, _42=-3.86, _43=72.91
+[14:47:11] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:47:12] [SceneGame] 鬼のライト更新: 1 個
+[14:47:12] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:47:12] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:47:13] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:47:14] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=1 name='N'
+[14:47:14] [Discovery/Advertiser] ブロードキャスト送信 #14: サイズ=19 bytes (port=12356)
+[14:47:14] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:47:14] [Discovery/Listener] マジック一致確認
+[14:47:14] [Discovery/Listener] プロトコルバージョン: 256
+[14:47:14] [Discovery/Listener] ポート（変換後）: 12356
+[14:47:14] [Discovery/Listener] プレイヤー数: 1
+[14:47:14] [Discovery/Listener] 最大プレイヤー数: 8
+[14:47:14] [Discovery/Listener] ステート: 1
+[14:47:14] [Discovery/Listener] 名前の長さ: 1
+[14:47:14] [Discovery/Listener] サーバー名: 'N'
+[14:47:14] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=1
+[14:47:14] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:47:15] [Discovery/Listener] 生存確認 ループ:700
+[14:47:15] [Map::DrawMapDepth] 壁の数=36 行列: _41=16.08, _42=-3.86, _43=72.91
+[14:47:15] [SceneGame] 鬼のライト更新: 1 個
+[14:47:15] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:47:15] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:47:15] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:47:17] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:47:18] [SceneGame] 鬼のライト更新: 1 個
+[14:47:18] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:47:18] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:47:19] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:47:19] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=1 name='N'
+[14:47:19] [Discovery/Advertiser] ブロードキャスト送信 #15: サイズ=19 bytes (port=12356)
+[14:47:19] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:47:19] [Discovery/Listener] マジック一致確認
+[14:47:19] [Discovery/Listener] プロトコルバージョン: 256
+[14:47:19] [Discovery/Listener] ポート（変換後）: 12356
+[14:47:19] [Discovery/Listener] プレイヤー数: 1
+[14:47:19] [Discovery/Listener] 最大プレイヤー数: 8
+[14:47:19] [Discovery/Listener] ステート: 1
+[14:47:19] [Discovery/Listener] 名前の長さ: 1
+[14:47:19] [Discovery/Listener] サーバー名: 'N'
+[14:47:19] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=1
+[14:47:19] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:47:20] [Discovery/Listener] 生存確認 ループ:750
+[14:47:20] [Map::DrawMapDepth] 壁の数=36 行列: _41=16.08, _42=-3.86, _43=72.91
+[14:47:21] [SceneGame] 鬼のライト更新: 1 個
+[14:47:21] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:47:21] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:47:21] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:47:23] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:47:24] [SceneGame] 鬼のライト更新: 1 個
+[14:47:24] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:47:24] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:47:24] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=1 name='N'
+[14:47:24] [Discovery/Advertiser] ブロードキャスト送信 #16: サイズ=19 bytes (port=12356)
+[14:47:25] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:47:25] [Discovery/Listener] マジック一致確認
+[14:47:25] [Discovery/Listener] プロトコルバージョン: 256
+[14:47:25] [Discovery/Listener] ポート（変換後）: 12356
+[14:47:25] [Discovery/Listener] プレイヤー数: 1
+[14:47:25] [Discovery/Listener] 最大プレイヤー数: 8
+[14:47:25] [Discovery/Listener] ステート: 1
+[14:47:25] [Discovery/Listener] 名前の長さ: 1
+[14:47:25] [Discovery/Listener] サーバー名: 'N'
+[14:47:25] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=1
+[14:47:25] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:47:25] [Discovery/Listener] 生存確認 ループ:800
+[14:47:25] [Map::DrawMapDepth] 壁の数=36 行列: _41=16.08, _42=-3.86, _43=72.91
+[14:47:25] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:47:27] [SceneGame] 鬼のライト更新: 1 個
+[14:47:27] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:47:27] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:47:27] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:47:29] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:47:29] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=1 name='N'
+[14:47:29] [Discovery/Advertiser] ブロードキャスト送信 #17: サイズ=19 bytes (port=12356)
+[14:47:29] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:47:29] [Discovery/Listener] マジック一致確認
+[14:47:29] [Discovery/Listener] プロトコルバージョン: 256
+[14:47:29] [Discovery/Listener] ポート（変換後）: 12356
+[14:47:29] [Discovery/Listener] プレイヤー数: 1
+[14:47:29] [Discovery/Listener] 最大プレイヤー数: 8
+[14:47:29] [Discovery/Listener] ステート: 1
+[14:47:29] [Discovery/Listener] 名前の長さ: 1
+[14:47:29] [Discovery/Listener] サーバー名: 'N'
+[14:47:29] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=1
+[14:47:29] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:47:30] [Discovery/Listener] 生存確認 ループ:850
+[14:47:30] [Map::DrawMapDepth] 壁の数=36 行列: _41=16.08, _42=-3.86, _43=72.91
+[14:47:30] [SceneGame] 鬼のライト更新: 1 個
+[14:47:30] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:47:30] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:47:31] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:47:33] [SceneGame] 鬼のライト更新: 1 個
+[14:47:33] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:47:33] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:47:33] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:47:34] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=1 name='N'
+[14:47:34] [Discovery/Advertiser] ブロードキャスト送信 #18: サイズ=19 bytes (port=12356)
+[14:47:35] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:47:35] [Discovery/Listener] マジック一致確認
+[14:47:35] [Discovery/Listener] プロトコルバージョン: 256
+[14:47:35] [Discovery/Listener] ポート（変換後）: 12356
+[14:47:35] [Discovery/Listener] プレイヤー数: 1
+[14:47:35] [Discovery/Listener] 最大プレイヤー数: 8
+[14:47:35] [Discovery/Listener] ステート: 1
+[14:47:35] [Discovery/Listener] 名前の長さ: 1
+[14:47:35] [Discovery/Listener] サーバー名: 'N'
+[14:47:35] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=1
+[14:47:35] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:47:35] [Discovery/Listener] 生存確認 ループ:900
+[14:47:35] [Map::DrawMapDepth] 壁の数=36 行列: _41=16.08, _42=-3.86, _43=72.91
+[14:47:35] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:47:36] [SceneGame] 鬼のライト更新: 1 個
+[14:47:36] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:47:36] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:47:37] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:47:39] [SceneGame] 鬼のライト更新: 1 個
+[14:47:39] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:47:39] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:47:39] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:47:40] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=1 name='N'
+[14:47:40] [Discovery/Advertiser] ブロードキャスト送信 #19: サイズ=19 bytes (port=12356)
+[14:47:40] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:47:40] [Discovery/Listener] マジック一致確認
+[14:47:40] [Discovery/Listener] プロトコルバージョン: 256
+[14:47:40] [Discovery/Listener] ポート（変換後）: 12356
+[14:47:40] [Discovery/Listener] プレイヤー数: 1
+[14:47:40] [Discovery/Listener] 最大プレイヤー数: 8
+[14:47:40] [Discovery/Listener] ステート: 1
+[14:47:40] [Discovery/Listener] 名前の長さ: 1
+[14:47:40] [Discovery/Listener] サーバー名: 'N'
+[14:47:40] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=1
+[14:47:40] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:47:40] [Discovery/Listener] 生存確認 ループ:950
+[14:47:40] [Map::DrawMapDepth] 壁の数=36 行列: _41=16.08, _42=-3.86, _43=72.91
+[14:47:41] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:47:42] [SceneGame] 鬼のライト更新: 1 個
+[14:47:42] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:47:42] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:47:43] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:47:45] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=1 name='N'
+[14:47:45] [Discovery/Advertiser] ブロードキャスト送信 #20: サイズ=19 bytes (port=12356)
+[14:47:45] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:47:45] [Discovery/Listener] マジック一致確認
+[14:47:45] [Discovery/Listener] プロトコルバージョン: 256
+[14:47:45] [Discovery/Listener] ポート（変換後）: 12356
+[14:47:45] [Discovery/Listener] プレイヤー数: 1
+[14:47:45] [Discovery/Listener] 最大プレイヤー数: 8
+[14:47:45] [Discovery/Listener] ステート: 1
+[14:47:45] [Discovery/Listener] 名前の長さ: 1
+[14:47:45] [Discovery/Listener] サーバー名: 'N'
+[14:47:45] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=1
+[14:47:45] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:47:45] [Discovery/Listener] 生存確認 ループ:1000
+[14:47:45] [Map::DrawMapDepth] 壁の数=36 行列: _41=16.08, _42=-3.86, _43=72.91
+[14:47:45] [SceneGame] 鬼のライト更新: 1 個
+[14:47:45] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:47:45] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:47:45] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:47:47] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:47:48] [SceneGame] 鬼のライト更新: 1 個
+[14:47:48] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:47:48] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:47:49] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:47:50] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=1 name='N'
+[14:47:50] [Discovery/Advertiser] ブロードキャスト送信 #21: サイズ=19 bytes (port=12356)
+[14:47:50] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:47:50] [Discovery/Listener] マジック一致確認
+[14:47:50] [Discovery/Listener] プロトコルバージョン: 256
+[14:47:50] [Discovery/Listener] ポート（変換後）: 12356
+[14:47:50] [Discovery/Listener] プレイヤー数: 1
+[14:47:50] [Discovery/Listener] 最大プレイヤー数: 8
+[14:47:50] [Discovery/Listener] ステート: 1
+[14:47:50] [Discovery/Listener] 名前の長さ: 1
+[14:47:50] [Discovery/Listener] サーバー名: 'N'
+[14:47:50] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=1
+[14:47:50] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:47:50] [Map::DrawMapDepth] 壁の数=36 行列: _41=16.08, _42=-3.86, _43=72.91
+[14:47:50] [Discovery/Listener] 生存確認 ループ:1050
+[14:47:51] [SceneGame] 鬼のライト更新: 1 個
+[14:47:51] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:47:51] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:47:51] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:47:53] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:47:54] [SceneGame] 鬼のライト更新: 1 個
+[14:47:54] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:47:54] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:47:55] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=1 name='N'
+[14:47:55] [Discovery/Advertiser] ブロードキャスト送信 #22: サイズ=19 bytes (port=12356)
+[14:47:55] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:47:55] [Discovery/Listener] マジック一致確認
+[14:47:55] [Discovery/Listener] プロトコルバージョン: 256
+[14:47:55] [Discovery/Listener] ポート（変換後）: 12356
+[14:47:55] [Discovery/Listener] プレイヤー数: 1
+[14:47:55] [Discovery/Listener] 最大プレイヤー数: 8
+[14:47:55] [Discovery/Listener] ステート: 1
+[14:47:55] [Discovery/Listener] 名前の長さ: 1
+[14:47:55] [Discovery/Listener] サーバー名: 'N'
+[14:47:55] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=1
+[14:47:55] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:47:55] [Map::DrawMapDepth] 壁の数=36 行列: _41=16.08, _42=-3.86, _43=72.91
+[14:47:55] [Discovery/Listener] 生存確認 ループ:1100
+[14:47:55] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:47:57] [SceneGame] 鬼のライト更新: 1 個
+[14:47:57] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:47:57] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:47:58] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:47:59] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:48:00] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=1 name='N'
+[14:48:00] [Discovery/Advertiser] ブロードキャスト送信 #23: サイズ=19 bytes (port=12356)
+[14:48:00] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:48:00] [Discovery/Listener] マジック一致確認
+[14:48:00] [Discovery/Listener] プロトコルバージョン: 256
+[14:48:00] [Discovery/Listener] ポート（変換後）: 12356
+[14:48:00] [Discovery/Listener] プレイヤー数: 1
+[14:48:00] [Discovery/Listener] 最大プレイヤー数: 8
+[14:48:00] [Discovery/Listener] ステート: 1
+[14:48:00] [Discovery/Listener] 名前の長さ: 1
+[14:48:00] [Discovery/Listener] サーバー名: 'N'
+[14:48:00] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=1
+[14:48:00] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:48:00] [Map::DrawMapDepth] 壁の数=36 行列: _41=16.08, _42=-3.86, _43=72.91
+[14:48:00] [Discovery/Listener] 生存確認 ループ:1150
+[14:48:00] [SceneGame] 鬼のライト更新: 1 個
+[14:48:00] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:48:01] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:48:01] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:48:03] [SceneGame] 鬼のライト更新: 1 個
+[14:48:03] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:48:03] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:48:04] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:48:05] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=1 name='N'
+[14:48:05] [Discovery/Advertiser] ブロードキャスト送信 #24: サイズ=19 bytes (port=12356)
+[14:48:05] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:48:05] [Discovery/Listener] マジック一致確認
+[14:48:05] [Discovery/Listener] プロトコルバージョン: 256
+[14:48:05] [Discovery/Listener] ポート（変換後）: 12356
+[14:48:05] [Discovery/Listener] プレイヤー数: 1
+[14:48:05] [Discovery/Listener] 最大プレイヤー数: 8
+[14:48:05] [Discovery/Listener] ステート: 1
+[14:48:05] [Discovery/Listener] 名前の長さ: 1
+[14:48:05] [Discovery/Listener] サーバー名: 'N'
+[14:48:05] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=1
+[14:48:05] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:48:05] [Map::DrawMapDepth] 壁の数=36 行列: _41=16.08, _42=-3.86, _43=72.91
+[14:48:05] [Discovery/Listener] 生存確認 ループ:1200
+[14:48:05] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:48:06] [SceneGame] 鬼のライト更新: 1 個
+[14:48:06] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:48:07] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:48:07] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:48:09] [SceneGame] 鬼のライト更新: 1 個
+[14:48:09] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:48:09] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:48:10] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:48:10] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=1 name='N'
+[14:48:10] [Discovery/Advertiser] ブロードキャスト送信 #25: サイズ=19 bytes (port=12356)
+[14:48:10] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:48:10] [Discovery/Listener] マジック一致確認
+[14:48:10] [Discovery/Listener] プロトコルバージョン: 256
+[14:48:10] [Discovery/Listener] ポート（変換後）: 12356
+[14:48:10] [Discovery/Listener] プレイヤー数: 1
+[14:48:10] [Discovery/Listener] 最大プレイヤー数: 8
+[14:48:10] [Discovery/Listener] ステート: 1
+[14:48:10] [Discovery/Listener] 名前の長さ: 1
+[14:48:10] [Discovery/Listener] サーバー名: 'N'
+[14:48:10] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=1
+[14:48:10] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:48:10] [Map::DrawMapDepth] 壁の数=36 行列: _41=16.08, _42=-3.86, _43=72.91
+[14:48:10] [Discovery/Listener] 生存確認 ループ:1250
+[14:48:11] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:48:12] [SceneGame] 鬼のライト更新: 1 個
+[14:48:12] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:48:13] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:48:13] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:48:15] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=1 name='N'
+[14:48:15] [Discovery/Advertiser] ブロードキャスト送信 #26: サイズ=19 bytes (port=12356)
+[14:48:15] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:48:15] [Discovery/Listener] マジック一致確認
+[14:48:15] [Discovery/Listener] プロトコルバージョン: 256
+[14:48:15] [Discovery/Listener] ポート（変換後）: 12356
+[14:48:15] [Discovery/Listener] プレイヤー数: 1
+[14:48:15] [Discovery/Listener] 最大プレイヤー数: 8
+[14:48:15] [Discovery/Listener] ステート: 1
+[14:48:15] [Discovery/Listener] 名前の長さ: 1
+[14:48:15] [Discovery/Listener] サーバー名: 'N'
+[14:48:15] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=1
+[14:48:15] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:48:15] [Map::DrawMapDepth] 壁の数=36 行列: _41=16.08, _42=-3.86, _43=72.91
+[14:48:15] [SceneGame] 鬼のライト更新: 1 個
+[14:48:15] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:48:15] [Discovery/Listener] 生存確認 ループ:1300
+[14:48:15] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:48:16] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:48:17] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:48:18] [SceneGame] 鬼のライト更新: 1 個
+[14:48:18] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:48:19] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:48:19] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:48:20] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=1 name='N'
+[14:48:20] [Discovery/Advertiser] ブロードキャスト送信 #27: サイズ=19 bytes (port=12356)
+[14:48:20] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:48:20] [Discovery/Listener] マジック一致確認
+[14:48:20] [Discovery/Listener] プロトコルバージョン: 256
+[14:48:20] [Discovery/Listener] ポート（変換後）: 12356
+[14:48:20] [Discovery/Listener] プレイヤー数: 1
+[14:48:20] [Discovery/Listener] 最大プレイヤー数: 8
+[14:48:20] [Discovery/Listener] ステート: 1
+[14:48:20] [Discovery/Listener] 名前の長さ: 1
+[14:48:20] [Discovery/Listener] サーバー名: 'N'
+[14:48:20] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=1
+[14:48:20] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:48:20] [Map::DrawMapDepth] 壁の数=36 行列: _41=16.08, _42=-3.86, _43=72.91
+[14:48:20] [Discovery/Listener] 生存確認 ループ:1350
+[14:48:21] [SceneGame] 鬼のライト更新: 1 個
+[14:48:21] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:48:21] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:48:22] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:48:23] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:48:24] [SceneGame] 鬼のライト更新: 1 個
+[14:48:24] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:48:25] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:48:25] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=1 name='N'
+[14:48:25] [Discovery/Advertiser] ブロードキャスト送信 #28: サイズ=19 bytes (port=12356)
+[14:48:25] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:48:25] [Discovery/Listener] マジック一致確認
+[14:48:25] [Discovery/Listener] プロトコルバージョン: 256
+[14:48:25] [Discovery/Listener] ポート（変換後）: 12356
+[14:48:25] [Discovery/Listener] プレイヤー数: 1
+[14:48:25] [Discovery/Listener] 最大プレイヤー数: 8
+[14:48:25] [Discovery/Listener] ステート: 1
+[14:48:25] [Discovery/Listener] 名前の長さ: 1
+[14:48:25] [Discovery/Listener] サーバー名: 'N'
+[14:48:25] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=1
+[14:48:25] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:48:25] [Map::DrawMapDepth] 壁の数=36 行列: _41=16.08, _42=-3.86, _43=72.91
+[14:48:25] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:48:26] [Discovery/Listener] 生存確認 ループ:1400
+[14:48:27] [SceneGame] 鬼のライト更新: 1 個
+[14:48:27] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:48:27] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:48:28] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:48:30] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[14:48:30] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=1 name='N'
+[14:48:30] [Discovery/Advertiser] ブロードキャスト送信 #29: サイズ=19 bytes (port=12356)
+[14:48:30] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:48:30] [Discovery/Listener] マジック一致確認
+[14:48:30] [Discovery/Listener] プロトコルバージョン: 256
+[14:48:30] [Discovery/Listener] ポート（変換後）: 12356
+[14:48:30] [Discovery/Listener] プレイヤー数: 1
+[14:48:30] [Discovery/Listener] 最大プレイヤー数: 8
+[14:48:30] [Discovery/Listener] ステート: 1
+[14:48:30] [Discovery/Listener] 名前の長さ: 1
+[14:48:30] [Discovery/Listener] サーバー名: 'N'
+[14:48:30] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=1
+[14:48:30] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:48:30] [Map::DrawMapDepth] 壁の数=36 行列: _41=16.08, _42=-3.86, _43=72.91
+[14:48:30] [SceneGame] 鬼のライト更新: 1 個
+[14:48:30] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:48:31] [Discovery/Listener] 生存確認 ループ:1450
+[14:48:31] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[14:48:32] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.11,0.00,-0.99) IsLocal=Yes
+[14:48:33] [SceneGame] 鬼のライト更新: 1 個
+[14:48:33] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:48:34] [Chaser::UpdateLight] ID=0 Pos=(10.5,1.8,71.8) Dir=(-0.32,0.00,-0.95) IsLocal=Yes
+[14:48:34] [SceneGame] 送信: ID=0 Pos=(10.5,0.5,71.8) Interval=16ms
+[14:48:35] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=1 name='N'
+[14:48:35] [Discovery/Advertiser] ブロードキャスト送信 #30: サイズ=19 bytes (port=12356)
+[14:48:35] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:48:35] [Discovery/Listener] マジック一致確認
+[14:48:35] [Discovery/Listener] プロトコルバージョン: 256
+[14:48:35] [Discovery/Listener] ポート（変換後）: 12356
+[14:48:35] [Discovery/Listener] プレイヤー数: 1
+[14:48:35] [Discovery/Listener] 最大プレイヤー数: 8
+[14:48:35] [Discovery/Listener] ステート: 1
+[14:48:35] [Discovery/Listener] 名前の長さ: 1
+[14:48:35] [Discovery/Listener] サーバー名: 'N'
+[14:48:35] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=1
+[14:48:35] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:48:35] [Map::DrawMapDepth] 壁の数=36 行列: _41=-142.51, _42=-3.86, _43=24.54
+[14:48:36] [Chaser::UpdateLight] ID=0 Pos=(11.7,1.8,69.8) Dir=(-0.98,0.00,-0.18) IsLocal=Yes
+[14:48:36] [Discovery/Listener] 生存確認 ループ:1500
+[14:48:36] [SceneGame] 鬼のライト更新: 1 個
+[14:48:36] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:48:37] [SceneGame] 送信: ID=0 Pos=(11.6,0.5,70.6) Interval=16ms
+[14:48:38] [Chaser::UpdateLight] ID=0 Pos=(11.6,1.8,70.6) Dir=(-0.95,0.00,-0.30) IsLocal=Yes
+[14:48:39] [SceneGame] 鬼のライト更新: 1 個
+[14:48:39] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:48:40] [SceneGame] 送信: ID=0 Pos=(11.6,0.5,70.6) Interval=16ms
+[14:48:40] [Chaser::UpdateLight] ID=0 Pos=(11.6,1.8,70.6) Dir=(-0.93,0.00,-0.38) IsLocal=Yes
+[14:48:40] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=1 name='N'
+[14:48:40] [Discovery/Advertiser] ブロードキャスト送信 #31: サイズ=19 bytes (port=12356)
+[14:48:40] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:48:40] [Discovery/Listener] マジック一致確認
+[14:48:40] [Discovery/Listener] プロトコルバージョン: 256
+[14:48:40] [Discovery/Listener] ポート（変換後）: 12356
+[14:48:40] [Discovery/Listener] プレイヤー数: 1
+[14:48:40] [Discovery/Listener] 最大プレイヤー数: 8
+[14:48:40] [Discovery/Listener] ステート: 1
+[14:48:40] [Discovery/Listener] 名前の長さ: 1
+[14:48:40] [Discovery/Listener] サーバー名: 'N'
+[14:48:40] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=1
+[14:48:40] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:48:40] [Map::DrawMapDepth] 壁の数=36 行列: _41=-123.47, _42=-3.86, _43=42.68
+[14:48:41] [Discovery/Listener] 生存確認 ループ:1550
+[14:48:42] [Chaser::UpdateLight] ID=0 Pos=(11.6,1.8,70.6) Dir=(-0.77,0.00,-0.64) IsLocal=Yes
+[14:48:42] [SceneGame] 鬼のライト更新: 1 個
+[14:48:42] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:48:43] [SceneGame] 送信: ID=0 Pos=(11.6,0.5,70.6) Interval=16ms
+[14:48:44] [Chaser::UpdateLight] ID=0 Pos=(11.6,1.8,70.6) Dir=(-0.86,0.00,-0.51) IsLocal=Yes
+[14:48:45] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=1 name='N'
+[14:48:45] [Discovery/Advertiser] ブロードキャスト送信 #32: サイズ=19 bytes (port=12356)
+[14:48:45] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:48:45] [Discovery/Listener] マジック一致確認
+[14:48:45] [Discovery/Listener] プロトコルバージョン: 256
+[14:48:45] [Discovery/Listener] ポート（変換後）: 12356
+[14:48:45] [Discovery/Listener] プレイヤー数: 1
+[14:48:45] [Discovery/Listener] 最大プレイヤー数: 8
+[14:48:45] [Discovery/Listener] ステート: 1
+[14:48:45] [Discovery/Listener] 名前の長さ: 1
+[14:48:45] [Discovery/Listener] サーバー名: 'N'
+[14:48:45] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=1
+[14:48:45] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:48:45] [Map::DrawMapDepth] 壁の数=36 行列: _41=34.58, _42=-3.86, _43=70.09
+[14:48:45] [SceneGame] 鬼のライト更新: 1 個
+[14:48:45] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:48:46] [SceneGame] 送信: ID=0 Pos=(12.6,0.5,70.7) Interval=16ms
+[14:48:46] [Discovery/Listener] 生存確認 ループ:1600
+[14:48:46] [Chaser::UpdateLight] ID=0 Pos=(13.5,1.8,70.9) Dir=(0.25,0.00,-0.97) IsLocal=Yes
+[14:48:48] [Chaser::UpdateLight] ID=0 Pos=(14.0,1.8,71.0) Dir=(0.74,0.00,-0.68) IsLocal=Yes
+[14:48:48] [SceneGame] 鬼のライト更新: 1 個
+[14:48:48] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:48:49] [SceneGame] 送信: ID=0 Pos=(14.5,0.5,71.3) Interval=16ms
+[14:48:50] [Chaser::UpdateLight] ID=0 Pos=(16.0,1.8,70.5) Dir=(0.49,0.00,-0.87) IsLocal=Yes
+[14:48:50] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=1 name='N'
+[14:48:50] [Discovery/Advertiser] ブロードキャスト送信 #33: サイズ=19 bytes (port=12356)
+[14:48:50] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:48:50] [Discovery/Listener] マジック一致確認
+[14:48:50] [Discovery/Listener] プロトコルバージョン: 256
+[14:48:50] [Discovery/Listener] ポート（変換後）: 12356
+[14:48:50] [Discovery/Listener] プレイヤー数: 1
+[14:48:50] [Discovery/Listener] 最大プレイヤー数: 8
+[14:48:50] [Discovery/Listener] ステート: 1
+[14:48:50] [Discovery/Listener] 名前の長さ: 1
+[14:48:50] [Discovery/Listener] サーバー名: 'N'
+[14:48:50] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=1
+[14:48:50] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:48:50] [Map::DrawMapDepth] 壁の数=36 行列: _41=107.86, _42=-3.86, _43=54.06
+[14:48:51] [Discovery/Listener] 生存確認 ループ:1650
+[14:48:51] [SceneGame] 鬼のライト更新: 1 個
+[14:48:51] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:48:52] [SceneGame] 送信: ID=0 Pos=(22.5,0.5,70.8) Interval=16ms
+[14:48:52] [Chaser::UpdateLight] ID=0 Pos=(23.2,1.8,70.3) Dir=(-0.57,0.00,-0.82) IsLocal=Yes
+[14:48:54] [Chaser::UpdateLight] ID=0 Pos=(30.5,1.8,71.7) Dir=(0.42,0.00,-0.91) IsLocal=Yes
+[14:48:54] [SceneGame] 鬼のライト更新: 1 個
+[14:48:54] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:48:55] [SceneGame] 送信: ID=0 Pos=(33.6,0.5,71.5) Interval=16ms
+[14:48:55] [Discovery/Advertiser] 送信データ: port=12356 player=1/8 state=1 name='N'
+[14:48:55] [Discovery/Advertiser] ブロードキャスト送信 #34: サイズ=19 bytes (port=12356)
+[14:48:55] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[14:48:55] [Discovery/Listener] マジック一致確認
+[14:48:55] [Discovery/Listener] プロトコルバージョン: 256
+[14:48:55] [Discovery/Listener] ポート（変換後）: 12356
+[14:48:55] [Discovery/Listener] プレイヤー数: 1
+[14:48:55] [Discovery/Listener] 最大プレイヤー数: 8
+[14:48:55] [Discovery/Listener] ステート: 1
+[14:48:55] [Discovery/Listener] 名前の長さ: 1
+[14:48:55] [Discovery/Listener] サーバー名: 'N'
+[14:48:55] [Discovery/Listener] ★サーバー検出★: N @ 172.20.145.6:12356 (1/8) state=1
+[14:48:55] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[14:48:55] [Map::DrawMapDepth] 壁の数=36 行列: _41=14.02, _42=-3.86, _43=79.35
+[14:48:56] [Discovery/Listener] 生存確認 ループ:1700
+[14:48:56] [Chaser::UpdateLight] ID=0 Pos=(34.2,1.8,71.3) Dir=(-0.12,0.00,-0.99) IsLocal=Yes
+[14:48:57] [SceneGame] 鬼のライト更新: 1 個
+[14:48:58] [SceneGame] ワールド状態受信: プレイヤー数=1
+[14:48:58] [SceneGame] 送信: ID=0 Pos=(31.1,0.5,74.7) Interval=16ms
+[14:48:58] [Chaser::UpdateLight] ID=0 Pos=(30.4,1.8,74.3) Dir=(-0.09,0.00,-1.00) IsLocal=Yes

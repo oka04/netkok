@@ -620,7 +620,7 @@ void SceneGame::RenderShadowMaps()
 		pDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
 		pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 
-		// クリア
+		// ★★★ 修正: クリア色を1.0fに（最大深度） ★★★
 		pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0);
 
 		// ライト行列取得
@@ -629,7 +629,7 @@ void SceneGame::RenderShadowMaps()
 		// 深度レンダリング
 		m_map.DrawMapDepth(m_pEngine, &matLightVP);
 
-		// 他のプレイヤーも影を落とす
+		// 他のプレイヤーも影を落とす（ライトの持ち主以外）
 		for (auto& kv2 : m_players)
 		{
 			if (kv2.second && kv2.first != kv.first)

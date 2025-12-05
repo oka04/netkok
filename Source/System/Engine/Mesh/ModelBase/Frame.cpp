@@ -246,9 +246,8 @@ void Frame::DrawMeshContainerDepth(LPD3DXMESHCONTAINER pMeshContainerBase, LPD3D
 				}
 			}
 
-			// ★★★ 修正: ボーン行列とライトVP行列を正しく結合 ★★★
-			D3DXMATRIX matWVP = matWorld[0] * *pMatWVP;
-			pEffect->SetMatrix("gMatWVP", &matWVP);
+			// ★★★ 修正不要: 既にWVP行列が渡されている ★★★
+			pEffect->SetMatrix("gMatWVP", pMatWVP);
 			pEffect->SetInt("gNumMaxInfle", pMeshContainer->numMaxFaceInfle);
 
 			UINT numPass;
@@ -261,9 +260,11 @@ void Frame::DrawMeshContainerDepth(LPD3DXMESHCONTAINER pMeshContainerBase, LPD3D
 	}
 	else
 	{
-		// ★★★ 修正: フレームのワールド行列を考慮 ★★★
+		// ★★★ 修正: フレームのワールド行列を正しく適用 ★★★
+		D3DXFRAME_DERIVED* pFrame = (D3DXFRAME_DERIVED*)pFrameBase;
 		D3DXMATRIX matWorld = pFrame->CombinedTransformationMatrix;
 		D3DXMATRIX matWVP = matWorld * *pMatWVP;
+
 		pEffect->SetMatrix("gMatWVP", &matWVP);
 
 		UINT numPass;
@@ -279,7 +280,6 @@ void Frame::DrawMeshContainerDepth(LPD3DXMESHCONTAINER pMeshContainerBase, LPD3D
 		pEffect->End();
 	}
 }
-
 
 //*****************************************************************************
 // private関数
