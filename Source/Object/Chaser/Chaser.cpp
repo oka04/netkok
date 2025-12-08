@@ -147,12 +147,12 @@ void Chaser::CreateShadowMap(Engine* pEngine)
 {
 	LPDIRECT3DDEVICE9 pDevice = pEngine->GetDevice();
 
-	// シャドウマップテクスチャの作成
+	// シャドウマップテクスチャの作成（R8G8B8A8フォーマットに変更）
 	HRESULT hr = pDevice->CreateTexture(
 		SHADOW_MAP_SIZE, SHADOW_MAP_SIZE,
 		1,
 		D3DUSAGE_RENDERTARGET,
-		D3DFMT_R32F,
+		D3DFMT_A8R8G8B8,  // shadowプロジェクトと同じフォーマット
 		D3DPOOL_DEFAULT,
 		&m_pShadowTexture,
 		NULL
@@ -165,10 +165,21 @@ void Chaser::CreateShadowMap(Engine* pEngine)
 		return;
 	}
 
-	// 深度バッファの作成
+	// サーフェスの取得
+	hr = m_pShadowTexture->GetSurfaceLevel(0, &m_pShadowSurface);
+	if (FAILED(hr))
+	{
+		NET_LOG("[Chaser] シャドウマップサーフェス取得失敗");
+		m_pShadowTexture->Release();
+		m_pShadowTexture = nullptr;
+		m_bShadowMapEnabled = false;
+		return;
+	}
+
+	// 深度バッファの作成（D16フォーマットに変更）
 	hr = pDevice->CreateDepthStencilSurface(
 		SHADOW_MAP_SIZE, SHADOW_MAP_SIZE,
-		D3DFMT_D24S8,
+		D3DFMT_D16,  // shadowプロジェクトと同じフォーマット
 		D3DMULTISAMPLE_NONE,
 		0,
 		TRUE,
@@ -179,15 +190,21 @@ void Chaser::CreateShadowMap(Engine* pEngine)
 	if (FAILED(hr))
 	{
 		NET_LOG("[Chaser] シャドウマップ深度バッファ作成失敗");
+		m_pShadowSurface->Release();
+		m_pShadowSurface = nullptr;
 		m_pShadowTexture->Release();
 		m_pShadowTexture = nullptr;
 		m_bShadowMapEnabled = false;
 		return;
 	}
 
+	// スケールバイアス行列の作成
+	CreateScaleBiasMatrix();
+
 	m_bShadowMapEnabled = true;
 	NET_LOG_F("[Chaser] シャドウマップ作成成功: ID=%u", m_clientId);
 }
+
 
 // ★★★ シャドウマップの解放 ★★★
 void Chaser::ReleaseShadowMap()
@@ -213,6 +230,7 @@ void Chaser::ReleaseShadowMap()
 	m_bShadowMapEnabled = false;
 }
 
+// Chaser.cpp - UpdateLightMatrices関数の修正
 void Chaser::UpdateLightMatrices()
 {
 	if (!m_bShadowMapEnabled) return;
@@ -232,8 +250,22 @@ void Chaser::UpdateLightMatrices()
 
 	D3DXMatrixLookAtLH(&m_matLightView, &lightPos, &lightTarget, &lightUp);
 
-	// ★★★ 修正: ニアプレーンを0.05に（さらに小さく） ★★★
-	D3DXMatrixPerspectiveFovLH(&m_matLightProj, m_lightFov, 1.0f, 0.05f, m_lightRange);
+	// ニアプレーンを大きくしてセルフシャドウを軽減
+	D3DXMatrixPerspectiveFovLH(&m_matLightProj, m_lightFov, 1.0f, 0.1f, m_lightRange);
+}
+
+void Chaser::CreateScaleBiasMatrix()
+{
+	// shadowプロジェクトと同じスケールバイアス行列を作成
+	float fOffsetX = 0.5f + (0.5f / (float)SHADOW_MAP_SIZE);
+	float fOffsetY = 0.5f + (0.5f / (float)SHADOW_MAP_SIZE);
+
+	m_matScaleBias = D3DXMATRIX(
+		0.5f, 0.0f, 0.0f, 0.0f,
+		0.0f, -0.5f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		fOffsetX, fOffsetY, 0.0f, 1.0f
+	);
 }
 
 void Chaser::LoadParameter()

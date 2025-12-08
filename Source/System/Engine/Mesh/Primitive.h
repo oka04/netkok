@@ -136,8 +136,8 @@ public:
 	// 　　　　std::vector<LPDIRECT3DTEXTURE9>* シャドウマップテクスチャ
 	// 　　　　std::vector<D3DXMATRIX>* ライトビュー射影行列
 	//=============================================================================
-	void Draw(Engine* pEngine, Camera* pCamera, Projection* pProj, AmbientLight* pAmbient = nullptr, DirectionalLight* pLight = nullptr, std::vector<SpotLight>* pSpotLights = nullptr, std::vector<LPDIRECT3DTEXTURE9>* pShadowMaps = nullptr, std::vector<D3DXMATRIX>* pLightViewProj = nullptr);
-
+	void Draw(Engine* pEngine, Camera* pCamera, Projection* pProj, AmbientLight* pAmbient = nullptr, DirectionalLight* pLight = nullptr, std::vector<SpotLight>* pSpotLights = nullptr, std::vector<LPDIRECT3DTEXTURE9>* pShadowMaps = nullptr, std::vector<D3DXMATRIX>* pLightViewProj = nullptr, std::vector<D3DXMATRIX>* pScaleBias = nullptr);
+	
 	//=============================================================================
 	//　バウンディングスフィア半径の取得
 	//　戻り値：バウンディングスフィアの半径

@@ -51,14 +51,14 @@ void Map::UpdateGoalEffect()
 	m_goalEffect.Update();
 }
 	
-void Map::DrawMap(Engine* pEngine, Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight, std::vector<SpotLight>* lights, std::vector<LPDIRECT3DTEXTURE9>* pShadowMaps, std::vector<D3DXMATRIX>* pLightViewProj)
+void Map::DrawMap(Engine* pEngine, Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight, std::vector<SpotLight>* lights, std::vector<LPDIRECT3DTEXTURE9>* pShadowMaps, std::vector<D3DXMATRIX>* pLightViewProj, std::vector<D3DXMATRIX>* pScaleBias)
 {
 	for (const auto& wall : m_wall)
 	{
-		wall->Draw(pEngine, pCamera, pProj, pAmbient, pLight, lights, pShadowMaps, pLightViewProj);
+		wall->Draw(pEngine, pCamera, pProj, pAmbient, pLight, lights, pShadowMaps, pLightViewProj, pScaleBias);
 	}
 
-	m_ground.Draw(pEngine, pCamera, pProj, pAmbient, pLight, lights, pShadowMaps, pLightViewProj);
+	m_ground.Draw(pEngine, pCamera, pProj, pAmbient, pLight, lights, pShadowMaps, pLightViewProj, pScaleBias);
 }
 void Map::DrawGoalEffect(Camera * pCamera, Projection * pProj)
 {

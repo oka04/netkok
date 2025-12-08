@@ -847,10 +847,12 @@ void Primitive::SetWorldTransform(const LPD3DXMATRIX pMatWorld)
 // 　　　　AmbientLight*     アンビエントライトクラスのポインタ
 // 　　　　DirectionalLight* ディレクショナルライトのポインタ
 //=============================================================================
-void Primitive::Draw(Engine* pEngine, Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight, std::vector<SpotLight>* pSpotLights, std::vector<LPDIRECT3DTEXTURE9>* pShadowMaps, std::vector<D3DXMATRIX>* pLightViewProj)
+void Primitive::Draw(Engine* pEngine, Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight, std::vector<SpotLight>* pSpotLights, std::vector<LPDIRECT3DTEXTURE9>* pShadowMaps, std::vector<D3DXMATRIX>* pLightViewProj, std::vector<D3DXMATRIX>* pScaleBias)
 {
-	if (!pAmbient) {
-		if (m_type != TRIANGLE_XYZ) {
+	if (!pAmbient)
+	{
+		if (m_type != TRIANGLE_XYZ)
+		{
 			return;
 		}
 	}
@@ -859,7 +861,8 @@ void Primitive::Draw(Engine* pEngine, Camera* pCamera, Projection* pProj, Ambien
 
 	pDevice->SetVertexDeclaration(m_pVertexDeclaration);
 
-	if (pAmbient) {
+	if (pAmbient)
+	{
 		D3DCOLORVALUE ambientColor = pAmbient->GetColorValue();
 		m_pEffect->SetValue("gAmbientColor", &ambientColor, sizeof(D3DCOLORVALUE));
 	}
@@ -875,7 +878,7 @@ void Primitive::Draw(Engine* pEngine, Camera* pCamera, Projection* pProj, Ambien
 	m_pEffect->SetValue("gMaterialDiffuse", &m_material.Diffuse, sizeof(D3DCOLORVALUE));
 	m_pEffect->SetValue("gMaterialAmbient", &m_material.Ambient, sizeof(D3DCOLORVALUE));
 
-	// ★★★ スポットライトの設定 ★★★
+	// スポットライトの設定
 	D3DXVECTOR3 positions[MAX_SPOT_LIGHTS] = {};
 	D3DXVECTOR3 directions[MAX_SPOT_LIGHTS] = {};
 	D3DCOLORVALUE colors[MAX_SPOT_LIGHTS] = {};
@@ -888,9 +891,11 @@ void Primitive::Draw(Engine* pEngine, Camera* pCamera, Projection* pProj, Ambien
 	float attn2s[MAX_SPOT_LIGHTS] = {};
 
 	int spotCount = 0;
-	if (pSpotLights) {
+	if (pSpotLights)
+	{
 		spotCount = min((int)pSpotLights->size(), MAX_SPOT_LIGHTS);
-		for (int i = 0; i < spotCount; ++i) {
+		for (int i = 0; i < spotCount; ++i)
+		{
 			const D3DLIGHT9& light = (*pSpotLights)[i].GetLight();
 			positions[i] = light.Position;
 			directions[i] = light.Direction;
@@ -917,17 +922,21 @@ void Primitive::Draw(Engine* pEngine, Camera* pCamera, Projection* pProj, Ambien
 	m_pEffect->SetValue("gSpotLightAttn2", attn2s, sizeof(FLOAT) * MAX_SPOT_LIGHTS);
 	m_pEffect->SetValue("gSpotLightRange", ranges, sizeof(FLOAT) * MAX_SPOT_LIGHTS);
 
-	// ★★★ 重要: シャドウマップテクスチャを常にクリア ★★★
+	// シャドウマップテクスチャを常にクリア
 	m_pEffect->SetTexture("gShadowMap0", nullptr);
 	m_pEffect->SetTexture("gShadowMap1", nullptr);
 	m_pEffect->SetTexture("gShadowMap2", nullptr);
 	m_pEffect->SetTexture("gShadowMap3", nullptr);
 
-	// ★★★ シャドウマップの設定（nullチェック追加） ★★★
-	if (pShadowMaps && !pShadowMaps->empty()) {
-		for (int i = 0; i < min((int)pShadowMaps->size(), MAX_SPOT_LIGHTS); ++i) {
-			if ((*pShadowMaps)[i] != nullptr) {
-				switch (i) {
+	// シャドウマップの設定
+	if (pShadowMaps && !pShadowMaps->empty())
+	{
+		for (int i = 0; i < min((int)pShadowMaps->size(), MAX_SPOT_LIGHTS); ++i)
+		{
+			if ((*pShadowMaps)[i] != nullptr)
+			{
+				switch (i)
+				{
 				case 0: m_pEffect->SetTexture("gShadowMap0", (*pShadowMaps)[i]); break;
 				case 1: m_pEffect->SetTexture("gShadowMap1", (*pShadowMaps)[i]); break;
 				case 2: m_pEffect->SetTexture("gShadowMap2", (*pShadowMaps)[i]); break;
@@ -937,25 +946,46 @@ void Primitive::Draw(Engine* pEngine, Camera* pCamera, Projection* pProj, Ambien
 		}
 	}
 
-	// ★★★ ライトビュー射影行列の設定 ★★★
+	// ライトビュー射影行列の設定
 	D3DXMATRIX lightMatrices[MAX_SPOT_LIGHTS];
-	for (int i = 0; i < MAX_SPOT_LIGHTS; ++i) {
+	for (int i = 0; i < MAX_SPOT_LIGHTS; ++i)
+	{
 		D3DXMatrixIdentity(&lightMatrices[i]);
 	}
 
-	if (pLightViewProj && !pLightViewProj->empty()) {
-		for (int i = 0; i < min((int)pLightViewProj->size(), MAX_SPOT_LIGHTS); ++i) {
+	if (pLightViewProj && !pLightViewProj->empty())
+	{
+		for (int i = 0; i < min((int)pLightViewProj->size(), MAX_SPOT_LIGHTS); ++i)
+		{
 			lightMatrices[i] = (*pLightViewProj)[i];
 		}
 	}
 
 	m_pEffect->SetMatrixArray("gLightViewProj", lightMatrices, MAX_SPOT_LIGHTS);
 
-	// ★★★ テクニックの開始 ★★★
+	// スケールバイアス行列の設定
+	D3DXMATRIX scaleBiasMatrices[MAX_SPOT_LIGHTS];
+	for (int i = 0; i < MAX_SPOT_LIGHTS; ++i)
+	{
+		D3DXMatrixIdentity(&scaleBiasMatrices[i]);
+	}
+
+	if (pScaleBias && !pScaleBias->empty())
+	{
+		for (int i = 0; i < min((int)pScaleBias->size(), MAX_SPOT_LIGHTS); ++i)
+		{
+			scaleBiasMatrices[i] = (*pScaleBias)[i];
+		}
+	}
+
+	m_pEffect->SetMatrixArray("gMatScaleBias", scaleBiasMatrices, MAX_SPOT_LIGHTS);
+
+	// テクニックの開始
 	UINT numPass;
 	m_pEffect->Begin(&numPass, 0);
 
-	switch (m_type) {
+	switch (m_type)
+	{
 	case TRIANGLE_XYZ:
 		pDevice->SetRenderState(D3DRS_WRAP0, 0);
 		m_pEffect->SetTechnique("PrimitivePosOnlyTec");
@@ -981,20 +1011,24 @@ void Primitive::Draw(Engine* pEngine, Camera* pCamera, Projection* pProj, Ambien
 		m_pEffect->SetValue("gLightDir", &light.Direction, sizeof(D3DVECTOR));
 		m_pEffect->SetTexture("gTexture", m_pTexture);
 		m_pEffect->SetTechnique("PrimitiveTextureTec");
-		if (m_pTexture) {
+		if (m_pTexture)
+		{
 			m_pEffect->BeginPass(0);
 		}
-		else {
+		else
+		{
 			m_pEffect->BeginPass(1);
 		}
 		break;
 	}
 	case SPHERE:
 	{
-		if (m_pTexture) {
+		if (m_pTexture)
+		{
 			pDevice->SetRenderState(D3DRS_WRAP0, D3DWRAPCOORD_0);
 		}
-		else {
+		else
+		{
 			pDevice->SetRenderState(D3DRS_WRAP0, 0);
 		}
 		D3DLIGHT9 light = pLight->GetLight();
@@ -1002,10 +1036,12 @@ void Primitive::Draw(Engine* pEngine, Camera* pCamera, Projection* pProj, Ambien
 		m_pEffect->SetValue("gLightDir", &light.Direction, sizeof(D3DVECTOR));
 		m_pEffect->SetTexture("gTexture", m_pTexture);
 		m_pEffect->SetTechnique("PrimitiveTextureTec");
-		if (m_pTexture) {
+		if (m_pTexture)
+		{
 			m_pEffect->BeginPass(0);
 		}
-		else {
+		else
+		{
 			m_pEffect->BeginPass(1);
 		}
 		break;

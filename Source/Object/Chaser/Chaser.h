@@ -31,35 +31,35 @@ public:
 	virtual void UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& light, float deltaTime) override;
 	void UpdateLight(Engine* pEngine);
 
-	// ★★★ 深度パス用の描画を追加 ★★★
 	virtual void DrawDepth(Engine* pEngine, const D3DXMATRIX* pMatLightVP) override;
 
-	// ★★★ シャドウマップ関連のメソッドを追加 ★★★
+	// シャドウマップ関連
 	bool IsShadowMapEnabled() const { return m_bShadowMapEnabled; }
 	LPDIRECT3DTEXTURE9 GetShadowTexture() const { return m_pShadowTexture; }
 	LPDIRECT3DSURFACE9 GetShadowDepthSurface() const { return m_pShadowDepthSurface; }
 	D3DXMATRIX GetLightViewMatrix() const { return m_matLightView; }
 	D3DXMATRIX GetLightProjectionMatrix() const { return m_matLightProj; }
 	D3DXMATRIX GetLightViewProjectionMatrix() const { return m_matLightView * m_matLightProj; }
+	D3DXMATRIX GetScaleBiasMatrix() const { return m_matScaleBias; }
 
 private:
 	void LoadParameter() override;
-
-	// ★★★ シャドウマップ関連のメソッド ★★★
 	void CreateShadowMap(Engine* pEngine);
 	void ReleaseShadowMap();
 	void UpdateLightMatrices();
+	void CreateScaleBiasMatrix();
 
 	SpotLight m_spotLight;
 	float m_lightFov;
 	float m_lightRange;
 
-	// ★★★ シャドウマップ関連のメンバー変数 ★★★
+	// シャドウマップ関連
 	bool m_bShadowMapEnabled;
 	LPDIRECT3DTEXTURE9 m_pShadowTexture;
 	LPDIRECT3DSURFACE9 m_pShadowSurface;
 	LPDIRECT3DSURFACE9 m_pShadowDepthSurface;
 	D3DXMATRIX m_matLightView;
 	D3DXMATRIX m_matLightProj;
+	D3DXMATRIX m_matScaleBias;
 	static const int SHADOW_MAP_SIZE = 512;
 };

@@ -574,11 +574,12 @@ void SceneGame::RenderShadowMaps()
 	D3DVIEWPORT9 oldViewport;
 	pDevice->GetViewport(&oldViewport);
 
-	// ★★★ レンダーステートを退避 ★★★
-	DWORD oldCullMode, oldZEnable, oldZWriteEnable;
+	// レンダーステートを退避
+	DWORD oldCullMode, oldZEnable, oldZWriteEnable, oldColorWriteEnable;
 	pDevice->GetRenderState(D3DRS_CULLMODE, &oldCullMode);
 	pDevice->GetRenderState(D3DRS_ZENABLE, &oldZEnable);
 	pDevice->GetRenderState(D3DRS_ZWRITEENABLE, &oldZWriteEnable);
+	pDevice->GetRenderState(D3DRS_COLORWRITEENABLE, &oldColorWriteEnable);
 
 	// 各鬼のシャドウマップを生成
 	for (auto& kv : m_players)
@@ -615,12 +616,13 @@ void SceneGame::RenderShadowMaps()
 		shadowViewport.MaxZ = 1.0f;
 		pDevice->SetViewport(&shadowViewport);
 
-		// ★★★ シャドウマップ用のレンダーステート設定 ★★★
-		pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+		// シャドウマップ用のレンダーステート設定
+		pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);  // 両面描画
 		pDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
 		pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+		pDevice->SetRenderState(D3DRS_COLORWRITEENABLE, 0x0000000F);  // RGBAすべて書き込み
 
-		// ★★★ 修正: クリア色を1.0fに（最大深度） ★★★
+																	  // クリア（白で塗りつぶす - 最も遠い深度）
 		pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0);
 
 		// ライト行列取得
@@ -629,7 +631,7 @@ void SceneGame::RenderShadowMaps()
 		// 深度レンダリング
 		m_map.DrawMapDepth(m_pEngine, &matLightVP);
 
-		// 他のプレイヤーも影を落とす（ライトの持ち主以外）
+		// 他のプレイヤーも影を落とす
 		for (auto& kv2 : m_players)
 		{
 			if (kv2.second && kv2.first != kv.first)
@@ -641,17 +643,19 @@ void SceneGame::RenderShadowMaps()
 		if (pShadowSurface) pShadowSurface->Release();
 	}
 
-	// ★★★ 重要: すべてのステートを元に戻す ★★★
+	// すべてのステートを元に戻す
 	pDevice->SetRenderTarget(0, pOldBackBuffer);
 	pDevice->SetDepthStencilSurface(pOldDepthBuffer);
 	pDevice->SetViewport(&oldViewport);
 	pDevice->SetRenderState(D3DRS_CULLMODE, oldCullMode);
 	pDevice->SetRenderState(D3DRS_ZENABLE, oldZEnable);
 	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, oldZWriteEnable);
+	pDevice->SetRenderState(D3DRS_COLORWRITEENABLE, oldColorWriteEnable);
 
 	if (pOldBackBuffer) pOldBackBuffer->Release();
 	if (pOldDepthBuffer) pOldDepthBuffer->Release();
 }
+
 void SceneGame::UpdateChaserLights()
 {
 	m_chaserLights.clear();
@@ -786,13 +790,14 @@ void SceneGame::DespawnPlayer(uint32_t clientId)
 
 void SceneGame::Draw()
 {
-	// ★★★ シャドウマップ生成 ★★★
+	// シャドウマップ生成
 	RenderShadowMaps();
 
-	// ★★★ 正しく鬼のライトとシャドウマップを収集 ★★★
+	// 鬼のライトとシャドウマップを収集
 	std::vector<SpotLight> spotLights;
 	std::vector<LPDIRECT3DTEXTURE9> shadowMaps;
 	std::vector<D3DXMATRIX> lightViewProjs;
+	std::vector<D3DXMATRIX> scaleBiases;
 
 	for (auto& kv : m_players)
 	{
@@ -812,6 +817,7 @@ void SceneGame::Draw()
 			{
 				shadowMaps.push_back(chaser->GetShadowTexture());
 				lightViewProjs.push_back(chaser->GetLightViewProjectionMatrix());
+				scaleBiases.push_back(chaser->GetScaleBiasMatrix());
 			}
 			else
 			{
@@ -819,6 +825,7 @@ void SceneGame::Draw()
 				D3DXMATRIX identity;
 				D3DXMatrixIdentity(&identity);
 				lightViewProjs.push_back(identity);
+				scaleBiases.push_back(identity);
 			}
 		}
 	}
@@ -827,10 +834,10 @@ void SceneGame::Draw()
 	std::vector<SpotLight>* pLights = spotLights.empty() ? nullptr : &spotLights;
 	std::vector<LPDIRECT3DTEXTURE9>* pShadowMaps = shadowMaps.empty() ? nullptr : &shadowMaps;
 	std::vector<D3DXMATRIX>* pLightViewProjs = lightViewProjs.empty() ? nullptr : &lightViewProjs;
-
+	std::vector<D3DXMATRIX>* pScaleBiases = scaleBiases.empty() ? nullptr : &scaleBiases;
 	// マップ描画
 	m_map.DrawMap(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light,
-		pLights, pShadowMaps, pLightViewProjs);
+		pLights, pShadowMaps, pLightViewProjs, pScaleBiases);
 
 	// ゴールエフェクト描画
 	m_map.DrawGoalEffect(&m_camera, &m_projection);
@@ -845,7 +852,6 @@ void SceneGame::Draw()
 			drawnCount++;
 		}
 	}
-
 
 #if _DEBUG
 	if (d_debugFlag & DRAW_BOXLINE)

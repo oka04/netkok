@@ -22,7 +22,7 @@ public:
 	void Initialize(Engine * pEngine, Camera * pCamera, Projection * pProj, AmbientLight * pAmbient, DirectionalLight * pLight, const int mapNumber);
 	void Release(Engine * pEngine);
 	void UpdateGoalEffect();
-	void DrawMap(Engine* pEngine, Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight, std::vector<SpotLight>* lights, std::vector<LPDIRECT3DTEXTURE9>* pShadowMaps = nullptr, std::vector<D3DXMATRIX>* pLightViewProj = nullptr);
+	void DrawMap(Engine* pEngine, Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight, std::vector<SpotLight>* lights, std::vector<LPDIRECT3DTEXTURE9>* pShadowMaps = nullptr, std::vector<D3DXMATRIX>* pLightViewProj = nullptr, std::vector<D3DXMATRIX>* pScaleBias = nullptr);
 	void DrawGoalEffect(Camera* pCamera, Projection* pProj);
 	void DrawMiniMap(Engine * pEngine, const D3DXVECTOR2 & playerPosition, const float arrowAngle);
 	void DebugBoxLine(Engine * pEngine, Camera * pCamera, Projection * pProj);
