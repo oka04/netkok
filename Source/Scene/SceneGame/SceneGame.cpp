@@ -617,12 +617,12 @@ void SceneGame::RenderShadowMaps()
 		pDevice->SetViewport(&shadowViewport);
 
 		// シャドウマップ用のレンダーステート設定
-		pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);  // 両面描画
+		pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 		pDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
 		pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
-		pDevice->SetRenderState(D3DRS_COLORWRITEENABLE, 0x0000000F);  // RGBAすべて書き込み
+		pDevice->SetRenderState(D3DRS_COLORWRITEENABLE, 0x0000000F);
 
-																	  // クリア（白で塗りつぶす - 最も遠い深度）
+		// クリア（白で塗りつぶす - 最も遠い深度）
 		pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0);
 
 		// ライト行列取得
@@ -631,10 +631,10 @@ void SceneGame::RenderShadowMaps()
 		// 深度レンダリング
 		m_map.DrawMapDepth(m_pEngine, &matLightVP);
 
-		// 他のプレイヤーも影を落とす
+		// ★★★ 修正: すべてのプレイヤーも影を落とす ★★★
 		for (auto& kv2 : m_players)
 		{
-			if (kv2.second && kv2.first != kv.first)
+			if (kv2.second)
 			{
 				kv2.second->DrawDepth(m_pEngine, &matLightVP);
 			}
@@ -655,7 +655,6 @@ void SceneGame::RenderShadowMaps()
 	if (pOldBackBuffer) pOldBackBuffer->Release();
 	if (pOldDepthBuffer) pOldDepthBuffer->Release();
 }
-
 void SceneGame::UpdateChaserLights()
 {
 	m_chaserLights.clear();

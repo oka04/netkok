@@ -152,7 +152,7 @@ struct PS_DEPTH_OUTPUT
 };
 
 // シャドウバイアス
-float gShadowBias = 0.005f;
+float gShadowBias = 0.001f;
 
 //=============================================================================
 // シャドウマップから影を判定
@@ -171,10 +171,10 @@ float CalculateShadow(int lightIndex, float4 lightSpacePos, float4x4 scaleBias, 
 		return 1.0f;
 	}
 
-	// 法線とライト方向の内積でバイアスを調整
+	// 法線とライト方向の内積でバイアスを調整（より小さく）
 	float cosTheta = saturate(dot(normal, -lightDir));
-	float bias = gShadowBias * tan(acos(cosTheta));
-	bias = clamp(bias, 0.0f, 0.01f);
+	float bias = gShadowBias * (1.0f - cosTheta);
+	bias = clamp(bias, 0.0f, 0.005f);
 
 	// シャドウマップから深度値を取得
 	float shadowDepth = 1.0f;
@@ -198,13 +198,7 @@ float CalculateShadow(int lightIndex, float4 lightSpacePos, float4x4 scaleBias, 
 
 	float currentDepth = texCoord.z;
 
-	// 深度の差が小さすぎる場合は影なし（セルフシャドウ対策）
-	if (abs(currentDepth - shadowDepth) < 0.0001f)
-	{
-		return 1.0f;
-	}
-
-	// 影判定
+	// 影判定（セルフシャドウ対策を削除）
 	float shadow = (currentDepth - bias) > shadowDepth ? 0.0f : 1.0f;
 
 	return shadow;

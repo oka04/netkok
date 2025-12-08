@@ -250,8 +250,8 @@ void Chaser::UpdateLightMatrices()
 
 	D3DXMatrixLookAtLH(&m_matLightView, &lightPos, &lightTarget, &lightUp);
 
-	// ニアプレーンを大きくしてセルフシャドウを軽減
-	D3DXMatrixPerspectiveFovLH(&m_matLightProj, m_lightFov, 1.0f, 0.1f, m_lightRange);
+	// ★★★ 修正: ニアプレーンを小さくして近距離の影を正しく描画 ★★★
+	D3DXMatrixPerspectiveFovLH(&m_matLightProj, m_lightFov, 1.0f, 0.01f, m_lightRange);
 }
 
 void Chaser::CreateScaleBiasMatrix()
@@ -267,7 +267,7 @@ void Chaser::CreateScaleBiasMatrix()
 		fOffsetX, fOffsetY, 0.0f, 1.0f
 	);
 }
-
+	
 void Chaser::LoadParameter()
 {
 	std::ifstream file(JSON_CHASER_PARAMETER);

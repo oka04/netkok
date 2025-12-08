@@ -206,7 +206,7 @@ void Frame::DrawFrameDepth(LPD3DXFRAME pFrame, LPD3DXMATRIX pMatWVP, ID3DXEffect
 // 　　　　LPD3DXMATRIX        ワールドビュープロジェクション変換マトリックスへのポインタ
 //         ID3DXEffect*        エフェクトへのポインタ
 //-----------------------------------------------------------------------------
-void Frame::DrawMeshContainerDepth(LPD3DXMESHCONTAINER pMeshContainerBase, LPD3DXFRAME pFrameBase, LPD3DXMATRIX pMatWVP, ID3DXEffect* pEffect)
+void Frame::DrawMeshContainerDepth(LPD3DXMESHCONTAINER pMeshContainerBase, LPD3DXFRAME pFrameBase, LPD3DXMATRIX pMatLightVP, ID3DXEffect* pEffect)
 {
 	D3DXMESHCONTAINER_DERIVED* pMeshContainer = (D3DXMESHCONTAINER_DERIVED*)pMeshContainerBase;
 	D3DXFRAME_DERIVED* pFrame = (D3DXFRAME_DERIVED*)pFrameBase;
@@ -215,20 +215,10 @@ void Frame::DrawMeshContainerDepth(LPD3DXMESHCONTAINER pMeshContainerBase, LPD3D
 	if (pMeshContainer->pSkinInfo)
 	{
 		// スキンメッシュの深度描画
-		DWORD AttribIdPrev = UNUSED32;
 		LPD3DXBONECOMBINATION pBoneComb = reinterpret_cast<LPD3DXBONECOMBINATION>(pMeshContainer->pBoneCombinationTable->GetBufferPointer());
 
 		for (UINT subset = 0; subset < pMeshContainer->numBoneCombinations; subset++)
 		{
-			UINT NumBlend = 0;
-			for (DWORD i = 0; i < pMeshContainer->numMaxFaceInfle; i++)
-			{
-				if (pBoneComb[subset].BoneId[i] != UINT_MAX)
-				{
-					NumBlend = i;
-				}
-			}
-
 			D3DXMATRIX matWorld[4];
 			for (int i = 0; i < 4; i++)
 			{
@@ -246,8 +236,14 @@ void Frame::DrawMeshContainerDepth(LPD3DXMESHCONTAINER pMeshContainerBase, LPD3D
 				}
 			}
 
-			// ★★★ 修正不要: 既にWVP行列が渡されている ★★★
-			pEffect->SetMatrix("gMatWVP", pMatWVP);
+			// ★★★ 修正: ライトVP行列と結合 ★★★
+			D3DXMATRIX matWVP[4];
+			for (int i = 0; i < 4; i++)
+			{
+				matWVP[i] = matWorld[i] * (*pMatLightVP);
+			}
+
+			pEffect->SetMatrixArray("gMatW", matWVP, 4);
 			pEffect->SetInt("gNumMaxInfle", pMeshContainer->numMaxFaceInfle);
 
 			UINT numPass;
@@ -260,10 +256,9 @@ void Frame::DrawMeshContainerDepth(LPD3DXMESHCONTAINER pMeshContainerBase, LPD3D
 	}
 	else
 	{
-		// ★★★ 修正: フレームのワールド行列を正しく適用 ★★★
-		D3DXFRAME_DERIVED* pFrame = (D3DXFRAME_DERIVED*)pFrameBase;
+		// ★★★ 修正: フレームのワールド行列とライトVP行列を結合 ★★★
 		D3DXMATRIX matWorld = pFrame->CombinedTransformationMatrix;
-		D3DXMATRIX matWVP = matWorld * *pMatWVP;
+		D3DXMATRIX matWVP = matWorld * (*pMatLightVP);
 
 		pEffect->SetMatrix("gMatWVP", &matWVP);
 
