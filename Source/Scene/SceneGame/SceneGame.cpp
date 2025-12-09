@@ -219,43 +219,124 @@ void SceneGame::UpdateNetwork()
 
 	DWORD now = timeGetTime();
 
-	// ★★★ 修正: 初期同期で役割がなくても仮生成する ★★★
-	if (!m_bInitialSyncDone && now - m_lastTime > 500)
+	// ★★★ 修正: 役割割り当て受信（最優先処理） ★★★
+	NetRoleAssignment roleAssign;
+	bool roleReceived = false;
+
+	while (m_pClient->PopRoleAssignment(roleAssign))
 	{
-		NET_LOG("[SceneGame] 初期同期開始");
+		roleReceived = true;
+		m_playerRoles[roleAssign.clientId] = roleAssign.role;
 
-		if (!m_bIsHost)
+		NET_LOG_F("[SceneGame] 役割受信: ID=%u Role=%s",
+			roleAssign.clientId,
+			(roleAssign.role == ROLE_CHASER) ? "鬼" : "逃げる側");
+
+		// 自分の役割が決定したらローカルプレイヤーを即座に生成
+		if (roleAssign.clientId == m_localClientId && !m_pLocalPlayer)
 		{
-			NetPlayerSpawn spawn;
-			while (m_pClient->PopPlayerSpawn(spawn))
+			m_localRole = roleAssign.role;
+			D3DXVECTOR3 startPos = m_map.GetPlayerStartPosition();
+			std::string myName = m_pClient->GetPlayerName();
+
+			NET_LOG_F("[SceneGame] ローカルプレイヤー即座に生成: Role=%s",
+				(m_localRole == ROLE_CHASER) ? "鬼" : "逃げる側");
+
+			SpawnPlayerWithRole(m_localClientId, myName, startPos, m_localRole);
+
+			if (m_pLocalPlayer)
 			{
-				if (spawn.clientId != m_localClientId)
+				m_pLocalPlayer->Update(m_pEngine, m_map, m_camera, m_light, 0);
+				m_pLocalPlayer->SetFirstPersonCamera(m_pEngine, m_camera);
+			}
+
+			// ★★★ 重要: 自分の役割を受信したら初期同期完了とみなす ★★★
+			m_bInitialSyncDone = true;
+			NET_LOG("[SceneGame] 初期同期完了（役割受信）");
+		}
+	}
+
+	if (roleReceived)
+	{
+		UpdateChaserLights();
+	}
+
+	// ★★★ 修正: 初期同期の条件を変更 ★★★
+	// - 役割が決まっていない場合のみタイムアウトで初期同期
+	// - ホストの場合は即座に初期同期完了
+	if (!m_bInitialSyncDone)
+	{
+		if (m_bIsHost)
+		{
+			// ホストは待機不要
+			m_bInitialSyncDone = true;
+			NET_LOG("[SceneGame] 初期同期完了（ホスト）");
+		}
+		else if (now - m_lastTime > 2000)  // 2秒でタイムアウト
+		{
+			// 2秒待っても役割が来ない場合はタイムアウト
+			NET_LOG("[SceneGame] 初期同期タイムアウト - 仮同期開始");
+			m_bInitialSyncDone = true;
+		}
+	}
+
+	// ★★★ 初期同期完了後のみ他のプレイヤーを処理 ★★★
+	if (m_bInitialSyncDone)
+	{
+		// プレイヤーのスポーン処理
+		NetPlayerSpawn spawn;
+		while (m_pClient->PopPlayerSpawn(spawn))
+		{
+			if (spawn.clientId != m_localClientId)
+			{
+				NET_LOG_F("[SceneGame] リモートプレイヤー参加: ID=%u, Name=%s",
+					spawn.clientId, spawn.name);
+
+				if (m_players.find(spawn.clientId) != m_players.end())
 				{
-					NET_LOG_F("[SceneGame] 既存プレイヤーを仮生成: ID=%u, Name=%s",
-						spawn.clientId, spawn.name);
+					continue;
+				}
 
-					// ★★★ 役割がなくてもRUNNERとして仮生成 ★★★
-					PlayerRole role = ROLE_RUNNER;  // デフォルト
-					auto roleIt = m_playerRoles.find(spawn.clientId);
-					if (roleIt != m_playerRoles.end())
-					{
-						role = roleIt->second;
-						NET_LOG_F("[SceneGame] 役割情報あり: %s",
-							(role == ROLE_CHASER) ? "鬼" : "逃げる側");
-					}
+				PlayerRole role = ROLE_RUNNER;
+				auto roleIt = m_playerRoles.find(spawn.clientId);
+				if (roleIt != m_playerRoles.end())
+				{
+					role = roleIt->second;
+				}
 
-					SpawnPlayerWithRole(spawn.clientId, spawn.name,
-						D3DXVECTOR3(spawn.startX, spawn.startY, spawn.startZ),
-						role);
+				SpawnPlayerWithRole(spawn.clientId, spawn.name,
+					D3DXVECTOR3(spawn.startX, spawn.startY, spawn.startZ),
+					role);
+
+				if (role == ROLE_CHASER)
+				{
+					UpdateChaserLights();
 				}
 			}
 		}
 
-		m_bInitialSyncDone = true;
-		NET_LOG_F("[SceneGame] 初期同期完了 - プレイヤー数: %d", (int)m_players.size());
+		// プレイヤーの削除処理
+		uint32_t despawnId;
+		while (m_pClient->PopPlayerDespawn(despawnId))
+		{
+			if (despawnId != m_localClientId)
+			{
+				NET_LOG_F("[SceneGame] プレイヤー退出: ID=%u", despawnId);
+				if (m_playerRoles[despawnId] == ROLE_CHASER)
+				{
+					DespawnPlayer(despawnId);
+					UpdateChaserLights();
+				}
+				else
+				{
+					DespawnPlayer(despawnId);
+				}
+			}
+		}
 	}
 
-	if (now - m_lastNetworkSend >= NETWORK_SEND_INTERVAL)
+	// ★★★ 定期的な状態送信（初期同期完了後のみ） ★★★
+	if (m_bInitialSyncDone && now - m_lastNetworkSend >= NETWORK_SEND_INTERVAL)
 	{
 		SyncToServer();
 		m_lastNetworkSend = now;
@@ -267,7 +348,11 @@ void SceneGame::UpdateNetwork()
 		m_lastWorldBroadcast = now;
 	}
 
-	ReceiveFromServer();
+	// ワールド状態の同期（初期同期完了後のみ）
+	if (m_bInitialSyncDone)
+	{
+		ReceiveWorldState();  // ワールド状態受信を別メソッドに分離
+	}
 }
 void SceneGame::UpdateLocalPlayer()
 {
@@ -376,6 +461,45 @@ void SceneGame::SyncToServer()
 	else
 	{
 		m_pClient->SendPlayerState(state);
+	}
+}
+
+void SceneGame::ReceiveWorldState()
+{
+	if (!m_pClient) return;
+
+	NetWorldState world;
+	if (m_pClient->GetWorldState(world))
+	{
+		static DWORD lastLogTime = 0;
+		DWORD now = timeGetTime();
+		if (now - lastLogTime > 3000)
+		{
+			NET_LOG_F("[SceneGame] ワールド状態受信: プレイヤー数=%d", (int)world.playerCount);
+			lastLogTime = now;
+		}
+
+		for (int i = 0; i < world.playerCount; ++i)
+		{
+			const NetPlayerState& ps = world.players[i];
+
+			if (ps.clientId == m_localClientId) continue;
+
+			auto it = m_players.find(ps.clientId);
+			if (it != m_players.end() && it->second)
+			{
+				it->second->UpdateFromNetwork(ps, m_light, m_deltaTime);
+
+				if (m_playerRoles[ps.clientId] == ROLE_CHASER)
+				{
+					Chaser* chaser = dynamic_cast<Chaser*>(it->second);
+					if (chaser)
+					{
+						chaser->UpdateLight(m_pEngine);
+					}
+				}
+			}
+		}
 	}
 }
 void SceneGame::ReceiveFromServer()
@@ -617,10 +741,16 @@ void SceneGame::RenderShadowMaps()
 		pDevice->SetViewport(&shadowViewport);
 
 		// シャドウマップ用のレンダーステート設定
-		pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+		pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 		pDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
 		pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 		pDevice->SetRenderState(D3DRS_COLORWRITEENABLE, 0x0000000F);
+
+		// ★★★ 修正: 深度バイアスを設定 ★★★
+		float slopeBias = 1.0f;
+		float depthBias = 0.00001f;
+		pDevice->SetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, *((DWORD*)&slopeBias));
+		pDevice->SetRenderState(D3DRS_DEPTHBIAS, *((DWORD*)&depthBias));
 
 		// クリア（白で塗りつぶす - 最も遠い深度）
 		pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0);
@@ -631,7 +761,7 @@ void SceneGame::RenderShadowMaps()
 		// 深度レンダリング
 		m_map.DrawMapDepth(m_pEngine, &matLightVP);
 
-		// ★★★ 修正: すべてのプレイヤーも影を落とす ★★★
+		// すべてのプレイヤーも影を落とす
 		for (auto& kv2 : m_players)
 		{
 			if (kv2.second)
@@ -642,6 +772,10 @@ void SceneGame::RenderShadowMaps()
 
 		if (pShadowSurface) pShadowSurface->Release();
 	}
+
+	// 深度バイアスをリセット
+	pDevice->SetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, 0);
+	pDevice->SetRenderState(D3DRS_DEPTHBIAS, 0);
 
 	// すべてのステートを元に戻す
 	pDevice->SetRenderTarget(0, pOldBackBuffer);

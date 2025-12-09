@@ -1,28 +1,146 @@
-﻿  Game.cpp
-d:\users\5231042\Desktop\netkok\Source\Object\..\\Object\\Network\\NetworkLogger.h(47): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\time.h(505): note: 'localtime' の宣言を確認してください
-  Player.cpp
-  SceneGame.cpp
-d:\users\5231042\desktop\netkok\source\scene\scenegame\..\\..\\Object\\Network\\NetworkLogger.h(47): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\time.h(505): note: 'localtime' の宣言を確認してください
-  SceneTitle.cpp
-  Main.cpp
-d:\users\5231042\Desktop\netkok\Source\Object\..\\Object\\Network\\NetworkLogger.h(47): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\time.h(505): note: 'localtime' の宣言を確認してください
+﻿  AkFileLocationBase.cpp
+c:\program files (x86)\microsoft sdks\windows\v7.1a\include\sal_supp.h(57): warning C4005: '__useHeader': マクロが再定義されました。
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\sal.h(2866): note: '__useHeader' の以前の定義を確認してください
+c:\program files (x86)\microsoft sdks\windows\v7.1a\include\specstrings_supp.h(77): warning C4005: '__on_failure': マクロが再定義されました。
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\sal.h(2876): note: '__on_failure' の以前の定義を確認してください
+  AkDefaultIOHookBlocking.cpp
+c:\program files (x86)\microsoft sdks\windows\v7.1a\include\sal_supp.h(57): warning C4005: '__useHeader': マクロが再定義されました。
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\sal.h(2866): note: '__useHeader' の以前の定義を確認してください
+c:\program files (x86)\microsoft sdks\windows\v7.1a\include\specstrings_supp.h(77): warning C4005: '__on_failure': マクロが再定義されました。
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\sal.h(2876): note: '__on_failure' の以前の定義を確認してください
+  Vector3D.cpp
+  Vector2D.cpp
+  Matrix.cpp
+  IntervalManage.cpp
+  Fps.cpp
   Window.cpp
-d:\users\5231042\Desktop\netkok\Source\Object\..\\Object\\Network\\NetworkLogger.h(47): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\time.h(505): note: 'localtime' の宣言を確認してください
+d:\users\5231042\desktop\netkok\source\object\network\networklogger.h(47): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\time.h(505): note: 'localtime' の宣言を確認してください
+  Main.cpp
+d:\users\5231042\desktop\netkok\source\object\network\networklogger.h(47): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\time.h(505): note: 'localtime' の宣言を確認してください
+  TextureManage.cpp
+  Texture.cpp
+  SEManage.cpp
+  SE.cpp
+  DSManage.cpp
+  DS.cpp
+  ParticleManage.cpp
+  ParticleBase.cpp
+  Primitive.cpp
+  ModelManage.cpp
+  ModelBase.cpp
+  コードを生成中...
+  コンパイル中...
+  Frame.cpp
+  AllocateHierarchy.cpp
+  Model.cpp
+  Viewport.cpp
+  Projection.cpp
+  Camera.cpp
+  Line.cpp
+  Spot.cpp
+  Point.cpp
+  Directional.cpp
+  Ambient.cpp
+  InputManage.cpp
+  imgui_widgets.cpp
+  imgui_tables.cpp
+  imgui_stdlib.cpp
+  imgui_impl_win32.cpp
+  imgui_impl_dx9.cpp
+  imgui_draw.cpp
+  imgui.cpp
+  FontManage.cpp
+  コードを生成中...
+  コンパイル中...
+  Font.cpp
+  DxSystemException.cpp
+  Engine.cpp
+  Collision.cpp
+  BoundingSphere.cpp
+  BoundingBox.cpp
+  Billboard.cpp
+  BGMManage.cpp
+  SceneSource.cpp
+  Scene.cpp
+  SceneTitle.cpp
+d:\users\5231042\desktop\netkok\source\object\network\networklogger.h(47): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\time.h(505): note: 'localtime' の宣言を確認してください
+  SceneSelectHost.cpp
+d:\users\5231042\desktop\netkok\source\object\network\networklogger.h(47): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\time.h(505): note: 'localtime' の宣言を確認してください
+  SceneSelectClient.cpp
+d:\users\5231042\desktop\netkok\source\object\network\networklogger.h(47): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\time.h(505): note: 'localtime' の宣言を確認してください
+  ScenePause.cpp
+  SceneLobby.cpp
+c:\program files (x86)\microsoft sdks\windows\v7.1a\include\sal_supp.h(57): warning C4005: '__useHeader': マクロが再定義されました。
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\sal.h(2866): note: '__useHeader' の以前の定義を確認してください
+c:\program files (x86)\microsoft sdks\windows\v7.1a\include\specstrings_supp.h(77): warning C4005: '__on_failure': マクロが再定義されました。
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\sal.h(2876): note: '__on_failure' の以前の定義を確認してください
+d:\users\5231042\desktop\netkok\source\object\network\networklogger.h(47): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\time.h(505): note: 'localtime' の宣言を確認してください
+  SceneInit.cpp
+  SceneGame.cpp
+d:\users\5231042\desktop\netkok\source\object\network\networklogger.h(47): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\time.h(505): note: 'localtime' の宣言を確認してください
+  SceneGameover.cpp
+  SceneClear.cpp
+  ParticleSource.cpp
+  コードを生成中...
+  コンパイル中...
+  ObjectSource.cpp
+  SoundManager.cpp
+  Runner.cpp
+d:\users\5231042\desktop\netkok\source\object\network\networklogger.h(47): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\time.h(505): note: 'localtime' の宣言を確認してください
+  ServerManager.cpp
+c:\program files (x86)\microsoft sdks\windows\v7.1a\include\sal_supp.h(57): warning C4005: '__useHeader': マクロが再定義されました。
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\sal.h(2866): note: '__useHeader' の以前の定義を確認してください
+c:\program files (x86)\microsoft sdks\windows\v7.1a\include\specstrings_supp.h(77): warning C4005: '__on_failure': マクロが再定義されました。
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\sal.h(2876): note: '__on_failure' の以前の定義を確認してください
+  Discovery.cpp
+c:\program files (x86)\microsoft sdks\windows\v7.1a\include\sal_supp.h(57): warning C4005: '__useHeader': マクロが再定義されました。
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\sal.h(2866): note: '__useHeader' の以前の定義を確認してください
+c:\program files (x86)\microsoft sdks\windows\v7.1a\include\specstrings_supp.h(77): warning C4005: '__on_failure': マクロが再定義されました。
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\sal.h(2876): note: '__on_failure' の以前の定義を確認してください
+d:\users\5231042\desktop\netkok\source\object\network\discovery\discovery.cpp(135): warning C4456: 'magic' を宣言すると、以前のローカル宣言が隠蔽されます
+  d:\users\5231042\desktop\netkok\source\object\network\discovery\discovery.cpp(111): note: 'magic' の宣言を確認してください
+  ClientManager.cpp
+c:\program files (x86)\microsoft sdks\windows\v7.1a\include\sal_supp.h(57): warning C4005: '__useHeader': マクロが再定義されました。
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\sal.h(2866): note: '__useHeader' の以前の定義を確認してください
+c:\program files (x86)\microsoft sdks\windows\v7.1a\include\specstrings_supp.h(77): warning C4005: '__on_failure': マクロが再定義されました。
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\sal.h(2876): note: '__on_failure' の以前の定義を確認してください
+  MenuManager.cpp
+  Map.cpp
+d:\users\5231042\desktop\netkok\source\object\network\networklogger.h(47): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\time.h(505): note: 'localtime' の宣言を確認してください
+  IntVector2.cpp
+  GoalEffect.cpp
+  Fade.cpp
+  Chaser.cpp
+d:\users\5231042\desktop\netkok\source\object\network\networklogger.h(47): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\time.h(505): note: 'localtime' の宣言を確認してください
+  CharacterBase.cpp
+d:\users\5231042\desktop\netkok\source\object\network\networklogger.h(47): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\time.h(505): note: 'localtime' の宣言を確認してください
+  Game.cpp
+d:\users\5231042\desktop\netkok\source\object\network\networklogger.h(47): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\time.h(505): note: 'localtime' の宣言を確認してください
+  コードを生成中...
+d:\users\5231042\desktop\netkok\source\object\characterbase\characterbase.cpp(271): warning C4172: ローカル変数またはテンポラリのアドレスを返します
+Game.obj : warning LNK4075: /EDITANDCONTINUE は /OPT:ICF の指定によって無視されます。
+  enetlib.lib(win32.obj) : MSIL .netmodule または /GL を伴ってコンパイルされたモジュールが見つかりました。/LTCG を使用して再開始してください。リンカーのパフォーマンスを向上させるためには、コマンドラインに /LTCG を追加してください。
+Game.obj : warning LNK4075: /EDITANDCONTINUE は /OPT:ICF の指定によって無視されます。
      ライブラリ d:\users\5231042\Desktop\netkok\Release\DxSystem2016.lib とオブジェクト d:\users\5231042\Desktop\netkok\Release\DxSystem2016.exp を作成中
   コード生成しています。
-  499 of 6001 functions ( 8.3%) were compiled, the rest were copied from previous compilation.
-    335 functions were new in current compilation
-    409 functions had inline decision re-evaluated but remain unchanged
   コード生成が終了しました。
 enetlib.lib(win32.obj) : warning LNK4099: PDB 'enetlib.pdb' が 'enetlib.lib(win32.obj)' で、または 'd:\users\5231042\Desktop\netkok\Release\enetlib.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
-enetlib.lib(peer.obj) : warning LNK4099: PDB 'enetlib.pdb' が 'enetlib.lib(peer.obj)' で、または 'd:\users\5231042\Desktop\netkok\Release\enetlib.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+enetlib.lib(packet.obj) : warning LNK4099: PDB 'enetlib.pdb' が 'enetlib.lib(packet.obj)' で、または 'd:\users\5231042\Desktop\netkok\Release\enetlib.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
 enetlib.lib(host.obj) : warning LNK4099: PDB 'enetlib.pdb' が 'enetlib.lib(host.obj)' で、または 'd:\users\5231042\Desktop\netkok\Release\enetlib.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
 enetlib.lib(protocol.obj) : warning LNK4099: PDB 'enetlib.pdb' が 'enetlib.lib(protocol.obj)' で、または 'd:\users\5231042\Desktop\netkok\Release\enetlib.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
-enetlib.lib(packet.obj) : warning LNK4099: PDB 'enetlib.pdb' が 'enetlib.lib(packet.obj)' で、または 'd:\users\5231042\Desktop\netkok\Release\enetlib.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+enetlib.lib(peer.obj) : warning LNK4099: PDB 'enetlib.pdb' が 'enetlib.lib(peer.obj)' で、または 'd:\users\5231042\Desktop\netkok\Release\enetlib.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
 enetlib.lib(callbacks.obj) : warning LNK4099: PDB 'enetlib.pdb' が 'enetlib.lib(callbacks.obj)' で、または 'd:\users\5231042\Desktop\netkok\Release\enetlib.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
 enetlib.lib(list.obj) : warning LNK4099: PDB 'enetlib.pdb' が 'enetlib.lib(list.obj)' で、または 'd:\users\5231042\Desktop\netkok\Release\enetlib.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
   DxSystem2016.vcxproj -> d:\users\5231042\Desktop\netkok\Release\DxSystem2016.exe

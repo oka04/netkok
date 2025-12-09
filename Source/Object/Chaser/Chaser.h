@@ -61,5 +61,5 @@ private:
 	D3DXMATRIX m_matLightView;
 	D3DXMATRIX m_matLightProj;
 	D3DXMATRIX m_matScaleBias;
-	static const int SHADOW_MAP_SIZE = 512;
+	static const int SHADOW_MAP_SIZE = 1024; 
 };

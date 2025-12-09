@@ -720,7 +720,6 @@ void ServerManager::BroadcastRoleAssignments()
 	NET_LOG("[ServerManager] 役割割り当てブロードキャスト完了");
 }
 
-// ★ ゲーム開始処理を修正（役割割り当てを追加）
 void ServerManager::StartGame()
 {
 	if (!m_pServerHost) return;
@@ -737,8 +736,21 @@ void ServerManager::StartGame()
 	// ★ 役割を割り当て
 	AssignRoles();
 
-	// ★ 役割をブロードキャスト
-	BroadcastRoleAssignments();
+	// ★★★ 修正: 役割を最優先で送信（複数回送信で確実性向上） ★★★
+	for (int retry = 0; retry < 3; retry++)  // 3回送信
+	{
+		BroadcastRoleAssignments();
+
+		if (retry < 2)
+		{
+			Sleep(50);  // 50msの間隔を空けて再送
+		}
+	}
+
+	NET_LOG("[ServerManager] 役割割り当て送信完了（3回送信）");
+
+	// ★★★ 100ms待機してから状態を更新 ★★★
+	Sleep(100);
 
 	if (m_advertiser) m_advertiser->SetAdvertiseState(1);
 

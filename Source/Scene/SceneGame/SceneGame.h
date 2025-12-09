@@ -113,6 +113,7 @@ private:
 	static const int MAX_SPOT_LIGHTS = 4;
 
 	void UpdateChaserLights();
+	void ReceiveWorldState();
 	static const DWORD NETWORK_SEND_INTERVAL = 16;
 	static const DWORD WORLD_BROADCAST_INTERVAL = 8;
 	bool m_bEnablePrediction;

@@ -152,7 +152,7 @@ struct PS_DEPTH_OUTPUT
 };
 
 // シャドウバイアス
-float gShadowBias = 0.001f;
+float gShadowBias = 0.005f;
 
 //=============================================================================
 // シャドウマップから影を判定
@@ -171,39 +171,55 @@ float CalculateShadow(int lightIndex, float4 lightSpacePos, float4x4 scaleBias, 
 		return 1.0f;
 	}
 
-	// 法線とライト方向の内積でバイアスを調整（より小さく）
+	// 法線とライト方向の内積でバイアスを調整
 	float cosTheta = saturate(dot(normal, -lightDir));
-	float bias = gShadowBias * (1.0f - cosTheta);
-	bias = clamp(bias, 0.0f, 0.005f);
+	
+	// 傾斜バイアス: 表面が光源に対して傾いているほど大きくする
+	float slopeBias = gShadowBias * tan(acos(cosTheta));
+	slopeBias = clamp(slopeBias, 0.0f, 0.02f);
+	
+	// 最終バイアス = 基本バイアス + 傾斜バイアス
+	float bias = gShadowBias + slopeBias;
 
-	// シャドウマップから深度値を取得
-	float shadowDepth = 1.0f;
-
-	if (lightIndex == 0)
+	// シャドウマップから深度値を取得（4サンプルPCFでソフトシャドウ）
+	float shadowDepth = 0.0f;
+	float2 texelSize = float2(1.0f / 512.0f, 1.0f / 512.0f);
+	
+	// 2x2 PCFサンプリング
+	float samples = 0.0f;
+	for (int x = -1; x <= 0; x++)
 	{
-		shadowDepth = tex2D(shadowSampler0, texCoord.xy).r;
+		for (int y = -1; y <= 0; y++)
+		{
+			float2 offset = float2(x, y) * texelSize;
+			float depth = 0.0f;
+			
+			if (lightIndex == 0)
+			{
+				depth = tex2D(shadowSampler0, texCoord.xy + offset).r;
+			}
+			else if (lightIndex == 1)
+			{
+				depth = tex2D(shadowSampler1, texCoord.xy + offset).r;
+			}
+			else if (lightIndex == 2)
+			{
+				depth = tex2D(shadowSampler2, texCoord.xy + offset).r;
+			}
+			else if (lightIndex == 3)
+			{
+				depth = tex2D(shadowSampler3, texCoord.xy + offset).r;
+			}
+			
+			samples += ((texCoord.z - bias) > depth) ? 0.0f : 1.0f;
+		}
 	}
-	else if (lightIndex == 1)
-	{
-		shadowDepth = tex2D(shadowSampler1, texCoord.xy).r;
-	}
-	else if (lightIndex == 2)
-	{
-		shadowDepth = tex2D(shadowSampler2, texCoord.xy).r;
-	}
-	else if (lightIndex == 3)
-	{
-		shadowDepth = tex2D(shadowSampler3, texCoord.xy).r;
-	}
-
-	float currentDepth = texCoord.z;
-
-	// 影判定（セルフシャドウ対策を削除）
-	float shadow = (currentDepth - bias) > shadowDepth ? 0.0f : 1.0f;
+	
+	// 平均を取る
+	float shadow = samples / 4.0f;
 
 	return shadow;
 }
-
 //=============================================================================
 // ライティング計算
 //=============================================================================

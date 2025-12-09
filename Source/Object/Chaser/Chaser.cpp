@@ -250,24 +250,19 @@ void Chaser::UpdateLightMatrices()
 
 	D3DXMatrixLookAtLH(&m_matLightView, &lightPos, &lightTarget, &lightUp);
 
-	// ★★★ 修正: ニアプレーンを小さくして近距離の影を正しく描画 ★★★
-	D3DXMatrixPerspectiveFovLH(&m_matLightProj, m_lightFov, 1.0f, 0.01f, m_lightRange);
+	// ★★★ 修正: ニアプレーンとファープレーンを調整 ★★★
+	D3DXMatrixPerspectiveFovLH(&m_matLightProj, m_lightFov, 1.0f, 0.1f, m_lightRange);
 }
-
 void Chaser::CreateScaleBiasMatrix()
 {
-	// shadowプロジェクトと同じスケールバイアス行列を作成
-	float fOffsetX = 0.5f + (0.5f / (float)SHADOW_MAP_SIZE);
-	float fOffsetY = 0.5f + (0.5f / (float)SHADOW_MAP_SIZE);
-
+	// ★★★ 修正: ピクセル中心オフセットを削除 ★★★
 	m_matScaleBias = D3DXMATRIX(
 		0.5f, 0.0f, 0.0f, 0.0f,
 		0.0f, -0.5f, 0.0f, 0.0f,
 		0.0f, 0.0f, 1.0f, 0.0f,
-		fOffsetX, fOffsetY, 0.0f, 1.0f
+		0.5f, 0.5f, 0.0f, 1.0f
 	);
 }
-	
 void Chaser::LoadParameter()
 {
 	std::ifstream file(JSON_CHASER_PARAMETER);
