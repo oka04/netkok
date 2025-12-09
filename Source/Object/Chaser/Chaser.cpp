@@ -250,8 +250,8 @@ void Chaser::UpdateLightMatrices()
 
 	D3DXMatrixLookAtLH(&m_matLightView, &lightPos, &lightTarget, &lightUp);
 
-	// ニアプレーンを大きくしてセルフシャドウを軽減
-	D3DXMatrixPerspectiveFovLH(&m_matLightProj, m_lightFov, 1.0f, 0.1f, m_lightRange);
+	// ★★★ 修正: ニアプレーンを1.0に変更してセルフシャドウを軽減 ★★★
+	D3DXMatrixPerspectiveFovLH(&m_matLightProj, m_lightFov, 1.0f, 1.0f, m_lightRange);
 }
 void Chaser::CreateScaleBiasMatrix()
 {

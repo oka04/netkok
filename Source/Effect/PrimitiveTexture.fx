@@ -150,8 +150,7 @@ struct PS_DEPTH_OUTPUT
 {
 	float4 color : COLOR0;
 };
-
-float gShadowBias = 0.005f;
+float gShadowBias = 0.002f;
 //=============================================================================
 // シャドウマップから影を判定
 //=============================================================================
@@ -178,7 +177,7 @@ float CalculateShadow(int lightIndex, float4 lightSpacePos, float4x4 scaleBias, 
 	float bias = gShadowBias + slopeBias;
 	// シャドウマップから深度値を取得（4サンプルPCFでソフトシャドウ）
 	float shadowDepth = 0.0f;
-	float2 texelSize = float2(1.0f / 512.0f, 1.0f / 512.0f);
+	float2 texelSize = float2(1.0f / 1024.0f, 1.0f / 1024.0f);
 
 	// 2x2 PCFサンプリング
 	float samples = 0.0f;
