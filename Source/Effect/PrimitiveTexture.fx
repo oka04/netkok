@@ -151,9 +151,7 @@ struct PS_DEPTH_OUTPUT
 	float4 color : COLOR0;
 };
 
-// シャドウバイアス
 float gShadowBias = 0.005f;
-
 //=============================================================================
 // シャドウマップから影を判定
 //=============================================================================
@@ -162,7 +160,6 @@ float CalculateShadow(int lightIndex, float4 lightSpacePos, float4x4 scaleBias, 
 	// ライト空間座標をテクスチャ座標に変換
 	float4 texCoord = mul(lightSpacePos, scaleBias);
 	texCoord.xyz /= texCoord.w;
-
 	// テクスチャ範囲外なら影なし
 	if (texCoord.x < 0.0f || texCoord.x > 1.0f ||
 		texCoord.y < 0.0f || texCoord.y > 1.0f ||
@@ -170,21 +167,19 @@ float CalculateShadow(int lightIndex, float4 lightSpacePos, float4x4 scaleBias, 
 	{
 		return 1.0f;
 	}
-
 	// 法線とライト方向の内積でバイアスを調整
 	float cosTheta = saturate(dot(normal, -lightDir));
-	
+
 	// 傾斜バイアス: 表面が光源に対して傾いているほど大きくする
 	float slopeBias = gShadowBias * tan(acos(cosTheta));
 	slopeBias = clamp(slopeBias, 0.0f, 0.02f);
-	
+
 	// 最終バイアス = 基本バイアス + 傾斜バイアス
 	float bias = gShadowBias + slopeBias;
-
 	// シャドウマップから深度値を取得（4サンプルPCFでソフトシャドウ）
 	float shadowDepth = 0.0f;
 	float2 texelSize = float2(1.0f / 512.0f, 1.0f / 512.0f);
-	
+
 	// 2x2 PCFサンプリング
 	float samples = 0.0f;
 	for (int x = -1; x <= 0; x++)
@@ -193,7 +188,7 @@ float CalculateShadow(int lightIndex, float4 lightSpacePos, float4x4 scaleBias, 
 		{
 			float2 offset = float2(x, y) * texelSize;
 			float depth = 0.0f;
-			
+
 			if (lightIndex == 0)
 			{
 				depth = tex2D(shadowSampler0, texCoord.xy + offset).r;
@@ -210,14 +205,13 @@ float CalculateShadow(int lightIndex, float4 lightSpacePos, float4x4 scaleBias, 
 			{
 				depth = tex2D(shadowSampler3, texCoord.xy + offset).r;
 			}
-			
+
 			samples += ((texCoord.z - bias) > depth) ? 0.0f : 1.0f;
 		}
 	}
-	
+
 	// 平均を取る
 	float shadow = samples / 4.0f;
-
 	return shadow;
 }
 //=============================================================================

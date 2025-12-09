@@ -25,31 +25,31 @@
 #include <cassert>
 
 const int Primitive::MAX_SPOT_LIGHTS = 4;
+ID3DXEffect* Primitive::s_pSharedEffect = nullptr;
 
 //=============================================================================
 // コンストラクタ
 //=============================================================================
+int Primitive::s_effectRefCount = 0;
+
 Primitive::Primitive()
 	: m_type(NONE)
 	, m_pMesh(nullptr)
 	, m_pTexture(nullptr)
-	, m_pEffect(nullptr)
+	, m_pEffect(nullptr)  // 共有エフェクトへのポインタのみ
 	, m_pVertexDeclaration(nullptr)
 {
-	//マテリアルの初期化
+	// マテリアルの初期化（既存のコード）
 	ZeroMemory(&m_material, sizeof(D3DMATERIAL9));
-
 	m_material.Diffuse.r = 1.0f;
 	m_material.Diffuse.g = 1.0f;
 	m_material.Diffuse.b = 1.0f;
 	m_material.Diffuse.a = 1.0f;
-
 	m_material.Ambient.r = 1.0f;
 	m_material.Ambient.g = 1.0f;
 	m_material.Ambient.b = 1.0f;
 	m_material.Ambient.a = 1.0f;
 
-	//ワールド座標変換行列の初期化
 	D3DXMatrixIdentity(&m_matWorld);
 }
 
@@ -58,6 +58,7 @@ Primitive::Primitive()
 //=============================================================================
 Primitive::~Primitive()
 {
+
 	DeleteTexture();
 	DeleteMesh();
 
@@ -66,10 +67,8 @@ Primitive::~Primitive()
 		m_pVertexDeclaration = nullptr;
 	}
 
-	if (m_pEffect) {
-		m_pEffect->Release();
-		m_pEffect = nullptr;
-	}
+	// エフェクトは解放しない（共有されているため）
+	m_pEffect = nullptr;
 }
 
 //=============================================================================
@@ -484,18 +483,11 @@ void Primitive::CreateBox(Engine* pEngine, const float width, const float height
 
 	DeleteMesh();
 
-	//シェーダーの読み込み
-	if (!m_pEffect) {
-
-#ifdef _DEBUG
-		HRESULT hr = D3DXCreateEffectFromResource(pDevice, nullptr, MAKEINTRESOURCE(FXID_PRIMITIVE_TEXTURE_EFFECT), nullptr, nullptr, D3DXSHADER_DEBUG, nullptr, &m_pEffect, nullptr);
-#else
-		HRESULT hr = D3DXCreateEffectFromResource(pDevice, nullptr, MAKEINTRESOURCE(FXID_PRIMITIVE_TEXTURE_EFFECT), nullptr, nullptr, 0, nullptr, &m_pEffect, nullptr);
-#endif
-		if (FAILED(hr)) {
-			throw DxSystemException(DxSystemException::OM_PRIMITIVE_LOAD_RESOURCE_ERROR);
-		}
+	// 共有エフェクトの初期化（初回のみコンパイル）
+	if (!s_pSharedEffect) {
+		InitializeSharedEffect(pDevice);
 	}
+	m_pEffect = s_pSharedEffect;
 
 	//頂点宣言
 	D3DVERTEXELEMENT9 VertexElement[] = {
@@ -1201,3 +1193,36 @@ void Primitive::DeleteTexture()
 	}
 }
 
+void Primitive::InitializeSharedEffect(LPDIRECT3DDEVICE9 pDevice)
+{
+	if (s_pSharedEffect) {
+		s_effectRefCount++;
+		return;
+	}
+
+#ifdef _DEBUG
+	HRESULT hr = D3DXCreateEffectFromResource(pDevice, nullptr,
+		MAKEINTRESOURCE(FXID_PRIMITIVE_TEXTURE_EFFECT), nullptr, nullptr,
+		D3DXSHADER_DEBUG, nullptr, &s_pSharedEffect, nullptr);
+#else
+	HRESULT hr = D3DXCreateEffectFromResource(pDevice, nullptr,
+		MAKEINTRESOURCE(FXID_PRIMITIVE_TEXTURE_EFFECT), nullptr, nullptr,
+		0, nullptr, &s_pSharedEffect, nullptr);
+#endif
+
+	if (FAILED(hr)) {
+		throw DxSystemException(DxSystemException::OM_PRIMITIVE_LOAD_RESOURCE_ERROR);
+	}
+
+	s_effectRefCount = 1;
+}
+
+void Primitive::ReleaseSharedEffect()
+{
+	s_effectRefCount--;
+	if (s_effectRefCount <= 0 && s_pSharedEffect) {
+		s_pSharedEffect->Release();
+		s_pSharedEffect = nullptr;
+		s_effectRefCount = 0;
+	}
+}

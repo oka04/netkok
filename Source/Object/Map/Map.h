@@ -57,6 +57,9 @@ private:
 		D3DXVECTOR2 min;
 		D3DXVECTOR2 max;
 	};
+	static ID3DXEffect* s_pPrimitiveEffect;
+	static void InitializePrimitiveEffect(Engine* pEngine);
+	static void ReleasePrimitiveEffect();
 	void LoadParameter();
 	void LoadMap(Engine * pEngine, Camera * pCamera, Projection * pProj, AmbientLight * pAmbient, DirectionalLight * pLight, const int mapNumber);
 	void CreateWall(Engine * pEngine);

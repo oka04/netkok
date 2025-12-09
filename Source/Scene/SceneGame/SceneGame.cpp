@@ -741,18 +741,12 @@ void SceneGame::RenderShadowMaps()
 		pDevice->SetViewport(&shadowViewport);
 
 		// シャドウマップ用のレンダーステート設定
-		pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+		pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);  // 両面描画
 		pDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
 		pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
-		pDevice->SetRenderState(D3DRS_COLORWRITEENABLE, 0x0000000F);
+		pDevice->SetRenderState(D3DRS_COLORWRITEENABLE, 0x0000000F);  // RGBAすべて書き込み
 
-		// ★★★ 修正: 深度バイアスを設定 ★★★
-		float slopeBias = 1.0f;
-		float depthBias = 0.00001f;
-		pDevice->SetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, *((DWORD*)&slopeBias));
-		pDevice->SetRenderState(D3DRS_DEPTHBIAS, *((DWORD*)&depthBias));
-
-		// クリア（白で塗りつぶす - 最も遠い深度）
+																	  // クリア（白で塗りつぶす - 最も遠い深度）
 		pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0);
 
 		// ライト行列取得
@@ -761,10 +755,10 @@ void SceneGame::RenderShadowMaps()
 		// 深度レンダリング
 		m_map.DrawMapDepth(m_pEngine, &matLightVP);
 
-		// すべてのプレイヤーも影を落とす
+		// 他のプレイヤーも影を落とす
 		for (auto& kv2 : m_players)
 		{
-			if (kv2.second)
+			if (kv2.second && kv2.first != kv.first)
 			{
 				kv2.second->DrawDepth(m_pEngine, &matLightVP);
 			}
@@ -772,10 +766,6 @@ void SceneGame::RenderShadowMaps()
 
 		if (pShadowSurface) pShadowSurface->Release();
 	}
-
-	// 深度バイアスをリセット
-	pDevice->SetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, 0);
-	pDevice->SetRenderState(D3DRS_DEPTHBIAS, 0);
 
 	// すべてのステートを元に戻す
 	pDevice->SetRenderTarget(0, pOldBackBuffer);
@@ -789,6 +779,7 @@ void SceneGame::RenderShadowMaps()
 	if (pOldBackBuffer) pOldBackBuffer->Release();
 	if (pOldDepthBuffer) pOldDepthBuffer->Release();
 }
+
 void SceneGame::UpdateChaserLights()
 {
 	m_chaserLights.clear();

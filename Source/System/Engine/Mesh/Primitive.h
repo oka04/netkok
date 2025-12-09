@@ -170,7 +170,13 @@ public:
 private:
 
 	static const int MAX_SPOT_LIGHTS;
+	static ID3DXEffect* s_pSharedEffect;
+	static int s_effectRefCount;
 
+	ID3DXEffect* m_pEffect;
+
+	static void InitializeSharedEffect(LPDIRECT3DDEVICE9 pDevice);
+	static void ReleaseSharedEffect();
 	//プリミティブタイプ列挙体
 	enum PRIMITIVE_TYPE {
 		NONE,
@@ -196,9 +202,6 @@ private:
 
 	//ワールド座標変換行列
 	D3DXMATRIX m_matWorld;
-
-	//エフェクト（シェーダー）
-	ID3DXEffect* m_pEffect;
 
 	//頂点宣言
 	LPDIRECT3DVERTEXDECLARATION9 m_pVertexDeclaration;

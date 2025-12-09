@@ -9,12 +9,13 @@ using namespace Common;
 
 using namespace std;
 
+ID3DXEffect* Map::s_pPrimitiveEffect = nullptr;
 void Map::Initialize(Engine * pEngine, Camera * pCamera, Projection * pProj, AmbientLight * pAmbient, DirectionalLight * pLight, const int mapNumber)
 {
+	InitializePrimitiveEffect(pEngine);
+
 	LoadMap(pEngine, pCamera, pProj, pAmbient, pLight, mapNumber);
-
 	CreateWall(pEngine);
-
 	// マップのサイズに合わせて地面を生成
 	m_mapSize = D3DXVECTOR3(m_col * f_wallSize, f_wallHeight, m_row * f_wallSize);
 	m_ground.CreateBox(pEngine, m_mapSize.x, f_groundHeight, m_mapSize.z);
@@ -36,6 +37,27 @@ void Map::Initialize(Engine * pEngine, Camera * pCamera, Projection * pProj, Amb
 	pEngine->AddTexture(TEXTURE_CHASE_CIRCLE);
 }
 
+void Map::InitializePrimitiveEffect(Engine* pEngine)
+{
+	if (s_pPrimitiveEffect) return;
+
+	LPDIRECT3DDEVICE9 pDevice = pEngine->GetDevice();
+
+#ifdef _DEBUG
+	HRESULT hr = D3DXCreateEffectFromResource(pDevice, nullptr,
+		MAKEINTRESOURCE(FXID_PRIMITIVE_TEXTURE_EFFECT), nullptr, nullptr,
+		D3DXSHADER_DEBUG, nullptr, &s_pPrimitiveEffect, nullptr);
+#else
+	HRESULT hr = D3DXCreateEffectFromResource(pDevice, nullptr,
+		MAKEINTRESOURCE(FXID_PRIMITIVE_TEXTURE_EFFECT), nullptr, nullptr,
+		0, nullptr, &s_pPrimitiveEffect, nullptr);
+#endif
+
+	if (FAILED(hr)) {
+		throw DxSystemException(DxSystemException::OM_PRIMITIVE_LOAD_RESOURCE_ERROR);
+	}
+}
+
 void Map::Release(Engine * pEngine)
 {
 	pEngine->ReleaseTexture(TEXTURE_MINI_MAP);
@@ -44,6 +66,15 @@ void Map::Release(Engine * pEngine)
 	pEngine->ReleaseTexture(TEXTURE_GOAL_PIN);
 	pEngine->ReleaseTexture(TEXTURE_NORMAL_CIRCLE);
 	pEngine->ReleaseTexture(TEXTURE_CHASE_CIRCLE);
+	ReleasePrimitiveEffect();
+}
+
+void Map::ReleasePrimitiveEffect()
+{
+	if (s_pPrimitiveEffect) {
+		s_pPrimitiveEffect->Release();
+		s_pPrimitiveEffect = nullptr;
+	}
 }
 
 void Map::UpdateGoalEffect()
