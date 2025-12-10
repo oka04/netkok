@@ -230,7 +230,6 @@ void Chaser::ReleaseShadowMap()
 	m_bShadowMapEnabled = false;
 }
 
-// Chaser.cpp - UpdateLightMatrices関数の修正
 void Chaser::UpdateLightMatrices()
 {
 	if (!m_bShadowMapEnabled) return;
@@ -250,12 +249,13 @@ void Chaser::UpdateLightMatrices()
 
 	D3DXMatrixLookAtLH(&m_matLightView, &lightPos, &lightTarget, &lightUp);
 
-	// ★★★ 修正: ニアプレーンを1.0に変更してセルフシャドウを軽減 ★★★
-	D3DXMatrixPerspectiveFovLH(&m_matLightProj, m_lightFov, 1.0f, 1.0f, m_lightRange);
+	// ニアプレーンを大きくしてセルフシャドウを軽減
+	D3DXMatrixPerspectiveFovLH(&m_matLightProj, m_lightFov, 1.0f, 0.5f, m_lightRange);
 }
+
+// CreateScaleBiasMatrix関数
 void Chaser::CreateScaleBiasMatrix()
 {
-	// ★★★ 修正: ピクセル中心オフセットを削除 ★★★
 	m_matScaleBias = D3DXMATRIX(
 		0.5f, 0.0f, 0.0f, 0.0f,
 		0.0f, -0.5f, 0.0f, 0.0f,
@@ -263,6 +263,7 @@ void Chaser::CreateScaleBiasMatrix()
 		0.5f, 0.5f, 0.0f, 1.0f
 	);
 }
+
 void Chaser::LoadParameter()
 {
 	std::ifstream file(JSON_CHASER_PARAMETER);

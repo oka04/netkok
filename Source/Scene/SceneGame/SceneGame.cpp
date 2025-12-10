@@ -734,19 +734,19 @@ void SceneGame::RenderShadowMaps()
 		D3DVIEWPORT9 shadowViewport;
 		shadowViewport.X = 0;
 		shadowViewport.Y = 0;
-		shadowViewport.Width = 512;
-		shadowViewport.Height = 512;
+		shadowViewport.Width = 1024;  // 変更: 512 → 1024
+		shadowViewport.Height = 1024; // 変更: 512 → 1024
 		shadowViewport.MinZ = 0.0f;
 		shadowViewport.MaxZ = 1.0f;
 		pDevice->SetViewport(&shadowViewport);
 
 		// シャドウマップ用のレンダーステート設定
-		pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);  // 両面描画
+		pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 		pDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
 		pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
-		pDevice->SetRenderState(D3DRS_COLORWRITEENABLE, 0x0000000F);  // RGBAすべて書き込み
+		pDevice->SetRenderState(D3DRS_COLORWRITEENABLE, 0x0000000F);
 
-																	  // クリア（白で塗りつぶす - 最も遠い深度）
+		// クリア（深度バッファは1.0、カラーは白）
 		pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0);
 
 		// ライト行列取得
@@ -779,7 +779,6 @@ void SceneGame::RenderShadowMaps()
 	if (pOldBackBuffer) pOldBackBuffer->Release();
 	if (pOldDepthBuffer) pOldDepthBuffer->Release();
 }
-
 void SceneGame::UpdateChaserLights()
 {
 	m_chaserLights.clear();
