@@ -962,14 +962,48 @@ void SceneGame::Draw()
 	// シャドウマップ生成
 	RenderShadowMaps();
 
-	// 鬼のライトとシャドウマップを収集
+	// ★★★ 修正: すべての鬼のライトとシャドウマップを収集（ローカルプレイヤーを含む） ★★★
 	std::vector<SpotLight> spotLights;
 	std::vector<LPDIRECT3DTEXTURE9> shadowMaps;
 	std::vector<D3DXMATRIX> lightViewProjs;
 	std::vector<D3DXMATRIX> scaleBiases;
 
+	// ★★★ 重要: ローカルプレイヤーが鬼の場合を最優先で追加 ★★★
+	if (m_pLocalPlayer && m_localRole == ROLE_CHASER)
+	{
+		Chaser* localChaser = dynamic_cast<Chaser*>(m_pLocalPlayer);
+		if (localChaser)
+		{
+			SpotLight* light = localChaser->GetLights();
+			if (light)
+			{
+				spotLights.push_back(*light);
+
+				if (localChaser->IsShadowMapEnabled())
+				{
+					shadowMaps.push_back(localChaser->GetShadowTexture());
+					lightViewProjs.push_back(localChaser->GetLightViewProjectionMatrix());
+					scaleBiases.push_back(localChaser->GetScaleBiasMatrix());
+				}
+				else
+				{
+					shadowMaps.push_back(nullptr);
+					D3DXMATRIX identity;
+					D3DXMatrixIdentity(&identity);
+					lightViewProjs.push_back(identity);
+					scaleBiases.push_back(identity);
+				}
+			}
+		}
+	}
+
+	// ★★★ 修正: リモートの鬼のライトを追加 ★★★
 	for (auto& kv : m_players)
 	{
+		// ローカルプレイヤーは既に追加済みなのでスキップ
+		if (kv.second && kv.second->IsLocal())
+			continue;
+
 		if (!kv.second || m_playerRoles[kv.first] != ROLE_CHASER)
 			continue;
 
@@ -999,11 +1033,11 @@ void SceneGame::Draw()
 		}
 	}
 
-	// ★★★ ポインタに変換（空の場合はnullptr） ★★★
-	std::vector<SpotLight>* pLights = spotLights.empty() ? nullptr : &spotLights;
-	std::vector<LPDIRECT3DTEXTURE9>* pShadowMaps = shadowMaps.empty() ? nullptr : &shadowMaps;
-	std::vector<D3DXMATRIX>* pLightViewProjs = lightViewProjs.empty() ? nullptr : &lightViewProjs;
-	std::vector<D3DXMATRIX>* pScaleBiases = scaleBiases.empty() ? nullptr : &scaleBiases;
+	// ★★★ 修正: 常にポインタを渡す（空でも構造体は用意） ★★★
+	std::vector<SpotLight>* pLights = &spotLights;
+	std::vector<LPDIRECT3DTEXTURE9>* pShadowMaps = &shadowMaps;
+	std::vector<D3DXMATRIX>* pLightViewProjs = &lightViewProjs;
+	std::vector<D3DXMATRIX>* pScaleBiases = &scaleBiases;
 	// マップ描画
 	m_map.DrawMap(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light,
 		pLights, pShadowMaps, pLightViewProjs, pScaleBiases);

@@ -1,4 +1,7 @@
-﻿Game.obj : warning LNK4075: /EDITANDCONTINUE は /OPT:ICF の指定によって無視されます。
+﻿  Chaser.cpp
+d:\users\5231042\desktop\netkok\source\object\network\networklogger.h(47): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\time.h(505): note: 'localtime' の宣言を確認してください
+Game.obj : warning LNK4075: /EDITANDCONTINUE は /OPT:ICF の指定によって無視されます。
   enetlib.lib(win32.obj) : MSIL .netmodule または /GL を伴ってコンパイルされたモジュールが見つかりました。/LTCG を使用して再開始してください。リンカーのパフォーマンスを向上させるためには、コマンドラインに /LTCG を追加してください。
 Game.obj : warning LNK4075: /EDITANDCONTINUE は /OPT:ICF の指定によって無視されます。
      ライブラリ d:\users\5231042\Desktop\netkok\Release\DxSystem2016.lib とオブジェクト d:\users\5231042\Desktop\netkok\Release\DxSystem2016.exp を作成中

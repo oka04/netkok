@@ -257,7 +257,7 @@ void Chaser::UpdateLightMatrices()
 	expandedFov = min(expandedFov, D3DXToRadian(170.0f));
 
 	// ★★★ 修正: ニアプレーンを0.1fに、ファープレーンを大きく ★★★
-	D3DXMatrixPerspectiveFovLH(&m_matLightProj, expandedFov, 1.0f, 0.1f, m_lightRange * 1.2f);
+	D3DXMatrixPerspectiveFovLH(&m_matLightProj, expandedFov, 1.0f, 1.0f, m_lightRange * 1.2f);
 
 	// ★★★ デバッグログ追加 ★★★
 	static DWORD lastLog = 0;
