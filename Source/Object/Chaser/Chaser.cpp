@@ -249,8 +249,28 @@ void Chaser::UpdateLightMatrices()
 
 	D3DXMatrixLookAtLH(&m_matLightView, &lightPos, &lightTarget, &lightUp);
 
-	// ニアプレーンを大きくしてセルフシャドウを軽減
-	D3DXMatrixPerspectiveFovLH(&m_matLightProj, m_lightFov, 1.0f, 0.5f, m_lightRange);
+	// ★★★ 重要: ライトのFOVを1.5倍に拡大（端まで影を描画） ★★★
+	// 元のFOVが狭すぎるため、ライトの視錐台を広げる
+	float expandedFov = m_lightFov * 2.0f;
+
+	// ★★★ 最大でも170度以下に制限（180度だと逆転するため） ★★★
+	expandedFov = min(expandedFov, D3DXToRadian(170.0f));
+
+	// ★★★ 修正: ニアプレーンを0.1fに、ファープレーンを大きく ★★★
+	D3DXMatrixPerspectiveFovLH(&m_matLightProj, expandedFov, 1.0f, 0.1f, m_lightRange * 1.2f);
+
+	// ★★★ デバッグログ追加 ★★★
+	static DWORD lastLog = 0;
+	DWORD now = timeGetTime();
+	if (now - lastLog > 5000)
+	{
+		NET_LOG_F("[Chaser::UpdateLightMatrices] ID=%u FOV=%.2f度 ExpandedFOV=%.2f度 Range=%.2f",
+			m_clientId,
+			D3DXToDegree(m_lightFov),
+			D3DXToDegree(expandedFov),
+			m_lightRange);
+		lastLog = now;
+	}
 }
 
 // CreateScaleBiasMatrix関数

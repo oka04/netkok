@@ -705,7 +705,7 @@ void SceneGame::RenderShadowMaps()
 	pDevice->GetRenderState(D3DRS_ZWRITEENABLE, &oldZWriteEnable);
 	pDevice->GetRenderState(D3DRS_COLORWRITEENABLE, &oldColorWriteEnable);
 
-	// 各鬼のシャドウマップを生成
+	// ★★★ 修正: 各鬼のシャドウマップを生成 ★★★
 	for (auto& kv : m_players)
 	{
 		if (!kv.second || m_playerRoles[kv.first] != ROLE_CHASER)
@@ -734,8 +734,8 @@ void SceneGame::RenderShadowMaps()
 		D3DVIEWPORT9 shadowViewport;
 		shadowViewport.X = 0;
 		shadowViewport.Y = 0;
-		shadowViewport.Width = 1024;  // 変更: 512 → 1024
-		shadowViewport.Height = 1024; // 変更: 512 → 1024
+		shadowViewport.Width = 1024;
+		shadowViewport.Height = 1024;
 		shadowViewport.MinZ = 0.0f;
 		shadowViewport.MaxZ = 1.0f;
 		pDevice->SetViewport(&shadowViewport);
@@ -752,16 +752,31 @@ void SceneGame::RenderShadowMaps()
 		// ライト行列取得
 		D3DXMATRIX matLightVP = chaser->GetLightViewProjectionMatrix();
 
-		// 深度レンダリング
+		// ★★★ 重要: マップの深度レンダリング ★★★
 		m_map.DrawMapDepth(m_pEngine, &matLightVP);
 
-		// 他のプレイヤーも影を落とす
+		// ★★★ 修正: すべてのプレイヤーの影を描画（自分以外）★★★
 		for (auto& kv2 : m_players)
 		{
 			if (kv2.second && kv2.first != kv.first)
 			{
+				// ★★★ デバッグログ追加 ★★★
+				static DWORD lastLog = 0;
+				DWORD now = timeGetTime();
+				if (now - lastLog > 3000)
+				{
+					NET_LOG_F("[SceneGame] シャドウマップに他プレイヤーを描画: ID=%u", kv2.first);
+					lastLog = now;
+				}
+
 				kv2.second->DrawDepth(m_pEngine, &matLightVP);
 			}
+		}
+
+		// ★★★ 追加: ローカルプレイヤーの影も描画（鬼以外）★★★
+		if (m_pLocalPlayer && m_localClientId != kv.first)
+		{
+			m_pLocalPlayer->DrawDepth(m_pEngine, &matLightVP);
 		}
 
 		if (pShadowSurface) pShadowSurface->Release();
@@ -779,10 +794,12 @@ void SceneGame::RenderShadowMaps()
 	if (pOldBackBuffer) pOldBackBuffer->Release();
 	if (pOldDepthBuffer) pOldDepthBuffer->Release();
 }
+
 void SceneGame::UpdateChaserLights()
 {
 	m_chaserLights.clear();
 
+	// ★★★ 修正: すべての鬼のライトを収集 ★★★
 	for (auto& kv : m_players)
 	{
 		if (kv.second && m_playerRoles[kv.first] == ROLE_CHASER)
@@ -790,10 +807,39 @@ void SceneGame::UpdateChaserLights()
 			Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
 			if (chaser)
 			{
+				// ★★★ 重要: ライトを常に更新 ★★★
 				chaser->UpdateLight(m_pEngine);
 
 				SpotLight* light = chaser->GetLights();
 				if (light)
+				{
+					m_chaserLights.push_back(light);
+				}
+			}
+		}
+	}
+
+	// ★★★ ローカルプレイヤーが鬼の場合も追加 ★★★
+	if (m_pLocalPlayer && m_localRole == ROLE_CHASER)
+	{
+		Chaser* localChaser = dynamic_cast<Chaser*>(m_pLocalPlayer);
+		if (localChaser)
+		{
+			localChaser->UpdateLight(m_pEngine);
+			SpotLight* light = localChaser->GetLights();
+			if (light)
+			{
+				// 重複チェック
+				bool alreadyAdded = false;
+				for (auto* existingLight : m_chaserLights)
+				{
+					if (existingLight == light)
+					{
+						alreadyAdded = true;
+						break;
+					}
+				}
+				if (!alreadyAdded)
 				{
 					m_chaserLights.push_back(light);
 				}

@@ -160,32 +160,40 @@ float CalculateShadow(int lightIndex, float4 lightSpacePos, float4x4 scaleBias, 
 	float4 texCoord = mul(lightSpacePos, scaleBias);
 	texCoord.xyz /= texCoord.w;
 
-	// テクスチャ範囲外なら影なし
-	if (texCoord.x < 0.0f || texCoord.x > 1.0f ||
-		texCoord.y < 0.0f || texCoord.y > 1.0f ||
+	// ★★★ 修正: テクスチャ範囲の判定を緩和（端の影を描画） ★★★
+	// 少しはみ出しても影を描画する
+	float edgeMargin = 0.02f;  // 2%のマージン
+	if (texCoord.x < -edgeMargin || texCoord.x > 1.0f + edgeMargin ||
+		texCoord.y < -edgeMargin || texCoord.y > 1.0f + edgeMargin ||
 		texCoord.z < 0.0f || texCoord.z > 1.0f)
 	{
-		return 1.0f;
+		return 1.0f;  // 範囲外は影なし
 	}
+
+	// ★★★ テクスチャ座標をクランプ（端での不正な座標を修正） ★★★
+	texCoord.x = saturate(texCoord.x);
+	texCoord.y = saturate(texCoord.y);
 
 	// 法線とライト方向の内積でバイアスを調整
 	float cosTheta = saturate(dot(normal, -lightDir));
 
-	// 傾斜バイアス: 表面が光源に対して傾いているほど大きくする
+	// ★★★ 修正: 傾斜バイアスを小さく ★★★
 	float slopeBias = gShadowBias * tan(acos(cosTheta));
-	slopeBias = clamp(slopeBias, 0.0f, 0.01f);  // 変更: 0.02f → 0.01f
+	slopeBias = clamp(slopeBias, 0.0f, 0.005f);  // 最大値を小さく（0.01f → 0.005f）
 
-												// 最終バイアス = 基本バイアス + 傾斜バイアス
+												 // 最終バイアス = 基本バイアス + 傾斜バイアス
 	float bias = gShadowBias + slopeBias;
 
 	// シャドウマップから深度値を取得（4サンプルPCFでソフトシャドウ）
-	float2 texelSize = float2(1.0f / 1024.0f, 1.0f / 1024.0f);  // 変更: 512 → 1024
+	float2 texelSize = float2(1.0f / 1024.0f, 1.0f / 1024.0f);
 
-																// 2x2 PCFサンプリング
+	// ★★★ 修正: PCFサンプリング範囲を少し広げる ★★★
 	float samples = 0.0f;
-	for (int x = -1; x <= 0; x++)
+	int sampleCount = 0;
+
+	for (int x = -1; x <= 1; x++)  // -1から1に拡大（元は0まで）
 	{
-		for (int y = -1; y <= 0; y++)
+		for (int y = -1; y <= 1; y++)  // -1から1に拡大（元は0まで）
 		{
 			float2 offset = float2(x, y) * texelSize;
 			float depth = 0.0f;
@@ -207,13 +215,14 @@ float CalculateShadow(int lightIndex, float4 lightSpacePos, float4x4 scaleBias, 
 				depth = tex2D(shadowSampler3, texCoord.xy + offset).r;
 			}
 
-			// 重要: 深度比較の修正
+			// 深度比較
 			samples += (texCoord.z > (depth + bias)) ? 0.0f : 1.0f;
+			sampleCount++;
 		}
 	}
 
-	// 平均を取る
-	float shadow = samples / 4.0f;
+	// 平均を取る（9サンプル）
+	float shadow = samples / (float)sampleCount;
 	return shadow;
 }
 //=============================================================================
