@@ -883,7 +883,7 @@ void Primitive::Draw(Engine* pEngine, Camera* pCamera, Projection* pProj, Ambien
 	float attn2s[MAX_SPOT_LIGHTS] = {};
 
 	int spotCount = 0;
-	if (pSpotLights)
+	if (pSpotLights && !pSpotLights->empty())
 	{
 		spotCount = min((int)pSpotLights->size(), MAX_SPOT_LIGHTS);
 		for (int i = 0; i < spotCount; ++i)
@@ -914,29 +914,37 @@ void Primitive::Draw(Engine* pEngine, Camera* pCamera, Projection* pProj, Ambien
 	m_pEffect->SetValue("gSpotLightAttn2", attn2s, sizeof(FLOAT) * MAX_SPOT_LIGHTS);
 	m_pEffect->SetValue("gSpotLightRange", ranges, sizeof(FLOAT) * MAX_SPOT_LIGHTS);
 
-	// シャドウマップテクスチャを常にクリア
-	m_pEffect->SetTexture("gShadowMap0", nullptr);
-	m_pEffect->SetTexture("gShadowMap1", nullptr);
-	m_pEffect->SetTexture("gShadowMap2", nullptr);
-	m_pEffect->SetTexture("gShadowMap3", nullptr);
+	// ★★★ 修正: シャドウマップテクスチャを条件付きで設定 ★★★
+	// デフォルトはnullptr
+	LPDIRECT3DTEXTURE9 shadowTex0 = nullptr;
+	LPDIRECT3DTEXTURE9 shadowTex1 = nullptr;
+	LPDIRECT3DTEXTURE9 shadowTex2 = nullptr;
+	LPDIRECT3DTEXTURE9 shadowTex3 = nullptr;
 
 	// シャドウマップの設定
 	if (pShadowMaps && !pShadowMaps->empty())
 	{
-		for (int i = 0; i < min((int)pShadowMaps->size(), MAX_SPOT_LIGHTS); ++i)
+		int shadowCount = min((int)pShadowMaps->size(), MAX_SPOT_LIGHTS);
+		for (int i = 0; i < shadowCount; ++i)
 		{
 			if ((*pShadowMaps)[i] != nullptr)
 			{
 				switch (i)
 				{
-				case 0: m_pEffect->SetTexture("gShadowMap0", (*pShadowMaps)[i]); break;
-				case 1: m_pEffect->SetTexture("gShadowMap1", (*pShadowMaps)[i]); break;
-				case 2: m_pEffect->SetTexture("gShadowMap2", (*pShadowMaps)[i]); break;
-				case 3: m_pEffect->SetTexture("gShadowMap3", (*pShadowMaps)[i]); break;
+				case 0: shadowTex0 = (*pShadowMaps)[i]; break;
+				case 1: shadowTex1 = (*pShadowMaps)[i]; break;
+				case 2: shadowTex2 = (*pShadowMaps)[i]; break;
+				case 3: shadowTex3 = (*pShadowMaps)[i]; break;
 				}
 			}
 		}
 	}
+
+	// ★★★ 修正: テクスチャは一度だけ設定 ★★★
+	m_pEffect->SetTexture("gShadowMap0", shadowTex0);
+	m_pEffect->SetTexture("gShadowMap1", shadowTex1);
+	m_pEffect->SetTexture("gShadowMap2", shadowTex2);
+	m_pEffect->SetTexture("gShadowMap3", shadowTex3);
 
 	// ライトビュー射影行列の設定
 	D3DXMATRIX lightMatrices[MAX_SPOT_LIGHTS];
@@ -947,7 +955,8 @@ void Primitive::Draw(Engine* pEngine, Camera* pCamera, Projection* pProj, Ambien
 
 	if (pLightViewProj && !pLightViewProj->empty())
 	{
-		for (int i = 0; i < min((int)pLightViewProj->size(), MAX_SPOT_LIGHTS); ++i)
+		int matrixCount = min((int)pLightViewProj->size(), MAX_SPOT_LIGHTS);
+		for (int i = 0; i < matrixCount; ++i)
 		{
 			lightMatrices[i] = (*pLightViewProj)[i];
 		}
@@ -964,7 +973,8 @@ void Primitive::Draw(Engine* pEngine, Camera* pCamera, Projection* pProj, Ambien
 
 	if (pScaleBias && !pScaleBias->empty())
 	{
-		for (int i = 0; i < min((int)pScaleBias->size(), MAX_SPOT_LIGHTS); ++i)
+		int biasCount = min((int)pScaleBias->size(), MAX_SPOT_LIGHTS);
+		for (int i = 0; i < biasCount; ++i)
 		{
 			scaleBiasMatrices[i] = (*pScaleBias)[i];
 		}
@@ -1048,7 +1058,6 @@ void Primitive::Draw(Engine* pEngine, Camera* pCamera, Projection* pProj, Ambien
 	m_pEffect->EndPass();
 	m_pEffect->End();
 }
-
 //=============================================================================
 //　バウンディングスフィア半径の取得
 //　戻り値：バウンディングスフィアの半径

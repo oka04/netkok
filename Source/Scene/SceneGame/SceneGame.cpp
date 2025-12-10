@@ -959,10 +959,13 @@ void SceneGame::DespawnPlayer(uint32_t clientId)
 
 void SceneGame::Draw()
 {
+	// ★★★ 修正: ライトとシャドウマップの収集を描画前に実行 ★★★
+	UpdateChaserLights();
+
 	// シャドウマップ生成
 	RenderShadowMaps();
 
-	// ★★★ 修正: すべての鬼のライトとシャドウマップを収集（ローカルプレイヤーを含む） ★★★
+	// ★★★ 修正: すべての鬼のライトとシャドウマップを収集 ★★★
 	std::vector<SpotLight> spotLights;
 	std::vector<LPDIRECT3DTEXTURE9> shadowMaps;
 	std::vector<D3DXMATRIX> lightViewProjs;
@@ -1033,11 +1036,22 @@ void SceneGame::Draw()
 		}
 	}
 
-	// ★★★ 修正: 常にポインタを渡す（空でも構造体は用意） ★★★
+	// ★★★ デバッグログ追加 ★★★
+	static DWORD lastLog = 0;
+	DWORD now = timeGetTime();
+	if (now - lastLog > 3000)
+	{
+		NET_LOG_F("[SceneGame::Draw] 鬼のライト数: %d シャドウマップ数: %d",
+			(int)spotLights.size(), (int)shadowMaps.size());
+		lastLog = now;
+	}
+
+	// ★★★ 修正: ポインタを常に渡す（空の場合でも構造体として渡す） ★★★
 	std::vector<SpotLight>* pLights = &spotLights;
 	std::vector<LPDIRECT3DTEXTURE9>* pShadowMaps = &shadowMaps;
 	std::vector<D3DXMATRIX>* pLightViewProjs = &lightViewProjs;
 	std::vector<D3DXMATRIX>* pScaleBiases = &scaleBiases;
+
 	// マップ描画
 	m_map.DrawMap(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light,
 		pLights, pShadowMaps, pLightViewProjs, pScaleBiases);
@@ -1086,8 +1100,8 @@ void SceneGame::Draw()
 	{
 		m_pEngine->DrawPrintf(50, 950, FONT_GOTHIC40, Color::WHITE, "DEL : %f", m_deltaTime);
 		m_pEngine->DrawPrintf(50, 1000, FONT_GOTHIC40, Color::WHITE, "FPS : %f", (float)m_pEngine->GetFPS());
-		m_pEngine->DrawPrintf(50, 900, FONT_GOTHIC40, Color::CYAN, "Players: %d (Drawn: %d) DEBUG: LIGHTS DISABLED",
-			(int)m_players.size(), drawnCount);
+		m_pEngine->DrawPrintf(50, 900, FONT_GOTHIC40, Color::CYAN, "Players: %d (Drawn: %d) Lights: %d",
+			(int)m_players.size(), drawnCount, (int)spotLights.size());
 
 		if (d_debugFlag & DRAW_PLAYER_STATE && m_pLocalPlayer)
 		{
@@ -1111,7 +1125,7 @@ void SceneGame::Draw()
 			if (m_playerRoles[kv.first] == ROLE_CHASER)
 			{
 				color = Color::RED;
-			}
+	}
 
 			const char* prefix = (kv.first == m_localClientId) ? "Local" : "Remote";
 			const char* roleStr = (m_playerRoles[kv.first] == ROLE_CHASER) ? "鬼" : "逃げる側";
@@ -1122,7 +1136,7 @@ void SceneGame::Draw()
 				prefix, kv.first, kv.second->GetCharacterName().c_str(), roleStr,
 				pos.x, pos.y, pos.z);
 			yOffset += 50;
-		}
+}
 	}
 #endif
 
