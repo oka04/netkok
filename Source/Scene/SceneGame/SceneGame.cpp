@@ -101,7 +101,6 @@ void SceneGame::Initialize()
 
 	NET_LOG_F("[SceneGame] Initialize: IsHost=%d, ClientID=%u", m_bIsHost, m_localClientId);
 
-	// ★ ローカルプレイヤーは役割が決まるまで生成しない
 	m_localRole = ROLE_NONE;
 
 	m_lastTime = timeGetTime();
@@ -136,7 +135,7 @@ void SceneGame::Update()
 		UpdateLocalPlayer();
 		UpdateRemotePlayers();
 
-		// ★★★ 鬼のライトを毎フレーム更新 ★★★
+		// ★★★ 修正: 鬼のライト更新を毎フレーム呼び出し ★★★
 		UpdateChaserLights();
 
 		if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
@@ -197,6 +196,8 @@ void SceneGame::Update()
 		return;
 	}
 }
+
+
 void SceneGame::UpdateNetwork()
 {
 	if (m_pClient) m_pClient->Update();
@@ -219,7 +220,6 @@ void SceneGame::UpdateNetwork()
 
 	DWORD now = timeGetTime();
 
-	// ★★★ 修正: 役割割り当て受信（最優先処理） ★★★
 	NetRoleAssignment roleAssign;
 	bool roleReceived = false;
 
@@ -232,7 +232,6 @@ void SceneGame::UpdateNetwork()
 			roleAssign.clientId,
 			(roleAssign.role == ROLE_CHASER) ? "鬼" : "逃げる側");
 
-		// 自分の役割が決定したらローカルプレイヤーを即座に生成
 		if (roleAssign.clientId == m_localClientId && !m_pLocalPlayer)
 		{
 			m_localRole = roleAssign.role;
@@ -250,40 +249,33 @@ void SceneGame::UpdateNetwork()
 				m_pLocalPlayer->SetFirstPersonCamera(m_pEngine, m_camera);
 			}
 
-			// ★★★ 重要: 自分の役割を受信したら初期同期完了とみなす ★★★
 			m_bInitialSyncDone = true;
 			NET_LOG("[SceneGame] 初期同期完了（役割受信）");
 		}
 	}
 
+	// ★★★ 修正: 役割が更新されたら即座にライト更新 ★★★
 	if (roleReceived)
 	{
 		UpdateChaserLights();
 	}
 
-	// ★★★ 修正: 初期同期の条件を変更 ★★★
-	// - 役割が決まっていない場合のみタイムアウトで初期同期
-	// - ホストの場合は即座に初期同期完了
 	if (!m_bInitialSyncDone)
 	{
 		if (m_bIsHost)
 		{
-			// ホストは待機不要
 			m_bInitialSyncDone = true;
 			NET_LOG("[SceneGame] 初期同期完了（ホスト）");
 		}
-		else if (now - m_lastTime > 2000)  // 2秒でタイムアウト
+		else if (now - m_lastTime > 2000)
 		{
-			// 2秒待っても役割が来ない場合はタイムアウト
 			NET_LOG("[SceneGame] 初期同期タイムアウト - 仮同期開始");
 			m_bInitialSyncDone = true;
 		}
 	}
 
-	// ★★★ 初期同期完了後のみ他のプレイヤーを処理 ★★★
 	if (m_bInitialSyncDone)
 	{
-		// プレイヤーのスポーン処理
 		NetPlayerSpawn spawn;
 		while (m_pClient->PopPlayerSpawn(spawn))
 		{
@@ -308,6 +300,7 @@ void SceneGame::UpdateNetwork()
 					D3DXVECTOR3(spawn.startX, spawn.startY, spawn.startZ),
 					role);
 
+				// ★★★ 修正: プレイヤー追加後すぐにライト更新 ★★★
 				if (role == ROLE_CHASER)
 				{
 					UpdateChaserLights();
@@ -315,7 +308,6 @@ void SceneGame::UpdateNetwork()
 			}
 		}
 
-		// プレイヤーの削除処理
 		uint32_t despawnId;
 		while (m_pClient->PopPlayerDespawn(despawnId))
 		{
@@ -335,7 +327,6 @@ void SceneGame::UpdateNetwork()
 		}
 	}
 
-	// ★★★ 定期的な状態送信（初期同期完了後のみ） ★★★
 	if (m_bInitialSyncDone && now - m_lastNetworkSend >= NETWORK_SEND_INTERVAL)
 	{
 		SyncToServer();
@@ -348,12 +339,12 @@ void SceneGame::UpdateNetwork()
 		m_lastWorldBroadcast = now;
 	}
 
-	// ワールド状態の同期（初期同期完了後のみ）
 	if (m_bInitialSyncDone)
 	{
-		ReceiveWorldState();  // ワールド状態受信を別メソッドに分離
+		ReceiveWorldState();
 	}
 }
+
 void SceneGame::UpdateLocalPlayer()
 {
 	if (!m_pLocalPlayer) return;
@@ -372,6 +363,8 @@ void SceneGame::UpdateLocalPlayer()
 		if (chaser)
 		{
 			chaser->Update(m_pEngine, m_map, m_camera, m_light, m_deltaTime);
+			// ★★★ 修正: ローカルの鬼のライトを毎フレーム更新 ★★★
+			chaser->UpdateLight(m_pEngine);
 		}
 	}
 
@@ -395,50 +388,33 @@ void SceneGame::UpdateLocalPlayer()
 #else
 	m_bFirstPerson = true;
 #endif
-}
+	}
 
 void SceneGame::UpdateRemotePlayers()
 {
-	if (m_bEnablePrediction)
+	for (auto& kv : m_players)
 	{
-		for (auto& kv : m_players)
-		{
-			if (kv.second && !kv.second->IsLocal())
-			{
-				kv.second->PredictMovement(m_deltaTime);
+		if (!kv.second || kv.second->IsLocal())
+			continue;
 
-				// ★★★ 追加: リモートの鬼のライトを更新 ★★★
-				if (m_playerRoles[kv.first] == ROLE_CHASER)
-				{
-					Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
-					if (chaser)
-					{
-						// ネットワーク経由で受け取った位置・方向でライトを更新
-						chaser->UpdateLight(m_pEngine);
-					}
-				}
-			}
-		}
-	}
-	else
-	{
-		// ★★★ 予測なしの場合もライトは更新 ★★★
-		for (auto& kv : m_players)
+		// ★★★ 修正: 予測移動 ★★★
+		if (m_bEnablePrediction)
 		{
-			if (kv.second && !kv.second->IsLocal())
+			kv.second->PredictMovement(m_deltaTime);
+		}
+
+		// ★★★ 修正: リモートの鬼のライトを毎フレーム更新 ★★★
+		if (m_playerRoles[kv.first] == ROLE_CHASER)
+		{
+			Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
+			if (chaser)
 			{
-				if (m_playerRoles[kv.first] == ROLE_CHASER)
-				{
-					Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
-					if (chaser)
-					{
-						chaser->UpdateLight(m_pEngine);
-					}
-				}
+				chaser->UpdateLight(m_pEngine);
 			}
 		}
 	}
 }
+
 void SceneGame::SyncToServer()
 {
 	if (!m_pLocalPlayer || !m_pClient) return;
@@ -463,7 +439,6 @@ void SceneGame::SyncToServer()
 		m_pClient->SendPlayerState(state);
 	}
 }
-
 void SceneGame::ReceiveWorldState()
 {
 	if (!m_pClient) return;
@@ -490,6 +465,7 @@ void SceneGame::ReceiveWorldState()
 			{
 				it->second->UpdateFromNetwork(ps, m_light, m_deltaTime);
 
+				// ★★★ 修正: ネットワーク更新後もライト更新 ★★★
 				if (m_playerRoles[ps.clientId] == ROLE_CHASER)
 				{
 					Chaser* chaser = dynamic_cast<Chaser*>(it->second);
@@ -683,7 +659,6 @@ void SceneGame::ReceiveFromServer()
 		}
 	}
 }
-
 void SceneGame::RenderShadowMaps()
 {
 	LPDIRECT3DDEVICE9 pDevice = m_pEngine->GetDevice();
@@ -760,15 +735,6 @@ void SceneGame::RenderShadowMaps()
 		{
 			if (kv2.second && kv2.first != kv.first)
 			{
-				// ★★★ デバッグログ追加 ★★★
-				static DWORD lastLog = 0;
-				DWORD now = timeGetTime();
-				if (now - lastLog > 3000)
-				{
-					NET_LOG_F("[SceneGame] シャドウマップに他プレイヤーを描画: ID=%u", kv2.first);
-					lastLog = now;
-				}
-
 				kv2.second->DrawDepth(m_pEngine, &matLightVP);
 			}
 		}
@@ -794,32 +760,14 @@ void SceneGame::RenderShadowMaps()
 	if (pOldBackBuffer) pOldBackBuffer->Release();
 	if (pOldDepthBuffer) pOldDepthBuffer->Release();
 }
-
 void SceneGame::UpdateChaserLights()
 {
 	m_chaserLights.clear();
 
-	// ★★★ 修正: すべての鬼のライトを収集 ★★★
-	for (auto& kv : m_players)
-	{
-		if (kv.second && m_playerRoles[kv.first] == ROLE_CHASER)
-		{
-			Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
-			if (chaser)
-			{
-				// ★★★ 重要: ライトを常に更新 ★★★
-				chaser->UpdateLight(m_pEngine);
+	static DWORD lastLog = 0;
+	DWORD now = timeGetTime();
 
-				SpotLight* light = chaser->GetLights();
-				if (light)
-				{
-					m_chaserLights.push_back(light);
-				}
-			}
-		}
-	}
-
-	// ★★★ ローカルプレイヤーが鬼の場合も追加 ★★★
+	// ★★★ 修正: ローカルプレイヤーが鬼の場合を最優先で追加 ★★★
 	if (m_pLocalPlayer && m_localRole == ROLE_CHASER)
 	{
 		Chaser* localChaser = dynamic_cast<Chaser*>(m_pLocalPlayer);
@@ -829,29 +777,52 @@ void SceneGame::UpdateChaserLights()
 			SpotLight* light = localChaser->GetLights();
 			if (light)
 			{
-				// 重複チェック
-				bool alreadyAdded = false;
-				for (auto* existingLight : m_chaserLights)
-				{
-					if (existingLight == light)
-					{
-						alreadyAdded = true;
-						break;
-					}
-				}
-				if (!alreadyAdded)
-				{
-					m_chaserLights.push_back(light);
-				}
+				m_chaserLights.push_back(light);
 			}
 		}
 	}
 
-	static DWORD lastLog = 0;
-	DWORD now = timeGetTime();
+	// ★★★ 修正: すべてのリモートの鬼のライトを収集 ★★★
+	for (auto& kv : m_players)
+	{
+		// ローカルプレイヤーは既に追加済みなのでスキップ
+		if (kv.second && kv.second->IsLocal())
+			continue;
+
+		if (!kv.second || m_playerRoles[kv.first] != ROLE_CHASER)
+			continue;
+
+		Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
+		if (chaser)
+		{
+			// ★★★ 重要: ライトを更新 ★★★
+			chaser->UpdateLight(m_pEngine);
+
+			SpotLight* light = chaser->GetLights();
+			if (light)
+			{
+				m_chaserLights.push_back(light);
+			}
+		}
+	}
+
 	if (now - lastLog > 3000)
 	{
-		NET_LOG_F("[SceneGame] 鬼のライト更新: %d 個", (int)m_chaserLights.size());
+		NET_LOG_F("[SceneGame] 鬼のライト更新完了: %d 個", (int)m_chaserLights.size());
+
+		// ★★★ デバッグ: 各ライトの情報を出力 ★★★
+		for (size_t i = 0; i < m_chaserLights.size(); ++i)
+		{
+			if (m_chaserLights[i])
+			{
+				const D3DLIGHT9& light = m_chaserLights[i]->GetLight();
+				NET_LOG_F("  Light[%d]: Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
+					(int)i,
+					light.Position.x, light.Position.y, light.Position.z,
+					light.Direction.x, light.Direction.y, light.Direction.z);
+			}
+		}
+
 		lastLog = now;
 	}
 }
@@ -959,7 +930,7 @@ void SceneGame::DespawnPlayer(uint32_t clientId)
 
 void SceneGame::Draw()
 {
-	// ★★★ 修正: ライトとシャドウマップの収集を描画前に実行 ★★★
+	// ★★★ 修正: 描画前に必ずライトを更新 ★★★
 	UpdateChaserLights();
 
 	// シャドウマップ生成
@@ -1043,6 +1014,18 @@ void SceneGame::Draw()
 	{
 		NET_LOG_F("[SceneGame::Draw] 鬼のライト数: %d シャドウマップ数: %d",
 			(int)spotLights.size(), (int)shadowMaps.size());
+
+		// 各ライトの詳細情報
+		for (size_t i = 0; i < spotLights.size(); ++i)
+		{
+			const D3DLIGHT9& light = spotLights[i].GetLight();
+			NET_LOG_F("  Light[%d]: Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f) Range=%.1f",
+				(int)i,
+				light.Position.x, light.Position.y, light.Position.z,
+				light.Direction.x, light.Direction.y, light.Direction.z,
+				light.Range);
+		}
+
 		lastLog = now;
 	}
 
@@ -1125,7 +1108,7 @@ void SceneGame::Draw()
 			if (m_playerRoles[kv.first] == ROLE_CHASER)
 			{
 				color = Color::RED;
-	}
+			}
 
 			const char* prefix = (kv.first == m_localClientId) ? "Local" : "Remote";
 			const char* roleStr = (m_playerRoles[kv.first] == ROLE_CHASER) ? "鬼" : "逃げる側";
@@ -1136,7 +1119,7 @@ void SceneGame::Draw()
 				prefix, kv.first, kv.second->GetCharacterName().c_str(), roleStr,
 				pos.x, pos.y, pos.z);
 			yOffset += 50;
-}
+		}
 	}
 #endif
 
