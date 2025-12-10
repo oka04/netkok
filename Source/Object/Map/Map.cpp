@@ -8,12 +8,8 @@ using namespace WindowSetting;
 using namespace Common;
 
 using namespace std;
-
-ID3DXEffect* Map::s_pPrimitiveEffect = nullptr;
 void Map::Initialize(Engine * pEngine, Camera * pCamera, Projection * pProj, AmbientLight * pAmbient, DirectionalLight * pLight, const int mapNumber)
 {
-	InitializePrimitiveEffect(pEngine);
-
 	LoadMap(pEngine, pCamera, pProj, pAmbient, pLight, mapNumber);
 	CreateWall(pEngine);
 	// マップのサイズに合わせて地面を生成
@@ -37,27 +33,6 @@ void Map::Initialize(Engine * pEngine, Camera * pCamera, Projection * pProj, Amb
 	pEngine->AddTexture(TEXTURE_CHASE_CIRCLE);
 }
 
-void Map::InitializePrimitiveEffect(Engine* pEngine)
-{
-	if (s_pPrimitiveEffect) return;
-
-	LPDIRECT3DDEVICE9 pDevice = pEngine->GetDevice();
-
-#ifdef _DEBUG
-	HRESULT hr = D3DXCreateEffectFromResource(pDevice, nullptr,
-		MAKEINTRESOURCE(FXID_PRIMITIVE_TEXTURE_EFFECT), nullptr, nullptr,
-		D3DXSHADER_DEBUG, nullptr, &s_pPrimitiveEffect, nullptr);
-#else
-	HRESULT hr = D3DXCreateEffectFromResource(pDevice, nullptr,
-		MAKEINTRESOURCE(FXID_PRIMITIVE_TEXTURE_EFFECT), nullptr, nullptr,
-		0, nullptr, &s_pPrimitiveEffect, nullptr);
-#endif
-
-	if (FAILED(hr)) {
-		throw DxSystemException(DxSystemException::OM_PRIMITIVE_LOAD_RESOURCE_ERROR);
-	}
-}
-
 void Map::Release(Engine * pEngine)
 {
 	pEngine->ReleaseTexture(TEXTURE_MINI_MAP);
@@ -66,15 +41,6 @@ void Map::Release(Engine * pEngine)
 	pEngine->ReleaseTexture(TEXTURE_GOAL_PIN);
 	pEngine->ReleaseTexture(TEXTURE_NORMAL_CIRCLE);
 	pEngine->ReleaseTexture(TEXTURE_CHASE_CIRCLE);
-	ReleasePrimitiveEffect();
-}
-
-void Map::ReleasePrimitiveEffect()
-{
-	if (s_pPrimitiveEffect) {
-		s_pPrimitiveEffect->Release();
-		s_pPrimitiveEffect = nullptr;
-	}
 }
 
 void Map::UpdateGoalEffect()
@@ -84,6 +50,24 @@ void Map::UpdateGoalEffect()
 	
 void Map::DrawMap(Engine* pEngine, Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight, std::vector<SpotLight>* lights, std::vector<LPDIRECT3DTEXTURE9>* pShadowMaps, std::vector<D3DXMATRIX>* pLightViewProj, std::vector<D3DXMATRIX>* pScaleBias)
 {
+	static DWORD lastMapLog = 0;
+	DWORD now = timeGetTime();
+	if (now - lastMapLog > 3000)
+	{
+		NET_LOG_F("[Map::DrawMap] ライト数: %d シャドウマップ数: %d",
+			lights ? (int)lights->size() : -1,
+			pShadowMaps ? (int)pShadowMaps->size() : -1);
+
+		if (lights && !lights->empty())
+		{
+			const D3DLIGHT9& firstLight = (*lights)[0].GetLight();
+			NET_LOG_F("[Map::DrawMap] Light[0] Pos=(%.1f,%.1f,%.1f)",
+				firstLight.Position.x, firstLight.Position.y, firstLight.Position.z);
+		}
+		lastMapLog = now;
+	}
+
+	// ★★★ 重要: すべての壁と地面にライト情報を渡す ★★★
 	for (const auto& wall : m_wall)
 	{
 		wall->Draw(pEngine, pCamera, pProj, pAmbient, pLight, lights, pShadowMaps, pLightViewProj, pScaleBias);
