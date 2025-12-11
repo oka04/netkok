@@ -794,6 +794,8 @@ void SceneGame::RenderShadowMaps()
 	if (pOldDepthBuffer) pOldDepthBuffer->Release();
 }
 
+// SceneGame.cpp の UpdateChaserLights() メソッド - 完全修正版
+
 void SceneGame::UpdateChaserLights()
 {
 	m_chaserLights.clear();
@@ -801,7 +803,7 @@ void SceneGame::UpdateChaserLights()
 	static DWORD lastLog = 0;
 	DWORD now = timeGetTime();
 
-	// ★★★ 修正: ローカルプレイヤーが鬼の場合を最優先で追加 ★★★
+	// ★★★ 修正1: ローカルプレイヤーが鬼の場合を最優先で追加 ★★★
 	if (m_pLocalPlayer && m_localRole == ROLE_CHASER)
 	{
 		Chaser* localChaser = dynamic_cast<Chaser*>(m_pLocalPlayer);
@@ -812,20 +814,43 @@ void SceneGame::UpdateChaserLights()
 			if (light)
 			{
 				m_chaserLights.push_back(light);
+
+				if (now - lastLog > 3000)
+				{
+					const D3DLIGHT9& l = light->GetLight();
+					NET_LOG_F("[UpdateChaserLights] ローカル鬼追加: ID=%u Pos=(%.1f,%.1f,%.1f)",
+						m_localClientId, l.Position.x, l.Position.y, l.Position.z);
+				}
 			}
 		}
 	}
 
-	// ★★★ 修正: すべてのリモートの鬼のライトを収集 ★★★
+	// ★★★ 修正2: すべてのリモートプレイヤーをチェック ★★★
 	for (auto& kv : m_players)
 	{
-		// ローカルプレイヤーは既に追加済みなのでスキップ
-		if (kv.second && kv.second->IsLocal())
+		// ★★★ 重要: ローカルプレイヤーは既に追加済みなのでスキップ ★★★
+		if (!kv.second || kv.second->IsLocal())
 			continue;
 
-		if (!kv.second || m_playerRoles[kv.first] != ROLE_CHASER)
+		// ★★★ デバッグ: プレイヤーの役割を確認 ★★★
+		if (now - lastLog > 3000)
+		{
+			auto roleIt = m_playerRoles.find(kv.first);
+			if (roleIt != m_playerRoles.end())
+			{
+				NET_LOG_F("[UpdateChaserLights] プレイヤーチェック: ID=%u Name=%s Role=%s",
+					kv.first,
+					kv.second->GetCharacterName().c_str(),
+					(roleIt->second == ROLE_CHASER) ? "鬼" : "逃げる側");
+			}
+		}
+
+		// ★★★ 役割マップから鬼かどうか確認 ★★★
+		auto roleIt = m_playerRoles.find(kv.first);
+		if (roleIt == m_playerRoles.end() || roleIt->second != ROLE_CHASER)
 			continue;
 
+		// ★★★ 鬼の場合、ライトを取得 ★★★
 		Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
 		if (chaser)
 		{
@@ -836,27 +861,35 @@ void SceneGame::UpdateChaserLights()
 			if (light)
 			{
 				m_chaserLights.push_back(light);
+
+				if (now - lastLog > 3000)
+				{
+					const D3DLIGHT9& l = light->GetLight();
+					NET_LOG_F("[UpdateChaserLights] リモート鬼追加: ID=%u Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
+						kv.first, l.Position.x, l.Position.y, l.Position.z,
+						l.Direction.x, l.Direction.y, l.Direction.z);
+				}
+			}
+			else
+			{
+				if (now - lastLog > 3000)
+				{
+					NET_LOG_F("[UpdateChaserLights] 警告: ID=%u のライトがnullptr", kv.first);
+				}
+			}
+		}
+		else
+		{
+			if (now - lastLog > 3000)
+			{
+				NET_LOG_F("[UpdateChaserLights] 警告: ID=%u はChaserにキャストできません", kv.first);
 			}
 		}
 	}
 
 	if (now - lastLog > 3000)
 	{
-		NET_LOG_F("[SceneGame] 鬼のライト更新完了: %d 個", (int)m_chaserLights.size());
-
-		// ★★★ デバッグ: 各ライトの情報を出力 ★★★
-		for (size_t i = 0; i < m_chaserLights.size(); ++i)
-		{
-			if (m_chaserLights[i])
-			{
-				const D3DLIGHT9& light = m_chaserLights[i]->GetLight();
-				NET_LOG_F("  Light[%d]: Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
-					(int)i,
-					light.Position.x, light.Position.y, light.Position.z,
-					light.Direction.x, light.Direction.y, light.Direction.z);
-			}
-		}
-
+		NET_LOG_F("[UpdateChaserLights] ライト収集完了: %d 個", (int)m_chaserLights.size());
 		lastLog = now;
 	}
 }
@@ -927,12 +960,24 @@ void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name,
 	}
 
 	p->SetPosition(spawnPos);
+
+	// ★★★ 重要: プレイヤーをマップに追加 ★★★
 	m_players[clientId] = p;
+
+	// ★★★ 重要: 役割を確実に設定 ★★★
 	m_playerRoles[clientId] = role;
 
 	NET_LOG_F("[SceneGame] プレイヤー生成完了: ID=%u, Role=%s, Pos=(%.1f,%.1f,%.1f)",
-		clientId, (role == ROLE_CHASER) ? "鬼" : (role == ROLE_RUNNER) ? "逃げる側" : "未定",
+		clientId,
+		(role == ROLE_CHASER) ? "鬼" : (role == ROLE_RUNNER) ? "逃げる側" : "未定",
 		spawnPos.x, spawnPos.y, spawnPos.z);
+
+	// ★★★ デバッグ: 役割マップの内容を確認 ★★★
+	NET_LOG_F("[SceneGame] 現在の役割マップ: 総数=%d", (int)m_playerRoles.size());
+	for (auto& kv : m_playerRoles)
+	{
+		NET_LOG_F("  ID=%u -> %s", kv.first, (kv.second == ROLE_CHASER) ? "鬼" : "逃げる側");
+	}
 }
 
 void SceneGame::DespawnPlayer(uint32_t clientId)
@@ -966,6 +1011,32 @@ void SceneGame::Draw()
 {
 	// ★★★ 修正: 描画前に必ずライトを更新 ★★★
 	UpdateChaserLights();
+
+	// ★★★ デバッグ: 描画前の状態を確認 ★★★
+	static DWORD lastDrawLog = 0;
+	DWORD now = timeGetTime();
+	if (now - lastDrawLog > 3000)
+	{
+		NET_LOG_F("[SceneGame::Draw] プレイヤー総数=%d ローカルRole=%s",
+			(int)m_players.size(),
+			(m_localRole == ROLE_CHASER) ? "鬼" : (m_localRole == ROLE_RUNNER) ? "逃げる側" : "未定");
+
+		// 各プレイヤーの役割を出力
+		for (auto& kv : m_players)
+		{
+			auto roleIt = m_playerRoles.find(kv.first);
+			if (roleIt != m_playerRoles.end())
+			{
+				NET_LOG_F("[SceneGame::Draw] Player ID=%u Role=%s IsLocal=%s",
+					kv.first,
+					(roleIt->second == ROLE_CHASER) ? "鬼" : "逃げる側",
+					kv.second->IsLocal() ? "Yes" : "No");
+			}
+		}
+
+		NET_LOG_F("[SceneGame::Draw] 収集したライト数: %d", (int)m_chaserLights.size());
+		lastDrawLog = now;
+	}
 
 	// シャドウマップ生成
 	RenderShadowMaps();
@@ -1043,7 +1114,7 @@ void SceneGame::Draw()
 
 	// ★★★ デバッグログ追加 ★★★
 	static DWORD lastLog = 0;
-	DWORD now = timeGetTime();
+	now = timeGetTime();
 	if (now - lastLog > 3000)
 	{
 		NET_LOG_F("[SceneGame::Draw] 鬼のライト数: %d シャドウマップ数: %d",
