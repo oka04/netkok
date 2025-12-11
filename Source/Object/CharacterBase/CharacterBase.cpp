@@ -298,7 +298,6 @@ const float & CharacterBase::GetArrowAngle() const
 }
 
 
-// ★★★ ネットワーク状態の取得 ★★★
 NetPlayerState CharacterBase::GetNetState() const
 {
 	NetPlayerState state;
@@ -314,6 +313,15 @@ NetPlayerState CharacterBase::GetNetState() const
 	state.keyFlag = m_keyFlag;
 	state.flags = 0;
 	state.SetFirstPerson(m_bFirstPerson);
+
+	// ★★★ 追加: ライト情報を初期化（派生クラスで上書き）★★★
+	state.lightPosX = 0.0f;
+	state.lightPosY = 0.0f;
+	state.lightPosZ = 0.0f;
+	state.lightDirX = 0.0f;
+	state.lightDirY = 0.0f;
+	state.lightDirZ = -1.0f;
+	state.lightRange = 0.0f;
 
 	return state;
 }

@@ -1,4 +1,4 @@
-﻿// NetworkSync.h - 役割（Role）を追加
+﻿// NetworkSync.h - ライト情報を追加
 #pragma once
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -9,9 +9,9 @@
 // プレイヤーの役割
 enum PlayerRole : uint8_t
 {
-	ROLE_NONE = 0,    // 未割り当て
-	ROLE_RUNNER = 1,  // 逃げる側
-	ROLE_CHASER = 2   // 鬼
+	ROLE_NONE = 0,
+	ROLE_RUNNER = 1,
+	ROLE_CHASER = 2
 };
 
 // ネットワークメッセージタイプ
@@ -26,7 +26,7 @@ enum NetworkMessageType : uint8_t
 	MSG_WORLD_STATE = 11,
 	MSG_PLAYER_SPAWN = 12,
 	MSG_PLAYER_DESPAWN = 13,
-	MSG_ROLE_ASSIGNMENT = 14,  // ★ 役割割り当てメッセージ
+	MSG_ROLE_ASSIGNMENT = 14,
 };
 
 #pragma pack(push, 1)
@@ -38,6 +38,11 @@ struct NetPlayerState
 	float depthX, depthY, depthZ;
 	uint8_t keyFlag;
 	uint8_t flags;
+
+	// ★★★ 追加: ライト情報 ★★★
+	float lightPosX, lightPosY, lightPosZ;      // ライト位置
+	float lightDirX, lightDirY, lightDirZ;      // ライト方向
+	float lightRange;                            // ライト範囲
 
 	void SetFirstPerson(bool v) { flags = v ? (flags | 0x01) : (flags & ~0x01); }
 	bool IsFirstPerson() const { return (flags & 0x01) != 0; }
@@ -62,11 +67,10 @@ struct NetPlayerSpawn
 	uint32_t clientId;
 	float startX, startY, startZ;
 	char name[32];
-	PlayerRole role;  // ★ 役割を追加
+	PlayerRole role;
 };
 #pragma pack(pop)
 
-// ★ 役割割り当てメッセージ
 #pragma pack(push, 1)
 struct NetRoleAssignment
 {
@@ -118,7 +122,6 @@ public:
 		return buf;
 	}
 
-	// ★ 役割割り当てのシリアライズ
 	static std::vector<uint8_t> SerializeRoleAssignment(const NetRoleAssignment& assignment)
 	{
 		std::vector<uint8_t> buf;
@@ -149,7 +152,6 @@ public:
 		return true;
 	}
 
-	// ★ 役割割り当てのデシリアライズ
 	static bool DeserializeRoleAssignment(const uint8_t* data, size_t len, NetRoleAssignment& out)
 	{
 		if (len < sizeof(NetRoleAssignment)) return false;

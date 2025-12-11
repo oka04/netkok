@@ -409,7 +409,21 @@ void SceneGame::UpdateRemotePlayers()
 			Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
 			if (chaser)
 			{
+				// ★★★ 重要: ライトをデバイスに設定 ★★★
 				chaser->UpdateLight(m_pEngine);
+
+				// ★★★ デバッグログ ★★★
+				static std::map<uint32_t, DWORD> lastLogPerChaser;
+				DWORD now = timeGetTime();
+				if (now - lastLogPerChaser[kv.first] > 3000)
+				{
+					const D3DLIGHT9& light = chaser->GetLights()->GetLight();
+					NET_LOG_F("[SceneGame::UpdateRemotePlayers] リモート鬼 ID=%u Light Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
+						kv.first,
+						light.Position.x, light.Position.y, light.Position.z,
+						light.Direction.x, light.Direction.y, light.Direction.z);
+					lastLogPerChaser[kv.first] = now;
+				}
 			}
 		}
 	}
@@ -439,6 +453,7 @@ void SceneGame::SyncToServer()
 		m_pClient->SendPlayerState(state);
 	}
 }
+
 void SceneGame::ReceiveWorldState()
 {
 	if (!m_pClient) return;
@@ -465,19 +480,36 @@ void SceneGame::ReceiveWorldState()
 			{
 				it->second->UpdateFromNetwork(ps, m_light, m_deltaTime);
 
-				// ★★★ 修正: ネットワーク更新後もライト更新 ★★★
+				// ★★★ 修正: ネットワーク更新後にライトを適用 ★★★
 				if (m_playerRoles[ps.clientId] == ROLE_CHASER)
 				{
 					Chaser* chaser = dynamic_cast<Chaser*>(it->second);
 					if (chaser)
 					{
+						// ★★★ ライト情報を適用 ★★★
+						D3DXVECTOR3 lightPos(ps.lightPosX, ps.lightPosY, ps.lightPosZ);
+						D3DXVECTOR3 lightDir(ps.lightDirX, ps.lightDirY, ps.lightDirZ);
+
+						chaser->GetLights()->SetPosition(lightPos);
+						chaser->GetLights()->SetDirection(lightDir);
+						chaser->GetLights()->SetRange(ps.lightRange);
 						chaser->UpdateLight(m_pEngine);
+
+						// ★★★ デバッグログ ★★★
+						static std::map<uint32_t, DWORD> lastLog;
+						if (now - lastLog[ps.clientId] > 3000)
+						{
+							NET_LOG_F("[SceneGame::ReceiveWorldState] ID=%u にライト適用: Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
+								ps.clientId, lightPos.x, lightPos.y, lightPos.z, lightDir.x, lightDir.y, lightDir.z);
+							lastLog[ps.clientId] = now;
+						}
 					}
 				}
 			}
 		}
 	}
 }
+
 void SceneGame::ReceiveFromServer()
 {
 	if (!m_pClient) return;
@@ -659,6 +691,7 @@ void SceneGame::ReceiveFromServer()
 		}
 	}
 }
+
 void SceneGame::RenderShadowMaps()
 {
 	LPDIRECT3DDEVICE9 pDevice = m_pEngine->GetDevice();
@@ -760,6 +793,7 @@ void SceneGame::RenderShadowMaps()
 	if (pOldBackBuffer) pOldBackBuffer->Release();
 	if (pOldDepthBuffer) pOldDepthBuffer->Release();
 }
+
 void SceneGame::UpdateChaserLights()
 {
 	m_chaserLights.clear();

@@ -80,12 +80,31 @@ void Chaser::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 NetPlayerState Chaser::GetNetState() const
 {
 	NetPlayerState state = CharacterBase::GetNetState();
+
+	const D3DLIGHT9& light = m_spotLight.GetLight();
+	state.lightPosX = light.Position.x;
+	state.lightPosY = light.Position.y;
+	state.lightPosZ = light.Position.z;
+	state.lightDirX = light.Direction.x;
+	state.lightDirY = light.Direction.y;
+	state.lightDirZ = light.Direction.z;
+	state.lightRange = light.Range;
+
 	return state;
 }
 
 void Chaser::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& light, float deltaTime)
 {
 	CharacterBase::UpdateFromNetwork(state, light, deltaTime);
+
+	// ★★★ 追加: ライト情報を適用 ★★★
+	D3DXVECTOR3 lightPos(state.lightPosX, state.lightPosY, state.lightPosZ);
+	D3DXVECTOR3 lightDir(state.lightDirX, state.lightDirY, state.lightDirZ);
+
+	m_spotLight.SetPosition(lightPos);
+	m_spotLight.SetDirection(lightDir);
+	m_spotLight.SetRange(state.lightRange);
+
 }
 
 void Chaser::Draw(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight)
