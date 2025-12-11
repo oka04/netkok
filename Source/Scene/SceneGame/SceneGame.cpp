@@ -846,35 +846,35 @@ void SceneGame::UpdateChaserLights()
 	static DWORD lastLog = 0;
 	DWORD now = timeGetTime();
 
-	int lightIndex = 0;
-
-	// ★★★ 修正: ローカルプレイヤーが鬼の場合を最優先で追加 ★★★
+	// ★★★ 修正1: ローカルプレイヤーが鬼の場合を追加 ★★★
 	if (m_pLocalPlayer && m_localRole == ROLE_CHASER)
 	{
 		Chaser* localChaser = dynamic_cast<Chaser*>(m_pLocalPlayer);
-		if (localChaser)
+		if (localChaser && localChaser->IsShadowMapEnabled())
 		{
-			localChaser->UpdateLight(m_pEngine);
 			SpotLight* light = localChaser->GetLights();
 			if (light)
 			{
-				light->SetDevice(m_pEngine, lightIndex);
 				m_chaserLights.push_back(light);
-				lightIndex++;
 
 				if (now - lastLog > 3000)
 				{
 					const D3DLIGHT9& l = light->GetLight();
 					NET_LOG_F("[UpdateChaserLights] ローカル鬼追加: ID=%u LightIndex=%d Pos=(%.1f,%.1f,%.1f)",
-						m_localClientId, lightIndex - 1, l.Position.x, l.Position.y, l.Position.z);
+						m_localClientId, (int)m_chaserLights.size() - 1,
+						l.Position.x, l.Position.y, l.Position.z);
 				}
 			}
 		}
 	}
 
-	// ★★★ 修正: m_playersからすべての鬼を追加（ローカルは上で追加済みなのでスキップ） ★★★
+	// ★★★ 修正2: リモートプレイヤーの鬼を追加 ★★★
 	for (auto& kv : m_players)
 	{
+		// ローカルプレイヤーはスキップ（既に追加済み）
+		if (kv.first == m_localClientId)
+			continue;
+
 		// プレイヤーが存在しない場合はスキップ
 		if (!kv.second)
 			continue;
@@ -884,36 +884,21 @@ void SceneGame::UpdateChaserLights()
 		if (roleIt == m_playerRoles.end() || roleIt->second != ROLE_CHASER)
 			continue;
 
-		// ★★★ 重要: ローカルプレイヤーが鬼の場合、既に上で追加済みなのでスキップ ★★★
-		if (m_localRole == ROLE_CHASER && kv.first == m_localClientId)
-			continue;
-
 		Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
-		if (chaser)
+		if (chaser && chaser->IsShadowMapEnabled())
 		{
-			chaser->UpdateLight(m_pEngine);
-
 			SpotLight* light = chaser->GetLights();
 			if (light)
 			{
-				light->SetDevice(m_pEngine, lightIndex);
 				m_chaserLights.push_back(light);
-				lightIndex++;
 
 				if (now - lastLog > 3000)
 				{
 					const D3DLIGHT9& l = light->GetLight();
 					NET_LOG_F("[UpdateChaserLights] リモート鬼追加: ID=%u LightIndex=%d Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
-						kv.first, lightIndex - 1,
+						kv.first, (int)m_chaserLights.size() - 1,
 						l.Position.x, l.Position.y, l.Position.z,
 						l.Direction.x, l.Direction.y, l.Direction.z);
-				}
-			}
-			else
-			{
-				if (now - lastLog > 3000)
-				{
-					NET_LOG_F("[UpdateChaserLights] 警告: ID=%u のライトがnullptr", kv.first);
 				}
 			}
 		}
@@ -921,8 +906,7 @@ void SceneGame::UpdateChaserLights()
 
 	if (now - lastLog > 3000)
 	{
-		NET_LOG_F("[UpdateChaserLights] ライト収集完了: %d 個 (合計ライトインデックス: 0-%d)",
-			(int)m_chaserLights.size(), lightIndex - 1);
+		NET_LOG_F("[UpdateChaserLights] ライト収集完了: %d 個", (int)m_chaserLights.size());
 		lastLog = now;
 	}
 }
@@ -1041,142 +1025,93 @@ void SceneGame::DespawnPlayer(uint32_t clientId)
 
 void SceneGame::Draw()
 {
-	// ★★★ 修正: 描画前に必ずライトを更新 ★★★
+	// ★★★ 修正: 描画前にライトを更新 ★★★
 	UpdateChaserLights();
-
-	// ★★★ デバッグ: 描画前の状態を確認 ★★★
-	static DWORD lastDrawLog = 0;
-	DWORD now = timeGetTime();
-	if (now - lastDrawLog > 3000)
-	{
-		NET_LOG_F("[SceneGame::Draw] プレイヤー総数=%d ローカルRole=%s",
-			(int)m_players.size(),
-			(m_localRole == ROLE_CHASER) ? "鬼" : (m_localRole == ROLE_RUNNER) ? "逃げる側" : "未定");
-
-		// 各プレイヤーの役割を出力
-		for (auto& kv : m_players)
-		{
-			auto roleIt = m_playerRoles.find(kv.first);
-			if (roleIt != m_playerRoles.end())
-			{
-				NET_LOG_F("[SceneGame::Draw] Player ID=%u Role=%s IsLocal=%s",
-					kv.first,
-					(roleIt->second == ROLE_CHASER) ? "鬼" : "逃げる側",
-					kv.second->IsLocal() ? "Yes" : "No");
-			}
-		}
-
-		NET_LOG_F("[SceneGame::Draw] 収集したライト数: %d", (int)m_chaserLights.size());
-		lastDrawLog = now;
-	}
 
 	// シャドウマップ生成
 	RenderShadowMaps();
 
-	// ★★★ 修正: すべての鬼のライトとシャドウマップを収集 ★★★
+	// ★★★ 修正: SpotLightの値のベクターを作成（ポインタではなく値） ★★★
 	std::vector<SpotLight> spotLights;
 	std::vector<LPDIRECT3DTEXTURE9> shadowMaps;
 	std::vector<D3DXMATRIX> lightViewProjs;
 	std::vector<D3DXMATRIX> scaleBiases;
 
-	// ★★★ 重要: ローカルプレイヤーが鬼の場合を最優先で追加 ★★★
-	if (m_pLocalPlayer && m_localRole == ROLE_CHASER)
+	// ★★★ 重要: m_chaserLightsから値をコピー ★★★
+	for (size_t i = 0; i < m_chaserLights.size(); ++i)
 	{
-		Chaser* localChaser = dynamic_cast<Chaser*>(m_pLocalPlayer);
-		if (localChaser)
-		{
-			SpotLight* light = localChaser->GetLights();
-			if (light)
-			{
-				spotLights.push_back(*light);
+		if (!m_chaserLights[i])
+			continue;
 
-				if (localChaser->IsShadowMapEnabled())
+		// ★★★ ポインタから値をコピー ★★★
+		spotLights.push_back(*m_chaserLights[i]);
+
+		// ★★★ 対応するChaserを探してシャドウマップ情報を取得 ★★★
+		Chaser* chaser = nullptr;
+
+		// ローカルプレイヤーが鬼かチェック
+		if (i == 0 && m_pLocalPlayer && m_localRole == ROLE_CHASER)
+		{
+			chaser = dynamic_cast<Chaser*>(m_pLocalPlayer);
+		}
+		else
+		{
+			// リモートプレイヤーから探す
+			for (auto& kv : m_players)
+			{
+				if (kv.first == m_localClientId)
+					continue;
+
+				if (m_playerRoles[kv.first] == ROLE_CHASER)
 				{
-					shadowMaps.push_back(localChaser->GetShadowTexture());
-					lightViewProjs.push_back(localChaser->GetLightViewProjectionMatrix());
-					scaleBiases.push_back(localChaser->GetScaleBiasMatrix());
-				}
-				else
-				{
-					shadowMaps.push_back(nullptr);
-					D3DXMATRIX identity;
-					D3DXMatrixIdentity(&identity);
-					lightViewProjs.push_back(identity);
-					scaleBiases.push_back(identity);
+					Chaser* c = dynamic_cast<Chaser*>(kv.second);
+					if (c && c->GetLights() == m_chaserLights[i])
+					{
+						chaser = c;
+						break;
+					}
 				}
 			}
 		}
-	}
 
-	// ★★★ 修正: リモートの鬼のライトを追加 ★★★
-	for (auto& kv : m_players)
-	{
-		// ローカルプレイヤーは既に追加済みなのでスキップ
-		if (kv.second && kv.second->IsLocal())
-			continue;
-
-		if (!kv.second || m_playerRoles[kv.first] != ROLE_CHASER)
-			continue;
-
-		Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
-		if (!chaser)
-			continue;
-
-		SpotLight* light = chaser->GetLights();
-		if (light)
+		if (chaser && chaser->IsShadowMapEnabled())
 		{
-			spotLights.push_back(*light);
-
-			if (chaser->IsShadowMapEnabled())
-			{
-				shadowMaps.push_back(chaser->GetShadowTexture());
-				lightViewProjs.push_back(chaser->GetLightViewProjectionMatrix());
-				scaleBiases.push_back(chaser->GetScaleBiasMatrix());
-			}
-			else
-			{
-				shadowMaps.push_back(nullptr);
-				D3DXMATRIX identity;
-				D3DXMatrixIdentity(&identity);
-				lightViewProjs.push_back(identity);
-				scaleBiases.push_back(identity);
-			}
+			shadowMaps.push_back(chaser->GetShadowTexture());
+			lightViewProjs.push_back(chaser->GetLightViewProjectionMatrix());
+			scaleBiases.push_back(chaser->GetScaleBiasMatrix());
+		}
+		else
+		{
+			shadowMaps.push_back(nullptr);
+			D3DXMATRIX identity;
+			D3DXMatrixIdentity(&identity);
+			lightViewProjs.push_back(identity);
+			scaleBiases.push_back(identity);
 		}
 	}
 
-	// ★★★ デバッグログ追加 ★★★
+	// ★★★ デバッグログ ★★★
 	static DWORD lastLog = 0;
-	now = timeGetTime();
+	DWORD now = timeGetTime();
 	if (now - lastLog > 3000)
 	{
 		NET_LOG_F("[SceneGame::Draw] 鬼のライト数: %d シャドウマップ数: %d",
 			(int)spotLights.size(), (int)shadowMaps.size());
-
-		// 各ライトの詳細情報
-		for (size_t i = 0; i < spotLights.size(); ++i)
-		{
-			const D3DLIGHT9& light = spotLights[i].GetLight();
-			NET_LOG_F("  Light[%d]: Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f) Range=%.1f",
-				(int)i,
-				light.Position.x, light.Position.y, light.Position.z,
-				light.Direction.x, light.Direction.y, light.Direction.z,
-				light.Range);
-		}
-
 		lastLog = now;
 	}
 
-	// ★★★ 修正: ポインタを常に渡す（空の場合でも構造体として渡す） ★★★
-	std::vector<SpotLight>* pLights = &spotLights;
-	std::vector<LPDIRECT3DTEXTURE9>* pShadowMaps = &shadowMaps;
-	std::vector<D3DXMATRIX>* pLightViewProjs = &lightViewProjs;
-	std::vector<D3DXMATRIX>* pScaleBiases = &scaleBiases;
+	// ★★★ マップ描画（ポインタで渡す） ★★★
+	std::vector<SpotLight>* pLights = spotLights.empty() ? nullptr : &spotLights;
+	std::vector<LPDIRECT3DTEXTURE9>* pShadowMaps = shadowMaps.empty() ? nullptr : &shadowMaps;
+	std::vector<D3DXMATRIX>* pLightViewProjs = lightViewProjs.empty() ? nullptr : &lightViewProjs;
+	std::vector<D3DXMATRIX>* pScaleBiases = scaleBiases.empty() ? nullptr : &scaleBiases;
 
-	// マップ描画
+	m_pEngine->Clear(D3DCOLOR_XRGB(0, 0, 0));
+	m_pEngine->BeginScene();
+
 	m_map.DrawMap(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light,
 		pLights, pShadowMaps, pLightViewProjs, pScaleBiases);
 
-	// ゴールエフェクト描画
 	m_map.DrawGoalEffect(&m_camera, &m_projection);
 
 	// プレイヤー描画
@@ -1186,6 +1121,26 @@ void SceneGame::Draw()
 		if (kv.second)
 		{
 			kv.second->Draw(&m_camera, &m_projection, &m_ambient, &m_light);
+			drawnCount++;
+		}
+	}
+
+	// ローカルプレイヤーも描画（m_playersに含まれていない場合）
+	if (m_pLocalPlayer)
+	{
+		bool alreadyDrawn = false;
+		for (auto& kv : m_players)
+		{
+			if (kv.first == m_localClientId)
+			{
+				alreadyDrawn = true;
+				break;
+			}
+		}
+
+		if (!alreadyDrawn)
+		{
+			m_pLocalPlayer->Draw(&m_camera, &m_projection, &m_ambient, &m_light);
 			drawnCount++;
 		}
 	}
@@ -1203,15 +1158,17 @@ void SceneGame::Draw()
 		m_map.DrawMiniMap(m_pEngine, m_pLocalPlayer->GetPosition2D(), m_pLocalPlayer->GetArrowAngle());
 	}
 
+	m_pEngine->EndScene();
+
 	// UI描画
 	m_pEngine->SpriteBegin();
 
-	if (m_pLocalPlayer)
+	if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
 	{
-		if (m_localRole == ROLE_RUNNER)
+		Runner* runner = dynamic_cast<Runner*>(m_pLocalPlayer);
+		if (runner)
 		{
-			Runner* runner = dynamic_cast<Runner*>(m_pLocalPlayer);
-			if (runner) runner->DrawStaminaGauge(m_pEngine);
+			runner->DrawStaminaGauge(m_pEngine);
 		}
 	}
 
@@ -1221,7 +1178,7 @@ void SceneGame::Draw()
 		m_pEngine->DrawPrintf(50, 950, FONT_GOTHIC40, Color::WHITE, "DEL : %f", m_deltaTime);
 		m_pEngine->DrawPrintf(50, 1000, FONT_GOTHIC40, Color::WHITE, "FPS : %f", (float)m_pEngine->GetFPS());
 		m_pEngine->DrawPrintf(50, 900, FONT_GOTHIC40, Color::CYAN, "Players: %d (Drawn: %d) Lights: %d",
-			(int)m_players.size(), drawnCount, (int)spotLights.size());
+			(int)m_players.size() + (m_pLocalPlayer ? 1 : 0), drawnCount, (int)spotLights.size());
 
 		if (d_debugFlag & DRAW_PLAYER_STATE && m_pLocalPlayer)
 		{
@@ -1237,23 +1194,40 @@ void SceneGame::Draw()
 			}
 		}
 
+		// ★★★ 修正: IsLocalの正しい表示 ★★★
 		int yOffset = 500;
+
+		// ローカルプレイヤーを表示
+		if (m_pLocalPlayer)
+		{
+			D3DCOLOR color = (m_localRole == ROLE_CHASER) ? Color::RED : Color::YELLOW;
+			const char* roleStr = (m_localRole == ROLE_CHASER) ? "鬼" : "逃げる側";
+			D3DXVECTOR3 pos = m_pLocalPlayer->GetPosition();
+
+			m_pEngine->DrawPrintf(0, yOffset, FONT_GOTHIC40, color,
+				"Local[%u]: %s [%s] Pos=(%.1f,%.1f,%.1f)",
+				m_localClientId, m_pLocalPlayer->GetCharacterName().c_str(), roleStr,
+				pos.x, pos.y, pos.z);
+			yOffset += 50;
+		}
+
+		// リモートプレイヤーを表示
 		for (auto& kv : m_players)
 		{
-			D3DCOLOR color = (kv.first == m_localClientId) ? Color::YELLOW : Color::GREEN;
+			// ローカルプレイヤーはスキップ
+			if (kv.first == m_localClientId)
+				continue;
 
-			if (m_playerRoles[kv.first] == ROLE_CHASER)
-			{
-				color = Color::RED;
-			}
+			if (!kv.second)
+				continue;
 
-			const char* prefix = (kv.first == m_localClientId) ? "Local" : "Remote";
+			D3DCOLOR color = (m_playerRoles[kv.first] == ROLE_CHASER) ? Color::RED : Color::GREEN;
 			const char* roleStr = (m_playerRoles[kv.first] == ROLE_CHASER) ? "鬼" : "逃げる側";
 			D3DXVECTOR3 pos = kv.second->GetPosition();
 
 			m_pEngine->DrawPrintf(0, yOffset, FONT_GOTHIC40, color,
-				"%s[%u]: %s [%s] Pos=(%.1f,%.1f,%.1f)",
-				prefix, kv.first, kv.second->GetCharacterName().c_str(), roleStr,
+				"Remote[%u]: %s [%s] Pos=(%.1f,%.1f,%.1f)",
+				kv.first, kv.second->GetCharacterName().c_str(), roleStr,
 				pos.x, pos.y, pos.z);
 			yOffset += 50;
 		}
