@@ -848,7 +848,7 @@ void SceneGame::UpdateChaserLights()
 
 	int lightIndex = 0;
 
-	// ★★★ 修正1: ローカルプレイヤーが鬼の場合を最優先で追加 ★★★
+	// ★★★ 修正: ローカルプレイヤーが鬼の場合を最優先で追加 ★★★
 	if (m_pLocalPlayer && m_localRole == ROLE_CHASER)
 	{
 		Chaser* localChaser = dynamic_cast<Chaser*>(m_pLocalPlayer);
@@ -858,7 +858,6 @@ void SceneGame::UpdateChaserLights()
 			SpotLight* light = localChaser->GetLights();
 			if (light)
 			{
-				// ★★★ 追加: デバイスに設定 ★★★
 				light->SetDevice(m_pEngine, lightIndex);
 				m_chaserLights.push_back(light);
 				lightIndex++;
@@ -873,26 +872,30 @@ void SceneGame::UpdateChaserLights()
 		}
 	}
 
-	// ★★★ 修正2: すべてのリモートプレイヤーの鬼をチェック ★★★
+	// ★★★ 修正: m_playersからすべての鬼を追加（ローカルは上で追加済みなのでスキップ） ★★★
 	for (auto& kv : m_players)
 	{
-		if (!kv.second || kv.second->IsLocal())
+		// プレイヤーが存在しない場合はスキップ
+		if (!kv.second)
 			continue;
 
+		// 役割が鬼でない場合はスキップ
 		auto roleIt = m_playerRoles.find(kv.first);
 		if (roleIt == m_playerRoles.end() || roleIt->second != ROLE_CHASER)
+			continue;
+
+		// ★★★ 重要: ローカルプレイヤーが鬼の場合、既に上で追加済みなのでスキップ ★★★
+		if (m_localRole == ROLE_CHASER && kv.first == m_localClientId)
 			continue;
 
 		Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
 		if (chaser)
 		{
-			// ライトを更新
 			chaser->UpdateLight(m_pEngine);
 
 			SpotLight* light = chaser->GetLights();
 			if (light)
 			{
-				// ★★★ 重要: デバイスに設定 ★★★
 				light->SetDevice(m_pEngine, lightIndex);
 				m_chaserLights.push_back(light);
 				lightIndex++;
@@ -923,7 +926,6 @@ void SceneGame::UpdateChaserLights()
 		lastLog = now;
 	}
 }
-
 void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name,
 	const D3DXVECTOR3& pos, PlayerRole role)
 {
