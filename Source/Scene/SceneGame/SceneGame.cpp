@@ -397,32 +397,56 @@ void SceneGame::UpdateRemotePlayers()
 		if (!kv.second || kv.second->IsLocal())
 			continue;
 
-		// ★★★ 修正: 予測移動 ★★★
+		// 予測移動
 		if (m_bEnablePrediction)
 		{
 			kv.second->PredictMovement(m_deltaTime);
 		}
 
-		// ★★★ 修正: リモートの鬼のライトを毎フレーム更新 ★★★
+		// ★★★ 重要修正: リモートの鬼のライトを毎フレーム強制的にデバイスに設定 ★★★
 		if (m_playerRoles[kv.first] == ROLE_CHASER)
 		{
 			Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
 			if (chaser)
 			{
-				// ★★★ 重要: ライトをデバイスに設定 ★★★
-				chaser->UpdateLight(m_pEngine);
-
-				// ★★★ デバッグログ ★★★
-				static std::map<uint32_t, DWORD> lastLogPerChaser;
-				DWORD now = timeGetTime();
-				if (now - lastLogPerChaser[kv.first] > 3000)
+				// ライトをエンジンのデバイスに設定
+				SpotLight* light = chaser->GetLights();
+				if (light)
 				{
-					const D3DLIGHT9& light = chaser->GetLights()->GetLight();
-					NET_LOG_F("[SceneGame::UpdateRemotePlayers] リモート鬼 ID=%u Light Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
-						kv.first,
-						light.Position.x, light.Position.y, light.Position.z,
-						light.Direction.x, light.Direction.y, light.Direction.z);
-					lastLogPerChaser[kv.first] = now;
+					// ★★★ 追加: ライトインデックスを動的に割り当て ★★★
+					// ローカル鬼が0番、リモート鬼は1番以降
+					int lightIndex = 0;
+					if (m_localRole == ROLE_CHASER && m_pLocalPlayer)
+					{
+						// ローカルが鬼なら、リモートは1番から
+						lightIndex = 1;
+						for (auto& kv2 : m_players)
+						{
+							if (kv2.first < kv.first && m_playerRoles[kv2.first] == ROLE_CHASER)
+							{
+								lightIndex++;
+							}
+						}
+					}
+
+					// ★★★ 重要: デバイスにライトを設定 ★★★
+					light->SetDevice(m_pEngine, lightIndex);
+
+					// ライトの更新
+					chaser->UpdateLight(m_pEngine);
+
+					// デバッグログ
+					static std::map<uint32_t, DWORD> lastLog;
+					DWORD now = timeGetTime();
+					if (now - lastLog[kv.first] > 3000)
+					{
+						const D3DLIGHT9& l = light->GetLight();
+						NET_LOG_F("[SceneGame::UpdateRemotePlayers] リモート鬼 ID=%u LightIndex=%d Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
+							kv.first, lightIndex,
+							l.Position.x, l.Position.y, l.Position.z,
+							l.Direction.x, l.Direction.y, l.Direction.z);
+						lastLog[kv.first] = now;
+					}
 				}
 			}
 		}
@@ -478,30 +502,50 @@ void SceneGame::ReceiveWorldState()
 			auto it = m_players.find(ps.clientId);
 			if (it != m_players.end() && it->second)
 			{
+				// 基本状態の更新
 				it->second->UpdateFromNetwork(ps, m_light, m_deltaTime);
 
-				// ★★★ 修正: ネットワーク更新後にライトを適用 ★★★
+				// ★★★ 重要修正: 鬼のライト情報を即座に適用 ★★★
 				if (m_playerRoles[ps.clientId] == ROLE_CHASER)
 				{
 					Chaser* chaser = dynamic_cast<Chaser*>(it->second);
 					if (chaser)
 					{
-						// ★★★ ライト情報を適用 ★★★
+						// ライト情報をネットワークデータから設定
 						D3DXVECTOR3 lightPos(ps.lightPosX, ps.lightPosY, ps.lightPosZ);
 						D3DXVECTOR3 lightDir(ps.lightDirX, ps.lightDirY, ps.lightDirZ);
 
-						chaser->GetLights()->SetPosition(lightPos);
-						chaser->GetLights()->SetDirection(lightDir);
-						chaser->GetLights()->SetRange(ps.lightRange);
+						SpotLight* light = chaser->GetLights();
+						if (light)
+						{
+							light->SetPosition(lightPos);
+							light->SetDirection(lightDir);
+							light->SetRange(ps.lightRange);
+
+							// ★★★ 追加: ライトをデバイスに即座に設定 ★★★
+							int lightIndex = 0;
+							if (m_localRole == ROLE_CHASER && m_pLocalPlayer)
+							{
+								lightIndex = 1;
+								for (auto& kv2 : m_players)
+								{
+									if (kv2.first < ps.clientId && m_playerRoles[kv2.first] == ROLE_CHASER)
+									{
+										lightIndex++;
+									}
+								}
+							}
+							light->SetDevice(m_pEngine, lightIndex);
+						}
+
+						// ライトの更新
 						chaser->UpdateLight(m_pEngine);
 
-						// ★★★ デバッグログ ★★★
-						static std::map<uint32_t, DWORD> lastLog;
-						if (now - lastLog[ps.clientId] > 3000)
+						// デバッグログ
+						if (now - lastLogTime > 3000)
 						{
 							NET_LOG_F("[SceneGame::ReceiveWorldState] ID=%u にライト適用: Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
 								ps.clientId, lightPos.x, lightPos.y, lightPos.z, lightDir.x, lightDir.y, lightDir.z);
-							lastLog[ps.clientId] = now;
 						}
 					}
 				}
@@ -795,13 +839,14 @@ void SceneGame::RenderShadowMaps()
 }
 
 // SceneGame.cpp の UpdateChaserLights() メソッド - 完全修正版
-
 void SceneGame::UpdateChaserLights()
 {
 	m_chaserLights.clear();
 
 	static DWORD lastLog = 0;
 	DWORD now = timeGetTime();
+
+	int lightIndex = 0;
 
 	// ★★★ 修正1: ローカルプレイヤーが鬼の場合を最優先で追加 ★★★
 	if (m_pLocalPlayer && m_localRole == ROLE_CHASER)
@@ -813,60 +858,51 @@ void SceneGame::UpdateChaserLights()
 			SpotLight* light = localChaser->GetLights();
 			if (light)
 			{
+				// ★★★ 追加: デバイスに設定 ★★★
+				light->SetDevice(m_pEngine, lightIndex);
 				m_chaserLights.push_back(light);
+				lightIndex++;
 
 				if (now - lastLog > 3000)
 				{
 					const D3DLIGHT9& l = light->GetLight();
-					NET_LOG_F("[UpdateChaserLights] ローカル鬼追加: ID=%u Pos=(%.1f,%.1f,%.1f)",
-						m_localClientId, l.Position.x, l.Position.y, l.Position.z);
+					NET_LOG_F("[UpdateChaserLights] ローカル鬼追加: ID=%u LightIndex=%d Pos=(%.1f,%.1f,%.1f)",
+						m_localClientId, lightIndex - 1, l.Position.x, l.Position.y, l.Position.z);
 				}
 			}
 		}
 	}
 
-	// ★★★ 修正2: すべてのリモートプレイヤーをチェック ★★★
+	// ★★★ 修正2: すべてのリモートプレイヤーの鬼をチェック ★★★
 	for (auto& kv : m_players)
 	{
-		// ★★★ 重要: ローカルプレイヤーは既に追加済みなのでスキップ ★★★
 		if (!kv.second || kv.second->IsLocal())
 			continue;
 
-		// ★★★ デバッグ: プレイヤーの役割を確認 ★★★
-		if (now - lastLog > 3000)
-		{
-			auto roleIt = m_playerRoles.find(kv.first);
-			if (roleIt != m_playerRoles.end())
-			{
-				NET_LOG_F("[UpdateChaserLights] プレイヤーチェック: ID=%u Name=%s Role=%s",
-					kv.first,
-					kv.second->GetCharacterName().c_str(),
-					(roleIt->second == ROLE_CHASER) ? "鬼" : "逃げる側");
-			}
-		}
-
-		// ★★★ 役割マップから鬼かどうか確認 ★★★
 		auto roleIt = m_playerRoles.find(kv.first);
 		if (roleIt == m_playerRoles.end() || roleIt->second != ROLE_CHASER)
 			continue;
 
-		// ★★★ 鬼の場合、ライトを取得 ★★★
 		Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
 		if (chaser)
 		{
-			// ★★★ 重要: ライトを更新 ★★★
+			// ライトを更新
 			chaser->UpdateLight(m_pEngine);
 
 			SpotLight* light = chaser->GetLights();
 			if (light)
 			{
+				// ★★★ 重要: デバイスに設定 ★★★
+				light->SetDevice(m_pEngine, lightIndex);
 				m_chaserLights.push_back(light);
+				lightIndex++;
 
 				if (now - lastLog > 3000)
 				{
 					const D3DLIGHT9& l = light->GetLight();
-					NET_LOG_F("[UpdateChaserLights] リモート鬼追加: ID=%u Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
-						kv.first, l.Position.x, l.Position.y, l.Position.z,
+					NET_LOG_F("[UpdateChaserLights] リモート鬼追加: ID=%u LightIndex=%d Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
+						kv.first, lightIndex - 1,
+						l.Position.x, l.Position.y, l.Position.z,
 						l.Direction.x, l.Direction.y, l.Direction.z);
 				}
 			}
@@ -878,18 +914,12 @@ void SceneGame::UpdateChaserLights()
 				}
 			}
 		}
-		else
-		{
-			if (now - lastLog > 3000)
-			{
-				NET_LOG_F("[UpdateChaserLights] 警告: ID=%u はChaserにキャストできません", kv.first);
-			}
-		}
 	}
 
 	if (now - lastLog > 3000)
 	{
-		NET_LOG_F("[UpdateChaserLights] ライト収集完了: %d 個", (int)m_chaserLights.size());
+		NET_LOG_F("[UpdateChaserLights] ライト収集完了: %d 個 (合計ライトインデックス: 0-%d)",
+			(int)m_chaserLights.size(), lightIndex - 1);
 		lastLog = now;
 	}
 }

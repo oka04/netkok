@@ -92,19 +92,55 @@ NetPlayerState Chaser::GetNetState() const
 
 	return state;
 }
-
 void Chaser::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& light, float deltaTime)
 {
+	// 基底クラスの更新
 	CharacterBase::UpdateFromNetwork(state, light, deltaTime);
 
-	// ★★★ 追加: ライト情報を適用 ★★★
+	// ★★★ 重要修正: ライト情報を必ず適用 ★★★
 	D3DXVECTOR3 lightPos(state.lightPosX, state.lightPosY, state.lightPosZ);
 	D3DXVECTOR3 lightDir(state.lightDirX, state.lightDirY, state.lightDirZ);
 
+	// ライト情報の検証（ゼロベクトルの場合はデフォルト値を使用）
+	if (D3DXVec3Length(&lightPos) < 0.01f)
+	{
+		// 位置情報がない場合は、キャラクター位置を使用
+		lightPos = m_eyePosition;
+		NET_LOG_F("[Chaser::UpdateFromNetwork] ID=%u ライト位置がゼロ、キャラクター位置を使用", m_clientId);
+	}
+
+	if (D3DXVec3Length(&lightDir) < 0.01f)
+	{
+		// 方向情報がない場合は、キャラクターの向きを使用
+		lightDir = m_depth;
+		NET_LOG_F("[Chaser::UpdateFromNetwork] ID=%u ライト方向がゼロ、キャラクター方向を使用", m_clientId);
+	}
+
+	// ライト範囲の検証
+	float lightRange = state.lightRange;
+	if (lightRange < 0.1f)
+	{
+		lightRange = m_lightRange; // デフォルト値を使用
+		NET_LOG_F("[Chaser::UpdateFromNetwork] ID=%u ライト範囲が無効、デフォルト値を使用: %.2f", m_clientId, lightRange);
+	}
+
+	// ★★★ SpotLightに設定 ★★★
 	m_spotLight.SetPosition(lightPos);
 	m_spotLight.SetDirection(lightDir);
-	m_spotLight.SetRange(state.lightRange);
+	m_spotLight.SetRange(lightRange);
 
+	// ★★★ デバッグログ（頻度制限） ★★★
+	static std::map<uint32_t, DWORD> lastLogPerChaser;
+	DWORD now = timeGetTime();
+	if (now - lastLogPerChaser[m_clientId] > 2000)
+	{
+		NET_LOG_F("[Chaser::UpdateFromNetwork] ID=%u ライト更新: Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f) Range=%.2f",
+			m_clientId,
+			lightPos.x, lightPos.y, lightPos.z,
+			lightDir.x, lightDir.y, lightDir.z,
+			lightRange);
+		lastLogPerChaser[m_clientId] = now;
+	}
 }
 
 void Chaser::Draw(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight)
