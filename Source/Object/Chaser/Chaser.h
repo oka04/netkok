@@ -31,7 +31,7 @@ public:
 	virtual void UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& light, float deltaTime) override;
 	void UpdateLight(Engine* pEngine);
 
-	virtual void DrawDepth(Engine* pEngine, D3DXMATRIX* pMatLightVP) override;
+	virtual void DrawDepth(Engine* pEngine, const D3DXMATRIX* pMatLightVP) override;
 
 	// シャドウマップ関連
 	bool IsShadowMapEnabled() const { return m_bShadowMapEnabled; }

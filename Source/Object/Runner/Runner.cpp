@@ -96,7 +96,7 @@ void Runner::Draw(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, Di
 	CharacterBase::Draw(pCamera, pProj, pAmbient, pLight);
 }
 
-void Runner::DrawDepth(Engine* pEngine, D3DXMATRIX* pMatLightVP)
+void Runner::DrawDepth(Engine* pEngine, const D3DXMATRIX* pMatLightVP)
 {
 	// モデルの深度描画
 	m_model.DrawDepth(pEngine, pMatLightVP);

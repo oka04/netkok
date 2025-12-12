@@ -192,7 +192,7 @@ void Chaser::UpdateLight(Engine* pEngine)
 	}
 }
 
-void Chaser::DrawDepth(Engine* pEngine, D3DXMATRIX* pMatLightVP)
+void Chaser::DrawDepth(Engine* pEngine, const D3DXMATRIX* pMatLightVP)
 {
 	m_model.DrawDepth(pEngine, pMatLightVP);
 }
