@@ -1121,6 +1121,30 @@ void SceneGame::DespawnPlayer(uint32_t clientId)
 
 void SceneGame::Draw()
 {
+	// ★★★ 修正: シャドウマップ生成前にリモート鬼のライトを強制的に更新 ★★★
+	for (auto& kv : m_players)
+	{
+		if (!kv.second || m_playerRoles[kv.first] != ROLE_CHASER)
+			continue;
+
+		Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
+		if (chaser)
+		{
+			// ★★★ 重要: ライトを強制的に更新 ★★★
+			chaser->UpdateLight(m_pEngine);
+		}
+	}
+
+	// ローカルプレイヤーが鬼の場合も更新
+	if (m_pLocalPlayer && m_localRole == ROLE_CHASER)
+	{
+		Chaser* localChaser = dynamic_cast<Chaser*>(m_pLocalPlayer);
+		if (localChaser)
+		{
+			localChaser->UpdateLight(m_pEngine);
+		}
+	}
+
 	// シャドウマップ生成
 	RenderShadowMaps();
 
