@@ -1107,7 +1107,6 @@ void SceneGame::Draw()
 	std::vector<D3DXMATRIX>* pScaleBiases = scaleBiases.empty() ? nullptr : &scaleBiases;
 
 	m_pEngine->Clear(D3DCOLOR_XRGB(0, 0, 0));
-	m_pEngine->BeginScene();
 
 	m_map.DrawMap(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light,
 		pLights, pShadowMaps, pLightViewProjs, pScaleBiases);
@@ -1157,8 +1156,6 @@ void SceneGame::Draw()
 	{
 		m_map.DrawMiniMap(m_pEngine, m_pLocalPlayer->GetPosition2D(), m_pLocalPlayer->GetArrowAngle());
 	}
-
-	m_pEngine->EndScene();
 
 	// UI描画
 	m_pEngine->SpriteBegin();

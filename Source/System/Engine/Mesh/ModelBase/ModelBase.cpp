@@ -207,6 +207,8 @@ void ModelBase::DrawDepth(LPD3DXMATRIX pMatWVP)
 {
 	if (!m_bLoaded || !m_pEffect) return;
 
+	m_pFrame->UpdateFrameMatrices(*(m_pFrame->GetRootFramePointerAddress()), &m_matWorld);
+
 	// 深度描画用のテクニックを設定
 	m_pEffect->SetTechnique("DepthPass");
 
