@@ -18,7 +18,7 @@ public:
 	virtual void Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight& light, float deltaTime) = 0;
 	void Draw(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight);
 
-	virtual void DrawDepth(Engine* pEngine, const D3DXMATRIX* pMatLightVP) = 0;
+	virtual void DrawDepth(Engine* pEngine, D3DXMATRIX* pMatLightVP) = 0;
 	void SetFirstPersonCamera(Engine* pEngine, Camera & camera);
 	void SetThirdPersonFromBehind(Engine* pEngine, Camera& camera, Map& map);
 

@@ -136,7 +136,7 @@ void Model::Draw(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, Dir
 	m_pModelBase->Draw(&m_matWorld, &matVP, &ambient, &light);
 }
 
-void Model::DrawDepth(Engine* pEngine, const D3DXMATRIX* pMatLightVP)
+void Model::DrawDepth(Engine* pEngine, D3DXMATRIX* pMatLightVP)
 {
 	if (!m_pModelBase) return;
 
