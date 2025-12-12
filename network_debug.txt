@@ -2,194 +2,166 @@
 Network Debug Log
 ===========================================
 
-[12:55:04] ========================================
-[12:55:04] ClientManager 初期化開始
-[12:55:04] ========================================
-[12:55:04] [ClientManager] ENet初期化成功
-[12:55:04] [ClientManager] Discovery作成
-[12:55:04] [ClientManager] Discoveryリスナー起動 (ポート:12346)
-[12:55:04] [Discovery/Listener] スレッド開始
-[12:55:04] [Discovery/Listener] WSAStartup成功
-[12:55:04] [Discovery/Listener] ソケット作成成功
-[12:55:04] [Discovery/Listener] bind成功 ポート:12346
-[12:55:04] [Discovery/Listener] 受信ループ開始
-[12:55:05] ========================================
-[12:55:05] [SceneSelectHost] サーバー作成開始: G
-[12:55:05] [Client] 切断
-[12:55:05] [ServerManager] ホスト名設定: Player706
-[12:55:05] [SceneSelectHost] サーバー名設定: G
-[12:55:05] [SceneSelectHost] ホスト名設定: Player706
-[12:55:05] [Discovery/Advertiser] スレッド開始
-[12:55:05] [Discovery/Advertiser] WSAStartup成功
-[12:55:05] [Discovery/Advertiser] ソケット作成成功
-[12:55:05] [Discovery/Advertiser] SO_BROADCAST設定成功
-[12:55:05] [ServerManager] サーバー起動: ポート=12911
-[12:55:05] [Discovery/Advertiser] ブロードキャストループ開始
-[12:55:05] [Discovery/Advertiser] 送信データ: port=12911 player=1/8 state=0 name='G'
-[12:55:05] [SceneSelectHost] サーバー起動成功: ポート=12911
-[12:55:05] [Discovery/Advertiser] ブロードキャスト送信 #1: サイズ=19 bytes (port=12911)
-[12:55:05] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[12:55:05] [Discovery/Listener] マジック一致確認
-[12:55:05] [Discovery/Listener] プロトコルバージョン: 256
-[12:55:05] [Discovery/Listener] ポート（変換後）: 12911
-[12:55:05] [Discovery/Listener] プレイヤー数: 1
-[12:55:05] [Discovery/Listener] 最大プレイヤー数: 8
-[12:55:05] [Discovery/Listener] ステート: 0
-[12:55:05] [Discovery/Listener] 名前の長さ: 1
-[12:55:05] [Discovery/Listener] サーバー名: 'G'
-[12:55:05] [Discovery/Listener] ★サーバー検出★: G @ 172.20.145.6:12911 (1/8) state=0
-[12:55:05] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[12:55:05] [ClientManager] ConnectToServer: 127.0.0.1:12911
-[12:55:05] [ClientManager] クライアントホスト作成成功
-[12:55:05] [ClientManager] ホスト接続 - サーバー名は接続後に取得
-[12:55:05] [ClientManager] 接続要求送信 (ホスト判定: true)
-[12:55:05] [SceneSelectHost] ロビーに遷移
-[12:55:05] [SceneLobby] ホストとしてロビー開始: サーバー名='G'
-[12:55:05] [SceneLobby] Start完了
-[12:55:05] [ClientManager] サーバー接続成功（ENET_EVENT_TYPE_CONNECT受信）
-[12:55:05] [ClientManager] JOIN送信: Player706
-[12:55:05] [ClientManager] JOIN送信完了: Player706
-[12:55:05] [ServerManager] クライアント接続: ID=1 (現在1人)
-[12:55:05] [ServerManager] ProcessJoin: データ長=10
-[12:55:05] [ServerManager] 名前長さ: 9
-[12:55:05] [ServerManager] 受信した名前: 'Player706'
-[12:55:05] [ServerManager] ホストのJOIN受信: Player706 (ID=1)
-[12:55:05] [ServerManager] JoinAck送信: ClientID=1
-[12:55:05] [ServerManager] 新規参加者にホスト情報を送信: Player706 Pos=(0.0,0.0,0.0)
-[12:55:05] [ServerManager] 新規参加者情報をブロードキャスト: Player706 (ID=1)
-[12:55:05] [ServerManager] ロビー更新をブロードキャスト
-[12:55:05] [ServerManager] BroadcastLobbyUpdate: 1 人
-[12:55:05] [ServerManager] プレイヤー1: 'Player706' (長さ:9)
-[12:55:05] [ServerManager] 送信データサイズ: 12 bytes
-[12:55:05] [ClientManager] クライアントID割り当て: 1
-[12:55:05] [ClientManager] プレイヤー生成通知: ID=1, Name=Player706
-[12:55:05] [ClientManager] プレイヤー生成通知: ID=1, Name=Player706
-[12:55:05] [ClientManager] ProcessLobbyUpdate: データ長=12
-[12:55:05] [ClientManager] プレイヤー数: 1
-[12:55:05] [ClientManager] プレイヤー1 名前長さ: 9
-[12:55:05] [ClientManager] プレイヤー1: 'Player706'
-[12:55:05] [ClientManager] ロビー更新完了: 1 人
-[12:55:05] [SceneLobby] ゲーム開始ボタン押下
-[12:55:05] [ServerManager] 役割割り当て開始
-[12:55:05] [ServerManager] ホストをリストに追加: ID=1
-[12:55:05] [ServerManager] 総プレイヤー数: 1
-[12:55:05] [ServerManager] 総人数=1 鬼=1 逃げる側=0
-[12:55:05] [ServerManager] シャッフル後のID順:
-[12:55:05]   位置0: ID=1
-[12:55:05] [ServerManager] ホスト(ID=1 Name=Player706)の役割: 鬼
-[12:55:05] [ServerManager] クライアント Player706 (ID=1) の役割: 鬼
-[12:55:05] [ServerManager] 役割割り当て完了
-[12:55:05] [ServerManager] 割り当て結果確認: 鬼=1 逃げる側=0
-[12:55:05] [ServerManager] 役割割り当てをブロードキャスト
-[12:55:05] [ServerManager] ホスト(ID=1)の役割送信: 鬼
-[12:55:05] [ServerManager] クライアント Player706 (ID=1)の役割送信: 鬼
-[12:55:05] [ServerManager] 役割割り当てブロードキャスト完了
-[12:55:05] [ServerManager] 役割割り当てをブロードキャスト
-[12:55:05] [ServerManager] ホスト(ID=1)の役割送信: 鬼
-[12:55:05] [ServerManager] クライアント Player706 (ID=1)の役割送信: 鬼
-[12:55:05] [ServerManager] 役割割り当てブロードキャスト完了
-[12:55:05] [ServerManager] 役割割り当てをブロードキャスト
-[12:55:05] [ServerManager] ホスト(ID=1)の役割送信: 鬼
-[12:55:05] [ServerManager] クライアント Player706 (ID=1)の役割送信: 鬼
-[12:55:05] [ServerManager] 役割割り当てブロードキャスト完了
-[12:55:05] [ServerManager] 役割割り当て送信完了（3回送信）
-[12:55:05] [ServerManager] ゲーム開始 - 役割割り当て済み
-[12:55:05] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
-[12:55:05] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
-[12:55:05] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
-[12:55:05] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
-[12:55:05] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
-[12:55:05] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
-[12:55:05] [ClientManager] ゲーム開始通知受信
-[12:55:05] [SceneLobby] ゲーム開始 - ゲームシーンへ遷移
-[12:55:06] [Map::DrawMap] ライト数: 0 シャドウマップ数: -1
-[12:55:06] [SceneGame] Initialize: IsHost=1, ClientID=1
-[12:55:06] [SceneGame] 初期化完了 - 役割割り当て待機中
-[12:55:06] [SceneGame] 役割受信: ID=1 Role=鬼
-[12:55:06] [SceneGame] ローカルプレイヤー即座に生成: Role=鬼
-[12:55:06] [SceneGame] Chaserを生成: ID=1, Name=Player706
-[12:55:06] [Chaser] シャドウマップ作成成功: ID=0
-[12:55:06] [SceneGame] プレイヤー生成完了: ID=1, Role=鬼, Pos=(7.5,0.5,72.5)
-[12:55:06] [SceneGame] 現在の役割マップ: 総数=1
-[12:55:06]   ID=1 -> 鬼
-[12:55:06] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
-[12:55:06] [Chaser::UpdateLightMatrices] ID=0 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
-[12:55:06] [SceneGame] 初期同期完了（役割受信）
-[12:55:06] [SceneGame] 役割受信: ID=1 Role=鬼
-[12:55:06] [SceneGame] 役割受信: ID=1 Role=鬼
-[12:55:06] [SceneGame] 役割受信: ID=1 Role=鬼
-[12:55:06] [SceneGame] 役割受信: ID=1 Role=鬼
-[12:55:06] [SceneGame] 役割受信: ID=1 Role=鬼
-[12:55:06] [UpdateChaserLights] ローカル鬼追加: ID=1 LightIndex=0 Pos=(7.5,1.8,72.5)
-[12:55:06] [UpdateChaserLights] ライト収集完了: 1 個
-[12:55:06] [Map::DrawMapDepth] 壁の数=36 行列: _41=6.57, _42=-1.51, _43=79.77
-[12:55:06] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
-[12:55:06] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
-[12:55:06] [SceneGame] ワールド状態受信: プレイヤー数=1
-[12:55:07] [SceneGame] フェードイン完了 - ゲーム開始
-[12:55:08] [Chaser::UpdateLight] ID=0 Pos=(8.0,1.8,71.8) Dir=(0.23,0.00,-0.97) IsLocal=Yes
-[12:55:09] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
-[12:55:09] [Map::DrawMap] Light[0] Pos=(9.8,1.8,71.2)
-[12:55:09] [UpdateChaserLights] ローカル鬼追加: ID=1 LightIndex=0 Pos=(9.8,1.8,71.2)
-[12:55:09] [UpdateChaserLights] ライト収集完了: 1 個
-[12:55:09] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
-[12:55:09] [SceneGame] 送信: ID=0 Pos=(9.8,0.5,71.2) Interval=16ms
-[12:55:09] [SceneGame] ワールド状態受信: プレイヤー数=1
-[12:55:09] [Discovery/Listener] 生存確認 ループ:50
-[12:55:10] [Chaser::UpdateLight] ID=0 Pos=(9.9,1.8,73.1) Dir=(-0.18,0.00,-0.98) IsLocal=Yes
-[12:55:10] [Discovery/Advertiser] 送信データ: port=12911 player=1/8 state=1 name='G'
-[12:55:10] [Discovery/Advertiser] ブロードキャスト送信 #2: サイズ=19 bytes (port=12911)
-[12:55:10] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[12:55:10] [Discovery/Listener] マジック一致確認
-[12:55:10] [Discovery/Listener] プロトコルバージョン: 256
-[12:55:10] [Discovery/Listener] ポート（変換後）: 12911
-[12:55:10] [Discovery/Listener] プレイヤー数: 1
-[12:55:10] [Discovery/Listener] 最大プレイヤー数: 8
-[12:55:10] [Discovery/Listener] ステート: 1
-[12:55:10] [Discovery/Listener] 名前の長さ: 1
-[12:55:10] [Discovery/Listener] サーバー名: 'G'
-[12:55:10] [Discovery/Listener] ★サーバー検出★: G @ 172.20.145.6:12911 (1/8) state=1
-[12:55:10] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[12:55:11] [Chaser::UpdateLightMatrices] ID=0 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
-[12:55:11] [Map::DrawMapDepth] 壁の数=36 行列: _41=27.01, _42=-1.51, _43=70.80
-[12:55:12] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
-[12:55:12] [Map::DrawMap] Light[0] Pos=(7.4,1.8,71.7)
-[12:55:12] [UpdateChaserLights] ローカル鬼追加: ID=1 LightIndex=0 Pos=(7.4,1.8,71.7)
-[12:55:12] [UpdateChaserLights] ライト収集完了: 1 個
-[12:55:12] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
-[12:55:12] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,71.7) Dir=(0.39,0.00,-0.92) IsLocal=Yes
-[12:55:12] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,71.8) Interval=16ms
-[12:55:12] [SceneGame] ワールド状態受信: プレイヤー数=1
-[12:55:14] [Chaser::UpdateLight] ID=0 Pos=(9.6,1.8,70.3) Dir=(-0.10,0.00,-0.99) IsLocal=Yes
-[12:55:14] [Discovery/Listener] 生存確認 ループ:100
-[12:55:15] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
-[12:55:15] [Map::DrawMap] Light[0] Pos=(10.3,1.8,70.0)
-[12:55:15] [UpdateChaserLights] ローカル鬼追加: ID=1 LightIndex=0 Pos=(10.3,1.8,70.0)
-[12:55:15] [UpdateChaserLights] ライト収集完了: 1 個
-[12:55:15] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
-[12:55:15] [SceneGame] 送信: ID=0 Pos=(10.3,0.5,70.0) Interval=16ms
-[12:55:15] [SceneGame] ワールド状態受信: プレイヤー数=1
-[12:55:15] [Discovery/Advertiser] 送信データ: port=12911 player=1/8 state=1 name='G'
-[12:55:15] [Discovery/Advertiser] ブロードキャスト送信 #3: サイズ=19 bytes (port=12911)
-[12:55:15] [Discovery/Listener] パケット受信! サイズ:19 bytes
-[12:55:15] [Discovery/Listener] マジック一致確認
-[12:55:15] [Discovery/Listener] プロトコルバージョン: 256
-[12:55:15] [Discovery/Listener] ポート（変換後）: 12911
-[12:55:15] [Discovery/Listener] プレイヤー数: 1
-[12:55:15] [Discovery/Listener] 最大プレイヤー数: 8
-[12:55:15] [Discovery/Listener] ステート: 1
-[12:55:15] [Discovery/Listener] 名前の長さ: 1
-[12:55:15] [Discovery/Listener] サーバー名: 'G'
-[12:55:15] [Discovery/Listener] ★サーバー検出★: G @ 172.20.145.6:12911 (1/8) state=1
-[12:55:15] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[12:55:16] [Chaser::UpdateLightMatrices] ID=0 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
-[12:55:16] [Map::DrawMapDepth] 壁の数=36 行列: _41=37.34, _42=-1.51, _43=60.81
-[12:55:16] [Chaser::UpdateLight] ID=0 Pos=(7.8,1.8,70.7) Dir=(0.55,0.00,-0.84) IsLocal=Yes
-[12:55:18] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
-[12:55:18] [Map::DrawMap] Light[0] Pos=(11.7,1.8,72.1)
-[12:55:18] [UpdateChaserLights] ローカル鬼追加: ID=1 LightIndex=0 Pos=(11.7,1.8,72.1)
-[12:55:18] [UpdateChaserLights] ライト収集完了: 1 個
-[12:55:18] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
-[12:55:18] [Chaser::UpdateLight] ID=0 Pos=(11.8,1.8,72.0) Dir=(-0.99,0.00,0.14) IsLocal=Yes
-[12:55:18] [SceneGame] 送信: ID=0 Pos=(11.9,0.5,72.0) Interval=16ms
-[12:55:18] [SceneGame] ワールド状態受信: プレイヤー数=1
+[13:43:47] ========================================
+[13:43:47] ClientManager 初期化開始
+[13:43:47] ========================================
+[13:43:47] [ClientManager] ENet初期化成功
+[13:43:47] [ClientManager] Discovery作成
+[13:43:47] [Discovery/Listener] スレッド開始
+[13:43:47] [Discovery/Listener] WSAStartup成功
+[13:43:47] [Discovery/Listener] ソケット作成成功
+[13:43:47] [Discovery/Listener] bind成功 ポート:12346
+[13:43:47] [Discovery/Listener] 受信ループ開始
+[13:43:47] [ClientManager] Discoveryリスナー起動 (ポート:12346)
+[13:43:49] ========================================
+[13:43:49] [SceneSelectHost] サーバー作成開始: K
+[13:43:49] [Client] 切断
+[13:43:49] [ServerManager] ホスト名設定: Player392
+[13:43:49] [SceneSelectHost] サーバー名設定: K
+[13:43:49] [SceneSelectHost] ホスト名設定: Player392
+[13:43:49] [Discovery/Advertiser] スレッド開始
+[13:43:49] [Discovery/Advertiser] WSAStartup成功
+[13:43:49] [ServerManager] サーバー起動: ポート=12420
+[13:43:49] [SceneSelectHost] サーバー起動成功: ポート=12420
+[13:43:49] [Discovery/Advertiser] ソケット作成成功
+[13:43:49] [Discovery/Advertiser] SO_BROADCAST設定成功
+[13:43:49] [Discovery/Advertiser] ブロードキャストループ開始
+[13:43:49] [Discovery/Advertiser] 送信データ: port=12420 player=1/8 state=0 name='K'
+[13:43:49] [Discovery/Advertiser] ブロードキャスト送信 #1: サイズ=19 bytes (port=12420)
+[13:43:49] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[13:43:49] [Discovery/Listener] マジック一致確認
+[13:43:49] [Discovery/Listener] プロトコルバージョン: 256
+[13:43:49] [Discovery/Listener] ポート（変換後）: 12420
+[13:43:49] [Discovery/Listener] プレイヤー数: 1
+[13:43:49] [Discovery/Listener] 最大プレイヤー数: 8
+[13:43:49] [Discovery/Listener] ステート: 0
+[13:43:49] [Discovery/Listener] 名前の長さ: 1
+[13:43:49] [Discovery/Listener] サーバー名: 'K'
+[13:43:49] [Discovery/Listener] ★サーバー検出★: K @ 172.20.145.8:12420 (1/8) state=0
+[13:43:49] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[13:43:49] [ClientManager] ConnectToServer: 127.0.0.1:12420
+[13:43:49] [ClientManager] クライアントホスト作成成功
+[13:43:49] [ClientManager] ホスト接続 - サーバー名は接続後に取得
+[13:43:49] [ClientManager] 接続要求送信 (ホスト判定: true)
+[13:43:49] [SceneSelectHost] ロビーに遷移
+[13:43:49] [SceneLobby] ホストとしてロビー開始: サーバー名='K'
+[13:43:49] [SceneLobby] Start完了
+[13:43:49] [ClientManager] サーバー接続成功（ENET_EVENT_TYPE_CONNECT受信）
+[13:43:49] [ClientManager] JOIN送信: Player392
+[13:43:49] [ClientManager] JOIN送信完了: Player392
+[13:43:49] [ServerManager] クライアント接続: ID=1 (現在1人)
+[13:43:49] [ServerManager] ProcessJoin: データ長=10
+[13:43:49] [ServerManager] 名前長さ: 9
+[13:43:49] [ServerManager] 受信した名前: 'Player392'
+[13:43:49] [ServerManager] ホストのJOIN受信: Player392 (ID=1)
+[13:43:49] [ServerManager] JoinAck送信: ClientID=1
+[13:43:49] [ServerManager] 新規参加者にホスト情報を送信: Player392 Pos=(0.0,0.0,0.0)
+[13:43:49] [ServerManager] 新規参加者情報をブロードキャスト: Player392 (ID=1)
+[13:43:49] [ServerManager] ロビー更新をブロードキャスト
+[13:43:49] [ServerManager] BroadcastLobbyUpdate: 1 人
+[13:43:49] [ServerManager] プレイヤー1: 'Player392' (長さ:9)
+[13:43:49] [ServerManager] 送信データサイズ: 12 bytes
+[13:43:49] [ClientManager] クライアントID割り当て: 1
+[13:43:49] [ClientManager] プレイヤー生成通知: ID=1, Name=Player392
+[13:43:49] [ClientManager] プレイヤー生成通知: ID=1, Name=Player392
+[13:43:49] [ClientManager] ProcessLobbyUpdate: データ長=12
+[13:43:49] [ClientManager] プレイヤー数: 1
+[13:43:49] [ClientManager] プレイヤー1 名前長さ: 9
+[13:43:49] [ClientManager] プレイヤー1: 'Player392'
+[13:43:49] [ClientManager] ロビー更新完了: 1 人
+[13:43:49] [SceneLobby] ゲーム開始ボタン押下
+[13:43:49] [ServerManager] 役割割り当て開始
+[13:43:49] [ServerManager] ホストをリストに追加: ID=1
+[13:43:49] [ServerManager] 総プレイヤー数: 1
+[13:43:49] [ServerManager] 総人数=1 鬼=1 逃げる側=0
+[13:43:49] [ServerManager] シャッフル後のID順:
+[13:43:49]   位置0: ID=1
+[13:43:49] [ServerManager] ホスト(ID=1 Name=Player392)の役割: 鬼
+[13:43:49] [ServerManager] クライアント Player392 (ID=1) の役割: 鬼
+[13:43:49] [ServerManager] 役割割り当て完了
+[13:43:49] [ServerManager] 割り当て結果確認: 鬼=1 逃げる側=0
+[13:43:49] [ServerManager] 役割割り当てをブロードキャスト
+[13:43:49] [ServerManager] ホスト(ID=1)の役割送信: 鬼
+[13:43:49] [ServerManager] クライアント Player392 (ID=1)の役割送信: 鬼
+[13:43:49] [ServerManager] 役割割り当てブロードキャスト完了
+[13:43:49] [ServerManager] 役割割り当てをブロードキャスト
+[13:43:49] [ServerManager] ホスト(ID=1)の役割送信: 鬼
+[13:43:49] [ServerManager] クライアント Player392 (ID=1)の役割送信: 鬼
+[13:43:49] [ServerManager] 役割割り当てブロードキャスト完了
+[13:43:49] [ServerManager] 役割割り当てをブロードキャスト
+[13:43:49] [ServerManager] ホスト(ID=1)の役割送信: 鬼
+[13:43:49] [ServerManager] クライアント Player392 (ID=1)の役割送信: 鬼
+[13:43:49] [ServerManager] 役割割り当てブロードキャスト完了
+[13:43:49] [ServerManager] 役割割り当て送信完了（3回送信）
+[13:43:49] [ServerManager] ゲーム開始 - 役割割り当て済み
+[13:43:49] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
+[13:43:49] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
+[13:43:49] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
+[13:43:49] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
+[13:43:49] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
+[13:43:49] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
+[13:43:49] [ClientManager] ゲーム開始通知受信
+[13:43:49] [SceneLobby] ゲーム開始 - ゲームシーンへ遷移
+[13:43:49] [SceneGame] Initialize: IsHost=1, ClientID=1
+[13:43:49] [SceneGame] 初期化完了 - 役割割り当て待機中
+[13:43:49] [SceneGame] 役割受信: ID=1 Role=鬼
+[13:43:49] [SceneGame] ローカルプレイヤー即座に生成: Role=鬼
+[13:43:49] [SceneGame] Chaserを生成: ID=1, Name=Player392
+[13:43:49] [Chaser] シャドウマップ作成成功: ID=0
+[13:43:49] [SceneGame] プレイヤー生成完了: ID=1, Role=鬼, Pos=(7.5,0.5,72.5)
+[13:43:49] [SceneGame] 現在の役割マップ: 総数=1
+[13:43:49]   ID=1 -> 鬼
+[13:43:49] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(-0.02,0.00,-1.00) IsLocal=Yes
+[13:43:49] [Chaser::UpdateLightMatrices] ID=0 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
+[13:43:49] [SceneGame] 初期同期完了（役割受信）
+[13:43:49] [SceneGame] 役割受信: ID=1 Role=鬼
+[13:43:49] [SceneGame] 役割受信: ID=1 Role=鬼
+[13:43:49] [SceneGame] 役割受信: ID=1 Role=鬼
+[13:43:49] [SceneGame] 役割受信: ID=1 Role=鬼
+[13:43:49] [SceneGame] 役割受信: ID=1 Role=鬼
+[13:43:49] [UpdateChaserLights] ローカル鬼追加: ID=1 LightIndex=0 Pos=(7.5,1.8,72.5)
+[13:43:49] [UpdateChaserLights] ライト収集完了: 1 個
+[13:43:49] [Map::DrawMapDepth] 壁の数=36 行列: _41=5.17, _42=-1.51, _43=79.95
+[13:43:49] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[13:43:49]   Light[0] Pos=(7.5,1.8,72.5) Dir=(-0.02,0.00,-1.00) ShadowMap=有効
+[13:43:49] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[13:43:49] [SceneGame] ワールド状態受信: プレイヤー数=1
+[13:43:49] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[13:43:49] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[13:43:51] [SceneGame] フェードイン完了 - ゲーム開始
+[13:43:51] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(-0.04,0.00,-1.00) IsLocal=Yes
+[13:43:52] [Discovery/Listener] 生存確認 ループ:50
+[13:43:52] [UpdateChaserLights] ローカル鬼追加: ID=1 LightIndex=0 Pos=(7.5,1.8,72.5)
+[13:43:52] [UpdateChaserLights] ライト収集完了: 1 個
+[13:43:52] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[13:43:52]   Light[0] Pos=(7.5,1.8,72.5) Dir=(-0.04,0.00,-1.00) ShadowMap=有効
+[13:43:52] [SceneGame] 送信: ID=0 Pos=(7.5,0.5,72.5) Interval=16ms
+[13:43:52] [SceneGame] ワールド状態受信: プレイヤー数=1
+[13:43:52] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[13:43:52] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[13:43:53] [Chaser::UpdateLight] ID=0 Pos=(7.5,1.8,72.5) Dir=(-0.04,0.00,-1.00) IsLocal=Yes
+[13:43:54] [Discovery/Advertiser] 送信データ: port=12420 player=1/8 state=1 name='K'
+[13:43:54] [Discovery/Advertiser] ブロードキャスト送信 #2: サイズ=19 bytes (port=12420)
+[13:43:54] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[13:43:54] [Discovery/Listener] マジック一致確認
+[13:43:54] [Discovery/Listener] プロトコルバージョン: 256
+[13:43:54] [Discovery/Listener] ポート（変換後）: 12420
+[13:43:54] [Discovery/Listener] プレイヤー数: 1
+[13:43:54] [Discovery/Listener] 最大プレイヤー数: 8
+[13:43:54] [Discovery/Listener] ステート: 1
+[13:43:54] [Discovery/Listener] 名前の長さ: 1
+[13:43:54] [Discovery/Listener] サーバー名: 'K'
+[13:43:54] [Discovery/Listener] ★サーバー検出★: K @ 172.20.145.8:12420 (1/8) state=1
+[13:43:54] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[13:43:54] [Chaser::UpdateLightMatrices] ID=0 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
+[13:43:54] [Map::DrawMapDepth] 壁の数=36 行列: _41=36.45, _42=-1.51, _43=64.22
+[13:43:55] [UpdateChaserLights] ローカル鬼追加: ID=1 LightIndex=0 Pos=(10.6,1.8,71.5)
+[13:43:55] [UpdateChaserLights] ライト収集完了: 1 個
+[13:43:55] [SceneGame] 送信: ID=0 Pos=(10.6,0.5,71.5) Interval=16ms
+[13:43:55] [Chaser::UpdateLight] ID=0 Pos=(10.6,1.8,71.5) Dir=(-0.30,0.00,-0.95) IsLocal=Yes
+[13:43:55] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[13:43:55]   Light[0] Pos=(10.6,1.8,71.5) Dir=(-0.31,0.00,-0.95) ShadowMap=有効
+[13:43:55] [SceneGame] ワールド状態受信: プレイヤー数=1
+[13:43:55] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[13:43:55] [Map::DrawMap] Light[0] Pos=(10.8,1.8,72.0)
+[13:43:57] [Discovery/Listener] 生存確認 ループ:100

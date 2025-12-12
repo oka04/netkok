@@ -1025,28 +1025,28 @@ void SceneGame::DespawnPlayer(uint32_t clientId)
 
 void SceneGame::Draw()
 {
-	// ★★★ 修正: 描画前にライトを更新 ★★★
-	UpdateChaserLights();
-
 	// シャドウマップ生成
 	RenderShadowMaps();
 
-	// ★★★ 修正: SpotLightの値のベクターを作成（ポインタではなく値） ★★★
+	// ★★★ 修正: シャドウマップ生成後に再度ライト情報を収集 ★★★
+	UpdateChaserLights();
+
+	// ★★★ 修正: 最新のライト情報でSpotLightの値のベクターを作成 ★★★
 	std::vector<SpotLight> spotLights;
 	std::vector<LPDIRECT3DTEXTURE9> shadowMaps;
 	std::vector<D3DXMATRIX> lightViewProjs;
 	std::vector<D3DXMATRIX> scaleBiases;
 
-	// ★★★ 重要: m_chaserLightsから値をコピー ★★★
+	// ★★★ 重要: 各鬼のライトとシャドウマップ情報を収集 ★★★
 	for (size_t i = 0; i < m_chaserLights.size(); ++i)
 	{
 		if (!m_chaserLights[i])
 			continue;
 
-		// ★★★ ポインタから値をコピー ★★★
+		// ライトの値をコピー
 		spotLights.push_back(*m_chaserLights[i]);
 
-		// ★★★ 対応するChaserを探してシャドウマップ情報を取得 ★★★
+		// 対応するChaserを探してシャドウマップ情報を取得
 		Chaser* chaser = nullptr;
 
 		// ローカルプレイヤーが鬼かチェック
@@ -1097,6 +1097,17 @@ void SceneGame::Draw()
 	{
 		NET_LOG_F("[SceneGame::Draw] 鬼のライト数: %d シャドウマップ数: %d",
 			(int)spotLights.size(), (int)shadowMaps.size());
+
+		// 各ライトの情報を出力
+		for (size_t i = 0; i < spotLights.size(); ++i)
+		{
+			const D3DLIGHT9& l = spotLights[i].GetLight();
+			NET_LOG_F("  Light[%d] Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f) ShadowMap=%s",
+				(int)i,
+				l.Position.x, l.Position.y, l.Position.z,
+				l.Direction.x, l.Direction.y, l.Direction.z,
+				shadowMaps[i] ? "有効" : "無効");
+		}
 		lastLog = now;
 	}
 
@@ -1124,7 +1135,7 @@ void SceneGame::Draw()
 		}
 	}
 
-	// ローカルプレイヤーも描画（m_playersに含まれていない場合）
+	// ローカルプレイヤーも描画
 	if (m_pLocalPlayer)
 	{
 		bool alreadyDrawn = false;
@@ -1191,10 +1202,8 @@ void SceneGame::Draw()
 			}
 		}
 
-		// ★★★ 修正: IsLocalの正しい表示 ★★★
 		int yOffset = 500;
 
-		// ローカルプレイヤーを表示
 		if (m_pLocalPlayer)
 		{
 			D3DCOLOR color = (m_localRole == ROLE_CHASER) ? Color::RED : Color::YELLOW;
@@ -1208,10 +1217,8 @@ void SceneGame::Draw()
 			yOffset += 50;
 		}
 
-		// リモートプレイヤーを表示
 		for (auto& kv : m_players)
 		{
-			// ローカルプレイヤーはスキップ
 			if (kv.first == m_localClientId)
 				continue;
 
@@ -1234,6 +1241,7 @@ void SceneGame::Draw()
 	m_fade.Draw(m_pEngine);
 	m_pEngine->SpriteEnd();
 }
+
 void SceneGame::PostEffect()
 {
 }
