@@ -140,8 +140,11 @@ void Model::DrawDepth(Engine* pEngine, D3DXMATRIX* pMatLightVP)
 {
 	if (!m_pModelBase) return;
 
-	// ★★★ 修正: ModelBaseにワールド行列を渡す ★★★
-	m_pModelBase->DrawDepth(pMatLightVP, &m_matWorld);
+	// ★★★ 修正: モデルのワールド行列とライトVP行列を結合 ★★★
+	D3DXMATRIX matWVP = m_matWorld * (*pMatLightVP);
+
+	// モデルベースに深度描画を委譲
+	m_pModelBase->DrawDepth(&matWVP);
 }
 //=============================================================================
 // ワールド座標変換行列の設定

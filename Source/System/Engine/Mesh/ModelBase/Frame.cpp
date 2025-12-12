@@ -236,7 +236,7 @@ void Frame::DrawMeshContainerDepth(LPD3DXMESHCONTAINER pMeshContainerBase, LPD3D
 				}
 			}
 
-			// ★★★ 重要: 各ボーンのワールド行列とライトVP行列を結合 ★★★
+			// ★★★ 修正: ライトVP行列と結合 ★★★
 			D3DXMATRIX matWVP[4];
 			for (int i = 0; i < 4; i++)
 			{
@@ -256,7 +256,7 @@ void Frame::DrawMeshContainerDepth(LPD3DXMESHCONTAINER pMeshContainerBase, LPD3D
 	}
 	else
 	{
-		// ★★★ 重要: フレームのワールド行列とライトVP行列を結合 ★★★
+		// ★★★ 修正: フレームのワールド行列とライトVP行列を結合 ★★★
 		D3DXMATRIX matWorld = pFrame->CombinedTransformationMatrix;
 		D3DXMATRIX matWVP = matWorld * (*pMatLightVP);
 
