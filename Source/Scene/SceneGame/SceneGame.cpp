@@ -1028,27 +1028,48 @@ void SceneGame::Draw()
 	// シャドウマップ生成
 	RenderShadowMaps();
 
-	// ★★★ 修正: シャドウマップ生成後に再度ライト情報を収集 ★★★
-	UpdateChaserLights();
+	// ★★★ 修正: シャドウマップ生成直後にライト情報を強制的に更新 ★★★
+	// すべての鬼のライトをデバイスに正しく設定
+	int lightIndex = 0;
 
-	// ★★★ 修正: リモートプレイヤーのライトを強制的に更新 ★★★
-	for (auto& kv : m_players)
+	// ローカルプレイヤーが鬼の場合
+	if (m_pLocalPlayer && m_localRole == ROLE_CHASER)
 	{
-		if (!kv.second || m_playerRoles[kv.first] != ROLE_CHASER)
-			continue;
-
-		Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
-		if (chaser)
+		Chaser* localChaser = dynamic_cast<Chaser*>(m_pLocalPlayer);
+		if (localChaser && localChaser->IsShadowMapEnabled())
 		{
-			// ★★★ 重要: ライトの位置と方向を強制的に更新 ★★★
-			chaser->UpdateLight(m_pEngine);
+			SpotLight* light = localChaser->GetLights();
+			if (light)
+			{
+				light->SetDevice(m_pEngine, lightIndex);
+				lightIndex++;
+			}
 		}
 	}
 
-	// ★★★ 再度ライト情報を収集（更新後の値を取得） ★★★
+	// リモートプレイヤーの鬼
+	for (auto& kv : m_players)
+	{
+		if (kv.first == m_localClientId) continue;
+		if (!kv.second || m_playerRoles[kv.first] != ROLE_CHASER) continue;
+
+		Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
+		if (chaser && chaser->IsShadowMapEnabled())
+		{
+			SpotLight* light = chaser->GetLights();
+			if (light)
+			{
+				// ★★★ 重要: デバイスに設定 ★★★
+				light->SetDevice(m_pEngine, lightIndex);
+				lightIndex++;
+			}
+		}
+	}
+
+	// ★★★ 最新のライト情報を収集 ★★★
 	UpdateChaserLights();
 
-	// ★★★ 修正: 最新のライト情報でSpotLightの値のベクターを作成 ★★★
+	// ★★★ SpotLightの値のベクターを作成 ★★★
 	std::vector<SpotLight> spotLights;
 	std::vector<LPDIRECT3DTEXTURE9> shadowMaps;
 	std::vector<D3DXMATRIX> lightViewProjs;
