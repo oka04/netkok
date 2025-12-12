@@ -740,6 +740,23 @@ void SceneGame::RenderShadowMaps()
 {
 	LPDIRECT3DDEVICE9 pDevice = m_pEngine->GetDevice();
 
+	// ★★★ デバッグログ追加 ★★★
+	static DWORD lastDebugLog = 0;
+	DWORD now = timeGetTime();
+	if (now - lastDebugLog > 3000)
+	{
+		NET_LOG_F("[RenderShadowMaps] 開始: m_players数=%d", (int)m_players.size());
+		for (auto& kv : m_players)
+		{
+			auto roleIt = m_playerRoles.find(kv.first);
+			NET_LOG_F("  Player[%u]: 存在=%s 役割=%s",
+				kv.first,
+				kv.second ? "Yes" : "No",
+				roleIt != m_playerRoles.end() ? (roleIt->second == ROLE_CHASER ? "鬼" : "逃げる側") : "未設定");
+		}
+		lastDebugLog = now;
+	}
+
 	// 現在のレンダーターゲットと深度バッファを退避
 	LPDIRECT3DSURFACE9 pOldBackBuffer = nullptr;
 	LPDIRECT3DSURFACE9 pOldDepthBuffer = nullptr;
@@ -758,14 +775,68 @@ void SceneGame::RenderShadowMaps()
 	pDevice->GetRenderState(D3DRS_COLORWRITEENABLE, &oldColorWriteEnable);
 
 	// ★★★ 修正: 各鬼のシャドウマップを生成 ★★★
+	int shadowMapCount = 0;
 	for (auto& kv : m_players)
 	{
-		if (!kv.second || m_playerRoles[kv.first] != ROLE_CHASER)
+		// ★★★ デバッグログ ★★★
+		if (now - lastDebugLog > 3000)
+		{
+			NET_LOG_F("[RenderShadowMaps] チェック中: Player[%u] Exists=%s",
+				kv.first, kv.second ? "Yes" : "No");
+		}
+
+		if (!kv.second)
+		{
+			if (now - lastDebugLog > 3000)
+			{
+				NET_LOG_F("[RenderShadowMaps] スキップ: Player[%u] - プレイヤーが存在しない", kv.first);
+			}
 			continue;
+		}
+
+		auto roleIt = m_playerRoles.find(kv.first);
+		if (roleIt == m_playerRoles.end())
+		{
+			if (now - lastDebugLog > 3000)
+			{
+				NET_LOG_F("[RenderShadowMaps] スキップ: Player[%u] - 役割が未設定", kv.first);
+			}
+			continue;
+		}
+
+		if (roleIt->second != ROLE_CHASER)
+		{
+			if (now - lastDebugLog > 3000)
+			{
+				NET_LOG_F("[RenderShadowMaps] スキップ: Player[%u] - 役割が鬼ではない", kv.first);
+			}
+			continue;
+		}
 
 		Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
-		if (!chaser || !chaser->IsShadowMapEnabled())
+		if (!chaser)
+		{
+			if (now - lastDebugLog > 3000)
+			{
+				NET_LOG_F("[RenderShadowMaps] スキップ: Player[%u] - Chaserへのキャスト失敗", kv.first);
+			}
 			continue;
+		}
+
+		if (!chaser->IsShadowMapEnabled())
+		{
+			if (now - lastDebugLog > 3000)
+			{
+				NET_LOG_F("[RenderShadowMaps] スキップ: Player[%u] - シャドウマップ無効", kv.first);
+			}
+			continue;
+		}
+
+		// ★★★ ここまで来たらシャドウマップを生成 ★★★
+		if (now - lastDebugLog > 3000)
+		{
+			NET_LOG_F("[RenderShadowMaps] シャドウマップ生成開始: Player[%u]", kv.first);
+		}
 
 		LPDIRECT3DTEXTURE9 pShadowTex = chaser->GetShadowTexture();
 		LPDIRECT3DSURFACE9 pShadowSurface = nullptr;
@@ -774,7 +845,7 @@ void SceneGame::RenderShadowMaps()
 		HRESULT hr = pShadowTex->GetSurfaceLevel(0, &pShadowSurface);
 		if (FAILED(hr))
 		{
-			NET_LOG("[SceneGame] シャドウサーフェス取得失敗");
+			NET_LOG_F("[RenderShadowMaps] エラー: Player[%u] - シャドウサーフェス取得失敗", kv.first);
 			continue;
 		}
 
@@ -819,10 +890,35 @@ void SceneGame::RenderShadowMaps()
 		// ★★★ 追加: ローカルプレイヤーの影も描画（鬼以外）★★★
 		if (m_pLocalPlayer && m_localClientId != kv.first)
 		{
-			m_pLocalPlayer->DrawDepth(m_pEngine, &matLightVP);
+			// ローカルプレイヤーが既にm_playersに含まれているか確認
+			bool alreadyDrawn = false;
+			for (auto& kv2 : m_players)
+			{
+				if (kv2.first == m_localClientId)
+				{
+					alreadyDrawn = true;
+					break;
+				}
+			}
+
+			if (!alreadyDrawn)
+			{
+				m_pLocalPlayer->DrawDepth(m_pEngine, &matLightVP);
+			}
 		}
 
 		if (pShadowSurface) pShadowSurface->Release();
+		shadowMapCount++;
+
+		if (now - lastDebugLog > 3000)
+		{
+			NET_LOG_F("[RenderShadowMaps] シャドウマップ生成完了: Player[%u] (合計: %d個)", kv.first, shadowMapCount);
+		}
+	}
+
+	if (now - lastDebugLog > 3000)
+	{
+		NET_LOG_F("[RenderShadowMaps] 完了: 生成数=%d", shadowMapCount);
 	}
 
 	// すべてのステートを元に戻す
