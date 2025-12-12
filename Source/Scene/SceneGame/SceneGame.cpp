@@ -1031,6 +1031,23 @@ void SceneGame::Draw()
 	// ★★★ 修正: シャドウマップ生成後に再度ライト情報を収集 ★★★
 	UpdateChaserLights();
 
+	// ★★★ 修正: リモートプレイヤーのライトを強制的に更新 ★★★
+	for (auto& kv : m_players)
+	{
+		if (!kv.second || m_playerRoles[kv.first] != ROLE_CHASER)
+			continue;
+
+		Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
+		if (chaser)
+		{
+			// ★★★ 重要: ライトの位置と方向を強制的に更新 ★★★
+			chaser->UpdateLight(m_pEngine);
+		}
+	}
+
+	// ★★★ 再度ライト情報を収集（更新後の値を取得） ★★★
+	UpdateChaserLights();
+
 	// ★★★ 修正: 最新のライト情報でSpotLightの値のベクターを作成 ★★★
 	std::vector<SpotLight> spotLights;
 	std::vector<LPDIRECT3DTEXTURE9> shadowMaps;
@@ -1043,6 +1060,13 @@ void SceneGame::Draw()
 		if (!m_chaserLights[i])
 			continue;
 
+		// ★★★ デバッグ: ライトの値を確認 ★★★
+		const D3DLIGHT9& lightCheck = m_chaserLights[i]->GetLight();
+		if (lightCheck.Position.x == 0.0f && lightCheck.Position.y == 0.0f && lightCheck.Position.z == 0.0f)
+		{
+			NET_LOG_F("[SceneGame::Draw] 警告: Light[%d]の位置がゼロ！", (int)i);
+		}
+
 		// ライトの値をコピー
 		spotLights.push_back(*m_chaserLights[i]);
 
@@ -1050,26 +1074,28 @@ void SceneGame::Draw()
 		Chaser* chaser = nullptr;
 
 		// ローカルプレイヤーが鬼かチェック
-		if (i == 0 && m_pLocalPlayer && m_localRole == ROLE_CHASER)
+		if (m_pLocalPlayer && m_localRole == ROLE_CHASER)
 		{
-			chaser = dynamic_cast<Chaser*>(m_pLocalPlayer);
+			Chaser* localChaser = dynamic_cast<Chaser*>(m_pLocalPlayer);
+			if (localChaser && localChaser->GetLights() == m_chaserLights[i])
+			{
+				chaser = localChaser;
+			}
 		}
-		else
+
+		// リモートプレイヤーから探す
+		if (!chaser)
 		{
-			// リモートプレイヤーから探す
 			for (auto& kv : m_players)
 			{
-				if (kv.first == m_localClientId)
+				if (m_playerRoles[kv.first] != ROLE_CHASER)
 					continue;
 
-				if (m_playerRoles[kv.first] == ROLE_CHASER)
+				Chaser* c = dynamic_cast<Chaser*>(kv.second);
+				if (c && c->GetLights() == m_chaserLights[i])
 				{
-					Chaser* c = dynamic_cast<Chaser*>(kv.second);
-					if (c && c->GetLights() == m_chaserLights[i])
-					{
-						chaser = c;
-						break;
-					}
+					chaser = c;
+					break;
 				}
 			}
 		}
