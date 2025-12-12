@@ -77,7 +77,7 @@ public:
 	//=============================================================================
 	void Draw(LPD3DXMATRIX pMatWorld, LPD3DXMATRIX pMatVP, D3DCOLORVALUE* pAmbient, D3DLIGHT9* pLight);
 
-	void DrawDepth(LPD3DXMATRIX pMatWVP);
+	void DrawDepth(LPD3DXMATRIX pMatLightVP, LPD3DXMATRIX pMatWorld);
 	//=============================================================================
 	// ルートフレームの変換マトリックスを取得
 	// 引　数：LPD3DXMATRIX 変換マトリックスのポインタ
