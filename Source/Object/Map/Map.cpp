@@ -42,11 +42,6 @@ void Map::Release(Engine * pEngine)
 	pEngine->ReleaseTexture(TEXTURE_NORMAL_CIRCLE);
 	pEngine->ReleaseTexture(TEXTURE_CHASE_CIRCLE);
 }
-
-void Map::UpdateGoalEffect()
-{
-	m_goalEffect.Update();
-}
 	
 void Map::DrawMap(Engine* pEngine, Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight, std::vector<SpotLight>* lights, std::vector<LPDIRECT3DTEXTURE9>* pShadowMaps, std::vector<D3DXMATRIX>* pLightViewProj, std::vector<D3DXMATRIX>* pScaleBias)
 {
@@ -73,11 +68,6 @@ void Map::DrawMap(Engine* pEngine, Camera* pCamera, Projection* pProj, AmbientLi
 	{
 		wall->Draw(pEngine, pCamera, pProj, pAmbient, pLight, lights, pShadowMaps, pLightViewProj, pScaleBias);
 	}
-
-}
-void Map::DrawGoalEffect(Camera * pCamera, Projection * pProj)
-{
-	m_goalEffect.Draw(pCamera, pProj);
 }
 
 void Map::DrawMiniMap(Engine* pEngine, const D3DXVECTOR2& playerPosition, const float arrowAngle)
@@ -610,14 +600,6 @@ void Map::LoadMap(Engine * pEngine, Camera * pCamera, Projection * pProj, Ambien
 				m_map[i][j] = GROUND;
 				m_playerStartPosition = D3DXVECTOR3(j * f_wallSize + f_wallSize / 2, f_groundHeight / 2, (m_row - i) * f_wallSize - f_wallSize / 2);
 			}
-
-			if (m_map[i][j] == GOAL)
-			{
-				m_goalPosition = D3DXVECTOR3(j * f_wallSize + f_wallSize / 2, f_groundHeight / 2, (m_row - i) * f_wallSize - f_wallSize / 2);
-				m_goalEffect.Initialize(pEngine, m_goalPosition, ParticleBase::INIFINITY);
-				m_map[i][j] = GROUND;
-			}
-
 			if (m_map[i][j] >= WAYPOINT_OFFSET)
 			{
 				m_waypoints[m_map[i][j] - WAYPOINT_OFFSET] = D3DXVECTOR3(j * f_wallSize + f_wallSize / 2, f_groundHeight / 2, (m_row - i) * f_wallSize - f_wallSize / 2);

@@ -1,4 +1,4 @@
-﻿// Chaser.cpp - プレイヤー固有の実装のみ
+﻿// Chaser.cpp - プレイヤー固有の実装 + ブレス攻撃機能
 
 #define _USING_V110_SDK71_ 1
 
@@ -14,6 +14,12 @@ Chaser::Chaser()
 	, m_pShadowTexture(nullptr)
 	, m_pShadowSurface(nullptr)
 	, m_pShadowDepthSurface(nullptr)
+	, m_pIceBreath(nullptr)
+	, m_bBreathActive(false)
+	, m_bBreathButtonPressed(false)
+	, m_lastBreathTime(0)
+	, f_breathCooldown(3.0f)
+	, m_breathDuration(3000)
 {
 	D3DXMatrixIdentity(&m_matLightView);
 	D3DXMatrixIdentity(&m_matLightProj);
@@ -22,6 +28,13 @@ Chaser::Chaser()
 Chaser::~Chaser()
 {
 	ReleaseShadowMap();
+
+	// ★★★ エフェクトを削除 ★★★
+	if (m_pIceBreath)
+	{
+		delete m_pIceBreath;
+		m_pIceBreath = nullptr;
+	}
 }
 
 void Chaser::Initialize(Engine* pEngine, Map& map, Projection* projection, Camera& camera, DirectionalLight& light)
@@ -36,6 +49,14 @@ void Chaser::Initialize(Engine* pEngine, Map& map, Projection* projection, Camer
 
 	// ★★★ シャドウマップの作成 ★★★
 	CreateShadowMap(pEngine);
+
+	// ★★★ ブレスエフェクトを1回だけ生成（再利用） ★★★
+	if (!m_pIceBreath)
+	{
+		m_pIceBreath = new IceBreath();
+		m_pIceBreath->Initialize(pEngine, m_eyePosition, m_breathDuration);
+		NET_LOG_F("[Chaser] IceBreath生成: ID=%u", m_clientId);
+	}
 
 	UpdateMatrix(light);
 }
@@ -53,12 +74,27 @@ void Chaser::InitializeAtPosition(Engine* pEngine, const D3DXVECTOR3& startPos, 
 	// ★★★ シャドウマップの作成 ★★★
 	CreateShadowMap(pEngine);
 
+	// ★★★ ブレスエフェクトを1回だけ生成（再利用） ★★★
+	if (!m_pIceBreath)
+	{
+		m_pIceBreath = new IceBreath();
+		m_pIceBreath->Initialize(pEngine, m_eyePosition, m_breathDuration);
+		NET_LOG_F("[Chaser] IceBreath生成: ID=%u", m_clientId);
+	}
+
 	UpdateMatrix(light);
 }
 
 void Chaser::Release(Engine* pEngine)
 {
 	ReleaseShadowMap();
+
+	// ★★★ エフェクトを削除 ★★★
+	if (m_pIceBreath)
+	{
+		delete m_pIceBreath;
+		m_pIceBreath = nullptr;
+	}
 
 	if (m_bIsLocal)
 		SoundManager::UnregisterGameObject(ID_PALYER);
@@ -69,12 +105,70 @@ void Chaser::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 	m_deltaTime = deltaTime;
 	SetMouseCursor(pEngine, camera);
 	Input(pEngine);
+
+	// ★★★ ブレス攻撃の更新 ★★★
+	UpdateBreathAttack(pEngine);
+
 	m_speed = f_walkSpeed * m_deltaTime;
 	Move(map);
 	SetThirdPersonFromBehind(pEngine, camera, map);
 	UpdateLight(pEngine);
-	UpdateLightMatrices();  // ★★★ ライト行列の更新 ★★★
+	UpdateLightMatrices();
 	UpdateMatrix(light);
+}
+
+// ★★★ ブレス攻撃の更新処理（エフェクト再利用版） ★★★
+void Chaser::UpdateBreathAttack(Engine* pEngine)
+{
+	// ローカルプレイヤーのみブレス攻撃を処理
+	if (!m_bIsLocal)
+		return;
+
+	// エフェクトが生成されていない場合は何もしない
+	if (!m_pIceBreath)
+		return;
+
+	// 左クリックが押されているかチェック
+	bool isAttackPressed = (m_keyFlag & ATTACK_KEY) != 0;
+
+	// ボタンが押された瞬間（立ち上がりエッジ）を検出
+	bool isButtonJustPressed = isAttackPressed && !m_bBreathButtonPressed;
+	m_bBreathButtonPressed = isAttackPressed;
+
+	// ★★★ ブレスが発動中の場合は更新（表示中） ★★★
+	if (m_bBreathActive)
+	{
+		m_pIceBreath->Update();
+
+		// ★★★ エフェクトが非アクティブになったら終了 ★★★
+		if (!m_pIceBreath->IsActive())
+		{
+			m_bBreathActive = false;
+			NET_LOG_F("[Chaser] ブレス終了: ID=%u", m_clientId);
+		}
+	}
+
+	// ★★★ 左クリックが押された瞬間で、クールタイムが経過していればブレス発動 ★★★
+	if (isButtonJustPressed && !m_bBreathActive && CanUseBreath())
+	{
+		// ★★★ エフェクトを再利用（Activate） ★★★
+		m_pIceBreath->Activate(m_eyePosition, m_depth);
+		m_bBreathActive = true;
+		m_lastBreathTime = timeGetTime();
+
+		NET_LOG_F("[Chaser] ブレス発動: ID=%u Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
+			m_clientId,
+			m_eyePosition.x, m_eyePosition.y, m_eyePosition.z,
+			m_depth.x, m_depth.y, m_depth.z);
+	}
+}
+
+// ★★★ ブレスが使用可能かチェック ★★★
+bool Chaser::CanUseBreath() const
+{
+	DWORD now = timeGetTime();
+	float elapsedTime = (now - m_lastBreathTime) / 1000.0f;
+	return elapsedTime >= f_breathCooldown;
 }
 
 NetPlayerState Chaser::GetNetState() const
@@ -92,6 +186,7 @@ NetPlayerState Chaser::GetNetState() const
 
 	return state;
 }
+
 void Chaser::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& light, float deltaTime)
 {
 	// 基底クラスの更新
@@ -148,6 +243,17 @@ void Chaser::Draw(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, Di
 	CharacterBase::Draw(pCamera, pProj, pAmbient, pLight);
 }
 
+// ★★★ エフェクトの描画（エフェクト内部でm_bActiveをチェック） ★★★
+void Chaser::DrawEffects(Camera* pCamera, Projection* pProj)
+{
+	// ★★★ エフェクトが生成されている場合のみ描画を試みる ★★★
+	// （内部でm_bActiveがfalseなら描画スキップ）
+	if (m_pIceBreath)
+	{
+		m_pIceBreath->Draw(pCamera, pProj);
+	}
+}
+
 void Chaser::DebugPrint(Engine* pEngine)
 {
 	pEngine->DrawPrintf(0, 50, FONT_GOTHIC40, Color::BLUE, "Position: %f,%f,%f", m_position.x, m_position.y, m_position.z);
@@ -158,6 +264,17 @@ void Chaser::DebugPrint(Engine* pEngine)
 	pEngine->DrawPrintf(0, 300, FONT_GOTHIC40, Color::BLUE, "ClientID: %u", m_clientId);
 	pEngine->DrawPrintf(0, 350, FONT_GOTHIC40, Color::BLUE, "Name: %s", m_characterName.c_str());
 	pEngine->DrawPrintf(0, 400, FONT_GOTHIC40, Color::BLUE, "Local: %s", m_bIsLocal ? "Yes" : "No");
+
+	// ★★★ ブレス攻撃のデバッグ情報 ★★★
+	pEngine->DrawPrintf(0, 450, FONT_GOTHIC40, Color::BLUE, "Breath: %s", m_bBreathActive ? "Active" : "Inactive");
+
+	if (m_bIsLocal)
+	{
+		DWORD now = timeGetTime();
+		float cooldownRemaining = f_breathCooldown - ((now - m_lastBreathTime) / 1000.0f);
+		if (cooldownRemaining < 0) cooldownRemaining = 0;
+		pEngine->DrawPrintf(0, 500, FONT_GOTHIC40, Color::BLUE, "Cooldown: %.1fs", cooldownRemaining);
+	}
 }
 
 SpotLight* Chaser::GetLights()
@@ -385,4 +502,14 @@ void Chaser::LoadParameter()
 
 	m_lightRange = config["lightRange"];
 	m_spotLight.SetRange(m_lightRange);
+
+	// ★★★ ブレス攻撃のパラメータを読み込み ★★★
+	if (config.contains("breathCooldown"))
+	{
+		f_breathCooldown = config["breathCooldown"];
+	}
+	if (config.contains("breathDuration"))
+	{
+		m_breathDuration = config["breathDuration"];
+	}
 }

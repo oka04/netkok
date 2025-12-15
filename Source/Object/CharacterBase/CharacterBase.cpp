@@ -154,6 +154,16 @@ void CharacterBase::Input(Engine * pEngine)
 		m_keyFlag &= ~DASH_KEY;
 	}
 
+	// ★★★ 左クリック攻撃入力 ★★★
+	if (pEngine->GetMouseButtonSync(DIK_LBUTTON))  // 0 = 左ボタン
+	{
+		m_keyFlag |= ATTACK_KEY;
+	}
+	else
+	{
+		m_keyFlag &= ~ATTACK_KEY;
+	}
+
 	if (pEngine->GetKeyState(DIK_UP)) {
 		m_position.y += 3;
 	}

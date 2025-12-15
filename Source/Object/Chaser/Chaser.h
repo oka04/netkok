@@ -7,6 +7,7 @@
 #include "..\\..\\Scene\\Scene\\Scene.h"
 #include "..\\..\\Object\\CharacterBase\\CharacterBase.h"
 #include "..\\..\\Object\\Map\\Map.h"
+#include "..\\..\\Object\\IceBreath\\IceBreath.h"  // ★★★ IceBreathをインクルード ★★★
 #include <fstream>
 #include "..\\json.hpp"
 
@@ -23,6 +24,7 @@ public:
 	void Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight& light, float deltaTime);
 
 	void Draw(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight);
+	void DrawEffects(Camera* pCamera, Projection* pProj);  // ★★★ エフェクト描画用 ★★★
 	void DebugPrint(Engine* pEngine);
 
 	SpotLight* GetLights();
@@ -49,6 +51,10 @@ private:
 	void UpdateLightMatrices();
 	void CreateScaleBiasMatrix();
 
+	// ★★★ ブレス攻撃関連 ★★★
+	void UpdateBreathAttack(Engine* pEngine);
+	bool CanUseBreath() const;
+
 	SpotLight m_spotLight;
 	float m_lightFov;
 	float m_lightRange;
@@ -61,5 +67,13 @@ private:
 	D3DXMATRIX m_matLightView;
 	D3DXMATRIX m_matLightProj;
 	D3DXMATRIX m_matScaleBias;
-	static const int SHADOW_MAP_SIZE = 1024; 
+	static const int SHADOW_MAP_SIZE = 1024;
+
+	// ★★★ ブレス攻撃関連メンバー変数 ★★★
+	IceBreath* m_pIceBreath;
+	bool m_bBreathActive;
+	bool m_bBreathButtonPressed;  // 前フレームでボタンが押されていたか
+	DWORD m_lastBreathTime;       // 最後にブレスを使った時間
+	float f_breathCooldown;       // ブレスのクールタイム（秒）
+	DWORD m_breathDuration;       // ブレスの持続時間（ミリ秒）
 };

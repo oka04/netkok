@@ -1,0 +1,17 @@
+{
+  "iceColorR": 0.5,
+  "iceColorG": 0.7,
+  "iceColorB": 1,
+  "generateCount": 20,
+  "positionRandomRange": 0.3,
+  "directionRandomScale": 1.5,
+  "forwardSpeed": 1.2,
+  "moveSpeed": 0.15,
+  "fadeInSpeed": 0.02,
+  "minAlpha": 0,
+  "maxAlpha": 0.7,
+  "particleExistTime": 2000,
+  "particleFadeTime": 1200,
+  "coneAngle": 0.8,
+  "gravity": 0.003
+}

@@ -61,6 +61,7 @@ protected:
 		D_KEY = 1 << 3,
 		CROUCH_KEY = 1 << 4,
 		DASH_KEY = 1 << 5,
+		ATTACK_KEY = 1 << 6,  // ★★★ 左クリック攻撃用 ★★★
 	};
 
 	enum GAUGE_COLOR

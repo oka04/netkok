@@ -14,16 +14,13 @@
 
 #include "..\\..\\GameBase.h"
 #include "..\\..\\Scene\\Scene\\Scene.h"
-#include "..\\GoalEffect\\GoalEffect.h"
 #include "Network\\NetworkLogger.h"
 class Map
 {
 public:
 	void Initialize(Engine * pEngine, Camera * pCamera, Projection * pProj, AmbientLight * pAmbient, DirectionalLight * pLight, const int mapNumber);
 	void Release(Engine * pEngine);
-	void UpdateGoalEffect();
 	void DrawMap(Engine* pEngine, Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight, std::vector<SpotLight>* lights, std::vector<LPDIRECT3DTEXTURE9>* pShadowMaps = nullptr, std::vector<D3DXMATRIX>* pLightViewProj = nullptr, std::vector<D3DXMATRIX>* pScaleBias = nullptr);
-	void DrawGoalEffect(Camera* pCamera, Projection* pProj);
 	void DrawMiniMap(Engine * pEngine, const D3DXVECTOR2 & playerPosition, const float arrowAngle);
 	void DebugBoxLine(Engine * pEngine, Camera * pCamera, Projection * pProj);
 
@@ -97,7 +94,6 @@ private:
 		WALL,
 		GROUND,
 		PLAYER,
-		GOAL,
 		WAYPOINT_OFFSET = 10,
 	};
 
@@ -122,5 +118,4 @@ private:
 	D3DXVECTOR3 m_goalPosition;
 
 	Primitive m_ground;
-	GoalEffect m_goalEffect;
 };

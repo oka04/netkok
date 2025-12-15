@@ -115,9 +115,6 @@
     <Filter Include="Object\IntVector2">
       <UniqueIdentifier>{d2ac5c96-746b-41c6-b7c8-d6dd9b02ba07}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Object\GoalEffect">
-      <UniqueIdentifier>{16104a20-9ba4-494d-8479-b84b0cd3e4f0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Object\Fade">
       <UniqueIdentifier>{ec06a531-14f7-4b66-916e-212e8e2fad83}</UniqueIdentifier>
     </Filter>
@@ -150,6 +147,9 @@
     </Filter>
     <Filter Include="Object\Chaser">
       <UniqueIdentifier>{d82375e9-d6c1-45c9-a0eb-e3c9709c1f69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\IceBreath">
+      <UniqueIdentifier>{f16814b0-3bfe-4025-8319-6d4b479b1126}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -336,9 +336,6 @@
     <ClCompile Include="Source\Object\IntVector2\IntVector2.cpp">
       <Filter>Object\IntVector2</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Object\GoalEffect\GoalEffect.cpp">
-      <Filter>Object\GoalEffect</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Object\Fade\Fade.cpp">
       <Filter>Object\Fade</Filter>
     </ClCompile>
@@ -374,6 +371,9 @@
     </ClCompile>
     <ClCompile Include="Source\Object\Chaser\Chaser.cpp">
       <Filter>Object\Chaser</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Object\IceBreath\IceBreath.cpp">
+      <Filter>Object\IceBreath</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -578,9 +578,6 @@
     <ClInclude Include="Source\Object\IntVector2\IntVector2.h">
       <Filter>Object\IntVector2</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Object\GoalEffect\GoalEffect.h">
-      <Filter>Object\GoalEffect</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Object\Fade\Fade.h">
       <Filter>Object\Fade</Filter>
     </ClInclude>
@@ -628,6 +625,9 @@
     </ClInclude>
     <ClInclude Include="Source\Object\Chaser\Chaser.h">
       <Filter>Object\Chaser</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Object\IceBreath\IceBreath.h">
+      <Filter>Object\IceBreath</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

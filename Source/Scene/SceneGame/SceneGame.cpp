@@ -129,7 +129,6 @@ void SceneGame::Update()
 	{
 	case IN_GAME:
 		m_gameData.m_gameTime += m_deltaTime;
-		m_map.UpdateGoalEffect();
 
 		UpdateNetwork();
 		UpdateLocalPlayer();
@@ -1325,8 +1324,6 @@ void SceneGame::Draw()
 
 	m_map.DrawMap(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light,
 		pLights, pShadowMaps, pLightViewProjs, pScaleBiases);
-
-	m_map.DrawGoalEffect(&m_camera, &m_projection);
 
 	// プレイヤー描画
 	int drawnCount = 0;
