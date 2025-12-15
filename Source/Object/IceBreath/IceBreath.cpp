@@ -1,20 +1,20 @@
 ﻿#define _USING_V110_SDK71_ 1
 
-#include "GoalEffect.h"
+#include "IceBreath.h"
 
 using namespace KeyString;
 using namespace InputKey;
 using namespace WindowSetting;
 using namespace Common;
 
-GoalEffect::GoalEffect()
+IceBreath::IceBreath()
 	: m_pEffect(nullptr)
 	, m_pVertexDeclaration(nullptr)
 {
 
 }
 
-GoalEffect::~GoalEffect()
+IceBreath::~IceBreath()
 {
 	if (m_pVertexDeclaration) 
 	{
@@ -29,7 +29,7 @@ GoalEffect::~GoalEffect()
 	}
 }
 
-void GoalEffect::Initialize(Engine* pEngine, const D3DXVECTOR3 position, const DWORD existTime)
+void IceBreath::Initialize(Engine* pEngine, const D3DXVECTOR3 position, const DWORD existTime)
 {
 	m_pEngine = pEngine;
 	m_position = position;
@@ -75,7 +75,7 @@ void GoalEffect::Initialize(Engine* pEngine, const D3DXVECTOR3 position, const D
 	}
 }
 
-void GoalEffect::Update()
+void IceBreath::Update()
 {
 	if (m_imGenerate.GetTiming()) 
 	{
@@ -113,7 +113,7 @@ void GoalEffect::Update()
 	ParticleBase::Update();
 }
 
-void GoalEffect::Draw(Camera* pCamera, Projection* pProj)
+void IceBreath::Draw(Camera* pCamera, Projection* pProj)
 {
 	LPDIRECT3DDEVICE9 pDevice = m_pEngine->GetDevice();
 
@@ -137,7 +137,7 @@ void GoalEffect::Draw(Camera* pCamera, Projection* pProj)
 	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 }
 
-void GoalEffect::LoadParameter()
+void IceBreath::LoadParameter()
 {
 	std::ifstream file(JSON_GOAL_EFFECT_PARAMETER);
 	if (!file.is_open()) 

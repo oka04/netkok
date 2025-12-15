@@ -7,7 +7,7 @@
 #include <fstream>
 #include "..\\json.hpp"
 
-class GoalEffect : public ParticleBase
+class IceBreath : public ParticleBase
 {
 public:
 	GoalEffect();
