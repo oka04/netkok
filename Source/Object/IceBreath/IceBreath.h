@@ -14,17 +14,17 @@ public:
 	IceBreath();
 	~IceBreath();
 
-	// ★★★ ParticleBaseの純粋仮想関数をオーバーライド ★★★
 	virtual void Initialize(Engine* pEngine, const D3DXVECTOR3 position, const DWORD existTime) override;
 
-	// ★★★ エフェクト再利用のための新メソッド ★★★
 	void Activate(const D3DXVECTOR3& position, const D3DXVECTOR3& direction);
 	void Deactivate();
 	bool IsActive() const { return m_bActive; }
 
-	// ★★★ 毎フレームの位置・向き更新用 ★★★
 	void SetPosition(const D3DXVECTOR3& position) { m_position = position; }
 	void SetDirection(const D3DXVECTOR3& direction) { m_breathDirection = direction; }
+
+	// ★★★ ライトの範囲に合わせる ★★★
+	void SetMaxDistance(float distance) { m_maxDistance = distance; }
 
 	void Update();
 	void Draw(Camera* pCamera, Projection* pProj);
@@ -36,15 +36,15 @@ private:
 	ID3DXEffect* m_pEffect;
 	LPDIRECT3DVERTEXDECLARATION9 m_pVertexDeclaration;
 
-	// キャラクターの向き（ブレスを吐く方向）
 	D3DXVECTOR3 m_breathDirection;
 
-	// ★★★ エフェクトの状態管理 ★★★
-	bool m_bActive;              // エフェクトが発動中か
-	DWORD m_activateTime;        // 発動開始時刻
-	DWORD m_duration;            // 持続時間（ミリ秒）
+	bool m_bActive;
+	DWORD m_activateTime;
+	DWORD m_duration;
 
-								 // 氷の色パラメータ
+	// ★★★ ライトの範囲制限用 ★★★
+	float m_maxDistance;
+
 	float f_iceColorR;
 	float f_iceColorG;
 	float f_iceColorB;
@@ -52,13 +52,13 @@ private:
 	int n_generateCount;
 	float f_positionRandomRange;
 	float f_directionRandomScale;
-	float f_forwardSpeed;        // 前方への速度
+	float f_forwardSpeed;
 	float f_moveSpeed;
 	float f_fadeInSpeed;
 	float f_minAlpha;
 	float f_maxAlpha;
 	int n_particleExistTime;
 	int n_particleFadeTime;
-	float f_coneAngle;           // ブレスの広がり角度
-	float f_gravity;             // 重力効果
+	float f_coneAngle;
+	float f_gravity;
 };

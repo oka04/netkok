@@ -29,7 +29,6 @@ Chaser::~Chaser()
 {
 	ReleaseShadowMap();
 
-	// ★★★ エフェクトを削除 ★★★
 	if (m_pIceBreath)
 	{
 		delete m_pIceBreath;
@@ -47,15 +46,14 @@ void Chaser::Initialize(Engine* pEngine, Map& map, Projection* projection, Camer
 	m_position = map.GetPlayerStartPosition();
 	m_targetPosition = m_position;
 
-	// ★★★ シャドウマップの作成 ★★★
 	CreateShadowMap(pEngine);
 
-	// ★★★ ブレスエフェクトを1回だけ生成（再利用） ★★★
 	if (!m_pIceBreath)
 	{
 		m_pIceBreath = new IceBreath();
 		m_pIceBreath->Initialize(pEngine, m_eyePosition, m_breathDuration);
-		NET_LOG_F("[Chaser] IceBreath生成: ID=%u", m_clientId);
+		m_pIceBreath->SetMaxDistance(m_lightRange);
+		NET_LOG_F("[Chaser] IceBreath生成: ID=%u Range=%.2f", m_clientId, m_lightRange);
 	}
 
 	UpdateMatrix(light);
@@ -71,15 +69,14 @@ void Chaser::InitializeAtPosition(Engine* pEngine, const D3DXVECTOR3& startPos, 
 	m_position = startPos;
 	m_targetPosition = m_position;
 
-	// ★★★ シャドウマップの作成 ★★★
 	CreateShadowMap(pEngine);
 
-	// ★★★ ブレスエフェクトを1回だけ生成（再利用） ★★★
 	if (!m_pIceBreath)
 	{
 		m_pIceBreath = new IceBreath();
 		m_pIceBreath->Initialize(pEngine, m_eyePosition, m_breathDuration);
-		NET_LOG_F("[Chaser] IceBreath生成: ID=%u", m_clientId);
+		m_pIceBreath->SetMaxDistance(m_lightRange);
+		NET_LOG_F("[Chaser] IceBreath生成: ID=%u Range=%.2f", m_clientId, m_lightRange);
 	}
 
 	UpdateMatrix(light);
@@ -89,7 +86,6 @@ void Chaser::Release(Engine* pEngine)
 {
 	ReleaseShadowMap();
 
-	// ★★★ エフェクトを削除 ★★★
 	if (m_pIceBreath)
 	{
 		delete m_pIceBreath;
@@ -106,45 +102,63 @@ void Chaser::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 	SetMouseCursor(pEngine, camera);
 	Input(pEngine);
 
-	// ★★★ ブレス攻撃の更新 ★★★
 	UpdateBreathAttack(pEngine);
 
-	m_speed = f_walkSpeed * m_deltaTime;
-	Move(map);
+	// ★★★ ブレス中は移動を禁止 ★★★
+	if (!m_bBreathActive)
+	{
+		m_speed = f_walkSpeed * m_deltaTime;
+		Move(map);
+	}
+	else
+	{
+		m_speed = 0.0f;
+	}
+
 	SetThirdPersonFromBehind(pEngine, camera, map);
 	UpdateLight(pEngine);
 	UpdateLightMatrices();
 	UpdateMatrix(light);
 }
 
-// ★★★ ブレス攻撃の更新処理（エフェクト再利用版） ★★★
 void Chaser::UpdateBreathAttack(Engine* pEngine)
 {
-	// ローカルプレイヤーのみブレス攻撃を処理
 	if (!m_bIsLocal)
 		return;
 
-	// エフェクトが生成されていない場合は何もしない
 	if (!m_pIceBreath)
 		return;
 
-	// 左クリックが押されているかチェック
 	bool isAttackPressed = (m_keyFlag & ATTACK_KEY) != 0;
-
-	// ボタンが押された瞬間（立ち上がりエッジ）を検出
 	bool isButtonJustPressed = isAttackPressed && !m_bBreathButtonPressed;
 	m_bBreathButtonPressed = isAttackPressed;
 
-	// ★★★ ブレスが発動中の場合は必ず更新 ★★★
 	if (m_bBreathActive)
 	{
-		// ★★★ 重要: エフェクトの位置と向きを毎フレーム更新 ★★★
+		// ★★★ ブレスの方向を下向きに調整（-10度から-30度の範囲） ★★★
+		D3DXVECTOR3 adjustedDirection = m_depth;
+
+		// 横方向ベクトルを計算
+		D3DXVECTOR3 rightVec;
+		D3DXVECTOR3 upVec(0.0f, 1.0f, 0.0f);
+		D3DXVec3Cross(&rightVec, &upVec, &m_depth);
+		D3DXVec3Normalize(&rightVec, &rightVec);
+
+		// 正確な上方向ベクトルを計算
+		D3DXVec3Cross(&upVec, &m_depth, &rightVec);
+		D3DXVec3Normalize(&upVec, &upVec);
+
+		// 下向きに20度回転（調整可能）
+		D3DXMATRIX matRotation;
+		D3DXMatrixRotationAxis(&matRotation, &rightVec, D3DXToRadian(-20.0f));
+		D3DXVec3TransformCoord(&adjustedDirection, &m_depth, &matRotation);
+		D3DXVec3Normalize(&adjustedDirection, &adjustedDirection);
+
 		m_pIceBreath->SetPosition(m_eyePosition);
-		m_pIceBreath->SetDirection(m_depth);
+		m_pIceBreath->SetDirection(adjustedDirection);
 
 		m_pIceBreath->Update();
 
-		// ★★★ エフェクトが非アクティブになったら終了 ★★★
 		if (!m_pIceBreath->IsActive())
 		{
 			m_bBreathActive = false;
@@ -152,22 +166,32 @@ void Chaser::UpdateBreathAttack(Engine* pEngine)
 		}
 	}
 
-	// ★★★ 左クリックが押された瞬間で、クールタイムが経過していればブレス発動 ★★★
 	if (isButtonJustPressed && !m_bBreathActive && CanUseBreath())
 	{
-		// ★★★ エフェクトを再利用（Activate） ★★★
-		m_pIceBreath->Activate(m_eyePosition, m_depth);
+		// ★★★ 発動時も下向きに調整した方向でブレスを開始 ★★★
+		D3DXVECTOR3 adjustedDirection = m_depth;
+
+		D3DXVECTOR3 rightVec;
+		D3DXVECTOR3 upVec(0.0f, 1.0f, 0.0f);
+		D3DXVec3Cross(&rightVec, &upVec, &m_depth);
+		D3DXVec3Normalize(&rightVec, &rightVec);
+
+		D3DXMATRIX matRotation;
+		D3DXMatrixRotationAxis(&matRotation, &rightVec, D3DXToRadian(-20.0f));
+		D3DXVec3TransformCoord(&adjustedDirection, &m_depth, &matRotation);
+		D3DXVec3Normalize(&adjustedDirection, &adjustedDirection);
+
+		m_pIceBreath->Activate(m_eyePosition, adjustedDirection);
 		m_bBreathActive = true;
 		m_lastBreathTime = timeGetTime();
 
 		NET_LOG_F("[Chaser] ブレス発動: ID=%u Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
 			m_clientId,
 			m_eyePosition.x, m_eyePosition.y, m_eyePosition.z,
-			m_depth.x, m_depth.y, m_depth.z);
+			adjustedDirection.x, adjustedDirection.y, adjustedDirection.z);
 	}
 }
 
-// ★★★ ブレスが使用可能かチェック ★★★
 bool Chaser::CanUseBreath() const
 {
 	DWORD now = timeGetTime();
@@ -193,14 +217,11 @@ NetPlayerState Chaser::GetNetState() const
 
 void Chaser::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& light, float deltaTime)
 {
-	// 基底クラスの更新
 	CharacterBase::UpdateFromNetwork(state, light, deltaTime);
 
-	// ★★★ 重要: ライト情報を適用 ★★★
 	D3DXVECTOR3 lightPos(state.lightPosX, state.lightPosY, state.lightPosZ);
 	D3DXVECTOR3 lightDir(state.lightDirX, state.lightDirY, state.lightDirZ);
 
-	// ライト情報の検証
 	if (D3DXVec3Length(&lightPos) < 0.01f)
 	{
 		lightPos = m_eyePosition;
@@ -217,15 +238,12 @@ void Chaser::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 		lightRange = m_lightRange;
 	}
 
-	// ★★★ SpotLightに設定 ★★★
 	m_spotLight.SetPosition(lightPos);
 	m_spotLight.SetDirection(lightDir);
 	m_spotLight.SetRange(lightRange);
 
-	// ★★★ 重要追加: ライト行列を更新 ★★★
 	UpdateLightMatrices();
 
-	// デバッグログ（頻度制限）
 	static std::map<uint32_t, DWORD> lastLogPerChaser;
 	DWORD now = timeGetTime();
 	if (now - lastLogPerChaser[m_clientId] > 5000)
@@ -247,11 +265,8 @@ void Chaser::Draw(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, Di
 	CharacterBase::Draw(pCamera, pProj, pAmbient, pLight);
 }
 
-// ★★★ エフェクトの描画（エフェクト内部でm_bActiveをチェック） ★★★
 void Chaser::DrawEffects(Camera* pCamera, Projection* pProj)
 {
-	// ★★★ エフェクトが生成されている場合のみ描画を試みる ★★★
-	// （内部でm_bActiveがfalseなら描画スキップ）
 	if (m_pIceBreath)
 	{
 		m_pIceBreath->Draw(pCamera, pProj);
@@ -269,7 +284,6 @@ void Chaser::DebugPrint(Engine* pEngine)
 	pEngine->DrawPrintf(0, 350, FONT_GOTHIC40, Color::BLUE, "Name: %s", m_characterName.c_str());
 	pEngine->DrawPrintf(0, 400, FONT_GOTHIC40, Color::BLUE, "Local: %s", m_bIsLocal ? "Yes" : "No");
 
-	// ★★★ ブレス攻撃のデバッグ情報 ★★★
 	pEngine->DrawPrintf(0, 450, FONT_GOTHIC40, Color::BLUE, "Breath: %s", m_bBreathActive ? "Active" : "Inactive");
 
 	if (m_bIsLocal)
@@ -297,7 +311,6 @@ void Chaser::UpdateLight(Engine* pEngine)
 	m_spotLight.SetDirection(m_direction);
 	m_spotLight.SetDevice(pEngine, 0);
 
-	// ★★★ 重要追加: ライト行列も更新 ★★★
 	UpdateLightMatrices();
 
 	static std::map<uint32_t, DWORD> lastLogPerChaser;
@@ -318,17 +331,15 @@ void Chaser::DrawDepth(Engine* pEngine, const D3DXMATRIX* pMatLightVP)
 	m_model.DrawDepth(pEngine, pMatLightVP);
 }
 
-// ★★★ シャドウマップの作成 ★★★
 void Chaser::CreateShadowMap(Engine* pEngine)
 {
 	LPDIRECT3DDEVICE9 pDevice = pEngine->GetDevice();
 
-	// シャドウマップテクスチャの作成（R8G8B8A8フォーマットに変更）
 	HRESULT hr = pDevice->CreateTexture(
 		SHADOW_MAP_SIZE, SHADOW_MAP_SIZE,
 		1,
 		D3DUSAGE_RENDERTARGET,
-		D3DFMT_A8R8G8B8,  // shadowプロジェクトと同じフォーマット
+		D3DFMT_A8R8G8B8,
 		D3DPOOL_DEFAULT,
 		&m_pShadowTexture,
 		NULL
@@ -341,7 +352,6 @@ void Chaser::CreateShadowMap(Engine* pEngine)
 		return;
 	}
 
-	// サーフェスの取得
 	hr = m_pShadowTexture->GetSurfaceLevel(0, &m_pShadowSurface);
 	if (FAILED(hr))
 	{
@@ -352,10 +362,9 @@ void Chaser::CreateShadowMap(Engine* pEngine)
 		return;
 	}
 
-	// 深度バッファの作成（D16フォーマットに変更）
 	hr = pDevice->CreateDepthStencilSurface(
 		SHADOW_MAP_SIZE, SHADOW_MAP_SIZE,
-		D3DFMT_D16,  // shadowプロジェクトと同じフォーマット
+		D3DFMT_D16,
 		D3DMULTISAMPLE_NONE,
 		0,
 		TRUE,
@@ -374,15 +383,12 @@ void Chaser::CreateShadowMap(Engine* pEngine)
 		return;
 	}
 
-	// スケールバイアス行列の作成
 	CreateScaleBiasMatrix();
 
 	m_bShadowMapEnabled = true;
 	NET_LOG_F("[Chaser] シャドウマップ作成成功: ID=%u", m_clientId);
 }
 
-
-// ★★★ シャドウマップの解放 ★★★
 void Chaser::ReleaseShadowMap()
 {
 	if (m_pShadowDepthSurface)
@@ -410,12 +416,10 @@ void Chaser::UpdateLightMatrices()
 {
 	if (!m_bShadowMapEnabled) return;
 
-	// ライトのビュー行列を作成
 	D3DXVECTOR3 lightPos = m_eyePosition;
 	D3DXVECTOR3 lightTarget = m_eyePosition + m_direction;
 	D3DXVECTOR3 lightUp(0.0f, 1.0f, 0.0f);
 
-	// 方向ベクトルが上ベクトルと平行な場合の対策
 	D3DXVECTOR3 normDir;
 	D3DXVec3Normalize(&normDir, &m_direction);
 	if (fabs(D3DXVec3Dot(&normDir, &lightUp)) > 0.99f)
@@ -425,17 +429,11 @@ void Chaser::UpdateLightMatrices()
 
 	D3DXMatrixLookAtLH(&m_matLightView, &lightPos, &lightTarget, &lightUp);
 
-	// ★★★ 重要: ライトのFOVを1.5倍に拡大（端まで影を描画） ★★★
-	// 元のFOVが狭すぎるため、ライトの視錐台を広げる
 	float expandedFov = m_lightFov * 2.0f;
-
-	// ★★★ 最大でも170度以下に制限（180度だと逆転するため） ★★★
 	expandedFov = min(expandedFov, D3DXToRadian(170.0f));
 
-	// ★★★ 修正: ニアプレーンを0.1fに、ファープレーンを大きく ★★★
 	D3DXMatrixPerspectiveFovLH(&m_matLightProj, expandedFov, 1.0f, 1.0f, m_lightRange * 1.2f);
 
-	// ★★★ デバッグログ追加 ★★★
 	static DWORD lastLog = 0;
 	DWORD now = timeGetTime();
 	if (now - lastLog > 5000)
@@ -449,7 +447,6 @@ void Chaser::UpdateLightMatrices()
 	}
 }
 
-// CreateScaleBiasMatrix関数
 void Chaser::CreateScaleBiasMatrix()
 {
 	m_matScaleBias = D3DXMATRIX(
@@ -503,7 +500,6 @@ void Chaser::LoadParameter()
 	m_lightRange = config["lightRange"];
 	m_spotLight.SetRange(m_lightRange);
 
-	// ★★★ ブレス攻撃のパラメータを読み込み ★★★
 	if (config.contains("breathCooldown"))
 	{
 		f_breathCooldown = config["breathCooldown"];

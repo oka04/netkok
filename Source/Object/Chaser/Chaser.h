@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿// Chaser.h - プレイヤー固有の実装 + ブレス攻撃機能
+#pragma once
 
 #include <winsock2.h> 
 #include <ws2tcpip.h>
@@ -7,7 +8,7 @@
 #include "..\\..\\Scene\\Scene\\Scene.h"
 #include "..\\..\\Object\\CharacterBase\\CharacterBase.h"
 #include "..\\..\\Object\\Map\\Map.h"
-#include "..\\..\\Object\\IceBreath\\IceBreath.h"  // ★★★ IceBreathをインクルード ★★★
+#include "..\\..\\Object\\IceBreath\\IceBreath.h"
 #include <fstream>
 #include "..\\json.hpp"
 
@@ -24,7 +25,7 @@ public:
 	void Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight& light, float deltaTime);
 
 	void Draw(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight);
-	void DrawEffects(Camera* pCamera, Projection* pProj);  // ★★★ エフェクト描画用 ★★★
+	void DrawEffects(Camera* pCamera, Projection* pProj);
 	void DebugPrint(Engine* pEngine);
 
 	SpotLight* GetLights();
@@ -34,6 +35,9 @@ public:
 	void UpdateLight(Engine* pEngine);
 
 	virtual void DrawDepth(Engine* pEngine, const D3DXMATRIX* pMatLightVP) override;
+
+	// ★★★ ブレス中かどうかを取得 ★★★
+	bool IsBreathing() const { return m_bBreathActive; }
 
 	// シャドウマップ関連
 	bool IsShadowMapEnabled() const { return m_bShadowMapEnabled; }
@@ -72,8 +76,8 @@ private:
 	// ★★★ ブレス攻撃関連メンバー変数 ★★★
 	IceBreath* m_pIceBreath;
 	bool m_bBreathActive;
-	bool m_bBreathButtonPressed;  // 前フレームでボタンが押されていたか
-	DWORD m_lastBreathTime;       // 最後にブレスを使った時間
-	float f_breathCooldown;       // ブレスのクールタイム（秒）
-	DWORD m_breathDuration;       // ブレスの持続時間（ミリ秒）
+	bool m_bBreathButtonPressed;
+	DWORD m_lastBreathTime;
+	float f_breathCooldown;
+	DWORD m_breathDuration;
 };
