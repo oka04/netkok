@@ -1,4 +1,5 @@
-﻿#define _USING_V110_SDK71_ 1
+﻿// IceBreath.cpp - 氷の息吹エフェクト（青色で下方向版）
+#define _USING_V110_SDK71_ 1
 
 #include "IceBreath.h"
 
@@ -11,13 +12,13 @@ IceBreath::IceBreath()
 	: m_pEffect(nullptr)
 	, m_pVertexDeclaration(nullptr)
 	, m_breathDirection(0.0f, 0.0f, -1.0f)
-	, f_iceColorR(0.5f)
-	, f_iceColorG(0.7f)
-	, f_iceColorB(1.0f)
+	, f_iceColorR(0.3f)
+	, f_iceColorG(0.5f)
+	, f_iceColorB(0.9f)
 	, m_bActive(false)
 	, m_activateTime(0)
 	, m_duration(3000)
-	, m_maxDistance(8.0f)
+	, m_maxDistance(10.0f)
 {
 
 }
@@ -49,9 +50,10 @@ void IceBreath::Initialize(Engine* pEngine, const D3DXVECTOR3 position, const DW
 
 	LoadParameter();
 
-	ParticleBase::SetSizeAndTexture(m_pEngine, 0.5f, 0.5f, TEXTURE_EFFECT);
+	// ★★★ 適度なサイズに調整（大きすぎず小さすぎず）★★★
+	ParticleBase::SetSizeAndTexture(m_pEngine, 0.3f, 0.3f, TEXTURE_EFFECT);
 
-	m_imGenerate.SetInterval(100);
+	m_imGenerate.SetInterval(120);
 
 	LPDIRECT3DDEVICE9 pDevice = m_pEngine->GetDevice();
 
@@ -131,7 +133,9 @@ void IceBreath::Update()
 	{
 		for (int i = 0; i < n_generateCount; i++)
 		{
-			D3DCOLORVALUE color = { f_iceColorR, f_iceColorG, f_iceColorB, f_minAlpha };
+			// ★★★ 青色で控えめな透明度に設定 ★★★
+			float initialAlpha = f_maxAlpha * 0.5f;
+			D3DCOLORVALUE color = { f_iceColorR, f_iceColorG, f_iceColorB, initialAlpha };
 
 			float randomX = (rand() / (float)RAND_MAX) * (f_positionRandomRange * 2.0f) - f_positionRandomRange;
 			float randomY = (rand() / (float)RAND_MAX) * (f_positionRandomRange * 2.0f) - f_positionRandomRange;
@@ -139,6 +143,9 @@ void IceBreath::Update()
 			D3DXVECTOR3 positionOffset(randomX, randomY, randomZ);
 
 			D3DXVECTOR3 baseDirection = m_breathDirection * f_forwardSpeed;
+
+			// ★★★ 下方向バイアスを追加 ★★★
+			baseDirection.y -= 0.05f;  // 下方向に少し傾ける
 
 			D3DXVECTOR3 rightVec;
 			D3DXVECTOR3 upVec(0.0f, 1.0f, 0.0f);
@@ -169,16 +176,16 @@ void IceBreath::Update()
 		}
 	}
 
-	// ★★★ パーティクルの更新とライト範囲外削除 ★★★
+	// ★★★ パーティクルの更新 ★★★
 	for (auto& particle : m_lstParticle)
 	{
 		// 前方への移動
 		particle.m_position += particle.m_direction * f_moveSpeed;
 
-		// 重力効果（徐々に下に落ちる）
-		particle.m_position.y -= f_gravity;
+		// ★★★ 重力効果を強化して下に落ちやすくする ★★★
+		particle.m_position.y -= f_gravity * 2.0f;
 
-		// フェードイン効果
+		// ★★★ ゆっくりとしたフェードイン ★★★
 		if (particle.m_color.a < f_maxAlpha)
 		{
 			particle.m_color.a += f_fadeInSpeed;
@@ -188,14 +195,13 @@ void IceBreath::Update()
 			}
 		}
 
-		// ★★★ ライトの範囲を超えたパーティクルをフェードアウト ★★★
+		// ★★★ ライト範囲外でフェードアウト ★★★
 		D3DXVECTOR3 diff = particle.m_position - m_position;
 		float distance = D3DXVec3Length(&diff);
 
-		if (distance > m_maxDistance)
+		if (distance > m_maxDistance * 1.5f)
 		{
-			// 範囲外は急速にフェードアウト
-			particle.m_color.a -= 0.1f;
+			particle.m_color.a -= 0.03f;
 			if (particle.m_color.a < 0.0f)
 			{
 				particle.m_color.a = 0.0f;
@@ -247,20 +253,21 @@ void IceBreath::LoadParameter()
 	file >> config;
 	file.close();
 
-	f_iceColorR = config["iceColorR"];
-	f_iceColorG = config["iceColorG"];
-	f_iceColorB = config["iceColorB"];
+	// ★★★ 青色で控えめな色設定 ★★★
+	f_iceColorR = config.value("iceColorR", 0.3f);  // 青色強調
+	f_iceColorG = config.value("iceColorG", 0.5f);  // 緑は少なめ
+	f_iceColorB = config.value("iceColorB", 0.9f);  // 青を強く
 
-	n_generateCount = config["generateCount"];
-	f_positionRandomRange = config["positionRandomRange"];
-	f_directionRandomScale = config["directionRandomScale"];
-	f_forwardSpeed = config["forwardSpeed"];
-	f_moveSpeed = config["moveSpeed"];
-	f_fadeInSpeed = config["fadeInSpeed"];
-	f_minAlpha = config["minAlpha"];
-	f_maxAlpha = config["maxAlpha"];
-	n_particleExistTime = config["particleExistTime"];
-	n_particleFadeTime = config["particleFadeTime"];
-	f_coneAngle = config["coneAngle"];
-	f_gravity = config["gravity"];
+	n_generateCount = config.value("generateCount", 10);
+	f_positionRandomRange = config.value("positionRandomRange", 0.3f);
+	f_directionRandomScale = config.value("directionRandomScale", 0.2f);
+	f_forwardSpeed = config.value("forwardSpeed", 0.5f);
+	f_moveSpeed = config.value("moveSpeed", 0.08f);
+	f_fadeInSpeed = config.value("fadeInSpeed", 0.03f);  // ゆっくりフェードイン
+	f_minAlpha = config.value("minAlpha", 0.2f);
+	f_maxAlpha = config.value("maxAlpha", 0.6f);  // 控えめな不透明度
+	n_particleExistTime = config.value("particleExistTime", 5000);
+	n_particleFadeTime = config.value("particleFadeTime", 1000);
+	f_coneAngle = config.value("coneAngle", 30.0f);
+	f_gravity = config.value("gravity", 0.002f);
 }

@@ -141,7 +141,7 @@ void Chaser::UpdateBreathAttack(Engine* pEngine)
 
 	if (m_bBreathActive)
 	{
-		// ★★★ ブレスの方向を下向きに調整（-10度から-30度の範囲） ★★★
+		// ★★★ ブレスの方向を下向きに大きく調整（+30度に変更で下向き）★★★
 		D3DXVECTOR3 adjustedDirection = m_depth;
 
 		// 横方向ベクトルを計算
@@ -154,9 +154,9 @@ void Chaser::UpdateBreathAttack(Engine* pEngine)
 		D3DXVec3Cross(&upVec, &m_depth, &rightVec);
 		D3DXVec3Normalize(&upVec, &upVec);
 
-		// 下向きに20度回転（調整可能）
+		// ★★★ 下向きに30度回転（+30度で下向き）★★★
 		D3DXMATRIX matRotation;
-		D3DXMatrixRotationAxis(&matRotation, &rightVec, D3DXToRadian(-20.0f));
+		D3DXMatrixRotationAxis(&matRotation, &rightVec, D3DXToRadian(10.0f));
 		D3DXVec3TransformCoord(&adjustedDirection, &m_depth, &matRotation);
 		D3DXVec3Normalize(&adjustedDirection, &adjustedDirection);
 
@@ -174,7 +174,7 @@ void Chaser::UpdateBreathAttack(Engine* pEngine)
 
 	if (isButtonJustPressed && !m_bBreathActive && CanUseBreath())
 	{
-		// ★★★ 発動時も下向きに調整した方向でブレスを開始 ★★★
+		// ★★★ 発動時も下向きに30度調整した方向でブレスを開始 ★★★
 		D3DXVECTOR3 adjustedDirection = m_depth;
 
 		D3DXVECTOR3 rightVec;
@@ -183,7 +183,7 @@ void Chaser::UpdateBreathAttack(Engine* pEngine)
 		D3DXVec3Normalize(&rightVec, &rightVec);
 
 		D3DXMATRIX matRotation;
-		D3DXMatrixRotationAxis(&matRotation, &rightVec, D3DXToRadian(-20.0f));
+		D3DXMatrixRotationAxis(&matRotation, &rightVec, D3DXToRadian(10.0f));
 		D3DXVec3TransformCoord(&adjustedDirection, &m_depth, &matRotation);
 		D3DXVec3Normalize(&adjustedDirection, &adjustedDirection);
 
