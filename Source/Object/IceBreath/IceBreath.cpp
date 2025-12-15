@@ -98,6 +98,11 @@ void IceBreath::Activate(const D3DXVECTOR3& position, const D3DXVECTOR3& directi
 	m_bExist = true;
 
 	m_lstParticle.clear();
+
+	NET_LOG_F("[IceBreath::Activate] Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f) MaxDist=%.2f",
+		m_position.x, m_position.y, m_position.z,
+		m_breathDirection.x, m_breathDirection.y, m_breathDirection.z,
+		m_maxDistance);
 }
 
 void IceBreath::Deactivate()
@@ -117,6 +122,7 @@ void IceBreath::Update()
 	DWORD now = timeGetTime();
 	if (now - m_activateTime >= m_duration)
 	{
+		NET_LOG("[IceBreath::Update] 持続時間終了");
 		Deactivate();
 		return;
 	}
@@ -154,34 +160,46 @@ void IceBreath::Update()
 
 			Add(positionOffset, color, n_particleExistTime, n_particleFadeTime, 0.0f, false, direction);
 		}
+
+		static DWORD lastLog = 0;
+		if (now - lastLog > 1000)
+		{
+			NET_LOG_F("[IceBreath::Update] パーティクル生成: 総数=%d", (int)m_lstParticle.size());
+			lastLog = now;
+		}
 	}
 
 	// ★★★ パーティクルの更新とライト範囲外削除 ★★★
-	for (auto it = m_lstParticle.begin(); it != m_lstParticle.end();)
+	for (auto& particle : m_lstParticle)
 	{
-		it->m_position += it->m_direction * f_moveSpeed;
-		it->m_position.y -= f_gravity;
+		// 前方への移動
+		particle.m_position += particle.m_direction * f_moveSpeed;
 
-		if (it->m_color.a < f_maxAlpha)
+		// 重力効果（徐々に下に落ちる）
+		particle.m_position.y -= f_gravity;
+
+		// フェードイン効果
+		if (particle.m_color.a < f_maxAlpha)
 		{
-			it->m_color.a += f_fadeInSpeed;
-			if (it->m_color.a > f_maxAlpha)
+			particle.m_color.a += f_fadeInSpeed;
+			if (particle.m_color.a > f_maxAlpha)
 			{
-				it->m_color.a = f_maxAlpha;
+				particle.m_color.a = f_maxAlpha;
 			}
 		}
 
-		// ★★★ ライトの範囲を超えたパーティクルを削除 ★★★
-		D3DXVECTOR3 diff = it->m_position - m_position;
+		// ★★★ ライトの範囲を超えたパーティクルをフェードアウト ★★★
+		D3DXVECTOR3 diff = particle.m_position - m_position;
 		float distance = D3DXVec3Length(&diff);
 
 		if (distance > m_maxDistance)
 		{
-			it = m_lstParticle.erase(it);
-		}
-		else
-		{
-			++it;
+			// 範囲外は急速にフェードアウト
+			particle.m_color.a -= 0.1f;
+			if (particle.m_color.a < 0.0f)
+			{
+				particle.m_color.a = 0.0f;
+			}
 		}
 	}
 

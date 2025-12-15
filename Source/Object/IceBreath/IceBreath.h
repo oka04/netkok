@@ -1,8 +1,11 @@
 ﻿// IceBreath.h - 氷の息吹エフェクト
 #pragma once
+#include <winsock2.h> 
+#include <ws2tcpip.h>
 
 #include "..\\..\\GameBase.h"
 
+#include "..\\Network\\NetworkLogger.h"
 #include "..\\..\\System\\Engine\\Particle\\ParticleBase.h"
 #include "..\\..\\Scene\\Scene\\Scene.h"
 #include <fstream>

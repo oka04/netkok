@@ -99,7 +99,13 @@ void Chaser::Release(Engine* pEngine)
 void Chaser::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight& light, float deltaTime)
 {
 	m_deltaTime = deltaTime;
-	SetMouseCursor(pEngine, camera);
+
+	// ★★★ ブレス中はカメラ操作も禁止 ★★★
+	if (!m_bBreathActive)
+	{
+		SetMouseCursor(pEngine, camera);
+	}
+
 	Input(pEngine);
 
 	UpdateBreathAttack(pEngine);

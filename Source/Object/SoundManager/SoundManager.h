@@ -25,7 +25,7 @@ public:
 	static void Update();
 	static AkPlayingID Play(AkUniqueID eventId, AkGameObjectID gameObjectId);
 	static void SetSwitch(AkUniqueID switchGroupId, AkUniqueID switchStateId, AkGameObjectID gameObjectId);
-	static void StopEvent(AkPlayingID  playingId);
+	static void StopEvent(AkPlayingID  playingId);	
 	static void StopAll(AkGameObjectID gameObjectId);
 	static void SetPosition(const D3DXVECTOR3& pos, const D3DXVECTOR3& forward, const D3DXVECTOR3& up, AkGameObjectID gameObjectId);
     static void RegisterGameObject(AkGameObjectID id, const char* name);
