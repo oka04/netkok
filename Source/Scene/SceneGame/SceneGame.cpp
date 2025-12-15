@@ -392,6 +392,10 @@ void SceneGame::UpdateLocalPlayer()
 
 void SceneGame::UpdateRemotePlayers()
 {
+	static DWORD lastLog = 0;
+	DWORD now = timeGetTime();
+	bool shouldLog = (now - lastLog > 5000);
+
 	for (auto& kv : m_players)
 	{
 		if (!kv.second || kv.second->IsLocal())
@@ -403,22 +407,22 @@ void SceneGame::UpdateRemotePlayers()
 			kv.second->PredictMovement(m_deltaTime);
 		}
 
-		// ★★★ 重要修正: リモートの鬼のライトを毎フレーム強制的にデバイスに設定 ★★★
+		// ★★★ リモートの鬼のライトを更新 ★★★
 		if (m_playerRoles[kv.first] == ROLE_CHASER)
 		{
 			Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
 			if (chaser)
 			{
-				// ライトをエンジンのデバイスに設定
+				// ライトを更新（ライト行列も更新される）
+				chaser->UpdateLight(m_pEngine);
+
+				// ライトをデバイスに設定
 				SpotLight* light = chaser->GetLights();
 				if (light)
 				{
-					// ★★★ 追加: ライトインデックスを動的に割り当て ★★★
-					// ローカル鬼が0番、リモート鬼は1番以降
 					int lightIndex = 0;
 					if (m_localRole == ROLE_CHASER && m_pLocalPlayer)
 					{
-						// ローカルが鬼なら、リモートは1番から
 						lightIndex = 1;
 						for (auto& kv2 : m_players)
 						{
@@ -429,27 +433,24 @@ void SceneGame::UpdateRemotePlayers()
 						}
 					}
 
-					// ★★★ 重要: デバイスにライトを設定 ★★★
 					light->SetDevice(m_pEngine, lightIndex);
 
-					// ライトの更新
-					chaser->UpdateLight(m_pEngine);
-
-					// デバッグログ
-					static std::map<uint32_t, DWORD> lastLog;
-					DWORD now = timeGetTime();
-					if (now - lastLog[kv.first] > 3000)
+					if (shouldLog)
 					{
 						const D3DLIGHT9& l = light->GetLight();
 						NET_LOG_F("[SceneGame::UpdateRemotePlayers] リモート鬼 ID=%u LightIndex=%d Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
 							kv.first, lightIndex,
 							l.Position.x, l.Position.y, l.Position.z,
 							l.Direction.x, l.Direction.y, l.Direction.z);
-						lastLog[kv.first] = now;
 					}
 				}
 			}
 		}
+	}
+
+	if (shouldLog)
+	{
+		lastLog = now;
 	}
 }
 
@@ -740,34 +741,38 @@ void SceneGame::RenderShadowMaps()
 {
 	LPDIRECT3DDEVICE9 pDevice = m_pEngine->GetDevice();
 
-	// ★★★ 常にログ出力（頻度制限なし） ★★★
-	NET_LOG_F("[RenderShadowMaps] ========== 開始 ==========");
-	NET_LOG_F("[RenderShadowMaps] m_players数=%d ローカルID=%u ローカルRole=%s",
-		(int)m_players.size(),
-		m_localClientId,
-		m_localRole == ROLE_CHASER ? "鬼" : "逃げる側");
+	static DWORD lastLog = 0;
+	DWORD now = timeGetTime();
+	bool shouldLog = (now - lastLog > 5000);
 
-	// ★★★ m_playersの内容を全て出力 ★★★
-	NET_LOG_F("[RenderShadowMaps] m_playersの内容:");
-	for (auto& kv : m_players)
+	if (shouldLog)
 	{
-		auto roleIt = m_playerRoles.find(kv.first);
-		const char* roleName = "未設定";
-		if (roleIt != m_playerRoles.end())
-		{
-			roleName = (roleIt->second == ROLE_CHASER) ? "鬼" : "逃げる側";
-		}
-		NET_LOG_F("  Player[%u]: Exists=%s Role=%s Ptr=%p",
-			kv.first,
-			kv.second ? "Yes" : "No",
-			roleName,
-			kv.second);
-	}
+		NET_LOG_F("[RenderShadowMaps] ========== 開始 ==========");
+		NET_LOG_F("[RenderShadowMaps] m_players数=%d ローカルID=%u ローカルRole=%s",
+			(int)m_players.size(),
+			m_localClientId,
+			m_localRole == ROLE_CHASER ? "鬼" : "逃げる側");
 
-	// ★★★ ローカルプレイヤーの情報 ★★★
-	NET_LOG_F("[RenderShadowMaps] m_pLocalPlayer: Ptr=%p IsLocal=%s",
-		m_pLocalPlayer,
-		m_pLocalPlayer ? (m_pLocalPlayer->IsLocal() ? "Yes" : "No") : "N/A");
+		NET_LOG_F("[RenderShadowMaps] m_playersの内容:");
+		for (auto& kv : m_players)
+		{
+			auto roleIt = m_playerRoles.find(kv.first);
+			const char* roleName = "未設定";
+			if (roleIt != m_playerRoles.end())
+			{
+				roleName = (roleIt->second == ROLE_CHASER) ? "鬼" : "逃げる側";
+			}
+			NET_LOG_F("  Player[%u]: Exists=%s Role=%s Ptr=%p",
+				kv.first,
+				kv.second ? "Yes" : "No",
+				roleName,
+				kv.second);
+		}
+
+		NET_LOG_F("[RenderShadowMaps] m_pLocalPlayer: Ptr=%p IsLocal=%s",
+			m_pLocalPlayer,
+			m_pLocalPlayer ? (m_pLocalPlayer->IsLocal() ? "Yes" : "No") : "N/A");
+	}
 
 	// 現在のレンダーターゲットと深度バッファを退避
 	LPDIRECT3DSURFACE9 pOldBackBuffer = nullptr;
@@ -789,43 +794,48 @@ void SceneGame::RenderShadowMaps()
 	// ★★★ 鬼のシャドウマップを生成 ★★★
 	for (auto& kv : m_players)
 	{
-		NET_LOG_F("[RenderShadowMaps] ループ開始: Player[%u]", kv.first);
+		if (shouldLog)
+		{
+			NET_LOG_F("[RenderShadowMaps] ループ開始: Player[%u]", kv.first);
+		}
 
 		if (!kv.second)
 		{
-			NET_LOG_F("[RenderShadowMaps] スキップ: Player[%u] - プレイヤーが存在しない", kv.first);
+			if (shouldLog) NET_LOG_F("[RenderShadowMaps] スキップ: Player[%u] - プレイヤーが存在しない", kv.first);
 			continue;
 		}
 
 		auto roleIt = m_playerRoles.find(kv.first);
 		if (roleIt == m_playerRoles.end())
 		{
-			NET_LOG_F("[RenderShadowMaps] スキップ: Player[%u] - 役割が未設定", kv.first);
+			if (shouldLog) NET_LOG_F("[RenderShadowMaps] スキップ: Player[%u] - 役割が未設定", kv.first);
 			continue;
 		}
 
 		if (roleIt->second != ROLE_CHASER)
 		{
-			NET_LOG_F("[RenderShadowMaps] スキップ: Player[%u] - 役割が鬼ではない（%s）",
-				kv.first,
-				roleIt->second == ROLE_RUNNER ? "逃げる側" : "不明");
+			if (shouldLog) NET_LOG_F("[RenderShadowMaps] スキップ: Player[%u] - 役割が鬼ではない（%s）",
+				kv.first, roleIt->second == ROLE_RUNNER ? "逃げる側" : "不明");
 			continue;
 		}
 
 		Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
 		if (!chaser)
 		{
-			NET_LOG_F("[RenderShadowMaps] スキップ: Player[%u] - Chaserへのキャスト失敗", kv.first);
+			if (shouldLog) NET_LOG_F("[RenderShadowMaps] スキップ: Player[%u] - Chaserへのキャスト失敗", kv.first);
 			continue;
 		}
 
 		if (!chaser->IsShadowMapEnabled())
 		{
-			NET_LOG_F("[RenderShadowMaps] スキップ: Player[%u] - シャドウマップ無効", kv.first);
+			if (shouldLog) NET_LOG_F("[RenderShadowMaps] スキップ: Player[%u] - シャドウマップ無効", kv.first);
 			continue;
 		}
 
-		NET_LOG_F("[RenderShadowMaps] ========== Chaser[%u]のシャドウマップ生成開始 ==========", kv.first);
+		if (shouldLog)
+		{
+			NET_LOG_F("[RenderShadowMaps] ========== Chaser[%u]のシャドウマップ生成開始 ==========", kv.first);
+		}
 
 		LPDIRECT3DTEXTURE9 pShadowTex = chaser->GetShadowTexture();
 		LPDIRECT3DSURFACE9 pShadowSurface = nullptr;
@@ -857,32 +867,48 @@ void SceneGame::RenderShadowMaps()
 
 		pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0);
 
-		D3DXMATRIX matLightVP = chaser->GetLightViewProjectionMatrix();
+		// ★★★ ライト行列を取得して設定 ★★★
+		D3DXMATRIX matLightView = chaser->GetLightViewMatrix();
+		D3DXMATRIX matLightProj = chaser->GetLightProjectionMatrix();
+		D3DXMATRIX matLightVP = matLightView * matLightProj;
 
-		// マップの深度描画
-		NET_LOG_F("[RenderShadowMaps] マップの深度描画");
+		// ★★★ デバイスに行列を設定 ★★★
+		pDevice->SetTransform(D3DTS_VIEW, &matLightView);
+		pDevice->SetTransform(D3DTS_PROJECTION, &matLightProj);
+
+		if (shouldLog)
+		{
+			NET_LOG_F("[RenderShadowMaps] ライト行列設定: View._41=%.2f, _42=%.2f, _43=%.2f",
+				matLightView._41, matLightView._42, matLightView._43);
+			NET_LOG_F("[RenderShadowMaps] マップの深度描画");
+		}
+
 		m_map.DrawMapDepth(m_pEngine, &matLightVP);
 
 		// ★★★ すべてのプレイヤーの影を描画（鬼自身以外） ★★★
-		NET_LOG_F("[RenderShadowMaps] プレイヤーの影描画開始（鬼[%u]以外）", kv.first);
+		if (shouldLog)
+		{
+			NET_LOG_F("[RenderShadowMaps] プレイヤーの影描画開始（鬼[%u]以外）", kv.first);
+		}
+
 		int drawnCount = 0;
 		for (auto& kv2 : m_players)
 		{
 			if (!kv2.second)
 			{
-				NET_LOG_F("  Player[%u]: スキップ（存在しない）", kv2.first);
+				if (shouldLog) NET_LOG_F("  Player[%u]: スキップ（存在しない）", kv2.first);
 				continue;
 			}
 
 			if (kv2.first == kv.first)
 			{
-				NET_LOG_F("  Player[%u]: スキップ（鬼自身）", kv2.first);
+				if (shouldLog) NET_LOG_F("  Player[%u]: スキップ（鬼自身）", kv2.first);
 				continue;
 			}
 
-			NET_LOG_F("  Player[%u]: DrawDepth呼び出し開始", kv2.first);
+			if (shouldLog) NET_LOG_F("  Player[%u]: DrawDepth呼び出し開始", kv2.first);
 			kv2.second->DrawDepth(m_pEngine, &matLightVP);
-			NET_LOG_F("  Player[%u]: DrawDepth呼び出し完了", kv2.first);
+			if (shouldLog) NET_LOG_F("  Player[%u]: DrawDepth呼び出し完了", kv2.first);
 			drawnCount++;
 		}
 
@@ -901,26 +927,36 @@ void SceneGame::RenderShadowMaps()
 
 			if (!alreadyDrawn)
 			{
-				NET_LOG_F("  LocalPlayer[%u]: DrawDepth呼び出し（m_playersに未登録）", m_localClientId);
+				if (shouldLog) NET_LOG_F("  LocalPlayer[%u]: DrawDepth呼び出し（m_playersに未登録）", m_localClientId);
 				m_pLocalPlayer->DrawDepth(m_pEngine, &matLightVP);
 				drawnCount++;
 			}
 			else
 			{
-				NET_LOG_F("  LocalPlayer[%u]: スキップ（m_playersに登録済み）", m_localClientId);
+				if (shouldLog) NET_LOG_F("  LocalPlayer[%u]: スキップ（m_playersに登録済み）", m_localClientId);
 			}
 		}
 
-		NET_LOG_F("[RenderShadowMaps] プレイヤーの影描画完了: %d体描画", drawnCount);
+		if (shouldLog)
+		{
+			NET_LOG_F("[RenderShadowMaps] プレイヤーの影描画完了: %d体描画", drawnCount);
+		}
 
 		if (pShadowSurface) pShadowSurface->Release();
 		shadowMapCount++;
 
-		NET_LOG_F("[RenderShadowMaps] ========== Chaser[%u]のシャドウマップ生成完了 ==========", kv.first);
+		if (shouldLog)
+		{
+			NET_LOG_F("[RenderShadowMaps] ========== Chaser[%u]のシャドウマップ生成完了 ==========", kv.first);
+		}
 	}
 
-	NET_LOG_F("[RenderShadowMaps] 完了: シャドウマップ生成数=%d", shadowMapCount);
-	NET_LOG_F("[RenderShadowMaps] ========== 終了 ==========");
+	if (shouldLog)
+	{
+		NET_LOG_F("[RenderShadowMaps] 完了: シャドウマップ生成数=%d", shadowMapCount);
+		NET_LOG_F("[RenderShadowMaps] ========== 終了 ==========");
+		lastLog = now;
+	}
 
 	// ステートを元に戻す
 	pDevice->SetRenderTarget(0, pOldBackBuffer);
