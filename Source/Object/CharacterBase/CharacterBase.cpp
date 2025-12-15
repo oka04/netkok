@@ -160,6 +160,14 @@ void CharacterBase::Input(Engine * pEngine)
 	if (pEngine->GetKeyState(DIK_DOWN)) {
 		m_position.y -= 3;
 	}
+
+	if (pEngine->GetKeyState(DIK_RIGHT)) {
+		m_position.x += 0.3;
+	}
+
+	if (pEngine->GetKeyState(DIK_LEFT)) {
+		m_position.x -= 0.3;
+	}
 }
 
 //m_speedを変えてから呼び出す

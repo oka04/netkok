@@ -67,13 +67,13 @@ void Map::DrawMap(Engine* pEngine, Camera* pCamera, Projection* pProj, AmbientLi
 		lastMapLog = now;
 	}
 
-	// ★★★ 重要: すべての壁と地面にライト情報を渡す ★★★
+	m_ground.Draw(pEngine, pCamera, pProj, pAmbient, pLight, lights, pShadowMaps, pLightViewProj, pScaleBias);
+
 	for (const auto& wall : m_wall)
 	{
 		wall->Draw(pEngine, pCamera, pProj, pAmbient, pLight, lights, pShadowMaps, pLightViewProj, pScaleBias);
 	}
 
-	m_ground.Draw(pEngine, pCamera, pProj, pAmbient, pLight, lights, pShadowMaps, pLightViewProj, pScaleBias);
 }
 void Map::DrawGoalEffect(Camera * pCamera, Projection * pProj)
 {
