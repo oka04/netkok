@@ -135,9 +135,13 @@ void Chaser::UpdateBreathAttack(Engine* pEngine)
 	bool isButtonJustPressed = isAttackPressed && !m_bBreathButtonPressed;
 	m_bBreathButtonPressed = isAttackPressed;
 
-	// ★★★ ブレスが発動中の場合は更新（表示中） ★★★
+	// ★★★ ブレスが発動中の場合は必ず更新 ★★★
 	if (m_bBreathActive)
 	{
+		// ★★★ 重要: エフェクトの位置と向きを毎フレーム更新 ★★★
+		m_pIceBreath->SetPosition(m_eyePosition);
+		m_pIceBreath->SetDirection(m_depth);
+
 		m_pIceBreath->Update();
 
 		// ★★★ エフェクトが非アクティブになったら終了 ★★★
@@ -484,15 +488,11 @@ void Chaser::LoadParameter()
 		f_crouchEyePosition[i] = config["crouchEyePosition"][i];
 	}
 
-	float value0 = config["lightDiffuse"][0];
-	float value1 = config["lightDiffuse"][1];
-	float value2 = config["lightDiffuse"][2];
-	float value3 = config["lightDiffuse"][3];
-	m_spotLight.SetDiffuse(value0, value1, value2, value3);
+	m_spotLight.SetDiffuse(1.0f, 1.0f, 0.0f, 0.0f);
 
-	value0 = config["lightAttenuation"][0];
-	value1 = config["lightAttenuation"][1];
-	value2 = config["lightAttenuation"][2];
+	float value0 = config["lightAttenuation"][0];
+	float value1 = config["lightAttenuation"][1];
+	float value2 = config["lightAttenuation"][2];
 	m_spotLight.SetAttenuation(value0, value1, value2);
 
 	value0 = config["lightCone"][0];

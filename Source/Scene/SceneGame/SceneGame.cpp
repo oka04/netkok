@@ -1166,7 +1166,6 @@ void SceneGame::Draw()
 		Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
 		if (chaser)
 		{
-			// ★★★ 重要: ライトを強制的に更新 ★★★
 			chaser->UpdateLight(m_pEngine);
 		}
 	}
@@ -1185,10 +1184,8 @@ void SceneGame::Draw()
 	RenderShadowMaps();
 
 	// ★★★ 修正: シャドウマップ生成直後にライト情報を強制的に更新 ★★★
-	// すべての鬼のライトをデバイスに正しく設定
 	int lightIndex = 0;
 
-	// ローカルプレイヤーが鬼の場合
 	if (m_pLocalPlayer && m_localRole == ROLE_CHASER)
 	{
 		Chaser* localChaser = dynamic_cast<Chaser*>(m_pLocalPlayer);
@@ -1203,7 +1200,6 @@ void SceneGame::Draw()
 		}
 	}
 
-	// リモートプレイヤーの鬼
 	for (auto& kv : m_players)
 	{
 		if (kv.first == m_localClientId) continue;
@@ -1215,42 +1211,34 @@ void SceneGame::Draw()
 			SpotLight* light = chaser->GetLights();
 			if (light)
 			{
-				// ★★★ 重要: デバイスに設定 ★★★
 				light->SetDevice(m_pEngine, lightIndex);
 				lightIndex++;
 			}
 		}
 	}
 
-	// ★★★ 最新のライト情報を収集 ★★★
 	UpdateChaserLights();
 
-	// ★★★ SpotLightの値のベクターを作成 ★★★
 	std::vector<SpotLight> spotLights;
 	std::vector<LPDIRECT3DTEXTURE9> shadowMaps;
 	std::vector<D3DXMATRIX> lightViewProjs;
 	std::vector<D3DXMATRIX> scaleBiases;
 
-	// ★★★ 重要: 各鬼のライトとシャドウマップ情報を収集 ★★★
 	for (size_t i = 0; i < m_chaserLights.size(); ++i)
 	{
 		if (!m_chaserLights[i])
 			continue;
 
-		// ★★★ デバッグ: ライトの値を確認 ★★★
 		const D3DLIGHT9& lightCheck = m_chaserLights[i]->GetLight();
 		if (lightCheck.Position.x == 0.0f && lightCheck.Position.y == 0.0f && lightCheck.Position.z == 0.0f)
 		{
 			NET_LOG_F("[SceneGame::Draw] 警告: Light[%d]の位置がゼロ！", (int)i);
 		}
 
-		// ライトの値をコピー
 		spotLights.push_back(*m_chaserLights[i]);
 
-		// 対応するChaserを探してシャドウマップ情報を取得
 		Chaser* chaser = nullptr;
 
-		// ローカルプレイヤーが鬼かチェック
 		if (m_pLocalPlayer && m_localRole == ROLE_CHASER)
 		{
 			Chaser* localChaser = dynamic_cast<Chaser*>(m_pLocalPlayer);
@@ -1260,7 +1248,6 @@ void SceneGame::Draw()
 			}
 		}
 
-		// リモートプレイヤーから探す
 		if (!chaser)
 		{
 			for (auto& kv : m_players)
@@ -1293,7 +1280,6 @@ void SceneGame::Draw()
 		}
 	}
 
-	// ★★★ デバッグログ ★★★
 	static DWORD lastLog = 0;
 	DWORD now = timeGetTime();
 	if (now - lastLog > 3000)
@@ -1301,7 +1287,6 @@ void SceneGame::Draw()
 		NET_LOG_F("[SceneGame::Draw] 鬼のライト数: %d シャドウマップ数: %d",
 			(int)spotLights.size(), (int)shadowMaps.size());
 
-		// 各ライトの情報を出力
 		for (size_t i = 0; i < spotLights.size(); ++i)
 		{
 			const D3DLIGHT9& l = spotLights[i].GetLight();
@@ -1314,7 +1299,6 @@ void SceneGame::Draw()
 		lastLog = now;
 	}
 
-	// ★★★ マップ描画（ポインタで渡す） ★★★
 	std::vector<SpotLight>* pLights = spotLights.empty() ? nullptr : &spotLights;
 	std::vector<LPDIRECT3DTEXTURE9>* pShadowMaps = shadowMaps.empty() ? nullptr : &shadowMaps;
 	std::vector<D3DXMATRIX>* pLightViewProjs = lightViewProjs.empty() ? nullptr : &lightViewProjs;
@@ -1325,7 +1309,6 @@ void SceneGame::Draw()
 	m_map.DrawMap(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light,
 		pLights, pShadowMaps, pLightViewProjs, pScaleBiases);
 
-	// プレイヤー描画
 	int drawnCount = 0;
 	for (auto& kv : m_players)
 	{
@@ -1336,7 +1319,6 @@ void SceneGame::Draw()
 		}
 	}
 
-	// ローカルプレイヤーも描画
 	if (m_pLocalPlayer)
 	{
 		bool alreadyDrawn = false;
@@ -1356,6 +1338,30 @@ void SceneGame::Draw()
 		}
 	}
 
+	// ★★★ 重要: ブレスエフェクトの描画 ★★★
+	// ローカルプレイヤーが鬼の場合
+	if (m_pLocalPlayer && m_localRole == ROLE_CHASER)
+	{
+		Chaser* localChaser = dynamic_cast<Chaser*>(m_pLocalPlayer);
+		if (localChaser)
+		{
+			localChaser->DrawEffects(&m_camera, &m_projection);
+		}
+	}
+
+	// リモートプレイヤーの鬼のエフェクトも描画
+	for (auto& kv : m_players)
+	{
+		if (kv.first == m_localClientId) continue;
+		if (!kv.second || m_playerRoles[kv.first] != ROLE_CHASER) continue;
+
+		Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
+		if (chaser)
+		{
+			chaser->DrawEffects(&m_camera, &m_projection);
+		}
+	}
+
 #if _DEBUG
 	if (d_debugFlag & DRAW_BOXLINE)
 	{
@@ -1363,13 +1369,11 @@ void SceneGame::Draw()
 	}
 #endif
 
-	// ミニマップ描画
 	if (m_pLocalPlayer)
 	{
 		m_map.DrawMiniMap(m_pEngine, m_pLocalPlayer->GetPosition2D(), m_pLocalPlayer->GetArrowAngle());
 	}
 
-	// UI描画
 	m_pEngine->SpriteBegin();
 
 	if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)

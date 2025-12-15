@@ -22,6 +22,10 @@ public:
 	void Deactivate();
 	bool IsActive() const { return m_bActive; }
 
+	// ★★★ 毎フレームの位置・向き更新用 ★★★
+	void SetPosition(const D3DXVECTOR3& position) { m_position = position; }
+	void SetDirection(const D3DXVECTOR3& direction) { m_breathDirection = direction; }
+
 	void Update();
 	void Draw(Camera* pCamera, Projection* pProj);
 
