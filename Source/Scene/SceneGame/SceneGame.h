@@ -10,6 +10,7 @@
 #include "..\\..\\Object\\Network\\ClientManager\\ClientManager.h"
 #include "..\\..\\Object\\Network\\ServerManager\\ServerManager.h"
 #include "..\\..\\Object\\Network\\NetworkSync.h"
+#include "..\\..\\Object\\IceBlock\\IceBlock.h"
 #include <map>
 
 class SceneGame : public Scene
@@ -53,6 +54,8 @@ private:
 		DISPLAY_DEBUG_STRING = 1 << 4,
 		STOP_GAME = 1 << 5,
 		DEBUG_MODE = 1 << 6,
+		SHOW_ICE_BLOCK = 1 << 7,      
+		RESET_ICE_BLOCK = 1 << 8,
 	};
 
 	enum VIEW_KIND
@@ -118,4 +121,5 @@ private:
 	static const DWORD WORLD_BROADCAST_INTERVAL = 8;
 	bool m_bEnablePrediction;
 	bool m_bEnableJitterReduction;
+	IceBlock* m_pDebugIceBlock;
 };

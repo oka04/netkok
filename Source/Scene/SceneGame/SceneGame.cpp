@@ -32,6 +32,7 @@ SceneGame::SceneGame(Engine* pEngine)
 	, m_bEnablePrediction(true)
 	, m_bEnableJitterReduction(true)
 	, m_localRole(ROLE_NONE)
+	, m_pDebugIceBlock(nullptr)        
 {
 }
 
@@ -109,6 +110,21 @@ void SceneGame::Initialize()
 	m_bInitialSyncDone = false;
 	m_bFirstPerson = true;
 
+	// ★★★ デバッグ用：氷ブロックの初期化 ★★★
+	if (!m_pDebugIceBlock)
+	{
+		m_pDebugIceBlock = new IceBlock();
+		// プレイヤーのスタート位置に配置、10秒で溶ける
+		D3DXVECTOR3 startPos = m_map.GetPlayerStartPosition();
+		startPos.x += 3.0f;  // 少し横にずらす
+		m_pDebugIceBlock->Initialize(m_pEngine, 2.0f, 2.0f, 2.0f, startPos, 10.0f);
+
+		// 氷の色を青白く設定
+		m_pDebugIceBlock->SetColor(D3DXVECTOR4(0.6f, 0.85f, 1.0f, 0.7f));
+
+		NET_LOG("[SceneGame] デバッグ用氷ブロック初期化完了");
+	}
+
 	SoundManager::Play(AK::EVENTS::PLAY_BGM_GAME, ID_BGM);
 
 	NET_LOG("[SceneGame] 初期化完了 - 役割割り当て待機中");
@@ -136,6 +152,29 @@ void SceneGame::Update()
 
 		// ★★★ 修正: 鬼のライト更新を毎フレーム呼び出し ★★★
 		UpdateChaserLights();
+
+		// ★★★ デバッグ用：氷ブロックの更新 ★★★
+		if (m_pDebugIceBlock && (d_debugFlag & SHOW_ICE_BLOCK))
+		{
+			// プレイヤーの位置に追従（少し横にずらす）
+			if (m_pLocalPlayer)
+			{
+				D3DXVECTOR3 playerPos = m_pLocalPlayer->GetPosition();
+				playerPos.x += 3.0f;  // 3メートル横
+				m_pDebugIceBlock->SetPosition(playerPos);
+			}
+
+			// 氷ブロックの更新
+			m_pDebugIceBlock->Update(m_deltaTime);
+
+			// ★★★ リセットフラグがONの場合、リセットして即OFFにする ★★★
+			if (d_debugFlag & RESET_ICE_BLOCK)
+			{
+				m_pDebugIceBlock->SetMeltAmount(0.0f);
+				d_debugFlag &= ~RESET_ICE_BLOCK;  // フラグを下ろす
+				NET_LOG("[SceneGame] 氷ブロックをリセット");
+			}
+		}
 
 		if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
 		{
@@ -1338,6 +1377,10 @@ void SceneGame::Draw()
 		}
 	}
 
+	if (m_pDebugIceBlock && (d_debugFlag & SHOW_ICE_BLOCK))
+	{
+		m_pDebugIceBlock->Draw(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light);
+	}
 	// ★★★ すべてのプレイヤーのエフェクトを描画（役割を問わず）★★★
 	// ローカルプレイヤーのエフェクトを描画
 	if (m_pLocalPlayer)
@@ -1385,6 +1428,14 @@ void SceneGame::Draw()
 		m_pEngine->DrawPrintf(50, 1000, FONT_GOTHIC40, Color::WHITE, "FPS : %f", (float)m_pEngine->GetFPS());
 		m_pEngine->DrawPrintf(50, 900, FONT_GOTHIC40, Color::CYAN, "Players: %d (Drawn: %d) Lights: %d",
 			(int)m_players.size() + (m_pLocalPlayer ? 1 : 0), drawnCount, (int)spotLights.size());
+
+		// ★★★ デバッグ用：氷ブロックの情報表示 ★★★
+		if (m_pDebugIceBlock && (d_debugFlag & SHOW_ICE_BLOCK))
+		{
+			float meltAmount = m_pDebugIceBlock->GetMeltAmount();
+			m_pEngine->DrawPrintf(50, 850, FONT_GOTHIC40, Color::CYAN,
+				"[ICE] %.1f%% melted (F8:Toggle F9:Reset)", meltAmount * 100.0f);
+		}
 
 		if (d_debugFlag & DRAW_PLAYER_STATE && m_pLocalPlayer)
 		{
@@ -1465,6 +1516,13 @@ void SceneGame::Exit()
 	m_playerRoles.clear();
 	m_pLocalPlayer = nullptr;
 
+	// ★★★ デバッグ用：氷ブロックの解放 ★★★
+	if (m_pDebugIceBlock)
+	{
+		delete m_pDebugIceBlock;
+		m_pDebugIceBlock = nullptr;
+	}
+
 	m_map.Release(m_pEngine);
 	m_fade.Release(m_pEngine);
 	m_pEngine->ReleaseFont(FONT_GOTHIC40);
@@ -1481,9 +1539,10 @@ void SceneGame::UpdateDebugFlag()
 	if (m_pEngine->GetKeyStateSync(DIK_F5)) d_debugFlag ^= PATROLLER_VIEW_LINE;
 	if (m_pEngine->GetKeyStateSync(DIK_F6)) d_debugFlag ^= STOP_GAME;
 	if (m_pEngine->GetKeyStateSync(DIK_F7)) d_debugFlag ^= DEBUG_MODE;
+	if (m_pEngine->GetKeyStateSync(DIK_F8)) d_debugFlag ^= SHOW_ICE_BLOCK;  
+	if (m_pEngine->GetKeyStateSync(DIK_F9)) d_debugFlag |= RESET_ICE_BLOCK; 
 	if (m_pEngine->GetKeyStateSync(DIK_F11)) d_debugFlag ^= DISPLAY_DEBUG_STRING;
 }
-
 #ifdef USE_IMGUI
 void SceneGame::ImGuiFrameProcess()
 {

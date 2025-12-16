@@ -151,6 +151,9 @@
     <Filter Include="Object\IceBreath">
       <UniqueIdentifier>{f16814b0-3bfe-4025-8319-6d4b479b1126}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Object\IceBlock">
+      <UniqueIdentifier>{53155f58-b045-454f-80f1-01b7b4e4c447}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Game.cpp">
@@ -374,6 +377,9 @@
     </ClCompile>
     <ClCompile Include="Source\Object\IceBreath\IceBreath.cpp">
       <Filter>Object\IceBreath</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Object\IceBlock\IceBlock.cpp">
+      <Filter>Object\IceBlock</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -628,6 +634,9 @@
     </ClInclude>
     <ClInclude Include="Source\Object\IceBreath\IceBreath.h">
       <Filter>Object\IceBreath</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Object\IceBlock\IceBlock.h">
+      <Filter>Object\IceBlock</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
