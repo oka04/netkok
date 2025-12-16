@@ -17,8 +17,8 @@ IceBreath::IceBreath()
 	, f_iceColorB(0.9f)
 	, m_bActive(false)
 	, m_activateTime(0)
-	, m_duration(3000)
-	, m_maxDistance(10.0f)
+	, m_duration(5000)
+	, m_maxDistance(15.0f)
 {
 
 }
@@ -53,7 +53,7 @@ void IceBreath::Initialize(Engine* pEngine, const D3DXVECTOR3 position, const DW
 	// ★★★ 適度なサイズに調整（大きすぎず小さすぎず）★★★
 	ParticleBase::SetSizeAndTexture(m_pEngine, 0.3f, 0.3f, TEXTURE_EFFECT);
 
-	m_imGenerate.SetInterval(120);
+	m_imGenerate.SetInterval(110);
 
 	LPDIRECT3DDEVICE9 pDevice = m_pEngine->GetDevice();
 
@@ -201,7 +201,7 @@ void IceBreath::Update()
 
 		if (distance > m_maxDistance * 1.5f)
 		{
-			particle.m_color.a -= 0.03f;
+			particle.m_color.a -= 0.015f;
 			if (particle.m_color.a < 0.0f)
 			{
 				particle.m_color.a = 0.0f;
@@ -264,8 +264,8 @@ void IceBreath::LoadParameter()
 	f_forwardSpeed = config.value("forwardSpeed", 0.5f);
 	f_moveSpeed = config.value("moveSpeed", 0.08f);
 	f_fadeInSpeed = config.value("fadeInSpeed", 0.03f);  // ゆっくりフェードイン
-	f_minAlpha = config.value("minAlpha", 0.2f);
-	f_maxAlpha = config.value("maxAlpha", 0.6f);  // 控えめな不透明度
+	f_minAlpha = config.value("minAlpha", 0.6f);
+	f_maxAlpha = config.value("maxAlpha", 0.9f);  // 控えめな不透明度
 	n_particleExistTime = config.value("particleExistTime", 5000);
 	n_particleFadeTime = config.value("particleFadeTime", 1000);
 	f_coneAngle = config.value("coneAngle", 30.0f);
