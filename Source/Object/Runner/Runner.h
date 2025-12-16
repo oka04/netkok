@@ -24,6 +24,7 @@ public:
 
 	void Draw(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight);
 
+	virtual void DrawEffects(Camera* pCamera, Projection* pProj) override;
 	virtual void DrawDepth(Engine* pEngine, const D3DXMATRIX* pMatLightVP) override;
 	void DrawStaminaGauge(Engine* pEngine) override;
 	void DebugPrint(Engine* pEngine);

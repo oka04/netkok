@@ -1,4 +1,4 @@
-﻿// Chaser.cpp - プレイヤー固有の実装 + ブレス攻撃機能
+﻿// Chaser.cpp - ブレス状態のネットワーク同期を追加
 
 #define _USING_V110_SDK71_ 1
 
@@ -218,6 +218,44 @@ NetPlayerState Chaser::GetNetState() const
 	state.lightDirZ = light.Direction.z;
 	state.lightRange = light.Range;
 
+	// ★★★ ブレス状態を追加 ★★★
+	state.breathActive = m_bBreathActive ? 1 : 0;
+
+	if (m_pIceBreath && m_bBreathActive)
+	{
+		// ブレスの現在位置と方向を送信
+		D3DXVECTOR3 breathPos = m_eyePosition;
+
+		// 調整済みの方向を計算
+		D3DXVECTOR3 adjustedDirection = m_depth;
+		D3DXVECTOR3 rightVec;
+		D3DXVECTOR3 upVec(0.0f, 1.0f, 0.0f);
+		D3DXVec3Cross(&rightVec, &upVec, &m_depth);
+		D3DXVec3Normalize(&rightVec, &rightVec);
+
+		D3DXMATRIX matRotation;
+		D3DXMatrixRotationAxis(&matRotation, &rightVec, D3DXToRadian(10.0f));
+		D3DXVec3TransformCoord(&adjustedDirection, &m_depth, &matRotation);
+		D3DXVec3Normalize(&adjustedDirection, &adjustedDirection);
+
+		state.breathPosX = breathPos.x;
+		state.breathPosY = breathPos.y;
+		state.breathPosZ = breathPos.z;
+		state.breathDirX = adjustedDirection.x;
+		state.breathDirY = adjustedDirection.y;
+		state.breathDirZ = adjustedDirection.z;
+	}
+	else
+	{
+		// ブレスが非アクティブの場合は0で初期化
+		state.breathPosX = 0.0f;
+		state.breathPosY = 0.0f;
+		state.breathPosZ = 0.0f;
+		state.breathDirX = 0.0f;
+		state.breathDirY = 0.0f;
+		state.breathDirZ = -1.0f;
+	}
+
 	return state;
 }
 
@@ -250,15 +288,74 @@ void Chaser::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 
 	UpdateLightMatrices();
 
+	// ★★★ ブレス状態の同期 ★★★
+	if (m_pIceBreath)
+	{
+		bool shouldBeActive = (state.breathActive != 0);
+
+		if (shouldBeActive && !m_bBreathActive)
+		{
+			// ブレスを開始
+			D3DXVECTOR3 breathPos(state.breathPosX, state.breathPosY, state.breathPosZ);
+			D3DXVECTOR3 breathDir(state.breathDirX, state.breathDirY, state.breathDirZ);
+
+			// 位置が無効な場合はm_eyePositionを使用
+			if (D3DXVec3Length(&breathPos) < 0.01f)
+			{
+				breathPos = m_eyePosition;
+			}
+
+			// 方向が無効な場合はm_depthを使用
+			if (D3DXVec3Length(&breathDir) < 0.01f)
+			{
+				breathDir = m_depth;
+			}
+
+			m_pIceBreath->Activate(breathPos, breathDir);
+			m_bBreathActive = true;
+
+			NET_LOG_F("[Chaser::UpdateFromNetwork] ID=%u ブレス開始: Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
+				m_clientId, breathPos.x, breathPos.y, breathPos.z,
+				breathDir.x, breathDir.y, breathDir.z);
+		}
+		else if (!shouldBeActive && m_bBreathActive)
+		{
+			// ブレスを終了
+			m_pIceBreath->Deactivate();
+			m_bBreathActive = false;
+
+			NET_LOG_F("[Chaser::UpdateFromNetwork] ID=%u ブレス終了", m_clientId);
+		}
+		else if (shouldBeActive && m_bBreathActive)
+		{
+			// ブレス継続中 - 位置と方向を更新
+			D3DXVECTOR3 breathPos(state.breathPosX, state.breathPosY, state.breathPosZ);
+			D3DXVECTOR3 breathDir(state.breathDirX, state.breathDirY, state.breathDirZ);
+
+			if (D3DXVec3Length(&breathPos) > 0.01f)
+			{
+				m_pIceBreath->SetPosition(breathPos);
+			}
+
+			if (D3DXVec3Length(&breathDir) > 0.01f)
+			{
+				m_pIceBreath->SetDirection(breathDir);
+			}
+
+			m_pIceBreath->Update();
+		}
+	}
+
 	static std::map<uint32_t, DWORD> lastLogPerChaser;
 	DWORD now = timeGetTime();
 	if (now - lastLogPerChaser[m_clientId] > 5000)
 	{
-		NET_LOG_F("[Chaser::UpdateFromNetwork] ID=%u ライト更新: Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f) Range=%.2f",
+		NET_LOG_F("[Chaser::UpdateFromNetwork] ID=%u ライト更新: Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f) Range=%.2f Breath=%s",
 			m_clientId,
 			lightPos.x, lightPos.y, lightPos.z,
 			lightDir.x, lightDir.y, lightDir.z,
-			lightRange);
+			lightRange,
+			m_bBreathActive ? "Active" : "Inactive");
 		lastLogPerChaser[m_clientId] = now;
 	}
 }

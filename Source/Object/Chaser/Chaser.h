@@ -25,7 +25,6 @@ public:
 	void Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight& light, float deltaTime);
 
 	void Draw(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight);
-	void DrawEffects(Camera* pCamera, Projection* pProj);
 	void DebugPrint(Engine* pEngine);
 
 	SpotLight* GetLights();
@@ -34,6 +33,7 @@ public:
 	virtual void UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& light, float deltaTime) override;
 	void UpdateLight(Engine* pEngine);
 
+	virtual void DrawEffects(Camera* pCamera, Projection* pProj) override;
 	virtual void DrawDepth(Engine* pEngine, const D3DXMATRIX* pMatLightVP) override;
 
 	// ★★★ ブレス中かどうかを取得 ★★★

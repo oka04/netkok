@@ -1338,28 +1338,21 @@ void SceneGame::Draw()
 		}
 	}
 
-	// ★★★ 重要: ブレスエフェクトの描画 ★★★
-	// ローカルプレイヤーが鬼の場合
-	if (m_pLocalPlayer && m_localRole == ROLE_CHASER)
+	// ★★★ すべてのプレイヤーのエフェクトを描画（役割を問わず）★★★
+	// ローカルプレイヤーのエフェクトを描画
+	if (m_pLocalPlayer)
 	{
-		Chaser* localChaser = dynamic_cast<Chaser*>(m_pLocalPlayer);
-		if (localChaser)
-		{
-			localChaser->DrawEffects(&m_camera, &m_projection);
-		}
+		m_pLocalPlayer->DrawEffects(&m_camera, &m_projection);
 	}
 
-	// リモートプレイヤーの鬼のエフェクトも描画
+	// リモートプレイヤーのエフェクトを描画
 	for (auto& kv : m_players)
 	{
 		if (kv.first == m_localClientId) continue;
-		if (!kv.second || m_playerRoles[kv.first] != ROLE_CHASER) continue;
+		if (!kv.second) continue;
 
-		Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
-		if (chaser)
-		{
-			chaser->DrawEffects(&m_camera, &m_projection);
-		}
+		// 鬼でも逃げる側でも、エフェクトがあれば描画
+		kv.second->DrawEffects(&m_camera, &m_projection);
 	}
 
 #if _DEBUG

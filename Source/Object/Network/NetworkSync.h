@@ -10,11 +10,21 @@
 enum PlayerRole : uint8_t
 {
 	ROLE_NONE = 0,
-	ROLE_RUNNER = 1,
-	ROLE_CHASER = 2
+	ROLE_RUNNER = 1,  // 逃げる側
+	ROLE_CHASER = 2   // 鬼
 };
 
-// ネットワークメッセージタイプ
+// ★★★ ネットワークメッセージタイプ ★★★
+enum NetMessageType : uint8_t
+{
+	NET_MSG_PLAYER_STATE = 1,
+	NET_MSG_WORLD_STATE = 2,
+	NET_MSG_PLAYER_SPAWN = 3,
+	NET_MSG_PLAYER_DESPAWN = 4,
+	NET_MSG_ROLE_ASSIGNMENT = 5,
+	NET_MSG_CLIENT_ID_ASSIGNMENT = 6,
+};
+
 enum NetworkMessageType : uint8_t
 {
 	MSG_JOIN = 1,
@@ -29,6 +39,7 @@ enum NetworkMessageType : uint8_t
 	MSG_ROLE_ASSIGNMENT = 14,
 };
 
+// ★★★ プレイヤー状態（120バイト）★★★
 #pragma pack(push, 1)
 struct NetPlayerState
 {
@@ -39,12 +50,18 @@ struct NetPlayerState
 	uint8_t keyFlag;
 	uint8_t flags;
 
-	// ★★★ 追加: ライト情報 ★★★
-	float lightPosX, lightPosY, lightPosZ;      // ライト位置
-	float lightDirX, lightDirY, lightDirZ;      // ライト方向
-	float lightRange;                            // ライト範囲
+	// ★★★ ライト情報（鬼用）★★★
+	float lightPosX, lightPosY, lightPosZ;
+	float lightDirX, lightDirY, lightDirZ;
+	float lightRange;
 
-	void SetFirstPerson(bool v) { flags = v ? (flags | 0x01) : (flags & ~0x01); }
+	// ★★★ ブレス状態（鬼用）★★★
+	uint8_t breathActive;      // ブレスが発動中か（0 or 1）
+	uint8_t breathPadding[3];  // パディング（4バイトアライメント）
+	float breathPosX, breathPosY, breathPosZ;     // ブレスの位置
+	float breathDirX, breathDirY, breathDirZ;     // ブレスの方向
+
+	void SetFirstPerson(bool fp) { flags = fp ? (flags | 0x01) : (flags & ~0x01); }
 	bool IsFirstPerson() const { return (flags & 0x01) != 0; }
 };
 #pragma pack(pop)
@@ -52,12 +69,10 @@ struct NetPlayerState
 #pragma pack(push, 1)
 struct NetWorldState
 {
+	uint32_t timestamp;
 	uint8_t playerCount;
+	uint8_t padding[3];
 	NetPlayerState players[8];
-
-	size_t GetSize() const {
-		return sizeof(uint8_t) + sizeof(NetPlayerState) * playerCount;
-	}
 };
 #pragma pack(pop)
 
@@ -67,7 +82,6 @@ struct NetPlayerSpawn
 	uint32_t clientId;
 	float startX, startY, startZ;
 	char name[32];
-	PlayerRole role;
 };
 #pragma pack(pop)
 
@@ -76,9 +90,17 @@ struct NetRoleAssignment
 {
 	uint32_t clientId;
 	PlayerRole role;
+	uint8_t padding[3];
 };
 #pragma pack(pop)
 
+#pragma pack(push, 1)
+struct NetClientIdAssignment
+{
+	uint32_t assignedClientId;
+};
+#pragma pack(pop)
+	
 class NetworkSerializer
 {
 public:

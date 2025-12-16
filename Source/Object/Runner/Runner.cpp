@@ -73,17 +73,14 @@ void Runner::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 	UpdateMatrix(light);
 }
 
-// ★★★ ネットワーク状態の取得（スタミナ情報を含む）★★★
 NetPlayerState Runner::GetNetState() const
 {
 	NetPlayerState state = CharacterBase::GetNetState();
 	return state;
 }
 
-// ★★★ ネットワークからの更新（スタミナ情報を含む）★★★
 void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& light, float deltaTime)
 {
-	// ★ 基底クラスのネットワーク更新を呼び出し
 	CharacterBase::UpdateFromNetwork(state, light, deltaTime);
 
 }
@@ -98,8 +95,11 @@ void Runner::Draw(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, Di
 
 void Runner::DrawDepth(Engine* pEngine, const D3DXMATRIX* pMatLightVP)
 {
-	// モデルの深度描画
 	m_model.DrawDepth(pEngine, pMatLightVP);
+}
+
+void Runner::DrawEffects(Camera* pCamera, Projection* pProj)
+{
 }
 
 void Runner::DrawStaminaGauge(Engine* pEngine)
@@ -158,7 +158,6 @@ void Runner::DebugPrint(Engine* pEngine)
 	pEngine->DrawPrintf(0, 450, FONT_GOTHIC40, Color::BLUE, "Stamina: %.1f", m_stamina);
 }
 
-// ★★★ プレイヤー固有のスタミナ更新 ★★★
 void Runner::UpdateStamina(float deltaTime)
 {
 	bool bMoving = (m_keyFlag & (W_KEY | S_KEY | D_KEY | A_KEY)) != 0;
