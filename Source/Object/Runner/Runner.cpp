@@ -725,15 +725,8 @@ void Runner::LoadParameter()
 	f_gaugeColorThresholds = config["gaugeColorThresholds"].get<std::vector<float>>();
 	f_eyePsoitionY = config["eyePsoitionY"];
 
-	// ★★★ 氷関連のパラメータ読み込み ★★★
-	if (config.contains("meltRange"))
-	{
-		f_meltRange = config["meltRange"];
-	}
-	if (config.contains("meltSpeed"))
-	{
-		f_meltSpeed = config["meltSpeed"];
-	}
+	f_meltRange = config["meltRange"];
+	f_meltSpeed = config["meltSpeed"];
 
 	for (int i = 0; i < 2; i++)
 	{
