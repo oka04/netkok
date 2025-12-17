@@ -154,10 +154,20 @@ void CharacterBase::Input(Engine * pEngine)
 		m_keyFlag &= ~DASH_KEY;
 	}
 
-	// ★★★ 左クリック攻撃入力 ★★★
-	if (pEngine->GetMouseButtonSync(DIK_LBUTTON))  // 0 = 左ボタン
+	// ★★★ 左クリック攻撃入力 - 修正版 ★★★
+	// 0 は左ボタンのインデックス（DIMOFS_BUTTON0）
+	if (pEngine->GetMouseButton(0))
 	{
 		m_keyFlag |= ATTACK_KEY;
+
+		// デバッグログ（頻度を下げる）
+		static DWORD lastLog = 0;
+		DWORD now = timeGetTime();
+		if (now - lastLog > 500)
+		{
+			NET_LOG_F("[CharacterBase::Input] ID=%u 左クリック検出！ KeyFlag=0x%02X", m_clientId, m_keyFlag);
+			lastLog = now;
+		}
 	}
 	else
 	{
