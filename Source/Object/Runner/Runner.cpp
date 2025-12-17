@@ -149,7 +149,119 @@ void Runner::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 	SetThirdPersonFromBehind(pEngine, camera, map);
 	UpdateMatrix(light);
 }
+// Runner.cpp - DrawMeltGauge と DrawGaugeRect の実装を追加
+// 既存のコードの末尾（ChangeSpeed の後）に以下を追加してください
 
+void Runner::DrawMeltGauge(Engine* pEngine, Camera* pCamera, Projection* pProj, float viewerDistance)
+{
+	// 凍結していない場合は描画しない
+	if (!m_bFrozen) return;
+
+	// 一定距離以上離れている場合は描画しない
+	const float MAX_GAUGE_DISTANCE = 10.0f;
+	if (viewerDistance > MAX_GAUGE_DISTANCE) return;
+
+	// プレイヤーの頭上の位置を計算
+	D3DXVECTOR3 headPos = GetCenterPosition();
+	headPos.y += f_height / 2.0f + 0.5f;  // 頭の上0.5m
+
+										  // ワールド座標からスクリーン座標への変換
+	D3DVIEWPORT9 viewport;
+	pEngine->GetDevice()->GetViewport(&viewport);
+
+	D3DXMATRIX matView = pCamera->GetViewMatrix();
+	D3DXMATRIX matProj = pProj->GetProjectionMatrix();
+	D3DXMATRIX matIdentity;
+	D3DXMatrixIdentity(&matIdentity);
+
+	D3DXVECTOR3 screenPos;
+	D3DXVec3Project(&screenPos, &headPos, &viewport, &matProj, &matView, &matIdentity);
+
+	// カメラの後ろにいる場合は描画しない
+	if (screenPos.z > 1.0f || screenPos.z < 0.0f) return;
+
+	// ゲージのサイズと位置
+	int gaugeWidth = 100;
+	int gaugeHeight = 10;
+	int x = (int)screenPos.x - gaugeWidth / 2;
+	int y = (int)screenPos.y - 20;  // 頭の少し上
+
+	LPDIRECT3DDEVICE9 pDevice = pEngine->GetDevice();
+
+	// レンダーステートの保存
+	DWORD oldAlphaBlend, oldSrcBlend, oldDestBlend, oldZEnable, oldZWrite;
+	pDevice->GetRenderState(D3DRS_ALPHABLENDENABLE, &oldAlphaBlend);
+	pDevice->GetRenderState(D3DRS_SRCBLEND, &oldSrcBlend);
+	pDevice->GetRenderState(D3DRS_DESTBLEND, &oldDestBlend);
+	pDevice->GetRenderState(D3DRS_ZENABLE, &oldZEnable);
+	pDevice->GetRenderState(D3DRS_ZWRITEENABLE, &oldZWrite);
+
+	// アルファブレンドを有効化
+	pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+	pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+	pDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
+	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+
+	// 外枠（黒、半透明）
+	DrawGaugeRect(pDevice, x - 2, y - 2, gaugeWidth + 4, gaugeHeight + 4, D3DCOLOR_ARGB(200, 0, 0, 0));
+
+	// 背景（暗いグレー）
+	DrawGaugeRect(pDevice, x, y, gaugeWidth, gaugeHeight, D3DCOLOR_ARGB(255, 50, 50, 50));
+
+	// 進捗バー（水色→緑へのグラデーション）
+	float progress = m_frozenAmount;  // 0.0 = 完全凍結, 1.0 = 完全解凍
+	int progressWidth = (int)(gaugeWidth * progress);
+
+	if (progressWidth > 0)
+	{
+		// 解凍が進むにつれて色を変化させる
+		// 0%: 水色(100, 200, 255)
+		// 100%: 緑色(100, 255, 100)
+		int r = 100;
+		int g = (int)(200 + 55 * progress);
+		int b = (int)(255 - 155 * progress);
+		DrawGaugeRect(pDevice, x, y, progressWidth, gaugeHeight, D3DCOLOR_ARGB(255, r, g, b));
+	}
+
+	// 枠線（白）
+	DrawGaugeRect(pDevice, x, y, gaugeWidth, 1, D3DCOLOR_ARGB(255, 255, 255, 255));  // 上
+	DrawGaugeRect(pDevice, x, y + gaugeHeight - 1, gaugeWidth, 1, D3DCOLOR_ARGB(255, 255, 255, 255));  // 下
+	DrawGaugeRect(pDevice, x, y, 1, gaugeHeight, D3DCOLOR_ARGB(255, 255, 255, 255));  // 左
+	DrawGaugeRect(pDevice, x + gaugeWidth - 1, y, 1, gaugeHeight, D3DCOLOR_ARGB(255, 255, 255, 255));  // 右
+
+																									   // レンダーステートを元に戻す
+	pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, oldAlphaBlend);
+	pDevice->SetRenderState(D3DRS_SRCBLEND, oldSrcBlend);
+	pDevice->SetRenderState(D3DRS_DESTBLEND, oldDestBlend);
+	pDevice->SetRenderState(D3DRS_ZENABLE, oldZEnable);
+	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, oldZWrite);
+}
+
+void Runner::DrawGaugeRect(LPDIRECT3DDEVICE9 pDevice, int x, int y, int width, int height, D3DCOLOR color)
+{
+	// 2D頂点構造体
+	struct VERTEX_2D
+	{
+		float x, y, z, rhw;
+		D3DCOLOR color;
+	};
+
+	// 矩形の4頂点を定義
+	VERTEX_2D vertices[4] = {
+		{ (float)x, (float)y, 0.0f, 1.0f, color },
+		{ (float)(x + width), (float)y, 0.0f, 1.0f, color },
+		{ (float)x, (float)(y + height), 0.0f, 1.0f, color },
+		{ (float)(x + width), (float)(y + height), 0.0f, 1.0f, color },
+	};
+
+	// FVFとテクスチャを設定
+	pDevice->SetFVF(D3DFVF_XYZRHW | D3DFVF_DIFFUSE);
+	pDevice->SetTexture(0, NULL);
+
+	// トライアングルストリップで矩形を描画
+	pDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertices, sizeof(VERTEX_2D));
+}
 void Runner::SetFrozen(bool frozen)
 {
 	if (m_bFrozen == frozen)

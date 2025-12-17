@@ -1581,7 +1581,6 @@ void SceneGame::Draw()
 	}
 
 	// ★★★ すべてのプレイヤーのエフェクトを描画（役割を問わず）★★★
-	// ローカルプレイヤーのエフェクトを描画
 	static DWORD lastEffectLog = 0;
 	DWORD nowEffect = timeGetTime();
 	if (nowEffect - lastEffectLog > 3000)
@@ -1629,6 +1628,39 @@ void SceneGame::Draw()
 
 		// 鬼でも逃げる側でも、エフェクトがあれば描画
 		kv.second->DrawEffects(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light);
+	}
+
+	// ★★★ 凍結プレイヤーの解凍ゲージを描画（3D空間）★★★
+	if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
+	{
+		D3DXVECTOR3 localPos = m_pLocalPlayer->GetPosition();
+
+		// 自分以外の凍結している逃げる側プレイヤーのゲージを描画
+		for (auto& kv : m_players)
+		{
+			// ローカルプレイヤー自身はスキップ
+			if (kv.first == m_localClientId) continue;
+
+			// プレイヤーが存在しない場合はスキップ
+			if (!kv.second) continue;
+
+			// 逃げる側でない場合はスキップ
+			if (m_playerRoles[kv.first] != ROLE_RUNNER) continue;
+
+			Runner* runner = dynamic_cast<Runner*>(kv.second);
+			if (!runner) continue;
+
+			// 凍結していない場合はスキップ
+			if (!runner->IsFrozen()) continue;
+
+			// プレイヤーとの距離を計算
+			D3DXVECTOR3 targetPos = runner->GetPosition();
+			D3DXVECTOR3 diff = targetPos - localPos;
+			float distance = D3DXVec3Length(&diff);
+
+			// ゲージを描画（距離が遠い場合は内部で描画されない）
+			runner->DrawMeltGauge(m_pEngine, &m_camera, &m_projection, distance);
+		}
 	}
 
 #if _DEBUG
@@ -1739,7 +1771,6 @@ void SceneGame::Draw()
 	m_fade.Draw(m_pEngine);
 	m_pEngine->SpriteEnd();
 }
-
 void SceneGame::PostEffect()
 {
 }

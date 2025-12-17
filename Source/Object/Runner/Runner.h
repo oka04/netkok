@@ -1,4 +1,4 @@
-﻿// Runner.h - 氷状態管理機能を追加
+﻿// Runner.h - 氷状態管理機能を追加 + 解凍ゲージ表示
 #pragma once
 
 #include <winsock2.h> 
@@ -47,10 +47,16 @@ public:
 	void UpdateFrozenState(float deltaTime);
 	void TryMeltNearbyFrozenPlayer(Engine* pEngine, const std::vector<std::pair<uint32_t, CharacterBase*>>& players, float deltaTime);
 
+	// ★★★ 解凍ゲージ表示 ★★★
+	void DrawMeltGauge(Engine* pEngine, Camera* pCamera, Projection* pProj, float viewerDistance);
+
 private:
 	void LoadParameter() override;
 	void ChangeSpeed();
 	void UpdateStamina(float deltaTime)override;
+
+	// ★★★ ゲージ描画用ヘルパー ★★★
+	void DrawGaugeRect(LPDIRECT3DDEVICE9 pDevice, int x, int y, int width, int height, D3DCOLOR color);
 
 	enum GAUGE_COLOR
 	{
