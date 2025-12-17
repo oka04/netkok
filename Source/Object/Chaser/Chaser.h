@@ -34,7 +34,7 @@ public:
 	virtual void UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& light, float deltaTime) override;
 	void UpdateLight(Engine* pEngine);
 
-	virtual void DrawEffects(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight) override;
+	virtual void DrawEffects(Engine* pEngine, Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight) override;
 	virtual void DrawDepth(Engine* pEngine, const D3DXMATRIX* pMatLightVP) override;
 
 	D3DXVECTOR3 GetCenterPosition() const override

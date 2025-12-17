@@ -295,12 +295,12 @@ void Runner::DrawDepth(Engine* pEngine, const D3DXMATRIX* pMatLightVP)
 	m_model.DrawDepth(pEngine, pMatLightVP);
 }
 
-void Runner::DrawEffects(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight)
+void Runner::DrawEffects(Engine* pEngine, Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight)
 {
 	// ★★★ 凍結中は氷ブロックを描画 ★★★
 	if (m_bFrozen && m_pIceBlock)
 	{
-		m_pIceBlock->Draw(m_pIceBlock->m_pEngine, pCamera, pProj, pAmbient, pLight);
+		m_pIceBlock->Draw(pEngine, pCamera, pProj, pAmbient, pLight);
 	}
 }
 

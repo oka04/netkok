@@ -31,7 +31,7 @@ public:
 		centerPos.y += f_height / 2.0f;
 		return centerPos;
 	}
-	virtual void DrawEffects(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight) override;
+	virtual void DrawEffects(Engine* pEngine, Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight) override;
 	virtual void DrawDepth(Engine* pEngine, const D3DXMATRIX* pMatLightVP) override;
 	void DrawStaminaGauge(Engine* pEngine) override;
 	void DebugPrint(Engine* pEngine);

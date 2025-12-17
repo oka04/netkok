@@ -49,9 +49,6 @@ public:
 	// 色を設定（氷の色調整用）
 	void SetColor(const D3DXVECTOR4& color) { m_iceColor = color; }
 
-	// ★★★ Engineポインタをpublicに（Runner::DrawEffectsから使用） ★★★
-	Engine* m_pEngine;
-
 private:
 	void UpdateWorldMatrix();
 	void ReleaseResources();

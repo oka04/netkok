@@ -1411,7 +1411,7 @@ void SceneGame::Draw()
 	// ローカルプレイヤーのエフェクトを描画
 	if (m_pLocalPlayer)
 	{
-		m_pLocalPlayer->DrawEffects(&m_camera, &m_projection, &m_ambient, &m_light);
+		m_pLocalPlayer->DrawEffects(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light);
 	}
 
 	// リモートプレイヤーのエフェクトを描画
@@ -1421,7 +1421,7 @@ void SceneGame::Draw()
 		if (!kv.second) continue;
 
 		// 鬼でも逃げる側でも、エフェクトがあれば描画
-		kv.second->DrawEffects(&m_camera, &m_projection, &m_ambient, &m_light);
+		kv.second->DrawEffects(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light);
 	}
 
 #if _DEBUG

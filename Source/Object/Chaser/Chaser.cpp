@@ -367,7 +367,7 @@ void Chaser::Draw(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, Di
 	CharacterBase::Draw(pCamera, pProj, pAmbient, pLight);
 }
 
-void Chaser::DrawEffects(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight)
+void Chaser::DrawEffects(Engine* pEngine, Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight)
 {
 	if (m_pIceBreath)
 	{
