@@ -12,8 +12,8 @@
 #include <queue>
 #include <map>
 
-#include "..\\..\\GameBase.h"
-#include "..\\..\\Scene\\Scene\\Scene.h"
+#include "..\\GameBase.h"
+#include "..\\Scene\\Scene\\Scene.h"
 #include "Network\\NetworkLogger.h"
 class Map
 {

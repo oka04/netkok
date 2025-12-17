@@ -50,29 +50,37 @@ struct NetPlayerState
 	uint8_t keyFlag;
 	uint8_t flags;
 
-	// ★★★ ライト情報（鬼用）★★★
+	// ライト情報（Chaser用）
 	float lightPosX, lightPosY, lightPosZ;
 	float lightDirX, lightDirY, lightDirZ;
 	float lightRange;
 
-	// ★★★ ブレス状態（鬼用）★★★
-	uint8_t breathActive;      // ブレスが発動中か（0 or 1）
-	uint8_t breathPadding[3];  // パディング（4バイトアライメント）
-	float breathPosX, breathPosY, breathPosZ;     // ブレスの位置
-	float breathDirX, breathDirY, breathDirZ;     // ブレスの方向
+	// ブレス情報
+	uint8_t breathActive;
+	float breathPosX, breathPosY, breathPosZ;
+	float breathDirX, breathDirY, breathDirZ;
 
-	void SetFirstPerson(bool fp) { flags = fp ? (flags | 0x01) : (flags & ~0x01); }
-	bool IsFirstPerson() const { return (flags & 0x01) != 0; }
+	uint8_t frozen;        
+	float frozenAmount;
+
+	void SetFirstPerson(bool fp)
+	{
+		if (fp) flags |= 0x01;
+		else flags &= ~0x01;
+	}
+
+	bool IsFirstPerson() const
+	{
+		return (flags & 0x01) != 0;
+	}
 };
 #pragma pack(pop)
 
 #pragma pack(push, 1)
 struct NetWorldState
 {
-	uint32_t timestamp;
-	uint8_t playerCount;
-	uint8_t padding[3];
-	NetPlayerState players[8];
+	int playerCount;
+	NetPlayerState players[16];
 };
 #pragma pack(pop)
 
@@ -80,8 +88,8 @@ struct NetWorldState
 struct NetPlayerSpawn
 {
 	uint32_t clientId;
+	char name[64];
 	float startX, startY, startZ;
-	char name[32];
 };
 #pragma pack(pop)
 
@@ -90,7 +98,6 @@ struct NetRoleAssignment
 {
 	uint32_t clientId;
 	PlayerRole role;
-	uint8_t padding[3];
 };
 #pragma pack(pop)
 

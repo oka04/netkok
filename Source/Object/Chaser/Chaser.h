@@ -1,14 +1,15 @@
-﻿// Chaser.h - プレイヤー固有の実装 + ブレス攻撃機能
+﻿// Chaser.h - プレイヤー固有の実装 + ブレス攻撃機能 + ヒット判定
 #pragma once
 
 #include <winsock2.h> 
 #include <ws2tcpip.h>
 
-#include "..\\..\\GameBase.h"
-#include "..\\..\\Scene\\Scene\\Scene.h"
-#include "..\\..\\Object\\CharacterBase\\CharacterBase.h"
-#include "..\\..\\Object\\Map\\Map.h"
-#include "..\\..\\Object\\IceBreath\\IceBreath.h"
+#include "..\\GameBase.h"
+#include "..\\Scene\\Scene\\Scene.h"
+#include "..\\CharacterBase\\CharacterBase.h"
+#include "..\\Map\\Map.h"
+#include "..\\IceBreath\\IceBreath.h"
+#include "..\\Runner\\Runner.h"
 #include <fstream>
 #include "..\\json.hpp"
 
@@ -33,17 +34,21 @@ public:
 	virtual void UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& light, float deltaTime) override;
 	void UpdateLight(Engine* pEngine);
 
-	virtual void DrawEffects(Camera* pCamera, Projection* pProj) override;
+	virtual void DrawEffects(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight) override;
 	virtual void DrawDepth(Engine* pEngine, const D3DXMATRIX* pMatLightVP) override;
 
 	D3DXVECTOR3 GetCenterPosition() const override
 	{
 		D3DXVECTOR3 centerPos = m_position;
-		centerPos.y += f_height / 2.0f; 
+		centerPos.y += f_height / 2.0f;
 		return centerPos;
 	}
+
 	// ★★★ ブレス中かどうかを取得 ★★★
 	bool IsBreathing() const { return m_bBreathActive; }
+
+	// ★★★ ブレスのヒット判定 - 新規追加 ★★★
+	void CheckBreathHitPlayers(const std::vector<std::pair<uint32_t, CharacterBase*>>& players);
 
 	// シャドウマップ関連
 	bool IsShadowMapEnabled() const { return m_bShadowMapEnabled; }

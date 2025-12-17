@@ -2,7 +2,7 @@
 
 #include "..\\..\\GameBase.h"
 
-#include "..\\..\\Scene\\Scene\\Scene.h"
+#include "..\\Scene\\Scene\\Scene.h"
 
 #include <fstream>
 #include "..\\json.hpp" 

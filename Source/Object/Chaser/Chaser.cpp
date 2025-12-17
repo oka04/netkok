@@ -367,7 +367,7 @@ void Chaser::Draw(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, Di
 	CharacterBase::Draw(pCamera, pProj, pAmbient, pLight);
 }
 
-void Chaser::DrawEffects(Camera* pCamera, Projection* pProj)
+void Chaser::DrawEffects(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight)
 {
 	if (m_pIceBreath)
 	{
@@ -559,6 +559,106 @@ void Chaser::CreateScaleBiasMatrix()
 	);
 }
 
+void Chaser::CheckBreathHitPlayers(const std::vector<std::pair<uint32_t, CharacterBase*>>& players)
+{
+	if (!m_bBreathActive || !m_pIceBreath)
+		return;
+
+	// ★★★ ライトの情報を取得 ★★★
+	const D3DLIGHT9& light = m_spotLight.GetLight();
+	D3DXVECTOR3 lightPos(light.Position.x, light.Position.y, light.Position.z);
+	D3DXVECTOR3 lightDir(light.Direction.x, light.Direction.y, light.Direction.z);
+	float lightRange = light.Range;
+	float lightConeAngle = light.Theta;  // 内側の円錐角度
+
+										 // デバッグログ用
+	static DWORD lastLog = 0;
+	DWORD now = timeGetTime();
+	bool shouldLog = (now - lastLog > 2000);
+
+	if (shouldLog)
+	{
+		NET_LOG_F("[Chaser::CheckBreathHitPlayers] ID=%u ライト Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f) Range=%.2f",
+			m_clientId, lightPos.x, lightPos.y, lightPos.z,
+			lightDir.x, lightDir.y, lightDir.z, lightRange);
+	}
+
+	// ★★★ 各プレイヤーをチェック ★★★
+	int checkedCount = 0;
+	int frozenCount = 0;
+
+	for (const auto& pair : players)
+	{
+		uint32_t id = pair.first;
+		CharacterBase* pChar = pair.second;
+
+		// 自分自身はスキップ
+		if (id == m_clientId)
+			continue;
+
+		// プレイヤーが存在しない場合はスキップ
+		if (!pChar)
+			continue;
+
+		// Runnerでない場合はスキップ
+		Runner* pRunner = dynamic_cast<Runner*>(pChar);
+		if (!pRunner)
+			continue;
+
+		// 既に凍結している場合はスキップ
+		if (pRunner->IsFrozen())
+			continue;
+
+		checkedCount++;
+
+		// ★★★ プレイヤーの中心位置を取得 ★★★
+		D3DXVECTOR3 playerPos = pRunner->GetCenterPosition();
+
+		// ★★★ ライトからの距離をチェック ★★★
+		D3DXVECTOR3 toPlayer = playerPos - lightPos;
+		float distance = D3DXVec3Length(&toPlayer);
+
+		// 範囲外
+		if (distance > lightRange)
+		{
+			if (shouldLog)
+			{
+				NET_LOG_F("  Player[%u]: 範囲外 Dist=%.2f > Range=%.2f", id, distance, lightRange);
+			}
+			continue;
+		}
+
+		// ★★★ ライトの方向内にいるかチェック（円錐形の範囲） ★★★
+		D3DXVec3Normalize(&toPlayer, &toPlayer);
+		float dotProduct = D3DXVec3Dot(&toPlayer, &lightDir);
+
+		// 円錐の範囲を広めに取る（元の角度の2倍）
+		float coneThreshold = cosf(lightConeAngle * 2.0f);
+
+		if (dotProduct < coneThreshold)
+		{
+			if (shouldLog)
+			{
+				NET_LOG_F("  Player[%u]: 円錐外 Dot=%.3f < Threshold=%.3f", id, dotProduct, coneThreshold);
+			}
+			continue;
+		}
+
+		// ★★★ ヒット！凍結させる ★★★
+		pRunner->SetFrozen(true);
+		frozenCount++;
+
+		NET_LOG_F("[Chaser] ブレスヒット！ 鬼[%u] -> Runner[%u] Dist=%.2f Dot=%.3f",
+			m_clientId, id, distance, dotProduct);
+	}
+
+	if (shouldLog)
+	{
+		NET_LOG_F("[Chaser::CheckBreathHitPlayers] ID=%u チェック=%d 凍結=%d",
+			m_clientId, checkedCount, frozenCount);
+		lastLog = now;
+	}
+}
 void Chaser::LoadParameter()
 {
 	std::ifstream file(JSON_CHASER_PARAMETER);

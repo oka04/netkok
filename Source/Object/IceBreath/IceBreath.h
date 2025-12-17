@@ -3,11 +3,11 @@
 #include <winsock2.h> 
 #include <ws2tcpip.h>
 
-#include "..\\..\\GameBase.h"
+#include "..\\GameBase.h"
 
 #include "..\\Network\\NetworkLogger.h"
-#include "..\\..\\System\\Engine\\Particle\\ParticleBase.h"
-#include "..\\..\\Scene\\Scene\\Scene.h"
+#include "..\\System\\Engine\\Particle\\ParticleBase.h"
+#include "..\\Scene\\Scene\\Scene.h"
 #include <fstream>
 #include "..\\json.hpp"
 

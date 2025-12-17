@@ -332,7 +332,7 @@ NetPlayerState CharacterBase::GetNetState() const
 	state.flags = 0;
 	state.SetFirstPerson(m_bFirstPerson);
 
-	// ★★★ 追加: ライト情報を初期化（派生クラスで上書き）★★★
+	// ★★★ ライト情報を初期化（派生クラスで上書き）★★★
 	state.lightPosX = 0.0f;
 	state.lightPosY = 0.0f;
 	state.lightPosZ = 0.0f;
@@ -341,8 +341,22 @@ NetPlayerState CharacterBase::GetNetState() const
 	state.lightDirZ = -1.0f;
 	state.lightRange = 0.0f;
 
+	// ★★★ ブレス情報を初期化 ★★★
+	state.breathActive = 0;
+	state.breathPosX = 0.0f;
+	state.breathPosY = 0.0f;
+	state.breathPosZ = 0.0f;
+	state.breathDirX = 0.0f;
+	state.breathDirY = 0.0f;
+	state.breathDirZ = -1.0f;
+
+	// ★★★ 氷状態を初期化（派生クラスで上書き）★★★
+	state.frozen = 0;
+	state.frozenAmount = 0.0f;
+
 	return state;
 }
+
 
 // ★★★ ネットワークからの更新 ★★★
 void CharacterBase::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& light, float deltaTime)

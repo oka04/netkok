@@ -1,4 +1,4 @@
-﻿// Runner.cpp - プレイヤー固有の実装のみ
+﻿// Runner.cpp - 氷状態処理を追加
 
 #define _USING_V110_SDK71_ 1
 
@@ -13,12 +13,22 @@ Runner::Runner()
 	: m_stamina(100.0f)
 	, m_staminaRecoveryTimer(0.0f)
 	, m_bFatigued(false)
+	, m_bFrozen(false)
+	, m_frozenAmount(0.0f)
+	, m_pIceBlock(nullptr)
+	, f_meltRange(3.0f)
+	, f_meltSpeed(0.2f)
+	, m_targetMeltPlayer(0)
 {
-	// ★ CharacterBaseのコンストラクタで初期化済み
 }
 
 Runner::~Runner()
 {
+	if (m_pIceBlock)
+	{
+		delete m_pIceBlock;
+		m_pIceBlock = nullptr;
+	}
 }
 
 void Runner::Initialize(Engine* pEngine, Map& map, Projection* projection, Camera& camera, DirectionalLight& light)
@@ -34,6 +44,19 @@ void Runner::Initialize(Engine* pEngine, Map& map, Projection* projection, Camer
 	m_stamina = f_maxStamina;
 	m_staminaRecoveryTimer = 0.0f;
 	m_bFatigued = false;
+
+	// ★★★ 氷ブロック初期化 ★★★
+	m_bFrozen = false;
+	m_frozenAmount = 0.0f;
+	m_targetMeltPlayer = 0;
+	if (!m_pIceBlock)
+	{
+		m_pIceBlock = new IceBlock();
+		D3DXVECTOR3 centerPos = GetCenterPosition();
+		m_pIceBlock->Initialize(pEngine, 2.0f, 2.0f, 2.0f, centerPos, 0.0f);
+		m_pIceBlock->SetColor(D3DXVECTOR4(0.6f, 0.85f, 1.0f, 0.7f));
+	}
+
 	UpdateMatrix(light);
 }
 
@@ -50,32 +73,193 @@ void Runner::InitializeAtPosition(Engine* pEngine, const D3DXVECTOR3& startPos, 
 	m_stamina = f_maxStamina;
 	m_staminaRecoveryTimer = 0.0f;
 	m_bFatigued = false;
+
+	// ★★★ 氷ブロック初期化 ★★★
+	m_bFrozen = false;
+	m_frozenAmount = 0.0f;
+	m_targetMeltPlayer = 0;
+	if (!m_pIceBlock)
+	{
+		m_pIceBlock = new IceBlock();
+		D3DXVECTOR3 centerPos = GetCenterPosition();
+		m_pIceBlock->Initialize(pEngine, 2.0f, 2.0f, 2.0f, centerPos, 0.0f);
+		m_pIceBlock->SetColor(D3DXVECTOR4(0.6f, 0.85f, 1.0f, 0.7f));
+	}
+
 	UpdateMatrix(light);
 }
 
 void Runner::Release(Engine* pEngine)
 {
 	pEngine->ReleaseTexture(TEXTURE_STAMINA_GAUGE);
+
+	if (m_pIceBlock)
+	{
+		delete m_pIceBlock;
+		m_pIceBlock = nullptr;
+	}
+
 	if (m_bIsLocal)
 		SoundManager::UnregisterGameObject(ID_PALYER);
 }
 
-// ★★★ プレイヤー固有の更新処理 ★★★
 void Runner::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight& light, float deltaTime)
 {
 	m_deltaTime = deltaTime;
+
+	// ★★★ 凍結状態でも視点移動は可能 ★★★
 	SetMouseCursor(pEngine, camera);
-	Input(pEngine);
-	UpdateStamina(deltaTime);
-	ChangeSpeed();
-	Move(map);
+
+	// ★★★ 凍結状態の更新 ★★★
+	UpdateFrozenState(deltaTime);
+
+	// ★★★ 凍結状態でなければ通常の更新 ★★★
+	if (!m_bFrozen)
+	{
+		Input(pEngine);
+		UpdateStamina(deltaTime);
+		ChangeSpeed();
+		Move(map);
+	}
+	else
+	{
+		// 凍結中は移動不可
+		m_speed = 0.0f;
+		m_keyFlag = 0x00;  // すべてのキー入力をクリア
+	}
+
 	SetThirdPersonFromBehind(pEngine, camera, map);
 	UpdateMatrix(light);
+}
+
+void Runner::SetFrozen(bool frozen)
+{
+	if (m_bFrozen == frozen)
+		return;
+
+	m_bFrozen = frozen;
+
+	if (frozen)
+	{
+		// 凍結開始
+		m_frozenAmount = 0.0f;
+		NET_LOG_F("[Runner] ID=%u 凍結開始", m_clientId);
+	}
+	else
+	{
+		// 凍結解除
+		m_frozenAmount = 1.0f;
+		NET_LOG_F("[Runner] ID=%u 凍結解除", m_clientId);
+	}
+}
+
+void Runner::UpdateFrozenState(float deltaTime)
+{
+	if (!m_pIceBlock)
+		return;
+
+	if (m_bFrozen)
+	{
+		// 氷ブロックの位置を更新
+		D3DXVECTOR3 centerPos = GetCenterPosition();
+		m_pIceBlock->SetPosition(centerPos);
+
+		// 氷の溶け具合を設定（0.0 = 完全凍結, 1.0 = 完全解凍）
+		m_pIceBlock->SetMeltAmount(m_frozenAmount);
+
+		// 完全に解凍されたら凍結解除
+		if (m_frozenAmount >= 1.0f)
+		{
+			m_bFrozen = false;
+			NET_LOG_F("[Runner] ID=%u 完全解凍", m_clientId);
+		}
+	}
+}
+
+void Runner::TryMeltNearbyFrozenPlayer(Engine* pEngine, const std::vector<std::pair<uint32_t, CharacterBase*>>& players, float deltaTime)
+{
+	if (m_bFrozen)
+		return;  // 自分が凍結中は解凍できない
+
+	bool isAttackPressed = (m_keyFlag & ATTACK_KEY) != 0;
+
+	if (!isAttackPressed)
+	{
+		// 左クリックを離した
+		m_targetMeltPlayer = 0;
+		return;
+	}
+
+	// ★★★ 範囲内の凍結プレイヤーを探す ★★★
+	Runner* closestFrozenRunner = nullptr;
+	float closestDistance = f_meltRange;
+	uint32_t closestId = 0;
+
+	for (const auto& pair : players)
+	{
+		uint32_t id = pair.first;
+		CharacterBase* pChar = pair.second;
+
+		if (!pChar || id == m_clientId)
+			continue;
+
+		Runner* pRunner = dynamic_cast<Runner*>(pChar);
+		if (!pRunner || !pRunner->IsFrozen())
+			continue;
+
+		D3DXVECTOR3 diff = pRunner->GetPosition() - m_position;
+		float distance = D3DXVec3Length(&diff);
+
+		if (distance < closestDistance)
+		{
+			closestDistance = distance;
+			closestFrozenRunner = pRunner;
+			closestId = id;
+		}
+	}
+
+	// ★★★ 解凍処理 ★★★
+	if (closestFrozenRunner)
+	{
+		if (m_targetMeltPlayer != closestId)
+		{
+			m_targetMeltPlayer = closestId;
+			NET_LOG_F("[Runner] ID=%u が ID=%u の解凍を開始", m_clientId, closestId);
+		}
+
+		// 氷を溶かす
+		float currentAmount = closestFrozenRunner->GetFrozenAmount();
+		float newAmount = currentAmount + f_meltSpeed * deltaTime;
+
+		if (newAmount >= 1.0f)
+		{
+			newAmount = 1.0f;
+			closestFrozenRunner->SetFrozen(false);
+			m_targetMeltPlayer = 0;
+			NET_LOG_F("[Runner] ID=%u が ID=%u を完全解凍", m_clientId, closestId);
+		}
+
+		// 手動で frozenAmount を更新（ネットワーク経由の更新を待たずに）
+		if (closestFrozenRunner->m_pIceBlock)
+		{
+			closestFrozenRunner->m_frozenAmount = newAmount;
+			closestFrozenRunner->m_pIceBlock->SetMeltAmount(newAmount);
+		}
+	}
+	else
+	{
+		m_targetMeltPlayer = 0;
+	}
 }
 
 NetPlayerState Runner::GetNetState() const
 {
 	NetPlayerState state = CharacterBase::GetNetState();
+
+	// ★★★ 氷状態を追加 ★★★
+	state.frozen = m_bFrozen ? 1 : 0;
+	state.frozenAmount = m_frozenAmount;
+
 	return state;
 }
 
@@ -83,6 +267,19 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 {
 	CharacterBase::UpdateFromNetwork(state, light, deltaTime);
 
+	// ★★★ 氷状態の同期 ★★★
+	bool wasFrozen = m_bFrozen;
+	m_bFrozen = (state.frozen != 0);
+	m_frozenAmount = state.frozenAmount;
+
+	if (!wasFrozen && m_bFrozen)
+	{
+		NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 凍結開始", m_clientId);
+	}
+	else if (wasFrozen && !m_bFrozen)
+	{
+		NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 凍結解除", m_clientId);
+	}
 }
 
 void Runner::Draw(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight)
@@ -98,8 +295,13 @@ void Runner::DrawDepth(Engine* pEngine, const D3DXMATRIX* pMatLightVP)
 	m_model.DrawDepth(pEngine, pMatLightVP);
 }
 
-void Runner::DrawEffects(Camera* pCamera, Projection* pProj)
+void Runner::DrawEffects(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight)
 {
+	// ★★★ 凍結中は氷ブロックを描画 ★★★
+	if (m_bFrozen && m_pIceBlock)
+	{
+		m_pIceBlock->Draw(m_pIceBlock->m_pEngine, pCamera, pProj, pAmbient, pLight);
+	}
 }
 
 void Runner::DrawStaminaGauge(Engine* pEngine)
@@ -156,6 +358,8 @@ void Runner::DebugPrint(Engine* pEngine)
 	pEngine->DrawPrintf(0, 350, FONT_GOTHIC40, Color::BLUE, "Name: %s", m_characterName.c_str());
 	pEngine->DrawPrintf(0, 400, FONT_GOTHIC40, Color::BLUE, "Local: %s", m_bIsLocal ? "Yes" : "No");
 	pEngine->DrawPrintf(0, 450, FONT_GOTHIC40, Color::BLUE, "Stamina: %.1f", m_stamina);
+	pEngine->DrawPrintf(0, 500, FONT_GOTHIC40, Color::BLUE, "Frozen: %s (%.1f%%)",
+		m_bFrozen ? "Yes" : "No", m_frozenAmount * 100.0f);
 }
 
 void Runner::UpdateStamina(float deltaTime)
@@ -233,6 +437,17 @@ void Runner::LoadParameter()
 	f_fatigueRecoveryThreshold = config["fatigueRecoveryThreshold"];
 	f_gaugeColorThresholds = config["gaugeColorThresholds"].get<std::vector<float>>();
 	f_eyePsoitionY = config["eyePsoitionY"];
+
+	// ★★★ 氷関連のパラメータ読み込み ★★★
+	if (config.contains("meltRange"))
+	{
+		f_meltRange = config["meltRange"];
+	}
+	if (config.contains("meltSpeed"))
+	{
+		f_meltSpeed = config["meltSpeed"];
+	}
+
 	for (int i = 0; i < 2; i++)
 	{
 		f_gaugeSourSize[i] = config["gaugeSourSize"][i];
@@ -246,7 +461,6 @@ void Runner::LoadParameter()
 	}
 }
 
-// ★★★ プレイヤー固有の速度変更 ★★★
 void Runner::ChangeSpeed()
 {
 	if (m_bFatigued)

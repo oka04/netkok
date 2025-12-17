@@ -38,7 +38,7 @@ public:
 	const float& GetRadius()const;
 	const float& GetArrowAngle()const;
 
-	virtual void DrawEffects(Camera* pCamera, Projection* pProj) = 0;
+	virtual void DrawEffects(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight) = 0;
 	// ★★★ ネットワーク関連メソッド ★★★
 	virtual NetPlayerState GetNetState() const;
 	virtual void UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& light, float deltaTime);
