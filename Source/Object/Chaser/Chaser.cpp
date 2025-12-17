@@ -569,21 +569,22 @@ void Chaser::CheckBreathHitPlayers(const std::vector<std::pair<uint32_t, Charact
 	D3DXVECTOR3 lightPos(light.Position.x, light.Position.y, light.Position.z);
 	D3DXVECTOR3 lightDir(light.Direction.x, light.Direction.y, light.Direction.z);
 	float lightRange = light.Range;
-	float lightConeAngle = light.Theta;  // 内側の円錐角度
+	float lightConeAngle = light.Theta;
 
-										 // デバッグログ用
+	// デバッグログ用
 	static DWORD lastLog = 0;
 	DWORD now = timeGetTime();
 	bool shouldLog = (now - lastLog > 2000);
 
 	if (shouldLog)
 	{
-		NET_LOG_F("[Chaser::CheckBreathHitPlayers] 鬼ID=%u ライト Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f) Range=%.2f",
-			m_clientId, lightPos.x, lightPos.y, lightPos.z,
+		NET_LOG_F("[Chaser::CheckBreathHitPlayers] 鬼[%u] ブレス判定開始: 対象プレイヤー=%d人",
+			m_clientId, (int)players.size());
+		NET_LOG_F("  ライト Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f) Range=%.2f",
+			lightPos.x, lightPos.y, lightPos.z,
 			lightDir.x, lightDir.y, lightDir.z, lightRange);
 	}
 
-	// ★★★ 各プレイヤーをチェック ★★★
 	int checkedCount = 0;
 	int frozenCount = 0;
 
@@ -592,93 +593,83 @@ void Chaser::CheckBreathHitPlayers(const std::vector<std::pair<uint32_t, Charact
 		uint32_t id = pair.first;
 		CharacterBase* pChar = pair.second;
 
-		// ★★★ 重要: 自分自身はスキップ（鬼は自分を凍結させない）★★★
+		// 自分自身はスキップ
 		if (id == m_clientId)
 		{
 			if (shouldLog)
 			{
-				NET_LOG_F("[Chaser::CheckBreathHitPlayers] スキップ: Player[%u] - 自分自身（鬼）", id);
+				NET_LOG_F("  [%u]: スキップ（自分）", id);
 			}
 			continue;
 		}
 
-		// プレイヤーが存在しない場合はスキップ
 		if (!pChar)
 		{
 			if (shouldLog)
 			{
-				NET_LOG_F("[Chaser::CheckBreathHitPlayers] スキップ: Player[%u] - 存在しない", id);
+				NET_LOG_F("  [%u]: スキップ（null）", id);
 			}
 			continue;
 		}
 
-		// Runnerでない場合はスキップ
 		Runner* pRunner = dynamic_cast<Runner*>(pChar);
 		if (!pRunner)
 		{
 			if (shouldLog)
 			{
-				NET_LOG_F("[Chaser::CheckBreathHitPlayers] スキップ: Player[%u] - Runnerではない", id);
+				NET_LOG_F("  [%u]: スキップ（Runnerでない）", id);
 			}
 			continue;
 		}
 
-		// 既に凍結している場合はスキップ
 		if (pRunner->IsFrozen())
 		{
 			if (shouldLog)
 			{
-				NET_LOG_F("[Chaser::CheckBreathHitPlayers] スキップ: Player[%u] - 既に凍結済み", id);
+				NET_LOG_F("  [%u]: スキップ（既に凍結）", id);
 			}
 			continue;
 		}
 
 		checkedCount++;
 
-		// ★★★ プレイヤーの中心位置を取得 ★★★
 		D3DXVECTOR3 playerPos = pRunner->GetCenterPosition();
-
-		// ★★★ ライトからの距離をチェック ★★★
 		D3DXVECTOR3 toPlayer = playerPos - lightPos;
 		float distance = D3DXVec3Length(&toPlayer);
 
-		// 範囲外
 		if (distance > lightRange)
 		{
 			if (shouldLog)
 			{
-				NET_LOG_F("  Player[%u]: 範囲外 Dist=%.2f > Range=%.2f", id, distance, lightRange);
+				NET_LOG_F("  [%u]: 範囲外 Dist=%.2f", id, distance);
 			}
 			continue;
 		}
 
-		// ★★★ ライトの方向内にいるかチェック（円錐形の範囲） ★★★
 		D3DXVec3Normalize(&toPlayer, &toPlayer);
 		float dotProduct = D3DXVec3Dot(&toPlayer, &lightDir);
-
-		// 円錐の範囲を広めに取る（元の角度の2倍）
 		float coneThreshold = cosf(lightConeAngle * 2.0f);
 
 		if (dotProduct < coneThreshold)
 		{
 			if (shouldLog)
 			{
-				NET_LOG_F("  Player[%u]: 円錐外 Dot=%.3f < Threshold=%.3f", id, dotProduct, coneThreshold);
+				NET_LOG_F("  [%u]: 円錐外 Dot=%.3f", id, dotProduct);
 			}
 			continue;
 		}
 
-		// ★★★ ヒット！凍結させる（対象プレイヤーのIDを明示的にログ出力）★★★
+		// ★★★ ヒット！凍結させる ★★★
 		pRunner->SetFrozen(true);
 		frozenCount++;
 
-		NET_LOG_F("[Chaser] ★★★ブレスヒット！★★★ 鬼[%u] -> Runner[%u]を凍結 Dist=%.2f Dot=%.3f",
+		NET_LOG_F("[Chaser] ★★★ブレスヒット★★★ 鬼[%u] -> Runner[%u]を凍結! Dist=%.2f Dot=%.3f",
 			m_clientId, id, distance, dotProduct);
 	}
 
 	if (shouldLog)
 	{
-		NET_LOG_F("[Chaser::CheckBreathHitPlayers] 鬼ID=%u チェック=%d 凍結=%d",
+		NET_LOG_F("[Chaser::CheckBreathHitPlayers] 鬼[%u] 結果: チェック=%d 凍結=%d",
 			m_clientId, checkedCount, frozenCount);
 		lastLog = now;
 	}

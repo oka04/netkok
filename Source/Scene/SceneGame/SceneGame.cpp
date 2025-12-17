@@ -456,45 +456,36 @@ void SceneGame::UpdateRemotePlayers()
 }
 void SceneGame::CheckBreathHitPlayers()
 {
-	// すべての鬼プレイヤーのブレスヒット判定
-	for (auto& kv : m_players)
+	// ★★★ 重要: ローカルプレイヤーが鬼の場合のみヒット判定を行う ★★★
+	// リモートの鬼のブレスヒット判定は、その鬼のクライアント側で行われる
+	if (!m_pLocalPlayer || m_localRole != ROLE_CHASER)
+		return;
+
+	Chaser* localChaser = dynamic_cast<Chaser*>(m_pLocalPlayer);
+	if (!localChaser || !localChaser->IsBreathing())
+		return;
+
+	// ★★★ プレイヤーリストを作成（リモートプレイヤーのみ）★★★
+	std::vector<std::pair<uint32_t, CharacterBase*>> playerList;
+	for (auto& p : m_players)
 	{
-		if (!kv.second) continue;
-		if (m_playerRoles[kv.first] != ROLE_CHASER) continue;
-
-		Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
-		if (!chaser || !chaser->IsBreathing()) continue;
-
-		// プレイヤーリストを作成
-		std::vector<std::pair<uint32_t, CharacterBase*>> playerList;
-		for (auto& p : m_players)
+		// 逃げる側のみを対象とする
+		if (m_playerRoles[p.first] == ROLE_RUNNER && p.second)
 		{
 			playerList.push_back(p);
 		}
-
-		// ローカルプレイヤーも追加
-		if (m_pLocalPlayer)
-		{
-			playerList.push_back({ m_localClientId, m_pLocalPlayer });
-		}
-
-		// ヒット判定
-		chaser->CheckBreathHitPlayers(playerList);
 	}
 
-	// ローカルプレイヤーが鬼の場合もチェック
-	if (m_pLocalPlayer && m_localRole == ROLE_CHASER)
+	// ヒット判定
+	localChaser->CheckBreathHitPlayers(playerList);
+
+	static DWORD lastLog = 0;
+	DWORD now = timeGetTime();
+	if (now - lastLog > 3000)
 	{
-		Chaser* localChaser = dynamic_cast<Chaser*>(m_pLocalPlayer);
-		if (localChaser && localChaser->IsBreathing())
-		{
-			std::vector<std::pair<uint32_t, CharacterBase*>> playerList;
-			for (auto& p : m_players)
-			{
-				playerList.push_back(p);
-			}
-			localChaser->CheckBreathHitPlayers(playerList);
-		}
+		NET_LOG_F("[SceneGame::CheckBreathHitPlayers] ローカル鬼[%u]のヒット判定: 対象=%d人",
+			m_localClientId, (int)playerList.size());
+		lastLog = now;
 	}
 }
 
@@ -566,32 +557,29 @@ void SceneGame::ReceiveWorldState()
 		{
 			const NetPlayerState& ps = world.players[i];
 
-			// ★★★ 重要: 自分自身の状態は適用しない（氷状態含む）★★★
+			// ★★★ 自分自身の状態は適用しない ★★★
 			if (ps.clientId == m_localClientId) continue;
 
+			// ★★★ 重要: ps.clientId のプレイヤーを m_players から探す ★★★
 			auto it = m_players.find(ps.clientId);
 			if (it != m_players.end() && it->second)
 			{
-				// ★★★ 重要修正: 必ず正しいプレイヤーに状態を適用 ★★★
-				// ps.clientId のプレイヤーの状態を、ps.clientId のプレイヤーに適用する
-
-				// 基本状態の更新
+				// ★★★ ps.clientId のプレイヤーに ps の状態を適用 ★★★
 				it->second->UpdateFromNetwork(ps, m_light, m_deltaTime);
 
 				// デバッグログ: 氷状態の適用を確認
 				if (ps.frozen != 0 && now - lastLogTime > 3000)
 				{
-					NET_LOG_F("[SceneGame::ReceiveWorldState] ID=%u の氷状態を適用: frozen=%d amount=%.2f",
+					NET_LOG_F("[SceneGame::ReceiveWorldState] プレイヤー[%u]に氷状態を適用: frozen=%d amount=%.2f",
 						ps.clientId, ps.frozen, ps.frozenAmount);
 				}
 
-				// ★★★ 重要修正: 鬼のライト情報を即座に適用 ★★★
+				// 鬼のライト情報を即座に適用
 				if (m_playerRoles[ps.clientId] == ROLE_CHASER)
 				{
 					Chaser* chaser = dynamic_cast<Chaser*>(it->second);
 					if (chaser)
 					{
-						// ライト情報をネットワークデータから設定
 						D3DXVECTOR3 lightPos(ps.lightPosX, ps.lightPosY, ps.lightPosZ);
 						D3DXVECTOR3 lightDir(ps.lightDirX, ps.lightDirY, ps.lightDirZ);
 
@@ -602,7 +590,6 @@ void SceneGame::ReceiveWorldState()
 							light->SetDirection(lightDir);
 							light->SetRange(ps.lightRange);
 
-							// ★★★ 追加: ライトをデバイスに即座に設定 ★★★
 							int lightIndex = 0;
 							if (m_localRole == ROLE_CHASER && m_pLocalPlayer)
 							{
@@ -618,13 +605,11 @@ void SceneGame::ReceiveWorldState()
 							light->SetDevice(m_pEngine, lightIndex);
 						}
 
-						// ライトの更新
 						chaser->UpdateLight(m_pEngine);
 
-						// デバッグログ
 						if (now - lastLogTime > 3000)
 						{
-							NET_LOG_F("[SceneGame::ReceiveWorldState] ID=%u にライト適用: Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
+							NET_LOG_F("[SceneGame::ReceiveWorldState] プレイヤー[%u]にライト適用: Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
 								ps.clientId, lightPos.x, lightPos.y, lightPos.z, lightDir.x, lightDir.y, lightDir.z);
 						}
 					}

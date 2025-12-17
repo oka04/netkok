@@ -265,24 +265,17 @@ NetPlayerState Runner::GetNetState() const
 
 void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& light, float deltaTime)
 {
-	// ★★★ 重要: クライアントIDの一致を確認 ★★★
-	if (state.clientId != m_clientId)
-	{
-		NET_LOG_F("[Runner::UpdateFromNetwork] 警告! 不正な状態適用: state.clientId=%u != m_clientId=%u",
-			state.clientId, m_clientId);
-		return;
-	}
-
 	CharacterBase::UpdateFromNetwork(state, light, deltaTime);
 
-	// ★★★ 氷状態の同期（必ず自分の状態のみ適用）★★★
+	// ★★★ 氷状態の同期（state.clientIdは自分のIDと一致しているはず）★★★
 	bool wasFrozen = m_bFrozen;
 	m_bFrozen = (state.frozen != 0);
 	m_frozenAmount = state.frozenAmount;
 
 	if (!wasFrozen && m_bFrozen)
 	{
-		NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 凍結開始（state.clientId=%u）", m_clientId, state.clientId);
+		NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 凍結開始（state.clientId=%u frozen=%d amount=%.2f）",
+			m_clientId, state.clientId, state.frozen, state.frozenAmount);
 	}
 	else if (wasFrozen && !m_bFrozen)
 	{
