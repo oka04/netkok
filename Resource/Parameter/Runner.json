@@ -30,7 +30,7 @@
   "gaugeDestSize": [400, 40], 
   "gaugePosition": [25, 50], 
   "standEyePosition": [0.0, 1.5, 0.0], 
-  "crouchEyePosition": [0.0, 1.2, 0.0]
+  "crouchEyePosition": [0.0, 1.2, 0.0],
   "meltRange": 5.0,
   "meltSpeed": 0.5
 }
