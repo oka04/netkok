@@ -578,7 +578,7 @@ void Chaser::CheckBreathHitPlayers(const std::vector<std::pair<uint32_t, Charact
 
 	if (shouldLog)
 	{
-		NET_LOG_F("[Chaser::CheckBreathHitPlayers] ID=%u ライト Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f) Range=%.2f",
+		NET_LOG_F("[Chaser::CheckBreathHitPlayers] 鬼ID=%u ライト Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f) Range=%.2f",
 			m_clientId, lightPos.x, lightPos.y, lightPos.z,
 			lightDir.x, lightDir.y, lightDir.z, lightRange);
 	}
@@ -592,22 +592,46 @@ void Chaser::CheckBreathHitPlayers(const std::vector<std::pair<uint32_t, Charact
 		uint32_t id = pair.first;
 		CharacterBase* pChar = pair.second;
 
-		// 自分自身はスキップ
+		// ★★★ 重要: 自分自身はスキップ（鬼は自分を凍結させない）★★★
 		if (id == m_clientId)
+		{
+			if (shouldLog)
+			{
+				NET_LOG_F("[Chaser::CheckBreathHitPlayers] スキップ: Player[%u] - 自分自身（鬼）", id);
+			}
 			continue;
+		}
 
 		// プレイヤーが存在しない場合はスキップ
 		if (!pChar)
+		{
+			if (shouldLog)
+			{
+				NET_LOG_F("[Chaser::CheckBreathHitPlayers] スキップ: Player[%u] - 存在しない", id);
+			}
 			continue;
+		}
 
 		// Runnerでない場合はスキップ
 		Runner* pRunner = dynamic_cast<Runner*>(pChar);
 		if (!pRunner)
+		{
+			if (shouldLog)
+			{
+				NET_LOG_F("[Chaser::CheckBreathHitPlayers] スキップ: Player[%u] - Runnerではない", id);
+			}
 			continue;
+		}
 
 		// 既に凍結している場合はスキップ
 		if (pRunner->IsFrozen())
+		{
+			if (shouldLog)
+			{
+				NET_LOG_F("[Chaser::CheckBreathHitPlayers] スキップ: Player[%u] - 既に凍結済み", id);
+			}
 			continue;
+		}
 
 		checkedCount++;
 
@@ -644,17 +668,17 @@ void Chaser::CheckBreathHitPlayers(const std::vector<std::pair<uint32_t, Charact
 			continue;
 		}
 
-		// ★★★ ヒット！凍結させる ★★★
+		// ★★★ ヒット！凍結させる（対象プレイヤーのIDを明示的にログ出力）★★★
 		pRunner->SetFrozen(true);
 		frozenCount++;
 
-		NET_LOG_F("[Chaser] ブレスヒット！ 鬼[%u] -> Runner[%u] Dist=%.2f Dot=%.3f",
+		NET_LOG_F("[Chaser] ★★★ブレスヒット！★★★ 鬼[%u] -> Runner[%u]を凍結 Dist=%.2f Dot=%.3f",
 			m_clientId, id, distance, dotProduct);
 	}
 
 	if (shouldLog)
 	{
-		NET_LOG_F("[Chaser::CheckBreathHitPlayers] ID=%u チェック=%d 凍結=%d",
+		NET_LOG_F("[Chaser::CheckBreathHitPlayers] 鬼ID=%u チェック=%d 凍結=%d",
 			m_clientId, checkedCount, frozenCount);
 		lastLog = now;
 	}

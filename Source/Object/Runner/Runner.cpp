@@ -265,20 +265,40 @@ NetPlayerState Runner::GetNetState() const
 
 void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& light, float deltaTime)
 {
+	// ★★★ 重要: クライアントIDの一致を確認 ★★★
+	if (state.clientId != m_clientId)
+	{
+		NET_LOG_F("[Runner::UpdateFromNetwork] 警告! 不正な状態適用: state.clientId=%u != m_clientId=%u",
+			state.clientId, m_clientId);
+		return;
+	}
+
 	CharacterBase::UpdateFromNetwork(state, light, deltaTime);
 
-	// ★★★ 氷状態の同期 ★★★
+	// ★★★ 氷状態の同期（必ず自分の状態のみ適用）★★★
 	bool wasFrozen = m_bFrozen;
 	m_bFrozen = (state.frozen != 0);
 	m_frozenAmount = state.frozenAmount;
 
 	if (!wasFrozen && m_bFrozen)
 	{
-		NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 凍結開始", m_clientId);
+		NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 凍結開始（state.clientId=%u）", m_clientId, state.clientId);
 	}
 	else if (wasFrozen && !m_bFrozen)
 	{
-		NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 凍結解除", m_clientId);
+		NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 凍結解除（state.clientId=%u）", m_clientId, state.clientId);
+	}
+
+	// 氷状態が変化した場合は詳細ログ
+	static std::map<uint32_t, bool> lastFrozenState;
+	if (lastFrozenState[m_clientId] != m_bFrozen)
+	{
+		NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u の氷状態が変化: %s -> %s (amount=%.2f)",
+			m_clientId,
+			lastFrozenState[m_clientId] ? "凍結" : "通常",
+			m_bFrozen ? "凍結" : "通常",
+			m_frozenAmount);
+		lastFrozenState[m_clientId] = m_bFrozen;
 	}
 }
 

@@ -566,13 +566,24 @@ void SceneGame::ReceiveWorldState()
 		{
 			const NetPlayerState& ps = world.players[i];
 
+			// ★★★ 重要: 自分自身の状態は適用しない（氷状態含む）★★★
 			if (ps.clientId == m_localClientId) continue;
 
 			auto it = m_players.find(ps.clientId);
 			if (it != m_players.end() && it->second)
 			{
+				// ★★★ 重要修正: 必ず正しいプレイヤーに状態を適用 ★★★
+				// ps.clientId のプレイヤーの状態を、ps.clientId のプレイヤーに適用する
+
 				// 基本状態の更新
 				it->second->UpdateFromNetwork(ps, m_light, m_deltaTime);
+
+				// デバッグログ: 氷状態の適用を確認
+				if (ps.frozen != 0 && now - lastLogTime > 3000)
+				{
+					NET_LOG_F("[SceneGame::ReceiveWorldState] ID=%u の氷状態を適用: frozen=%d amount=%.2f",
+						ps.clientId, ps.frozen, ps.frozenAmount);
+				}
 
 				// ★★★ 重要修正: 鬼のライト情報を即座に適用 ★★★
 				if (m_playerRoles[ps.clientId] == ROLE_CHASER)
@@ -622,7 +633,6 @@ void SceneGame::ReceiveWorldState()
 		}
 	}
 }
-
 void SceneGame::ReceiveFromServer()
 {
 	if (!m_pClient) return;

@@ -361,6 +361,14 @@ NetPlayerState CharacterBase::GetNetState() const
 // ★★★ ネットワークからの更新 ★★★
 void CharacterBase::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& light, float deltaTime)
 {
+	// ★★★ 重要: 必ず正しいクライアントIDの状態を更新していることを確認 ★★★
+	if (state.clientId != m_clientId)
+	{
+		NET_LOG_F("[CharacterBase::UpdateFromNetwork] 警告! 不正な状態適用: state.clientId=%u != m_clientId=%u",
+			state.clientId, m_clientId);
+		return;  // 異なるプレイヤーの状態は適用しない
+	}
+
 	DWORD now = timeGetTime();
 
 	// タイムスタンプ管理
