@@ -350,21 +350,53 @@ void SceneGame::UpdateLocalPlayer()
 {
 	if (!m_pLocalPlayer) return;
 
+	// ★★★ 逃げる側の場合、凍結状態の変化を監視 ★★★
+	static bool lastFrozenState = false;
+	static float lastFrozenAmount = 0.0f;
+
 	if (m_localRole == ROLE_RUNNER)
 	{
 		Runner* runner = dynamic_cast<Runner*>(m_pLocalPlayer);
 		if (runner)
 		{
+			bool currentFrozen = runner->IsFrozen();
+			float currentAmount = runner->GetFrozenAmount();
+
+			// 凍結状態が変化したら即座に送信
+			if (lastFrozenState != currentFrozen)
+			{
+				NET_LOG_F("[SceneGame::UpdateLocalPlayer] ローカルプレイヤー[%u]の凍結状態変化: %s -> %s",
+					m_localClientId,
+					lastFrozenState ? "凍結" : "通常",
+					currentFrozen ? "凍結" : "通常");
+
+				SyncToServer();
+				lastFrozenState = currentFrozen;
+				lastFrozenAmount = currentAmount;
+			}
+			// 凍結中で溶け具合が変化したら送信
+			else if (currentFrozen && abs(lastFrozenAmount - currentAmount) > 0.01f)
+			{
+				static DWORD lastSync = 0;
+				DWORD now = timeGetTime();
+				// 100msごとに送信（頻度を抑える）
+				if (now - lastSync > 100)
+				{
+					SyncToServer();
+					lastFrozenAmount = currentAmount;
+					lastSync = now;
+				}
+			}
+
 			runner->Update(m_pEngine, m_map, m_camera, m_light, m_deltaTime);
+			}
 		}
-	}
 	else if (m_localRole == ROLE_CHASER)
 	{
 		Chaser* chaser = dynamic_cast<Chaser*>(m_pLocalPlayer);
 		if (chaser)
 		{
 			chaser->Update(m_pEngine, m_map, m_camera, m_light, m_deltaTime);
-			// ★★★ 修正: ローカルの鬼のライトを毎フレーム更新 ★★★
 			chaser->UpdateLight(m_pEngine);
 		}
 	}
@@ -390,7 +422,6 @@ void SceneGame::UpdateLocalPlayer()
 	m_bFirstPerson = true;
 #endif
 	}
-
 void SceneGame::UpdateRemotePlayers()
 {
 	static DWORD lastLog = 0;
@@ -456,68 +487,103 @@ void SceneGame::UpdateRemotePlayers()
 }
 void SceneGame::CheckBreathHitPlayers()
 {
-	// ★★★ 重要: ローカルプレイヤーが鬼の場合のみヒット判定を行う ★★★
-	// リモートの鬼のブレスヒット判定は、その鬼のクライアント側で行われる
-	if (!m_pLocalPlayer || m_localRole != ROLE_CHASER)
-		return;
-
-	Chaser* localChaser = dynamic_cast<Chaser*>(m_pLocalPlayer);
-	if (!localChaser || !localChaser->IsBreathing())
-		return;
-
-	// ★★★ プレイヤーリストを作成（リモートプレイヤーのみ）★★★
-	std::vector<std::pair<uint32_t, CharacterBase*>> playerList;
-	for (auto& p : m_players)
+	// ★★★ ケース1: ローカル鬼がリモート逃げる側をチェック ★★★
+	if (m_pLocalPlayer && m_localRole == ROLE_CHASER)
 	{
-		// 逃げる側のみを対象とする
-		if (m_playerRoles[p.first] == ROLE_RUNNER && p.second)
+		Chaser* localChaser = dynamic_cast<Chaser*>(m_pLocalPlayer);
+		if (localChaser && localChaser->IsBreathing())
 		{
-			playerList.push_back(p);
+			std::vector<std::pair<uint32_t, CharacterBase*>> playerList;
+			for (auto& p : m_players)
+			{
+				if (m_playerRoles[p.first] == ROLE_RUNNER && p.second)
+				{
+					playerList.push_back(p);
+				}
+			}
+
+			std::map<uint32_t, bool> beforeFrozen;
+			for (auto& p : playerList)
+			{
+				Runner* runner = dynamic_cast<Runner*>(p.second);
+				if (runner)
+				{
+					beforeFrozen[p.first] = runner->IsFrozen();
+				}
+			}
+
+			localChaser->CheckBreathHitPlayers(playerList);
+
+			bool stateChanged = false;
+			for (auto& p : playerList)
+			{
+				Runner* runner = dynamic_cast<Runner*>(p.second);
+				if (runner && beforeFrozen[p.first] != runner->IsFrozen())
+				{
+					stateChanged = true;
+					NET_LOG_F("[SceneGame::CheckBreathHitPlayers] プレイヤー[%u]の凍結状態が変化",
+						p.first);
+				}
+			}
+
+			if (stateChanged)
+			{
+				SyncToServer();
+			}
 		}
 	}
 
-	// ヒット判定実行前の凍結状態を記録
-	std::map<uint32_t, bool> beforeFrozen;
-	for (auto& p : playerList)
+	// ★★★ ケース2: ローカル逃げる側がリモート鬼のブレスをチェック ★★★
+	if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
 	{
-		Runner* runner = dynamic_cast<Runner*>(p.second);
-		if (runner)
+		Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
+		if (!localRunner || localRunner->IsFrozen())
+			return;  // 既に凍結していたらチェック不要
+
+					 // すべての鬼のブレスをチェック
+		for (auto& kv : m_players)
 		{
-			beforeFrozen[p.first] = runner->IsFrozen();
+			if (m_playerRoles[kv.first] != ROLE_CHASER)
+				continue;
+
+			Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
+			if (!chaser || !chaser->IsBreathing())
+				continue;
+
+			// この鬼のブレスが当たったかチェック
+			SpotLight* light = chaser->GetLights();
+			if (!light)
+				continue;
+
+			const D3DLIGHT9& lightData = light->GetLight();
+			D3DXVECTOR3 lightPos(lightData.Position.x, lightData.Position.y, lightData.Position.z);
+			D3DXVECTOR3 lightDir(lightData.Direction.x, lightData.Direction.y, lightData.Direction.z);
+			float lightRange = lightData.Range;
+			float lightConeAngle = lightData.Theta;
+
+			D3DXVECTOR3 playerPos = localRunner->GetCenterPosition();
+			D3DXVECTOR3 toPlayer = playerPos - lightPos;
+			float distance = D3DXVec3Length(&toPlayer);
+
+			if (distance > lightRange)
+				continue;
+
+			D3DXVec3Normalize(&toPlayer, &toPlayer);
+			float dotProduct = D3DXVec3Dot(&toPlayer, &lightDir);
+			float coneThreshold = cosf(lightConeAngle * 2.0f);
+
+			if (dotProduct < coneThreshold)
+				continue;
+
+			// ★★★ ヒット！自分を凍結 ★★★
+			localRunner->SetFrozen(true);
+			NET_LOG_F("[SceneGame] ★★★ローカルプレイヤー[%u]が鬼[%u]のブレスに当たった！★★★",
+				m_localClientId, kv.first);
+
+			// 即座に状態を送信
+			SyncToServer();
+			return;  // 1つの鬼に当たったら終了
 		}
-	}
-
-	// ヒット判定
-	localChaser->CheckBreathHitPlayers(playerList);
-
-	// ★★★ 凍結状態が変化したプレイヤーがいれば即座に同期 ★★★
-	bool stateChanged = false;
-	for (auto& p : playerList)
-	{
-		Runner* runner = dynamic_cast<Runner*>(p.second);
-		if (runner && beforeFrozen[p.first] != runner->IsFrozen())
-		{
-			stateChanged = true;
-			NET_LOG_F("[SceneGame::CheckBreathHitPlayers] プレイヤー[%u]の凍結状態が変化: %s -> %s",
-				p.first,
-				beforeFrozen[p.first] ? "凍結" : "通常",
-				runner->IsFrozen() ? "凍結" : "通常");
-		}
-	}
-
-	// 状態が変化した場合は即座にサーバーに送信
-	if (stateChanged)
-	{
-		SyncToServer();
-	}
-
-	static DWORD lastLog = 0;
-	DWORD now = timeGetTime();
-	if (now - lastLog > 3000)
-	{
-		NET_LOG_F("[SceneGame::CheckBreathHitPlayers] ローカル鬼[%u]のヒット判定: 対象=%d人 状態変化=%s",
-			m_localClientId, (int)playerList.size(), stateChanged ? "あり" : "なし");
-		lastLog = now;
 	}
 }
 
@@ -630,14 +696,53 @@ void SceneGame::ReceiveWorldState()
 		{
 			const NetPlayerState& ps = world.players[i];
 
-			// ★★★ 自分自身の状態は適用しない ★★★
-			if (ps.clientId == m_localClientId) continue;
+			// ★★★ 重要修正: 自分の氷状態だけは受信する ★★★
+			if (ps.clientId == m_localClientId)
+			{
+				// ローカルプレイヤーが逃げる側の場合、氷状態のみ更新
+				if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
+				{
+					Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
+					if (localRunner)
+					{
+						bool wasFrozen = localRunner->IsFrozen();
+						bool newFrozen = (ps.frozen != 0);
 
-			// ★★★ 重要: ps.clientId のプレイヤーを m_players から探す ★★★
+						if (!wasFrozen && newFrozen)
+						{
+							// 新規凍結
+							localRunner->SetFrozen(true);
+							NET_LOG_F("[SceneGame::ReceiveWorldState] ★★★ローカルプレイヤー[%u]が凍結された！★★★",
+								m_localClientId);
+						}
+						else if (wasFrozen && newFrozen)
+						{
+							// 凍結継続 - 溶け具合を更新
+							float oldAmount = localRunner->GetFrozenAmount();
+
+							if (abs(oldAmount - ps.frozenAmount) > 0.05f && now - lastLogTime > 1000)
+							{
+								NET_LOG_F("[SceneGame::ReceiveWorldState] ローカルプレイヤー[%u]の氷が溶けている: %.2f -> %.2f",
+									m_localClientId, oldAmount, ps.frozenAmount);
+							}
+						}
+						else if (wasFrozen && !newFrozen)
+						{
+							// 凍結解除
+							localRunner->SetFrozen(false);
+							NET_LOG_F("[SceneGame::ReceiveWorldState] ローカルプレイヤー[%u]の凍結解除",
+								m_localClientId);
+						}
+					}
+				}
+				continue;  // 位置などその他の情報はスキップ
+			}
+
+			// ★★★ リモートプレイヤーの状態を更新 ★★★
 			auto it = m_players.find(ps.clientId);
 			if (it != m_players.end() && it->second)
 			{
-				// ★★★ ps.clientId のプレイヤーに ps の状態を適用 ★★★
+				// 基本状態の更新
 				it->second->UpdateFromNetwork(ps, m_light, m_deltaTime);
 
 				// デバッグログ: 氷状態の適用を確認
@@ -1579,9 +1684,21 @@ void SceneGame::Draw()
 			const char* roleStr = (m_localRole == ROLE_CHASER) ? "鬼" : "逃げる側";
 			D3DXVECTOR3 pos = m_pLocalPlayer->GetPosition();
 
+			// ★★★ 凍結状態を表示 ★★★
+			const char* frozenStr = "";
+			if (m_localRole == ROLE_RUNNER)
+			{
+				Runner* runner = dynamic_cast<Runner*>(m_pLocalPlayer);
+				if (runner && runner->IsFrozen())
+				{
+					frozenStr = " [凍結中]";
+					color = Color::BLUE;
+				}
+			}
+
 			m_pEngine->DrawPrintf(0, yOffset, FONT_GOTHIC40, color,
-				"Local[%u]: %s [%s] Pos=(%.1f,%.1f,%.1f)",
-				m_localClientId, m_pLocalPlayer->GetCharacterName().c_str(), roleStr,
+				"Local[%u]: %s [%s]%s Pos=(%.1f,%.1f,%.1f)",
+				m_localClientId, m_pLocalPlayer->GetCharacterName().c_str(), roleStr, frozenStr,
 				pos.x, pos.y, pos.z);
 			yOffset += 50;
 		}
@@ -1598,9 +1715,21 @@ void SceneGame::Draw()
 			const char* roleStr = (m_playerRoles[kv.first] == ROLE_CHASER) ? "鬼" : "逃げる側";
 			D3DXVECTOR3 pos = kv.second->GetPosition();
 
+			// ★★★ 凍結状態を表示 ★★★
+			const char* frozenStr = "";
+			if (m_playerRoles[kv.first] == ROLE_RUNNER)
+			{
+				Runner* runner = dynamic_cast<Runner*>(kv.second);
+				if (runner && runner->IsFrozen())
+				{
+					frozenStr = " [凍結中]";
+					color = Color::BLUE;
+				}
+			}
+
 			m_pEngine->DrawPrintf(0, yOffset, FONT_GOTHIC40, color,
-				"Remote[%u]: %s [%s] Pos=(%.1f,%.1f,%.1f)",
-				kv.first, kv.second->GetCharacterName().c_str(), roleStr,
+				"Remote[%u]: %s [%s]%s Pos=(%.1f,%.1f,%.1f)",
+				kv.first, kv.second->GetCharacterName().c_str(), roleStr, frozenStr,
 				pos.x, pos.y, pos.z);
 			yOffset += 50;
 		}

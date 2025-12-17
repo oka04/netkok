@@ -123,16 +123,26 @@ void Runner::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 	}
 	else
 	{
-		// 凍結中は移動不可
+		// ★★★ 凍結中は完全に動けない ★★★
 		m_speed = 0.0f;
 		m_keyFlag = 0x00;  // すべてのキー入力をクリア
 
-						   // ★★★ 凍結中は氷ブロックの位置を毎フレーム更新 ★★★
+						   // 氷ブロックの位置を毎フレーム更新
 		if (m_pIceBlock)
 		{
 			D3DXVECTOR3 centerPos = GetCenterPosition();
 			m_pIceBlock->SetPosition(centerPos);
 			m_pIceBlock->SetMeltAmount(m_frozenAmount);
+		}
+
+		// デバッグログ
+		static DWORD lastLog = 0;
+		DWORD now = timeGetTime();
+		if (now - lastLog > 2000)
+		{
+			NET_LOG_F("[Runner::Update] ID=%u 凍結中で動けない: amount=%.2f",
+				m_clientId, m_frozenAmount);
+			lastLog = now;
 		}
 	}
 
