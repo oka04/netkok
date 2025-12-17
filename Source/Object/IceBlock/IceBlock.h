@@ -1,4 +1,4 @@
-﻿// IceBlock.h - 溶ける氷ブロッククラス
+﻿// IceBlock.h - 溶ける氷ブロッククラス（球体版）
 #pragma once
 
 #include "../../GameBase.h"
@@ -51,10 +51,9 @@ public:
 
 private:
 	void UpdateWorldMatrix();
-	void CreateShaderEffect(Engine* pEngine);
 	void ReleaseResources();
 
-	Primitive m_primitive;
+	Primitive m_primitiveSphere;  // ★★★ 球体メッシュのみ使用 ★★★
 
 	D3DXVECTOR3 m_position;
 	D3DXVECTOR3 m_rotation;
@@ -68,9 +67,6 @@ private:
 	float m_elapsedTime;          // 経過時間
 
 	D3DXVECTOR4 m_iceColor;       // 氷の色（デフォルトは青白い色）
-
-	ID3DXEffect* m_pEffect;
-	LPDIRECT3DVERTEXDECLARATION9 m_pVertexDeclaration;
 
 	bool m_autoMelt;              // 自動で溶けるか
 };

@@ -23,7 +23,12 @@ public:
 	void Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight& light, float deltaTime);
 
 	void Draw(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight);
-
+	D3DXVECTOR3 GetCenterPosition() const override
+	{
+		D3DXVECTOR3 centerPos = m_position;
+		centerPos.y += f_height / 2.0f;
+		return centerPos;
+	}
 	virtual void DrawEffects(Camera* pCamera, Projection* pProj) override;
 	virtual void DrawDepth(Engine* pEngine, const D3DXMATRIX* pMatLightVP) override;
 	void DrawStaminaGauge(Engine* pEngine) override;

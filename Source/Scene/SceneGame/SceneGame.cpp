@@ -110,13 +110,13 @@ void SceneGame::Initialize()
 	m_bInitialSyncDone = false;
 	m_bFirstPerson = true;
 
-	// ★★★ デバッグ用：氷ブロックの初期化 ★★★
 	if (!m_pDebugIceBlock)
 	{
 		m_pDebugIceBlock = new IceBlock();
-		// プレイヤーのスタート位置に配置、10秒で溶ける
+		// プレイヤーのスタート位置に配置
 		D3DXVECTOR3 startPos = m_map.GetPlayerStartPosition();
-		startPos.x += 3.0f;  // 少し横にずらす
+		// 高さの中心に調整（足元＋1.0f）
+		startPos.y += 0.9f;
 		m_pDebugIceBlock->Initialize(m_pEngine, 2.0f, 2.0f, 2.0f, startPos, 10.0f);
 
 		// 氷の色を青白く設定
@@ -150,30 +150,20 @@ void SceneGame::Update()
 		UpdateLocalPlayer();
 		UpdateRemotePlayers();
 
-		// ★★★ 修正: 鬼のライト更新を毎フレーム呼び出し ★★★
 		UpdateChaserLights();
 
 		// ★★★ デバッグ用：氷ブロックの更新 ★★★
 		if (m_pDebugIceBlock && (d_debugFlag & SHOW_ICE_BLOCK))
 		{
-			// プレイヤーの位置に追従（少し横にずらす）
+			// ★★★ プレイヤーの中心位置に追従 ★★★
 			if (m_pLocalPlayer)
 			{
-				D3DXVECTOR3 playerPos = m_pLocalPlayer->GetPosition();
-				playerPos.x += 3.0f;  // 3メートル横
-				m_pDebugIceBlock->SetPosition(playerPos);
+				D3DXVECTOR3 centerPos = m_pLocalPlayer->GetCenterPosition();
+				m_pDebugIceBlock->SetPosition(centerPos);
 			}
 
 			// 氷ブロックの更新
 			m_pDebugIceBlock->Update(m_deltaTime);
-
-			// ★★★ リセットフラグがONの場合、リセットして即OFFにする ★★★
-			if (d_debugFlag & RESET_ICE_BLOCK)
-			{
-				m_pDebugIceBlock->SetMeltAmount(0.0f);
-				d_debugFlag &= ~RESET_ICE_BLOCK;  // フラグを下ろす
-				NET_LOG("[SceneGame] 氷ブロックをリセット");
-			}
 		}
 
 		if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
@@ -1539,8 +1529,18 @@ void SceneGame::UpdateDebugFlag()
 	if (m_pEngine->GetKeyStateSync(DIK_F5)) d_debugFlag ^= PATROLLER_VIEW_LINE;
 	if (m_pEngine->GetKeyStateSync(DIK_F6)) d_debugFlag ^= STOP_GAME;
 	if (m_pEngine->GetKeyStateSync(DIK_F7)) d_debugFlag ^= DEBUG_MODE;
-	if (m_pEngine->GetKeyStateSync(DIK_F8)) d_debugFlag ^= SHOW_ICE_BLOCK;  
-	if (m_pEngine->GetKeyStateSync(DIK_F9)) d_debugFlag |= RESET_ICE_BLOCK; 
+	if (m_pEngine->GetKeyStateSync(DIK_F8)) d_debugFlag ^= SHOW_ICE_BLOCK;
+
+	// ★★★ F9キーでリセット処理（キーが押された瞬間に実行） ★★★
+	if (m_pEngine->GetKeyStateSync(DIK_F9))
+	{
+		if (m_pDebugIceBlock && (d_debugFlag & SHOW_ICE_BLOCK))
+		{
+			m_pDebugIceBlock->SetMeltAmount(0.0f);
+			NET_LOG("[SceneGame] 氷ブロックをリセット");
+}
+	}
+
 	if (m_pEngine->GetKeyStateSync(DIK_F11)) d_debugFlag ^= DISPLAY_DEBUG_STRING;
 }
 #ifdef USE_IMGUI

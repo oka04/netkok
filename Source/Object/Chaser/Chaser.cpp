@@ -580,6 +580,7 @@ void Chaser::LoadParameter()
 	f_baseVAngle = config["baseAngleV"];
 	f_headSize = config["headSize"];
 	f_radius = config["radius"];
+	f_height = config["height"];
 	f_eyePsoitionY = config["eyePsoitionY"];
 	for (int i = 0; i < 3; i++)
 	{

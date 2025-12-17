@@ -27,6 +27,13 @@ public:
 	const D3DXVECTOR3& GetDepth()const;
 	const D3DXVECTOR2& GetPosition2D()const;
 
+	virtual D3DXVECTOR3 GetCenterPosition() const
+	{
+		D3DXVECTOR3 centerPos = m_position;
+		centerPos.y += f_height / 2.0f; 
+		return centerPos;
+	}
+
 	const float& GetFov()const;
 	const float& GetRadius()const;
 	const float& GetArrowAngle()const;
@@ -102,6 +109,7 @@ protected:
 	float f_defaultSenseH;
 	float f_radius;
 	float f_headSize;
+	float f_height;
 	float f_baseHAngle;
 	float f_baseVAngle;
 	float f_eyePsoitionY;

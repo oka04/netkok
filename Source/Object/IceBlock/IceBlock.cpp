@@ -1,4 +1,4 @@
-﻿// IceBlock.cpp - 溶ける氷ブロッククラス実装
+﻿// IceBlock.cpp - 溶ける氷ブロッククラス実装（球体版）
 #define _USING_V110_SDK71_ 1
 
 #include "IceBlock.h"
@@ -13,8 +13,6 @@ IceBlock::IceBlock()
 	, m_meltDuration(0.0f)
 	, m_elapsedTime(0.0f)
 	, m_iceColor(0.7f, 0.9f, 1.0f, 0.6f)  // 青白い半透明
-	, m_pEffect(nullptr)
-	, m_pVertexDeclaration(nullptr)
 	, m_autoMelt(false)
 {
 	D3DXMatrixIdentity(&m_matWorld);
@@ -35,10 +33,12 @@ void IceBlock::Initialize(Engine* pEngine, float width, float height, float dept
 	m_elapsedTime = 0.0f;
 	m_meltAmount = 0.0f;
 
-	// ボックスプリミティブを作成
-	m_primitive.CreateBox(pEngine, width, height, depth);
+	// ★★★ 球体プリミティブを作成（元のサイズに基づく） ★★★
+	// 初期サイズは元のブロックサイズと同じくらいの直径
+	float radius = (width + height + depth) / 6.0f;  // 平均の半径
+	m_primitiveSphere.CreateSphere(pEngine, radius, 24);  // 滑らかな球体
 
-	// マテリアル設定
+														  // マテリアル設定
 	D3DMATERIAL9 material;
 	ZeroMemory(&material, sizeof(D3DMATERIAL9));
 	material.Diffuse.r = m_iceColor.x;
@@ -51,10 +51,7 @@ void IceBlock::Initialize(Engine* pEngine, float width, float height, float dept
 	material.Specular.b = 1.0f;
 	material.Specular.a = 1.0f;
 	material.Power = 32.0f;
-	m_primitive.SetMaterial(material);
-
-	// シェーダー作成
-	CreateShaderEffect(pEngine);
+	m_primitiveSphere.SetMaterial(material);
 
 	UpdateWorldMatrix();
 }
@@ -85,23 +82,28 @@ void IceBlock::Draw(Engine* pEngine, Camera* pCamera, Projection* pProj,
 	// カリング設定（両面描画）
 	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
-	// 溶け具合に応じてスケールを調整
+	// ★★★ 溶け具合に応じたスケール計算 ★★★
 	D3DXVECTOR3 currentScale = m_scale;
 
-	// 下から溶ける効果
-	float meltScale = 1.0f - m_meltAmount;
-	currentScale.y *= meltScale;
+	// 全体的な縮小率（1.0 → 0.0に向かって縮む）
+	// イージング関数を使って自然な縮み方に
+	float shrinkAmount = 1.0f - m_meltAmount;  // 1.0 → 0.0
+	float easeOut = shrinkAmount * shrinkAmount;  // 二次関数で徐々に縮む
 
-	// 若干全体的にも縮小
-	float shrinkFactor = 1.0f - (m_meltAmount * 0.3f);
-	currentScale.x *= shrinkFactor;
-	currentScale.z *= shrinkFactor;
+	currentScale.x *= easeOut;
+	currentScale.y *= easeOut;
+	currentScale.z *= easeOut;
 
-	// 溶けた分だけ下に移動
+	// ★★★ Y位置はプレイヤーの中心に固定（動かさない） ★★★
 	D3DXVECTOR3 adjustedPosition = m_position;
-	adjustedPosition.y -= (m_originalSize.y * m_scale.y * m_meltAmount * 0.5f);
 
-	// ワールド行列の更新
+	// プレイヤーの中心位置をそのまま使用
+	// Y位置の調整なし（プレイヤーの中心で溶けていく）
+
+	// ★★★ アルファ値の調整（徐々に透明に） ★★★
+	float currentAlpha = m_iceColor.w * (1.0f - m_meltAmount * 0.5f);  // 完全には透明にならない
+
+																	   // ワールド行列の構築
 	D3DXMATRIX matScale, matRotX, matRotY, matRotZ, matTrans;
 	D3DXMatrixScaling(&matScale, currentScale.x, currentScale.y, currentScale.z);
 	D3DXMatrixRotationX(&matRotX, m_rotation.x);
@@ -110,27 +112,25 @@ void IceBlock::Draw(Engine* pEngine, Camera* pCamera, Projection* pProj,
 	D3DXMatrixTranslation(&matTrans, adjustedPosition.x, adjustedPosition.y, adjustedPosition.z);
 
 	D3DXMATRIX matWorld = matScale * matRotX * matRotY * matRotZ * matTrans;
-	m_primitive.SetWorldTransform(&matWorld);
 
-	// 溶け具合に応じてアルファ値を調整
-	float alpha = m_iceColor.w * (1.0f - m_meltAmount * 0.5f);
-
+	// マテリアル更新
 	D3DMATERIAL9 material;
 	ZeroMemory(&material, sizeof(D3DMATERIAL9));
 	material.Diffuse.r = m_iceColor.x;
 	material.Diffuse.g = m_iceColor.y;
 	material.Diffuse.b = m_iceColor.z;
-	material.Diffuse.a = alpha;
+	material.Diffuse.a = currentAlpha;
 	material.Ambient = material.Diffuse;
 	material.Specular.r = 1.0f;
 	material.Specular.g = 1.0f;
 	material.Specular.b = 1.0f;
 	material.Specular.a = 1.0f;
 	material.Power = 32.0f;
-	m_primitive.SetMaterial(material);
+	m_primitiveSphere.SetMaterial(material);
 
-	// 描画
-	m_primitive.Draw(pEngine, pCamera, pProj, pAmbient, pLight);
+	// 球体の描画
+	m_primitiveSphere.SetWorldTransform(&matWorld);
+	m_primitiveSphere.Draw(pEngine, pCamera, pProj, pAmbient, pLight);
 
 	// レンダーステートを戻す
 	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
@@ -173,23 +173,7 @@ void IceBlock::UpdateWorldMatrix()
 	m_matWorld = matScale * matRotX * matRotY * matRotZ * matTrans;
 }
 
-void IceBlock::CreateShaderEffect(Engine* pEngine)
-{
-	// Primitiveクラスが既にシェーダーを持っているので、ここでは特別な処理は不要
-	// 必要に応じてカスタムシェーダーを読み込むこともできます
-}
-
 void IceBlock::ReleaseResources()
 {
-	if (m_pVertexDeclaration)
-	{
-		m_pVertexDeclaration->Release();
-		m_pVertexDeclaration = nullptr;
-	}
-
-	if (m_pEffect)
-	{
-		m_pEffect->Release();
-		m_pEffect = nullptr;
-	}
+	// Primitiveのデストラクタが自動的にリソースを解放
 }

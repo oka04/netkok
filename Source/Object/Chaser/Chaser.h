@@ -36,6 +36,12 @@ public:
 	virtual void DrawEffects(Camera* pCamera, Projection* pProj) override;
 	virtual void DrawDepth(Engine* pEngine, const D3DXMATRIX* pMatLightVP) override;
 
+	D3DXVECTOR3 GetCenterPosition() const override
+	{
+		D3DXVECTOR3 centerPos = m_position;
+		centerPos.y += f_height / 2.0f; 
+		return centerPos;
+	}
 	// ★★★ ブレス中かどうかを取得 ★★★
 	bool IsBreathing() const { return m_bBreathActive; }
 

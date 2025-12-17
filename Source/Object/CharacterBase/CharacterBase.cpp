@@ -172,11 +172,11 @@ void CharacterBase::Input(Engine * pEngine)
 	}
 
 	if (pEngine->GetKeyState(DIK_RIGHT)) {
-		m_position.x += 0.3;
+		m_position.x += 0.3f;
 	}
 
 	if (pEngine->GetKeyState(DIK_LEFT)) {
-		m_position.x -= 0.3;
+		m_position.x -= 0.3f;
 	}
 }
 

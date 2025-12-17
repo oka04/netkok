@@ -229,6 +229,7 @@ void Runner::LoadParameter()
 	f_fatigueRecoveryRate = config["fatigueRecoveryRate"];
 	f_recoveryDelayTime = config["recoveryDelayTime"];
 	f_fatigueSpeed = config["fatigueSpeed"];
+	f_height = config["height"];
 	f_fatigueRecoveryThreshold = config["fatigueRecoveryThreshold"];
 	f_gaugeColorThresholds = config["gaugeColorThresholds"].get<std::vector<float>>();
 	f_eyePsoitionY = config["eyePsoitionY"];
