@@ -476,15 +476,47 @@ void SceneGame::CheckBreathHitPlayers()
 		}
 	}
 
+	// ヒット判定実行前の凍結状態を記録
+	std::map<uint32_t, bool> beforeFrozen;
+	for (auto& p : playerList)
+	{
+		Runner* runner = dynamic_cast<Runner*>(p.second);
+		if (runner)
+		{
+			beforeFrozen[p.first] = runner->IsFrozen();
+		}
+	}
+
 	// ヒット判定
 	localChaser->CheckBreathHitPlayers(playerList);
+
+	// ★★★ 凍結状態が変化したプレイヤーがいれば即座に同期 ★★★
+	bool stateChanged = false;
+	for (auto& p : playerList)
+	{
+		Runner* runner = dynamic_cast<Runner*>(p.second);
+		if (runner && beforeFrozen[p.first] != runner->IsFrozen())
+		{
+			stateChanged = true;
+			NET_LOG_F("[SceneGame::CheckBreathHitPlayers] プレイヤー[%u]の凍結状態が変化: %s -> %s",
+				p.first,
+				beforeFrozen[p.first] ? "凍結" : "通常",
+				runner->IsFrozen() ? "凍結" : "通常");
+		}
+	}
+
+	// 状態が変化した場合は即座にサーバーに送信
+	if (stateChanged)
+	{
+		SyncToServer();
+	}
 
 	static DWORD lastLog = 0;
 	DWORD now = timeGetTime();
 	if (now - lastLog > 3000)
 	{
-		NET_LOG_F("[SceneGame::CheckBreathHitPlayers] ローカル鬼[%u]のヒット判定: 対象=%d人",
-			m_localClientId, (int)playerList.size());
+		NET_LOG_F("[SceneGame::CheckBreathHitPlayers] ローカル鬼[%u]のヒット判定: 対象=%d人 状態変化=%s",
+			m_localClientId, (int)playerList.size(), stateChanged ? "あり" : "なし");
 		lastLog = now;
 	}
 }
@@ -508,8 +540,49 @@ void SceneGame::UpdatePlayerFreezing()
 			}
 		}
 
+		// 解凍前の状態を記録
+		std::map<uint32_t, float> beforeAmount;
+		for (auto& p : playerList)
+		{
+			Runner* runner = dynamic_cast<Runner*>(p.second);
+			if (runner && runner->IsFrozen())
+			{
+				beforeAmount[p.first] = runner->GetFrozenAmount();
+			}
+		}
+
 		// 近くの凍結プレイヤーを解凍
 		localRunner->TryMeltNearbyFrozenPlayer(m_pEngine, playerList, m_deltaTime);
+
+		// ★★★ 解凍が進行したら即座に同期 ★★★
+		bool stateChanged = false;
+		for (auto& p : playerList)
+		{
+			Runner* runner = dynamic_cast<Runner*>(p.second);
+			if (runner && beforeAmount.find(p.first) != beforeAmount.end())
+			{
+				float currentAmount = runner->GetFrozenAmount();
+				if (abs(currentAmount - beforeAmount[p.first]) > 0.01f)
+				{
+					stateChanged = true;
+
+					static std::map<uint32_t, DWORD> lastLog;
+					DWORD now = timeGetTime();
+					if (now - lastLog[p.first] > 1000)
+					{
+						NET_LOG_F("[SceneGame::UpdatePlayerFreezing] プレイヤー[%u]を解凍中: %.2f -> %.2f",
+							p.first, beforeAmount[p.first], currentAmount);
+						lastLog[p.first] = now;
+					}
+				}
+			}
+		}
+
+		// 状態が変化した場合は即座にサーバーに送信
+		if (stateChanged)
+		{
+			SyncToServer();
+		}
 	}
 }
 
@@ -1403,6 +1476,40 @@ void SceneGame::Draw()
 	}
 
 	// ★★★ すべてのプレイヤーのエフェクトを描画（役割を問わず）★★★
+	// ローカルプレイヤーのエフェクトを描画
+	static DWORD lastEffectLog = 0;
+	DWORD nowEffect = timeGetTime();
+	if (nowEffect - lastEffectLog > 3000)
+	{
+		int frozenCount = 0;
+		for (auto& kv : m_players)
+		{
+			if (!kv.second) continue;
+			Runner* runner = dynamic_cast<Runner*>(kv.second);
+			if (runner && runner->IsFrozen())
+			{
+				frozenCount++;
+				NET_LOG_F("[SceneGame::Draw] リモートプレイヤー[%u] 凍結中: amount=%.2f",
+					kv.first, runner->GetFrozenAmount());
+			}
+		}
+
+		// ローカルプレイヤーも確認
+		if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
+		{
+			Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
+			if (localRunner && localRunner->IsFrozen())
+			{
+				frozenCount++;
+				NET_LOG_F("[SceneGame::Draw] ローカルプレイヤー[%u] 凍結中: amount=%.2f",
+					m_localClientId, localRunner->GetFrozenAmount());
+			}
+		}
+
+		NET_LOG_F("[SceneGame::Draw] エフェクト描画: 凍結プレイヤー=%d人", frozenCount);
+		lastEffectLog = nowEffect;
+	}
+
 	// ローカルプレイヤーのエフェクトを描画
 	if (m_pLocalPlayer)
 	{
