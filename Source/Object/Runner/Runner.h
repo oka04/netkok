@@ -47,7 +47,11 @@ public:
 	void SetFrozenAmount(float amount);  // ★★★ 追加：外部から氷の溶け具合を設定 ★★★
 	void UpdateFrozenState(float deltaTime);
 	void TryMeltNearbyFrozenPlayer(Engine* pEngine, const std::vector<std::pair<uint32_t, CharacterBase*>>& players, float deltaTime);
+	void DrawMeltGaugeThroughWalls(Engine* pEngine, Camera* pCamera, Projection* pProj,
+	float viewerDistance, float alpha = 0.7f);
 
+	// ★★★ 氷ブロックを取得 ★★★
+	IceBlock* GetIceBlock() const { return m_pIceBlock; }
 	// ★★★ 解凍ゲージ表示 ★★★
 	void DrawMeltGauge(Engine* pEngine, Camera* pCamera, Projection* pProj, float viewerDistance);
 

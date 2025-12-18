@@ -138,6 +138,78 @@ void IceBlock::Draw(Engine* pEngine, Camera* pCamera, Projection* pProj,
 	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 }
 
+// ★★★ 壁貫通描画（常に最大サイズ、Z-test無効） ★★★
+void IceBlock::DrawThroughWalls(Engine* pEngine, Camera* pCamera, Projection* pProj,
+	AmbientLight* pAmbient, DirectionalLight* pLight, float alpha)
+{
+	if (m_meltAmount >= 1.0f)
+		return;  // 完全に溶けたら描画しない
+
+	LPDIRECT3DDEVICE9 pDevice = pEngine->GetDevice();
+
+	// ★★★ レンダーステートを保存 ★★★
+	DWORD oldZEnable, oldZWriteEnable, oldAlphaBlend, oldSrcBlend, oldDestBlend, oldCullMode;
+	pDevice->GetRenderState(D3DRS_ZENABLE, &oldZEnable);
+	pDevice->GetRenderState(D3DRS_ZWRITEENABLE, &oldZWriteEnable);
+	pDevice->GetRenderState(D3DRS_ALPHABLENDENABLE, &oldAlphaBlend);
+	pDevice->GetRenderState(D3DRS_SRCBLEND, &oldSrcBlend);
+	pDevice->GetRenderState(D3DRS_DESTBLEND, &oldDestBlend);
+	pDevice->GetRenderState(D3DRS_CULLMODE, &oldCullMode);
+
+	// ★★★ 壁貫通設定（Z-test無効、Z-write無効） ★★★
+	pDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
+	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+	pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+	pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+
+	// ★★★ 常に最大サイズで描画（溶け具合は無視） ★★★
+	D3DXVECTOR3 maxScale = m_scale;  // 最大サイズを使用
+
+	D3DXVECTOR3 adjustedPosition = m_position;
+
+	// ★★★ 透明度を調整（壁越しは薄く表示） ★★★
+	float currentAlpha = m_iceColor.w * alpha;
+
+	// ワールド行列の構築（最大サイズ）
+	D3DXMATRIX matScale, matRotX, matRotY, matRotZ, matTrans;
+	D3DXMatrixScaling(&matScale, maxScale.x, maxScale.y, maxScale.z);
+	D3DXMatrixRotationX(&matRotX, m_rotation.x);
+	D3DXMatrixRotationY(&matRotY, m_rotation.y);
+	D3DXMatrixRotationZ(&matRotZ, m_rotation.z);
+	D3DXMatrixTranslation(&matTrans, adjustedPosition.x, adjustedPosition.y, adjustedPosition.z);
+
+	D3DXMATRIX matWorld = matScale * matRotX * matRotY * matRotZ * matTrans;
+
+	// マテリアル更新
+	D3DMATERIAL9 material;
+	ZeroMemory(&material, sizeof(D3DMATERIAL9));
+	material.Diffuse.r = m_iceColor.x;
+	material.Diffuse.g = m_iceColor.y;
+	material.Diffuse.b = m_iceColor.z;
+	material.Diffuse.a = currentAlpha;
+	material.Ambient = material.Diffuse;
+	material.Specular.r = 1.0f;
+	material.Specular.g = 1.0f;
+	material.Specular.b = 1.0f;
+	material.Specular.a = 1.0f;
+	material.Power = 32.0f;
+	m_primitiveSphere.SetMaterial(material);
+
+	// 球体の描画
+	m_primitiveSphere.SetWorldTransform(&matWorld);
+	m_primitiveSphere.Draw(pEngine, pCamera, pProj, pAmbient, pLight);
+
+	// ★★★ レンダーステートを元に戻す ★★★
+	pDevice->SetRenderState(D3DRS_ZENABLE, oldZEnable);
+	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, oldZWriteEnable);
+	pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, oldAlphaBlend);
+	pDevice->SetRenderState(D3DRS_SRCBLEND, oldSrcBlend);
+	pDevice->SetRenderState(D3DRS_DESTBLEND, oldDestBlend);
+	pDevice->SetRenderState(D3DRS_CULLMODE, oldCullMode);
+}
+
 void IceBlock::SetMeltAmount(float amount)
 {
 	m_meltAmount = max(0.0f, min(1.0f, amount));

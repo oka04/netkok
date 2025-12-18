@@ -246,7 +246,89 @@ void Runner::DrawMeltGauge(Engine* pEngine, Camera* pCamera, Projection* pProj, 
 	pDevice->SetRenderState(D3DRS_ZENABLE, oldZEnable);
 	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, oldZWrite);
 }
+void Runner::DrawMeltGaugeThroughWalls(Engine* pEngine, Camera* pCamera, Projection* pProj, float viewerDistance, float alpha)
+{
+	// 凍結していない場合は描画しない
+	if (!m_bFrozen) return;
 
+	// プレイヤーの頭上の位置を計算
+	D3DXVECTOR3 headPos = GetCenterPosition();
+	headPos.y += f_height / 2.0f + 0.5f;  // 頭の上0.5m
+
+										  // ワールド座標からスクリーン座標への変換
+	D3DVIEWPORT9 viewport;
+	pEngine->GetDevice()->GetViewport(&viewport);
+
+	D3DXMATRIX matView = pCamera->GetViewMatrix();
+	D3DXMATRIX matProj = pProj->GetProjectionMatrix();
+	D3DXMATRIX matIdentity;
+	D3DXMatrixIdentity(&matIdentity);
+
+	D3DXVECTOR3 screenPos;
+	D3DXVec3Project(&screenPos, &headPos, &viewport, &matProj, &matView, &matIdentity);
+
+	// 画面外は描画しない
+	if (screenPos.x < 0 || screenPos.x > viewport.Width ||
+		screenPos.y < 0 || screenPos.y > viewport.Height)
+		return;
+
+	// ゲージのサイズと位置
+	int gaugeWidth = 100;
+	int gaugeHeight = 10;
+	int x = (int)screenPos.x - gaugeWidth / 2;
+	int y = (int)screenPos.y - 20;  // 頭の少し上
+
+	LPDIRECT3DDEVICE9 pDevice = pEngine->GetDevice();
+
+	// レンダーステートの保存
+	DWORD oldAlphaBlend, oldSrcBlend, oldDestBlend, oldZEnable, oldZWrite;
+	pDevice->GetRenderState(D3DRS_ALPHABLENDENABLE, &oldAlphaBlend);
+	pDevice->GetRenderState(D3DRS_SRCBLEND, &oldSrcBlend);
+	pDevice->GetRenderState(D3DRS_DESTBLEND, &oldDestBlend);
+	pDevice->GetRenderState(D3DRS_ZENABLE, &oldZEnable);
+	pDevice->GetRenderState(D3DRS_ZWRITEENABLE, &oldZWrite);
+
+	// ★★★ 壁貫通設定（Z-test無効） ★★★
+	pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+	pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+	pDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
+	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+
+	// アルファ値を適用
+	int alphaValue = (int)(alpha * 255);
+
+	// 外枠（黒、半透明）
+	DrawGaugeRect(pDevice, x - 2, y - 2, gaugeWidth + 4, gaugeHeight + 4, D3DCOLOR_ARGB(alphaValue * 200 / 255, 0, 0, 0));
+
+	// 背景（暗いグレー）
+	DrawGaugeRect(pDevice, x, y, gaugeWidth, gaugeHeight, D3DCOLOR_ARGB(alphaValue, 50, 50, 50));
+
+	// 進捗バー（水色→緑へのグラデーション）
+	float progress = m_frozenAmount;  // 0.0 = 完全凍結, 1.0 = 完全解凍
+	int progressWidth = (int)(gaugeWidth * progress);
+
+	if (progressWidth > 0)
+	{
+		int r = 100;
+		int g = (int)(200 + 55 * progress);
+		int b = (int)(255 - 155 * progress);
+		DrawGaugeRect(pDevice, x, y, progressWidth, gaugeHeight, D3DCOLOR_ARGB(alphaValue, r, g, b));
+	}
+
+	// 枠線（白）
+	DrawGaugeRect(pDevice, x, y, gaugeWidth, 1, D3DCOLOR_ARGB(alphaValue, 255, 255, 255));  // 上
+	DrawGaugeRect(pDevice, x, y + gaugeHeight - 1, gaugeWidth, 1, D3DCOLOR_ARGB(alphaValue, 255, 255, 255));  // 下
+	DrawGaugeRect(pDevice, x, y, 1, gaugeHeight, D3DCOLOR_ARGB(alphaValue, 255, 255, 255));  // 左
+	DrawGaugeRect(pDevice, x + gaugeWidth - 1, y, 1, gaugeHeight, D3DCOLOR_ARGB(alphaValue, 255, 255, 255));  // 右
+
+																											  // レンダーステートを元に戻す
+	pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, oldAlphaBlend);
+	pDevice->SetRenderState(D3DRS_SRCBLEND, oldSrcBlend);
+	pDevice->SetRenderState(D3DRS_DESTBLEND, oldDestBlend);
+	pDevice->SetRenderState(D3DRS_ZENABLE, oldZEnable);
+	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, oldZWrite);
+}
 void Runner::DrawGaugeRect(LPDIRECT3DDEVICE9 pDevice, int x, int y, int width, int height, D3DCOLOR color)
 {
 	// 2D頂点構造体

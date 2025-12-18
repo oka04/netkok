@@ -36,7 +36,9 @@ public:
 
 	// 位置を設定
 	void SetPosition(const D3DXVECTOR3& position);
-
+	// ★★★ 壁貫通描画（常に最大サイズ） ★★★
+	void DrawThroughWalls(Engine* pEngine, Camera* pCamera, Projection* pProj,
+		AmbientLight* pAmbient, DirectionalLight* pLight, float alpha = 0.5f);
 	// 位置を取得
 	const D3DXVECTOR3& GetPosition() const { return m_position; }
 
