@@ -587,6 +587,7 @@ void SceneGame::CheckBreathHitPlayers()
 	}
 }
 
+
 void SceneGame::UpdatePlayerFreezing()
 {
 	// ローカルプレイヤーが逃げる側の場合、解凍処理を行う
@@ -595,15 +596,41 @@ void SceneGame::UpdatePlayerFreezing()
 		Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
 		if (!localRunner) return;
 
-		// 逃げる側のプレイヤーリストを作成
+		// ★★★ 修正: 逃げる側のプレイヤーリストを作成（ローカルプレイヤーも含める）★★★
 		std::vector<std::pair<uint32_t, CharacterBase*>> playerList;
 
+		// リモートプレイヤーを追加
 		for (auto& kv : m_players)
 		{
 			if (m_playerRoles[kv.first] == ROLE_RUNNER)
 			{
 				playerList.push_back(kv);
 			}
+		}
+
+		// ★★★ ローカルプレイヤーも追加（リストに入れることで解凍対象として認識される）★★★
+		if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
+		{
+			playerList.push_back(std::make_pair(m_localClientId, m_pLocalPlayer));
+		}
+
+		static DWORD lastDebugLog = 0;
+		DWORD now = timeGetTime();
+		if (now - lastDebugLog > 2000)
+		{
+			int totalCount = (int)playerList.size();
+			int frozenCount = 0;
+			for (auto& p : playerList)
+			{
+				Runner* runner = dynamic_cast<Runner*>(p.second);
+				if (runner && runner->IsFrozen())
+				{
+					frozenCount++;
+				}
+			}
+			NET_LOG_F("[SceneGame::UpdatePlayerFreezing] プレイヤーリスト: 総数=%d 凍結=%d（ローカルプレイヤー含む）",
+				totalCount, frozenCount);
+			lastDebugLog = now;
 		}
 
 		// 解凍前の状態を記録
@@ -633,11 +660,11 @@ void SceneGame::UpdatePlayerFreezing()
 					stateChanged = true;
 
 					static std::map<uint32_t, DWORD> lastLog;
-					DWORD now = timeGetTime();
-					if (now - lastLog[p.first] > 1000)
+					now = timeGetTime();
+					if (now - lastLog[p.first] > 200)  // 200msごとにログ出力
 					{
-						NET_LOG_F("[SceneGame::UpdatePlayerFreezing] プレイヤー[%u]を解凍中: %.2f -> %.2f",
-							p.first, beforeAmount[p.first], currentAmount);
+						NET_LOG_F("[SceneGame::UpdatePlayerFreezing] ★解凍進行中★ プレイヤー[%u]: %.3f -> %.3f (差分=%.4f)",
+							p.first, beforeAmount[p.first], currentAmount, currentAmount - beforeAmount[p.first]);
 						lastLog[p.first] = now;
 					}
 				}
@@ -647,10 +674,18 @@ void SceneGame::UpdatePlayerFreezing()
 		// 状態が変化した場合は即座にサーバーに送信
 		if (stateChanged)
 		{
+			static DWORD lastSyncLog = 0;
+			now = timeGetTime();
+			if (now - lastSyncLog > 500)
+			{
+				NET_LOG_F("[SceneGame::UpdatePlayerFreezing] 状態変化を検出 - サーバーに同期");
+				lastSyncLog = now;
+			}
 			SyncToServer();
 		}
 	}
 }
+
 
 void SceneGame::SyncToServer()
 {

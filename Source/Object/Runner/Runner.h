@@ -44,6 +44,7 @@ public:
 	bool IsFrozen() const { return m_bFrozen; }
 	void SetFrozen(bool frozen);
 	float GetFrozenAmount() const { return m_frozenAmount; }
+	void SetFrozenAmount(float amount);  // ★★★ 追加：外部から氷の溶け具合を設定 ★★★
 	void UpdateFrozenState(float deltaTime);
 	void TryMeltNearbyFrozenPlayer(Engine* pEngine, const std::vector<std::pair<uint32_t, CharacterBase*>>& players, float deltaTime);
 

@@ -277,6 +277,7 @@ void Runner::DrawGaugeRect(LPDIRECT3DDEVICE9 pDevice, int x, int y, int width, i
 	// トライアングルストリップで矩形を描画
 	pDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertices, sizeof(VERTEX_2D));
 }
+
 void Runner::SetFrozen(bool frozen)
 {
 	if (m_bFrozen == frozen)
@@ -312,6 +313,24 @@ void Runner::SetFrozen(bool frozen)
 		NET_LOG_F("[Runner] ID=%u 凍結解除", m_clientId);
 	}
 }
+
+void Runner::SetFrozenAmount(float amount)
+{
+	m_frozenAmount = max(0.0f, min(1.0f, amount));
+
+	if (m_pIceBlock)
+	{
+		m_pIceBlock->SetMeltAmount(m_frozenAmount);
+	}
+
+	// 完全に溶けたら凍結解除
+	if (m_frozenAmount >= 1.0f && m_bFrozen)
+	{
+		m_bFrozen = false;
+		NET_LOG_F("[Runner] ID=%u 完全解凍（SetFrozenAmount経由）", m_clientId);
+	}
+}
+
 void Runner::UpdateFrozenState(float deltaTime)
 {
 	if (!m_pIceBlock)
@@ -347,6 +366,7 @@ void Runner::UpdateFrozenState(float deltaTime)
 		}
 	}
 }
+
 void Runner::TryMeltNearbyFrozenPlayer(Engine* pEngine, const std::vector<std::pair<uint32_t, CharacterBase*>>& players, float deltaTime)
 {
 	if (m_bFrozen)
@@ -368,10 +388,11 @@ void Runner::TryMeltNearbyFrozenPlayer(Engine* pEngine, const std::vector<std::p
 	DWORD now = timeGetTime();
 	if (now - lastInputLog > 500)
 	{
-		NET_LOG_F("[Runner::TryMelt] ID=%u 左クリック状態: %s KeyFlag=0x%02X",
-			m_clientId,
-			isAttackPressed ? "押されている" : "押されていない",
-			m_keyFlag);
+		if (isAttackPressed)
+		{
+			NET_LOG_F("[Runner::TryMelt] ID=%u 左クリック状態: 押されている KeyFlag=0x%02X",
+				m_clientId, m_keyFlag);
+		}
 		lastInputLog = now;
 	}
 
@@ -380,7 +401,8 @@ void Runner::TryMeltNearbyFrozenPlayer(Engine* pEngine, const std::vector<std::p
 		// 左クリックを離した
 		if (m_targetMeltPlayer != 0)
 		{
-			NET_LOG_F("[Runner::TryMelt] ID=%u 左クリックを離した - 解凍中止", m_clientId);
+			NET_LOG_F("[Runner::TryMelt] ID=%u 左クリックを離した - 解凍中止 (ターゲット=%u)",
+				m_clientId, m_targetMeltPlayer);
 			m_targetMeltPlayer = 0;
 		}
 		return;
@@ -402,8 +424,8 @@ void Runner::TryMeltNearbyFrozenPlayer(Engine* pEngine, const std::vector<std::p
 			{
 				D3DXVECTOR3 diff = pRunner->GetPosition() - m_position;
 				float distance = D3DXVec3Length(&diff);
-				NET_LOG_F("  [%u]: Distance=%.2f Frozen=%s",
-					id, distance, pRunner->IsFrozen() ? "Yes" : "No");
+				NET_LOG_F("  [%u]: Distance=%.2f Frozen=%s Amount=%.2f",
+					id, distance, pRunner->IsFrozen() ? "Yes" : "No", pRunner->GetFrozenAmount());
 			}
 		}
 		lastListLog = now;
@@ -451,8 +473,11 @@ void Runner::TryMeltNearbyFrozenPlayer(Engine* pEngine, const std::vector<std::p
 		D3DXVECTOR3 diff = pRunner->GetPosition() - m_position;
 		float distance = D3DXVec3Length(&diff);
 
-		NET_LOG_F("[Runner::TryMelt] ID=%u が凍結プレイヤー[%u]を検出: Distance=%.2f Range=%.2f",
-			m_clientId, id, distance, f_meltRange);
+		if (now - lastListLog > 2000)
+		{
+			NET_LOG_F("[Runner::TryMelt] ID=%u が凍結プレイヤー[%u]を検出: Distance=%.2f Range=%.2f",
+				m_clientId, id, distance, f_meltRange);
+		}
 
 		if (distance < closestDistance)
 		{
@@ -465,8 +490,11 @@ void Runner::TryMeltNearbyFrozenPlayer(Engine* pEngine, const std::vector<std::p
 	static DWORD lastCheckLog = 0;
 	if (now - lastCheckLog > 1000)
 	{
-		NET_LOG_F("[Runner::TryMelt] ID=%u チェック結果: checked=%d frozen=%d closest=%u dist=%.2f",
-			m_clientId, checkedCount, frozenCount, closestId, closestDistance);
+		if (isAttackPressed)
+		{
+			NET_LOG_F("[Runner::TryMelt] ID=%u チェック結果: checked=%d frozen=%d closest=%u dist=%.2f",
+				m_clientId, checkedCount, frozenCount, closestId, closestDistance);
+		}
 		lastCheckLog = now;
 	}
 
@@ -484,8 +512,14 @@ void Runner::TryMeltNearbyFrozenPlayer(Engine* pEngine, const std::vector<std::p
 		float currentAmount = closestFrozenRunner->GetFrozenAmount();
 		float newAmount = currentAmount + f_meltSpeed * deltaTime;
 
-		NET_LOG_F("[Runner::TryMelt] ID=%u が ID=%u を解凍中: %.2f -> %.2f (速度=%.4f dt=%.4f)",
-			m_clientId, closestId, currentAmount, newAmount, f_meltSpeed, deltaTime);
+		// デバッグログを毎フレーム出力（詳細確認用）
+		static DWORD lastMeltLog = 0;
+		if (now - lastMeltLog > 200)  // 200msごとに出力
+		{
+			NET_LOG_F("[Runner::TryMelt] ★解凍進行中★ ID=%u -> ID=%u: %.3f -> %.3f (速度=%.4f dt=%.4f 増加=%.4f)",
+				m_clientId, closestId, currentAmount, newAmount, f_meltSpeed, deltaTime, f_meltSpeed * deltaTime);
+			lastMeltLog = now;
+		}
 
 		if (newAmount >= 1.0f)
 		{
@@ -495,18 +529,15 @@ void Runner::TryMeltNearbyFrozenPlayer(Engine* pEngine, const std::vector<std::p
 			NET_LOG_F("[Runner] ★★★ID=%u が ID=%u を完全解凍★★★", m_clientId, closestId);
 		}
 
-		// 手動で frozenAmount を更新（ネットワーク経由の更新を待たずに）
-		if (closestFrozenRunner->m_pIceBlock)
-		{
-			closestFrozenRunner->m_frozenAmount = newAmount;
-			closestFrozenRunner->m_pIceBlock->SetMeltAmount(newAmount);
-		}
+		// SetFrozenAmountを使って更新
+		closestFrozenRunner->SetFrozenAmount(newAmount);
 	}
 	else
 	{
-		if (m_targetMeltPlayer != 0)
+		if (m_targetMeltPlayer != 0 && now - lastCheckLog > 500)
 		{
-			NET_LOG_F("[Runner::TryMelt] ID=%u 範囲内に凍結プレイヤーなし - 解凍中止", m_clientId);
+			NET_LOG_F("[Runner::TryMelt] ID=%u 範囲内に凍結プレイヤーなし - 解凍中止 (前回ターゲット=%u)",
+				m_clientId, m_targetMeltPlayer);
 		}
 		m_targetMeltPlayer = 0;
 	}
@@ -591,6 +622,7 @@ void Runner::DrawEffects(Engine* pEngine, Camera* pCamera, Projection* pProj, Am
 		}
 	}
 }
+
 void Runner::DrawStaminaGauge(Engine* pEngine)
 {
 	if (!m_bIsLocal) return;
