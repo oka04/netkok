@@ -1493,7 +1493,6 @@ void SceneGame::DespawnPlayer(uint32_t clientId)
 
 void SceneGame::Draw()
 {
-	// ★★★ 修正: シャドウマップ生成前にリモート鬼のライトを強制的に更新 ★★★
 	for (auto& kv : m_players)
 	{
 		if (!kv.second || m_playerRoles[kv.first] != ROLE_CHASER)
@@ -1506,7 +1505,6 @@ void SceneGame::Draw()
 		}
 	}
 
-	// ローカルプレイヤーが鬼の場合も更新
 	if (m_pLocalPlayer && m_localRole == ROLE_CHASER)
 	{
 		Chaser* localChaser = dynamic_cast<Chaser*>(m_pLocalPlayer);
@@ -1516,10 +1514,8 @@ void SceneGame::Draw()
 		}
 	}
 
-	// シャドウマップ生成
 	RenderShadowMaps();
 
-	// ★★★ 修正: シャドウマップ生成直後にライト情報を強制的に更新 ★★★
 	int lightIndex = 0;
 
 	if (m_pLocalPlayer && m_localRole == ROLE_CHASER)
@@ -1674,7 +1670,6 @@ void SceneGame::Draw()
 		}
 	}
 
-	// ★★★ すべてのプレイヤーのエフェクトを描画（役割を問わず）★★★
 	static DWORD lastEffectLog = 0;
 	DWORD nowEffect = timeGetTime();
 	if (nowEffect - lastEffectLog > 3000)
@@ -1692,7 +1687,6 @@ void SceneGame::Draw()
 			}
 		}
 
-		// ローカルプレイヤーも確認
 		if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
 		{
 			Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
@@ -1708,31 +1702,25 @@ void SceneGame::Draw()
 		lastEffectLog = nowEffect;
 	}
 
-	// ローカルプレイヤーのエフェクトを描画
 	if (m_pLocalPlayer)
 	{
 		m_pLocalPlayer->DrawEffects(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light);
 	}
 
-	// リモートプレイヤーのエフェクトを描画
 	for (auto& kv : m_players)
 	{
 		if (kv.first == m_localClientId) continue;
 		if (!kv.second) continue;
 
-		// 鬼でも逃げる側でも、エフェクトがあれば描画
 		kv.second->DrawEffects(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light);
 	}
 
-	// ★★★ 壁貫通表示：氷ブロックとゲージ ★★★
 	if (m_pLocalPlayer)
 	{
-		D3DXVECTOR3 localPos = m_pLocalPlayer->GetPosition();
+		D3DXVECTOR3 cameraPos = m_camera.m_vecEye;
 
-		// ★★★ ケース1: ローカルプレイヤーが逃げる側の場合 ★★★
 		if (m_localRole == ROLE_RUNNER)
 		{
-			// すべての凍結プレイヤーの氷ブロックとゲージを壁貫通表示
 			for (auto& kv : m_players)
 			{
 				if (kv.first == m_localClientId) continue;
@@ -1743,29 +1731,32 @@ void SceneGame::Draw()
 				if (!runner || !runner->IsFrozen()) continue;
 
 				D3DXVECTOR3 targetPos = runner->GetPosition();
-				D3DXVECTOR3 diff = targetPos - localPos;
+				D3DXVECTOR3 diff = targetPos - cameraPos;
 				float distance = D3DXVec3Length(&diff);
 
-				// 距離に応じてアルファ値を調整（遠いほど薄く）
+				D3DXVECTOR3 intersection;
+				bool isBlocked = m_map.RayToWallIntersection(cameraPos, targetPos, &intersection);
+
+				if (!isBlocked)
+				{
+					continue;
+				}
+
 				float alpha = 0.5f;
 				if (distance > 15.0f) alpha = 0.3f;
 				else if (distance > 30.0f) alpha = 0.2f;
 
-				// 氷ブロックを壁貫通表示（常に最大サイズ）
 				IceBlock* iceBlock = runner->GetIceBlock();
 				if (iceBlock)
 				{
 					iceBlock->DrawThroughWalls(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light, alpha);
 				}
 
-				// ゲージを壁貫通表示
 				runner->DrawMeltGaugeThroughWalls(m_pEngine, &m_camera, &m_projection, distance, alpha);
 			}
 		}
-		// ★★★ ケース2: ローカルプレイヤーが鬼の場合 ★★★
 		else if (m_localRole == ROLE_CHASER)
 		{
-			// すべての凍結プレイヤーの氷ブロックを壁貫通表示（ゲージは近距離のみ）
 			for (auto& kv : m_players)
 			{
 				if (kv.first == m_localClientId) continue;
@@ -1776,22 +1767,27 @@ void SceneGame::Draw()
 				if (!runner || !runner->IsFrozen()) continue;
 
 				D3DXVECTOR3 targetPos = runner->GetPosition();
-				D3DXVECTOR3 diff = targetPos - localPos;
+				D3DXVECTOR3 diff = targetPos - cameraPos;
 				float distance = D3DXVec3Length(&diff);
 
-				// 距離に応じてアルファ値を調整
+				D3DXVECTOR3 intersection;
+				bool isBlocked = m_map.RayToWallIntersection(cameraPos, targetPos, &intersection);
+
+				if (!isBlocked)
+				{
+					continue;
+				}
+
 				float alpha = 0.4f;
 				if (distance > 15.0f) alpha = 0.25f;
 				else if (distance > 30.0f) alpha = 0.15f;
 
-				// 氷ブロックを壁貫通表示（常に最大サイズ）
 				IceBlock* iceBlock = runner->GetIceBlock();
 				if (iceBlock)
 				{
 					iceBlock->DrawThroughWalls(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light, alpha);
 				}
 
-				// ★★★ ゲージは近距離のみ表示（10m以内） ★★★
 				const float GAUGE_VISIBLE_DISTANCE = 10.0f;
 				if (distance <= GAUGE_VISIBLE_DISTANCE)
 				{
@@ -1801,35 +1797,27 @@ void SceneGame::Draw()
 		}
 	}
 
-	// ★★★ 凍結プレイヤーの解凍ゲージを描画（3D空間）★★★
 	if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
 	{
 		D3DXVECTOR3 localPos = m_pLocalPlayer->GetPosition();
 
-		// 自分以外の凍結している逃げる側プレイヤーのゲージを描画
 		for (auto& kv : m_players)
 		{
-			// ローカルプレイヤー自身はスキップ
 			if (kv.first == m_localClientId) continue;
 
-			// プレイヤーが存在しない場合はスキップ
 			if (!kv.second) continue;
 
-			// 逃げる側でない場合はスキップ
 			if (m_playerRoles[kv.first] != ROLE_RUNNER) continue;
 
 			Runner* runner = dynamic_cast<Runner*>(kv.second);
 			if (!runner) continue;
 
-			// 凍結していない場合はスキップ
 			if (!runner->IsFrozen()) continue;
 
-			// プレイヤーとの距離を計算
 			D3DXVECTOR3 targetPos = runner->GetPosition();
 			D3DXVECTOR3 diff = targetPos - localPos;
 			float distance = D3DXVec3Length(&diff);
 
-			// ゲージを描画（距離が遠い場合は内部で描画されない）
 			runner->DrawMeltGauge(m_pEngine, &m_camera, &m_projection, distance);
 		}
 	}
@@ -1887,7 +1875,6 @@ void SceneGame::Draw()
 			const char* roleStr = (m_localRole == ROLE_CHASER) ? "鬼" : "逃げる側";
 			D3DXVECTOR3 pos = m_pLocalPlayer->GetPosition();
 
-			// ★★★ 凍結状態を表示 ★★★
 			const char* frozenStr = "";
 			if (m_localRole == ROLE_RUNNER)
 			{
@@ -1918,7 +1905,6 @@ void SceneGame::Draw()
 			const char* roleStr = (m_playerRoles[kv.first] == ROLE_CHASER) ? "鬼" : "逃げる側";
 			D3DXVECTOR3 pos = kv.second->GetPosition();
 
-			// ★★★ 凍結状態を表示 ★★★
 			const char* frozenStr = "";
 			if (m_playerRoles[kv.first] == ROLE_RUNNER)
 			{

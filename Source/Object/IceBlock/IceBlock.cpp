@@ -82,28 +82,45 @@ void IceBlock::Draw(Engine* pEngine, Camera* pCamera, Projection* pProj,
 	// カリング設定（両面描画）
 	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
-	// ★★★ 溶け具合に応じたスケール計算 ★★★
+	// ★★★ 改善された溶け具合の計算 ★★★
 	D3DXVECTOR3 currentScale = m_scale;
 
-	// 全体的な縮小率（1.0 → 0.0に向かって縮む）
-	// イージング関数を使って自然な縮み方に
-	float shrinkAmount = 1.0f - m_meltAmount;  // 1.0 → 0.0
-	float easeOut = shrinkAmount * shrinkAmount;  // 二次関数で徐々に縮む
+	// 最小スケール（完全には消えない）
+	const float MIN_SCALE = 0.3f;
 
-	currentScale.x *= easeOut;
-	currentScale.y *= easeOut;
-	currentScale.z *= easeOut;
+	// 溶け始めの閾値（この値まではフルサイズを維持）
+	const float MELT_START_THRESHOLD = 0.7f;
+
+	float shrinkAmount;
+
+	if (m_meltAmount < MELT_START_THRESHOLD)
+	{
+		// 0.0 ～ 0.7 の範囲では最小サイズを維持
+		shrinkAmount = MIN_SCALE;
+	}
+	else
+	{
+		// 0.7 ～ 1.0 の範囲で最小サイズから0に向かって縮む
+		float normalizedMelt = (m_meltAmount - MELT_START_THRESHOLD) / (1.0f - MELT_START_THRESHOLD);
+
+		// イージング関数（二次関数で徐々に縮む）
+		float easeOut = normalizedMelt * normalizedMelt;
+
+		// MIN_SCALE から 0.0 へ補間
+		shrinkAmount = MIN_SCALE * (1.0f - easeOut);
+	}
+
+	currentScale.x *= shrinkAmount;
+	currentScale.y *= shrinkAmount;
+	currentScale.z *= shrinkAmount;
 
 	// ★★★ Y位置はプレイヤーの中心に固定（動かさない） ★★★
 	D3DXVECTOR3 adjustedPosition = m_position;
 
-	// プレイヤーの中心位置をそのまま使用
-	// Y位置の調整なし（プレイヤーの中心で溶けていく）
-
 	// ★★★ アルファ値の調整（徐々に透明に） ★★★
-	float currentAlpha = m_iceColor.w * (1.0f - m_meltAmount * 0.5f);  // 完全には透明にならない
+	float currentAlpha = m_iceColor.w * (1.0f - m_meltAmount * 0.5f);
 
-																	   // ワールド行列の構築
+	// ワールド行列の構築
 	D3DXMATRIX matScale, matRotX, matRotY, matRotZ, matTrans;
 	D3DXMatrixScaling(&matScale, currentScale.x, currentScale.y, currentScale.z);
 	D3DXMatrixRotationX(&matRotX, m_rotation.x);
@@ -136,6 +153,7 @@ void IceBlock::Draw(Engine* pEngine, Camera* pCamera, Projection* pProj,
 	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 	pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+
 }
 
 // ★★★ 壁貫通描画（常に最大サイズ、Z-test無効） ★★★
