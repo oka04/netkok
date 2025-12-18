@@ -62,6 +62,7 @@ struct NetPlayerState
 
 	uint8_t frozen;         
 	float frozenAmount;     
+
 	uint32_t meltTargetId;
 	void SetFirstPerson(bool fp)
 	{

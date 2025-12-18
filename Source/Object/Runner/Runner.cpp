@@ -1,4 +1,4 @@
-﻿// Runner.cpp - 氷状態処理を追加 + 解凍ロジック修正
+﻿// Runner.cpp - 氷状態処理を追加 + 解凍ロジック修正 + meltTargetId同期
 
 #define _USING_V110_SDK71_ 1
 
@@ -495,6 +495,34 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 			m_bFrozen ? "凍結" : "通常",
 			m_frozenAmount);
 		lastFrozenState[m_clientId] = m_bFrozen;
+	}
+
+	// ★★★ 【重要な追加】解凍ターゲットの同期（誰を助けようとしているか）★★★
+	uint32_t oldTarget = m_targetMeltPlayer;
+	m_targetMeltPlayer = state.meltTargetId;
+
+	// デバッグログ：ターゲットが変化した場合のみ
+	static std::map<uint32_t, DWORD> lastTargetLog;
+	DWORD now = timeGetTime();
+
+	if (oldTarget != m_targetMeltPlayer && m_targetMeltPlayer != 0)
+	{
+		NET_LOG_F("[Runner::UpdateFromNetwork] ★ID=%u が ID=%u を助けようとしている（ネットワーク同期）★",
+			m_clientId, m_targetMeltPlayer);
+		lastTargetLog[m_clientId] = now;
+	}
+	else if (oldTarget != 0 && m_targetMeltPlayer == 0)
+	{
+		NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u が解凍を中止（ネットワーク同期）", m_clientId);
+		lastTargetLog[m_clientId] = now;
+	}
+
+	// 定期的なログ（助けている状態が継続している場合）
+	if (m_targetMeltPlayer != 0 && now - lastTargetLog[m_clientId] > 3000)
+	{
+		NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u は現在 ID=%u を助けている（継続中）",
+			m_clientId, m_targetMeltPlayer);
+		lastTargetLog[m_clientId] = now;
 	}
 }
 
