@@ -95,19 +95,14 @@ void IceBlock::Draw(Engine* pEngine, Camera* pCamera, Projection* pProj,
 
 	if (m_meltAmount < MELT_START_THRESHOLD)
 	{
-		// 0.0 ～ 0.7 の範囲では最小サイズを維持
-		shrinkAmount = MIN_SCALE;
+		shrinkAmount = 1.0f;  // 0%～70%: フルサイズ（100%）
 	}
 	else
 	{
-		// 0.7 ～ 1.0 の範囲で最小サイズから0に向かって縮む
+		// 70%～100%: フルサイズから30%まで縮む
 		float normalizedMelt = (m_meltAmount - MELT_START_THRESHOLD) / (1.0f - MELT_START_THRESHOLD);
-
-		// イージング関数（二次関数で徐々に縮む）
 		float easeOut = normalizedMelt * normalizedMelt;
-
-		// MIN_SCALE から 0.0 へ補間
-		shrinkAmount = MIN_SCALE * (1.0f - easeOut);
+		shrinkAmount = 1.0f - (1.0f - MIN_SCALE) * easeOut;
 	}
 
 	currentScale.x *= shrinkAmount;

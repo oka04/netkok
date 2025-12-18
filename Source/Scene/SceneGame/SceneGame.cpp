@@ -589,9 +589,6 @@ void SceneGame::CheckBreathHitPlayers()
 
 void SceneGame::UpdatePlayerFreezing()
 {
-	// ★★★ 新しいロジック: ネットワーク同期を考慮した解凍処理 ★★★
-
-	// ローカルプレイヤーが逃げる側で凍結していない場合、近くの凍結プレイヤーを探す（ターゲット設定のみ）
 	if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
 	{
 		Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
@@ -599,10 +596,8 @@ void SceneGame::UpdatePlayerFreezing()
 
 		if (!localRunner->IsFrozen())
 		{
-			// ★★★ ターゲット検出のみ行う（実際の解凍はターゲット側で処理）★★★
 			std::vector<std::pair<uint32_t, CharacterBase*>> playerList;
 
-			// リモートプレイヤーを追加
 			for (auto& kv : m_players)
 			{
 				if (m_playerRoles[kv.first] == ROLE_RUNNER)
@@ -611,10 +606,8 @@ void SceneGame::UpdatePlayerFreezing()
 				}
 			}
 
-			// TryMeltNearbyFrozenPlayer は実際の解凍を行わず、m_targetMeltPlayer を設定するだけ
 			localRunner->TryMeltNearbyFrozenPlayer(m_pEngine, playerList, m_deltaTime);
 
-			// デバッグログ
 			static DWORD lastLog = 0;
 			DWORD now = timeGetTime();
 			if (now - lastLog > 1000)
@@ -627,20 +620,12 @@ void SceneGame::UpdatePlayerFreezing()
 				}
 				lastLog = now;
 			}
+			return;
 		}
-	}
 
-	// ★★★ 自分が凍結している場合、誰かが助けてくれているかチェックして解凍処理を行う ★★★
-	if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
-	{
-		Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
-		if (!localRunner || !localRunner->IsFrozen()) return;
-
-		// 誰かが自分をターゲットにしているかチェック
 		int helperCount = 0;
 		std::vector<uint32_t> helperIds;
 
-		// すべてのプレイヤーのmeltTargetIdをチェック
 		for (auto& kv : m_players)
 		{
 			if (m_playerRoles[kv.first] != ROLE_RUNNER)
@@ -653,7 +638,6 @@ void SceneGame::UpdatePlayerFreezing()
 			uint32_t targetId = otherRunner->GetMeltTargetId();
 			if (targetId == m_localClientId)
 			{
-				// このプレイヤーが自分を助けてくれている
 				helperCount++;
 				helperIds.push_back(kv.first);
 
@@ -668,12 +652,10 @@ void SceneGame::UpdatePlayerFreezing()
 			}
 		}
 
-		// 助けてくれている人がいる場合、解凍処理を行う
 		if (helperCount > 0)
 		{
 			float oldAmount = localRunner->GetFrozenAmount();
 
-			// ★★★ 複数人で助けると速く溶ける ★★★
 			float meltSpeed = localRunner->GetMeltSpeed() * helperCount;
 
 			float newAmount = oldAmount + meltSpeed * m_deltaTime;
@@ -681,9 +663,9 @@ void SceneGame::UpdatePlayerFreezing()
 			if (newAmount >= 1.0f)
 			{
 				newAmount = 1.0f;
+				localRunner->SetFrozenAmount(1.0f);
 				localRunner->SetFrozen(false);
 
-				// 助けてくれた人のIDをログに出力
 				std::string helperList = "";
 				for (size_t i = 0; i < helperIds.size(); i++)
 				{
@@ -693,11 +675,13 @@ void SceneGame::UpdatePlayerFreezing()
 
 				NET_LOG_F("[SceneGame::UpdatePlayerFreezing] ★★★自分[%u]が完全解凍！★★★ 助けてくれた人: [%s]",
 					m_localClientId, helperList.c_str());
+
+				SyncToServer();
+				return;
 			}
 
 			localRunner->SetFrozenAmount(newAmount);
 
-			// 詳細ログ
 			static DWORD lastMeltLog = 0;
 			DWORD now = timeGetTime();
 			if (now - lastMeltLog > 200)
@@ -707,7 +691,6 @@ void SceneGame::UpdatePlayerFreezing()
 				lastMeltLog = now;
 			}
 
-			// 状態が変化したので同期
 			if (abs(newAmount - oldAmount) > 0.01f)
 			{
 				SyncToServer();
@@ -715,7 +698,6 @@ void SceneGame::UpdatePlayerFreezing()
 		}
 		else
 		{
-			// 誰も助けてくれていない場合のログ
 			static DWORD lastNoHelperLog = 0;
 			DWORD now = timeGetTime();
 			if (now - lastNoHelperLog > 3000)
@@ -723,7 +705,6 @@ void SceneGame::UpdatePlayerFreezing()
 				NET_LOG_F("[SceneGame::UpdatePlayerFreezing] 自分[%u]は凍結中だが、誰も助けてくれていない（プレイヤー数=%d）",
 					m_localClientId, (int)m_players.size());
 
-				// デバッグ：各プレイヤーのmeltTargetIdを表示
 				for (auto& kv : m_players)
 				{
 					if (m_playerRoles[kv.first] != ROLE_RUNNER)
