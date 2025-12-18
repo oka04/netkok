@@ -1,4 +1,4 @@
-﻿// Runner.cpp - 氷状態処理を追加
+﻿// Runner.cpp - 氷状態処理を追加 + 解凍ロジック修正
 
 #define _USING_V110_SDK71_ 1
 
@@ -118,22 +118,6 @@ void Runner::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 	{
 		Input(pEngine);
 
-		// ★★★ デバッグ: 入力状態を確認 ★★★
-		static DWORD lastInputLog = 0;
-		DWORD now = timeGetTime();
-		if (now - lastInputLog > 1000)
-		{
-			bool isAttack = (m_keyFlag & ATTACK_KEY) != 0;
-			if (isAttack)
-			{
-				NET_LOG_F("[Runner::Update] ID=%u Input後: 左クリック=%s KeyFlag=0x%02X",
-					m_clientId,
-					isAttack ? "ON" : "OFF",
-					m_keyFlag);
-			}
-			lastInputLog = now;
-		}
-
 		UpdateStamina(deltaTime);
 		ChangeSpeed();
 		Move(map);
@@ -142,9 +126,19 @@ void Runner::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 	{
 		// ★★★ 凍結中は完全に動けない ★★★
 		m_speed = 0.0f;
-		m_keyFlag = 0x00;  // すべてのキー入力をクリア
 
-						   // 氷ブロックの位置を毎フレーム更新
+		// ★★★ 凍結中でも左クリック入力だけは受け付ける（他人を助けるため） ★★★
+		// しかし、移動キーなどは無効化
+		unsigned char oldKeyFlag = m_keyFlag;
+		m_keyFlag = 0x00;  // 一旦クリア
+
+						   // 左クリックの状態だけを保持
+		if (pEngine->GetMouseButton(0))
+		{
+			m_keyFlag |= ATTACK_KEY;
+		}
+
+		// 氷ブロックの位置を毎フレーム更新
 		if (m_pIceBlock)
 		{
 			D3DXVECTOR3 centerPos = GetCenterPosition();
@@ -369,32 +363,18 @@ void Runner::UpdateFrozenState(float deltaTime)
 
 void Runner::TryMeltNearbyFrozenPlayer(Engine* pEngine, const std::vector<std::pair<uint32_t, CharacterBase*>>& players, float deltaTime)
 {
+	// ★★★ 自分が凍結中は解凍できない ★★★
 	if (m_bFrozen)
 	{
-		static DWORD lastLog = 0;
-		DWORD now = timeGetTime();
-		if (now - lastLog > 1000)
+		if (m_targetMeltPlayer != 0)
 		{
-			NET_LOG_F("[Runner::TryMelt] ID=%u 自分が凍結中なので解凍できない", m_clientId);
-			lastLog = now;
+			m_targetMeltPlayer = 0;
+			NET_LOG_F("[Runner::TryMelt] ID=%u 自分が凍結中なので解凍中止", m_clientId);
 		}
-		return;  // 自分が凍結中は解凍できない
+		return;
 	}
 
 	bool isAttackPressed = (m_keyFlag & ATTACK_KEY) != 0;
-
-	// デバッグ: 入力状態を確認
-	static DWORD lastInputLog = 0;
-	DWORD now = timeGetTime();
-	if (now - lastInputLog > 500)
-	{
-		if (isAttackPressed)
-		{
-			NET_LOG_F("[Runner::TryMelt] ID=%u 左クリック状態: 押されている KeyFlag=0x%02X",
-				m_clientId, m_keyFlag);
-		}
-		lastInputLog = now;
-	}
 
 	if (!isAttackPressed)
 	{
@@ -408,43 +388,17 @@ void Runner::TryMeltNearbyFrozenPlayer(Engine* pEngine, const std::vector<std::p
 		return;
 	}
 
-	// デバッグ: プレイヤーリストの内容を確認
-	static DWORD lastListLog = 0;
-	if (now - lastListLog > 2000)
-	{
-		NET_LOG_F("[Runner::TryMelt] ID=%u プレイヤーリスト: 総数=%d", m_clientId, (int)players.size());
-		for (const auto& pair : players)
-		{
-			uint32_t id = pair.first;
-			CharacterBase* pChar = pair.second;
-			if (!pChar) continue;
-
-			Runner* pRunner = dynamic_cast<Runner*>(pChar);
-			if (pRunner)
-			{
-				D3DXVECTOR3 diff = pRunner->GetPosition() - m_position;
-				float distance = D3DXVec3Length(&diff);
-				NET_LOG_F("  [%u]: Distance=%.2f Frozen=%s Amount=%.2f",
-					id, distance, pRunner->IsFrozen() ? "Yes" : "No", pRunner->GetFrozenAmount());
-			}
-		}
-		lastListLog = now;
-	}
-
 	// ★★★ 範囲内の凍結プレイヤーを探す ★★★
 	Runner* closestFrozenRunner = nullptr;
 	float closestDistance = f_meltRange;
 	uint32_t closestId = 0;
-
-	int checkedCount = 0;
-	int frozenCount = 0;
 
 	for (const auto& pair : players)
 	{
 		uint32_t id = pair.first;
 		CharacterBase* pChar = pair.second;
 
-		// 自分自身はスキップ
+		// ★★★ 自分自身はスキップ ★★★
 		if (id == m_clientId)
 		{
 			continue;
@@ -461,23 +415,13 @@ void Runner::TryMeltNearbyFrozenPlayer(Engine* pEngine, const std::vector<std::p
 			continue;
 		}
 
-		checkedCount++;
-
 		if (!pRunner->IsFrozen())
 		{
 			continue;
 		}
 
-		frozenCount++;
-
 		D3DXVECTOR3 diff = pRunner->GetPosition() - m_position;
 		float distance = D3DXVec3Length(&diff);
-
-		if (now - lastListLog > 2000)
-		{
-			NET_LOG_F("[Runner::TryMelt] ID=%u が凍結プレイヤー[%u]を検出: Distance=%.2f Range=%.2f",
-				m_clientId, id, distance, f_meltRange);
-		}
 
 		if (distance < closestDistance)
 		{
@@ -487,54 +431,19 @@ void Runner::TryMeltNearbyFrozenPlayer(Engine* pEngine, const std::vector<std::p
 		}
 	}
 
-	static DWORD lastCheckLog = 0;
-	if (now - lastCheckLog > 1000)
-	{
-		if (isAttackPressed)
-		{
-			NET_LOG_F("[Runner::TryMelt] ID=%u チェック結果: checked=%d frozen=%d closest=%u dist=%.2f",
-				m_clientId, checkedCount, frozenCount, closestId, closestDistance);
-		}
-		lastCheckLog = now;
-	}
-
-	// ★★★ 解凍処理 ★★★
+	// ★★★ ターゲットの更新（実際の解凍処理は行わない）★★★
 	if (closestFrozenRunner)
 	{
 		if (m_targetMeltPlayer != closestId)
 		{
 			m_targetMeltPlayer = closestId;
-			NET_LOG_F("[Runner] ★★★ID=%u が ID=%u の解凍を開始★★★ Distance=%.2f",
+			NET_LOG_F("[Runner] ★★★ID=%u が ID=%u の解凍ターゲットに設定★★★ Distance=%.2f",
 				m_clientId, closestId, closestDistance);
 		}
-
-		// 氷を溶かす
-		float currentAmount = closestFrozenRunner->GetFrozenAmount();
-		float newAmount = currentAmount + f_meltSpeed * deltaTime;
-
-		// デバッグログを毎フレーム出力（詳細確認用）
-		static DWORD lastMeltLog = 0;
-		if (now - lastMeltLog > 200)  // 200msごとに出力
-		{
-			NET_LOG_F("[Runner::TryMelt] ★解凍進行中★ ID=%u -> ID=%u: %.3f -> %.3f (速度=%.4f dt=%.4f 増加=%.4f)",
-				m_clientId, closestId, currentAmount, newAmount, f_meltSpeed, deltaTime, f_meltSpeed * deltaTime);
-			lastMeltLog = now;
-		}
-
-		if (newAmount >= 1.0f)
-		{
-			newAmount = 1.0f;
-			closestFrozenRunner->SetFrozen(false);
-			m_targetMeltPlayer = 0;
-			NET_LOG_F("[Runner] ★★★ID=%u が ID=%u を完全解凍★★★", m_clientId, closestId);
-		}
-
-		// SetFrozenAmountを使って更新
-		closestFrozenRunner->SetFrozenAmount(newAmount);
 	}
 	else
 	{
-		if (m_targetMeltPlayer != 0 && now - lastCheckLog > 500)
+		if (m_targetMeltPlayer != 0)
 		{
 			NET_LOG_F("[Runner::TryMelt] ID=%u 範囲内に凍結プレイヤーなし - 解凍中止 (前回ターゲット=%u)",
 				m_clientId, m_targetMeltPlayer);
@@ -551,6 +460,9 @@ NetPlayerState Runner::GetNetState() const
 	state.frozen = m_bFrozen ? 1 : 0;
 	state.frozenAmount = m_frozenAmount;
 
+	// ★★★ 解凍ターゲットを追加（基底クラスで既に設定済み）★★★
+	// state.meltTargetId は CharacterBase::GetNetState() で GetMeltTargetId() から取得される
+
 	return state;
 }
 
@@ -558,7 +470,7 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 {
 	CharacterBase::UpdateFromNetwork(state, light, deltaTime);
 
-	// ★★★ 氷状態の同期（state.clientIdは自分のIDと一致しているはず）★★★
+	// ★★★ 氷状態の同期 ★★★
 	bool wasFrozen = m_bFrozen;
 	m_bFrozen = (state.frozen != 0);
 	m_frozenAmount = state.frozenAmount;
@@ -679,6 +591,7 @@ void Runner::DebugPrint(Engine* pEngine)
 	pEngine->DrawPrintf(0, 450, FONT_GOTHIC40, Color::BLUE, "Stamina: %.1f", m_stamina);
 	pEngine->DrawPrintf(0, 500, FONT_GOTHIC40, Color::BLUE, "Frozen: %s (%.1f%%)",
 		m_bFrozen ? "Yes" : "No", m_frozenAmount * 100.0f);
+	pEngine->DrawPrintf(0, 550, FONT_GOTHIC40, Color::BLUE, "MeltTarget: %u", m_targetMeltPlayer);
 }
 
 void Runner::UpdateStamina(float deltaTime)

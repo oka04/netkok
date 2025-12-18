@@ -364,6 +364,9 @@ NetPlayerState CharacterBase::GetNetState() const
 	state.frozen = 0;
 	state.frozenAmount = 0.0f;
 
+	// ★★★ 解凍ターゲットを初期化（派生クラスで上書き）★★★
+	state.meltTargetId = GetMeltTargetId();
+
 	return state;
 }
 

@@ -51,6 +51,12 @@ public:
 	// ★★★ 解凍ゲージ表示 ★★★
 	void DrawMeltGauge(Engine* pEngine, Camera* pCamera, Projection* pProj, float viewerDistance);
 
+	// ★★★ 誰を助けようとしているか取得 ★★★
+	virtual uint32_t GetMeltTargetId() const override { return m_targetMeltPlayer; }
+
+	// ★★★ 解凍速度を取得 ★★★
+	float GetMeltSpeed() const { return f_meltSpeed; }
+
 private:
 	void LoadParameter() override;
 	void ChangeSpeed();

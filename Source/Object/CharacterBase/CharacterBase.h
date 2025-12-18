@@ -30,7 +30,7 @@ public:
 	virtual D3DXVECTOR3 GetCenterPosition() const
 	{
 		D3DXVECTOR3 centerPos = m_position;
-		centerPos.y += f_height / 2.0f; 
+		centerPos.y += f_height / 2.0f;
 		return centerPos;
 	}
 
@@ -57,6 +57,10 @@ public:
 	void SetPosition(const D3DXVECTOR3& pos) { m_position = pos; }
 	const D3DXVECTOR3& GetEyePosition() const { return m_eyePosition; }
 
+	// ★★★ 誰を助けようとしているか取得（解凍ターゲット）★★★
+	virtual uint32_t GetMeltTargetId() const { return 0; }
+	unsigned char GetKeyFlag() const { return m_keyFlag; }
+
 protected:
 	static const D3DXVECTOR3 DEPTH_DIRECTION;
 	static const D3DXVECTOR3 UP_DIRECTION;
@@ -69,7 +73,7 @@ protected:
 		D_KEY = 1 << 3,
 		CROUCH_KEY = 1 << 4,
 		DASH_KEY = 1 << 5,
-		ATTACK_KEY = 1 << 6,  // ★★★ 左クリック攻撃用 ★★★
+		ATTACK_KEY = 1 << 6,  
 	};
 
 	enum GAUGE_COLOR

@@ -60,9 +60,9 @@ struct NetPlayerState
 	float breathPosX, breathPosY, breathPosZ;
 	float breathDirX, breathDirY, breathDirZ;
 
-	uint8_t frozen;        
-	float frozenAmount;
-
+	uint8_t frozen;         
+	float frozenAmount;     
+	uint32_t meltTargetId;
 	void SetFirstPerson(bool fp)
 	{
 		if (fp) flags |= 0x01;
