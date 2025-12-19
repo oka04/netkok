@@ -1,4 +1,5 @@
-﻿// SceneGame.h - デバッグ用氷ブロックを削除
+﻿// SceneGame.h - パラメータ管理追加
+
 #pragma once
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -12,6 +13,8 @@
 #include "..\\..\\Object\\Network\\ServerManager\\ServerManager.h"
 #include "..\\..\\Object\\Network\\NetworkSync.h"
 #include <map>
+#include <fstream>
+#include "..\\..\\Object\\json.hpp"
 
 class SceneGame : public Scene
 {
@@ -40,14 +43,13 @@ private:
 	void SpawnPlayerWithRole(uint32_t clientId, const std::string& name, const D3DXVECTOR3& pos, PlayerRole role);
 	void DespawnPlayer(uint32_t clientId);
 
-	// ★★★ シャドウマップ関連のメソッドを追加 ★★★
 	void CreateShadowMaps();
 	void RenderShadowMaps();
 	void ReleaseShadowMaps();
 
-	// ★★★ 氷状態関連の処理 ★★★
 	void CheckBreathHitPlayers();
 	void UpdatePlayerFreezing();
+	void LoadGameParameter();  // ★★★ パラメータ読み込み追加 ★★★
 
 	enum DEBUG_FLAG
 	{
@@ -109,7 +111,6 @@ private:
 	ServerManager* m_pServer;
 	std::vector<SpotLight*> m_chaserLights;
 
-	// ★★★ シャドウマップ関連のメンバー変数を追加 ★★★
 	std::vector<LPDIRECT3DTEXTURE9> m_shadowMaps;
 	std::vector<LPDIRECT3DSURFACE9> m_shadowSurfaces;
 	std::vector<LPDIRECT3DSURFACE9> m_shadowDepthSurfaces;
@@ -119,8 +120,18 @@ private:
 
 	void UpdateChaserLights();
 	void ReceiveWorldState();
-	static const DWORD NETWORK_SEND_INTERVAL = 16;
-	static const DWORD WORLD_BROADCAST_INTERVAL = 8;
+
+	// ★★★ パラメータファイルから読み込む値 ★★★
+	float f_maxGaugeDistance;
+	float f_chaserGaugeDistance;
+	float f_wallAlphaFar;
+	float f_wallAlphaMid;
+	float f_wallAlphaNear;
+	float f_wallDistanceMid;
+	float f_wallDistanceFar;
+	DWORD f_networkSendInterval;
+	DWORD f_worldBroadcastInterval;
+
 	bool m_bEnablePrediction;
 	bool m_bEnableJitterReduction;
 };

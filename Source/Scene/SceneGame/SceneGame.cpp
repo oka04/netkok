@@ -68,6 +68,8 @@ void SceneGame::Start()
 
 void SceneGame::Initialize()
 {
+	LoadGameParameter();  // ★★★ パラメータ読み込み ★★★
+
 	SetBackColor(0x00008000);
 	d_debugFlag = 0;
 	d_viewPointCount = 0;
@@ -328,13 +330,13 @@ void SceneGame::UpdateNetwork()
 		}
 	}
 
-	if (m_bInitialSyncDone && now - m_lastNetworkSend >= NETWORK_SEND_INTERVAL)
+	if (m_bInitialSyncDone && now - m_lastNetworkSend >= f_networkSendInterval)
 	{
 		SyncToServer();
 		m_lastNetworkSend = now;
 	}
 
-	if (m_bIsHost && m_pServer && now - m_lastWorldBroadcast >= WORLD_BROADCAST_INTERVAL)
+	if (m_bIsHost && m_pServer && now - m_lastWorldBroadcast >= f_worldBroadcastInterval)
 	{
 		m_pServer->BroadcastWorldState();
 		m_lastWorldBroadcast = now;
@@ -738,7 +740,7 @@ void SceneGame::SyncToServer()
 	if (now - lastLogTime > 3000)
 	{
 		NET_LOG_F("[SceneGame] 送信: ID=%u Pos=(%.1f,%.1f,%.1f) Interval=%dms",
-			state.clientId, state.posX, state.posY, state.posZ, NETWORK_SEND_INTERVAL);
+			state.clientId, state.posX, state.posY, state.posZ, f_networkSendInterval);
 		lastLogTime = now;
 	}
 
@@ -1723,9 +1725,10 @@ void SceneGame::Draw()
 					continue;
 				}
 
-				float alpha = 0.5f;
-				if (distance > 15.0f) alpha = 0.3f;
-				else if (distance > 30.0f) alpha = 0.2f;
+				// ★★★ パラメータファイルの値を使用 ★★★
+				float alpha = f_wallAlphaNear;
+				if (distance > f_wallDistanceMid) alpha = f_wallAlphaMid;
+				else if (distance > f_wallDistanceFar) alpha = f_wallAlphaFar;
 
 				IceBlock* iceBlock = runner->GetIceBlock();
 				if (iceBlock)
@@ -1738,9 +1741,7 @@ void SceneGame::Draw()
 		}
 		else if (m_localRole == ROLE_CHASER)
 		{
-			// ★★★ 鬼は近距離の凍結プレイヤーのみゲージを表示 ★★★
-			const float CHASER_GAUGE_DISTANCE = 5.0f;  // 5m以内のみゲージ表示
-
+			// ★★★ 鬼は近距離の凍結プレイヤーのみ表示（パラメータから読み込んだ距離） ★★★
 			for (auto& kv : m_players)
 			{
 				if (kv.first == m_localClientId) continue;
@@ -1762,14 +1763,14 @@ void SceneGame::Draw()
 					continue;
 				}
 
-				// ★★★ 鬼は近距離のみ氷ブロックとゲージを表示 ★★★
-				if (distance > CHASER_GAUGE_DISTANCE)
+				// ★★★ 鬼の表示範囲をパラメータから取得 ★★★
+				if (distance > f_chaserGaugeDistance)
 				{
 					continue;
 				}
 
-				float alpha = 0.5f;  // ★★★ 明るめに設定 ★★★
-				if (distance > 3.0f) alpha = 0.4f;
+				float alpha = f_wallAlphaNear;
+				if (distance > 3.0f) alpha = f_wallAlphaMid;
 
 				IceBlock* iceBlock = runner->GetIceBlock();
 				if (iceBlock)
@@ -1777,12 +1778,12 @@ void SceneGame::Draw()
 					iceBlock->DrawThroughWalls(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light, alpha);
 				}
 
-				// ゲージも表示
 				runner->DrawMeltGaugeThroughWalls(m_pEngine, &m_camera, &m_projection, distance, alpha);
 			}
 		}
 	}
 
+	// ★★★ 通常描画のゲージ表示（逃げる側専用） ★★★
 	if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
 	{
 		D3DXVECTOR3 localPos = m_pLocalPlayer->GetPosition();
@@ -1790,19 +1791,45 @@ void SceneGame::Draw()
 		for (auto& kv : m_players)
 		{
 			if (kv.first == m_localClientId) continue;
-
 			if (!kv.second) continue;
-
 			if (m_playerRoles[kv.first] != ROLE_RUNNER) continue;
 
 			Runner* runner = dynamic_cast<Runner*>(kv.second);
 			if (!runner) continue;
-
 			if (!runner->IsFrozen()) continue;
 
 			D3DXVECTOR3 targetPos = runner->GetPosition();
 			D3DXVECTOR3 diff = targetPos - localPos;
 			float distance = D3DXVec3Length(&diff);
+
+			// ★★★ パラメータファイルの値を使用 ★★★
+			runner->DrawMeltGauge(m_pEngine, &m_camera, &m_projection, distance);
+		}
+	}
+	// ★★★ 鬼も近距離の凍結プレイヤーのゲージを通常描画 ★★★
+	else if (m_pLocalPlayer && m_localRole == ROLE_CHASER)
+	{
+		D3DXVECTOR3 localPos = m_pLocalPlayer->GetPosition();
+
+		for (auto& kv : m_players)
+		{
+			if (kv.first == m_localClientId) continue;
+			if (!kv.second) continue;
+			if (m_playerRoles[kv.first] != ROLE_RUNNER) continue;
+
+			Runner* runner = dynamic_cast<Runner*>(kv.second);
+			if (!runner) continue;
+			if (!runner->IsFrozen()) continue;
+
+			D3DXVECTOR3 targetPos = runner->GetPosition();
+			D3DXVECTOR3 diff = targetPos - localPos;
+			float distance = D3DXVec3Length(&diff);
+
+			// ★★★ 鬼の表示範囲をパラメータから取得 ★★★
+			if (distance > f_chaserGaugeDistance)
+			{
+				continue;
+			}
 
 			runner->DrawMeltGauge(m_pEngine, &m_camera, &m_projection, distance);
 		}
@@ -1943,6 +1970,29 @@ void SceneGame::Exit()
 	m_fade.Release(m_pEngine);
 	m_pEngine->ReleaseFont(FONT_GOTHIC40);
 	m_pEngine->ReleaseModel(MODEL_CHARACTER);
+}
+
+void SceneGame::LoadGameParameter()
+{
+	std::ifstream file(JSON_GAME_PARAMETER);
+	if (!file.is_open())
+	{
+		throw DxSystemException(DxSystemException::OM_FILE_OPEN_ERROR);
+	}
+
+	nlohmann::json config;
+	file >> config;
+	file.close();
+
+	f_maxGaugeDistance = config.value("maxGaugeDistance", 10.0f);
+	f_chaserGaugeDistance = config.value("chaserGaugeDistance", 5.0f);
+	f_wallAlphaFar = config.value("wallAlphaFar", 0.5f);
+	f_wallAlphaMid = config.value("wallAlphaMid", 0.4f);
+	f_wallAlphaNear = config.value("wallAlphaNear", 0.7f);
+	f_wallDistanceMid = config.value("wallDistanceMid", 15.0f);
+	f_wallDistanceFar = config.value("wallDistanceFar", 30.0f);
+	f_networkSendInterval = config.value("networkSendInterval", 16);
+	f_worldBroadcastInterval = config.value("worldBroadcastInterval", 8);
 }
 
 void SceneGame::UpdateDebugFlag()

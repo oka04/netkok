@@ -44,11 +44,11 @@ public:
 	bool IsFrozen() const { return m_bFrozen; }
 	void SetFrozen(bool frozen);
 	float GetFrozenAmount() const { return m_frozenAmount; }
-	void SetFrozenAmount(float amount);  // ★★★ 追加：外部から氷の溶け具合を設定 ★★★
+	void SetFrozenAmount(float amount);
 	void UpdateFrozenState(float deltaTime);
 	void TryMeltNearbyFrozenPlayer(Engine* pEngine, const std::vector<std::pair<uint32_t, CharacterBase*>>& players, float deltaTime);
 	void DrawMeltGaugeThroughWalls(Engine* pEngine, Camera* pCamera, Projection* pProj,
-	float viewerDistance, float alpha = 0.7f);
+		float viewerDistance, float alpha = 0.7f);
 
 	// ★★★ 氷ブロックを取得 ★★★
 	IceBlock* GetIceBlock() const { return m_pIceBlock; }
@@ -60,6 +60,9 @@ public:
 
 	// ★★★ 解凍速度を取得 ★★★
 	float GetMeltSpeed() const { return f_meltSpeed; }
+
+	// ★★★ 完全解凍済みフラグ ★★★
+	bool IsFullyMelted() const { return m_bFullyMelted; }
 
 private:
 	void LoadParameter() override;
@@ -98,10 +101,11 @@ private:
 	bool m_bFatigued;
 
 	// ★★★ 氷状態管理 ★★★
-	bool m_bFrozen;               // 凍結状態フラグ
-	float m_frozenAmount;         // 氷の溶け具合 (0.0 = 完全凍結, 1.0 = 完全解凍)
-	IceBlock* m_pIceBlock;        // 氷ブロック表示用
-	float f_meltRange;            // 解凍可能な距離
-	float f_meltSpeed;            // 解凍速度
-	uint32_t m_targetMeltPlayer;  // 現在解凍中のプレイヤーID（0なら解凍していない）
+	bool m_bFrozen;
+	float m_frozenAmount;
+	IceBlock* m_pIceBlock;
+	float f_meltRange;
+	float f_meltSpeed;
+	uint32_t m_targetMeltPlayer;
+	bool m_bFullyMelted;  // ★★★ 完全解凍済みフラグ ★★★
 };

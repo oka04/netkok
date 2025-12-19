@@ -1,0 +1,12 @@
+{
+  "maxGaugeDistance": 10.0,
+  "chaserGaugeDistance": 5.0,
+  "wallAlphaFar": 0.5,
+  "wallAlphaMid": 0.4,
+  "wallAlphaNear": 0.7,
+  "wallDistanceMid": 15.0,
+  "wallDistanceFar": 30.0,
+  "networkSendInterval": 16,
+  "worldBroadcastInterval": 8,
+  "gaugeThicknessMultiplier": 1.2
+}

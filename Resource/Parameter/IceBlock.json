@@ -1,0 +1,18 @@
+{
+  "iceColorR": 0.8,
+  "iceColorG": 0.95,
+  "iceColorB": 1.0,
+  "iceAlpha": 0.75,
+  "ambientMultiplier": 1.3,
+  "diffuseMultiplier": 1.0,
+  "specularPower": 32.0,
+  "minScale": 0.3,
+  "sizeWidth": 2.0,
+  "sizeHeight": 2.0,
+  "sizeDepth": 2.0,
+  "headOffsetY": 0.5,
+  "throughWallAlphaMultiplier": 1.5,
+  "throughWallDiffuseMultiplier": 1.3,
+  "throughWallAmbientMultiplier": 1.5,
+  "alphaFadeRate": 0.4
+}

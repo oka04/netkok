@@ -1,8 +1,13 @@
-﻿// IceBlock.cpp - 溶ける氷ブロッククラス実装（球体版・線形縮小・明るい色）
+﻿// IceBlock.cpp - パラメータファイル対応版
+
 #define _USING_V110_SDK71_ 1
 
 #include "IceBlock.h"
-#include "../../Effect/resource.h"
+using namespace KeyString;
+using namespace InputKey;
+using namespace WindowSetting;
+using namespace Common;
+
 
 IceBlock::IceBlock()
 	: m_position(0.0f, 0.0f, 0.0f)
@@ -12,8 +17,20 @@ IceBlock::IceBlock()
 	, m_meltAmount(0.0f)
 	, m_meltDuration(0.0f)
 	, m_elapsedTime(0.0f)
-	, m_iceColor(0.8f, 0.95f, 1.0f, 0.75f)  // ★★★ 明るい青白色に変更 ★★★
+	, m_iceColor(0.8f, 0.95f, 1.0f, 0.75f)
 	, m_autoMelt(false)
+	, f_iceColorR(0.8f)
+	, f_iceColorG(0.95f)
+	, f_iceColorB(1.0f)
+	, f_iceAlpha(0.75f)
+	, f_ambientMultiplier(1.3f)
+	, f_diffuseMultiplier(1.0f)
+	, f_specularPower(32.0f)
+	, f_minScale(0.3f)
+	, f_throughWallAlphaMultiplier(1.5f)
+	, f_throughWallDiffuseMultiplier(1.3f)
+	, f_throughWallAmbientMultiplier(1.5f)
+	, f_alphaFadeRate(0.4f)
 {
 	D3DXMatrixIdentity(&m_matWorld);
 }
@@ -23,9 +40,39 @@ IceBlock::~IceBlock()
 	ReleaseResources();
 }
 
+void IceBlock::LoadParameter()
+{
+	std::ifstream file(JSON_ICE_BLOCK_PARAMETER);
+	if (!file.is_open())
+	{
+		throw DxSystemException(DxSystemException::OM_FILE_OPEN_ERROR);
+	}
+
+	nlohmann::json config;
+	file >> config;
+	file.close();
+
+	f_iceColorR = config.value("iceColorR", 0.8f);
+	f_iceColorG = config.value("iceColorG", 0.95f);
+	f_iceColorB = config.value("iceColorB", 1.0f);
+	f_iceAlpha = config.value("iceAlpha", 0.75f);
+	f_ambientMultiplier = config.value("ambientMultiplier", 1.3f);
+	f_diffuseMultiplier = config.value("diffuseMultiplier", 1.0f);
+	f_specularPower = config.value("specularPower", 32.0f);
+	f_minScale = config.value("minScale", 0.3f);
+	f_throughWallAlphaMultiplier = config.value("throughWallAlphaMultiplier", 1.5f);
+	f_throughWallDiffuseMultiplier = config.value("throughWallDiffuseMultiplier", 1.3f);
+	f_throughWallAmbientMultiplier = config.value("throughWallAmbientMultiplier", 1.5f);
+	f_alphaFadeRate = config.value("alphaFadeRate", 0.4f);
+
+	m_iceColor = D3DXVECTOR4(f_iceColorR, f_iceColorG, f_iceColorB, f_iceAlpha);
+}
+
 void IceBlock::Initialize(Engine* pEngine, float width, float height, float depth,
 	const D3DXVECTOR3& position, float meltDuration)
 {
+	LoadParameter();  // ★★★ パラメータ読み込み ★★★
+
 	m_position = position;
 	m_originalSize = D3DXVECTOR3(width, height, depth);
 	m_meltDuration = meltDuration;
@@ -33,26 +80,24 @@ void IceBlock::Initialize(Engine* pEngine, float width, float height, float dept
 	m_elapsedTime = 0.0f;
 	m_meltAmount = 0.0f;
 
-	// 球体プリミティブを作成
 	float radius = (width + height + depth) / 6.0f;
 	m_primitiveSphere.CreateSphere(pEngine, radius, 24);
 
-	// マテリアル設定（明るめに）
 	D3DMATERIAL9 material;
 	ZeroMemory(&material, sizeof(D3DMATERIAL9));
-	material.Diffuse.r = m_iceColor.x;
-	material.Diffuse.g = m_iceColor.y;
-	material.Diffuse.b = m_iceColor.z;
+	material.Diffuse.r = m_iceColor.x * f_diffuseMultiplier;
+	material.Diffuse.g = m_iceColor.y * f_diffuseMultiplier;
+	material.Diffuse.b = m_iceColor.z * f_diffuseMultiplier;
 	material.Diffuse.a = m_iceColor.w;
 	material.Ambient = material.Diffuse;
-	material.Ambient.r *= 1.2f;  // ★★★ アンビエントを明るく ★★★
-	material.Ambient.g *= 1.2f;
-	material.Ambient.b *= 1.2f;
+	material.Ambient.r *= f_ambientMultiplier;
+	material.Ambient.g *= f_ambientMultiplier;
+	material.Ambient.b *= f_ambientMultiplier;
 	material.Specular.r = 1.0f;
 	material.Specular.g = 1.0f;
 	material.Specular.b = 1.0f;
 	material.Specular.a = 1.0f;
-	material.Power = 32.0f;
+	material.Power = f_specularPower;
 	m_primitiveSphere.SetMaterial(material);
 
 	UpdateWorldMatrix();
@@ -75,29 +120,24 @@ void IceBlock::Draw(Engine* pEngine, Camera* pCamera, Projection* pProj,
 
 	LPDIRECT3DDEVICE9 pDevice = pEngine->GetDevice();
 
-	// 半透明描画設定
 	pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
-	// ★★★ 線形にサイズを縮小（0% = 100%サイズ, 100% = 30%サイズ） ★★★
-	const float MIN_SCALE = 0.3f;
-	float shrinkAmount = 1.0f - (1.0f - MIN_SCALE) * m_meltAmount;
+	// ★★★ パラメータから読み込んだ値を使用 ★★★
+	float shrinkAmount = 1.0f - (1.0f - f_minScale) * m_meltAmount;
 
 	D3DXVECTOR3 currentScale = m_scale;
 	currentScale.x *= shrinkAmount;
 	currentScale.y *= shrinkAmount;
 	currentScale.z *= shrinkAmount;
 
-	// Y位置はプレイヤーの中心に固定（動かさない）
 	D3DXVECTOR3 adjustedPosition = m_position;
 
-	// ★★★ アルファ値の調整（徐々に透明に） ★★★
-	float currentAlpha = m_iceColor.w * (1.0f - m_meltAmount * 0.4f);
+	float currentAlpha = m_iceColor.w * (1.0f - m_meltAmount * f_alphaFadeRate);
 
-	// ワールド行列の構築
 	D3DXMATRIX matScale, matRotX, matRotY, matRotZ, matTrans;
 	D3DXMatrixScaling(&matScale, currentScale.x, currentScale.y, currentScale.z);
 	D3DXMatrixRotationX(&matRotX, m_rotation.x);
@@ -107,35 +147,31 @@ void IceBlock::Draw(Engine* pEngine, Camera* pCamera, Projection* pProj,
 
 	D3DXMATRIX matWorld = matScale * matRotX * matRotY * matRotZ * matTrans;
 
-	// マテリアル更新（明るめに）
 	D3DMATERIAL9 material;
 	ZeroMemory(&material, sizeof(D3DMATERIAL9));
-	material.Diffuse.r = m_iceColor.x;
-	material.Diffuse.g = m_iceColor.y;
-	material.Diffuse.b = m_iceColor.z;
+	material.Diffuse.r = m_iceColor.x * f_diffuseMultiplier;
+	material.Diffuse.g = m_iceColor.y * f_diffuseMultiplier;
+	material.Diffuse.b = m_iceColor.z * f_diffuseMultiplier;
 	material.Diffuse.a = currentAlpha;
-	material.Ambient.r = m_iceColor.x * 1.3f;  // ★★★ アンビエントを明るく ★★★
-	material.Ambient.g = m_iceColor.y * 1.3f;
-	material.Ambient.b = m_iceColor.z * 1.3f;
+	material.Ambient.r = m_iceColor.x * f_ambientMultiplier;
+	material.Ambient.g = m_iceColor.y * f_ambientMultiplier;
+	material.Ambient.b = m_iceColor.z * f_ambientMultiplier;
 	material.Ambient.a = currentAlpha;
 	material.Specular.r = 1.0f;
 	material.Specular.g = 1.0f;
 	material.Specular.b = 1.0f;
 	material.Specular.a = 1.0f;
-	material.Power = 32.0f;
+	material.Power = f_specularPower;
 	m_primitiveSphere.SetMaterial(material);
 
-	// 球体の描画
 	m_primitiveSphere.SetWorldTransform(&matWorld);
 	m_primitiveSphere.Draw(pEngine, pCamera, pProj, pAmbient, pLight);
 
-	// レンダーステートを戻す
 	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 	pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 }
 
-// ★★★ 壁貫通描画（常に最大サイズ、Z-test無効、明るい色） ★★★
 void IceBlock::DrawThroughWalls(Engine* pEngine, Camera* pCamera, Projection* pProj,
 	AmbientLight* pAmbient, DirectionalLight* pLight, float alpha)
 {
@@ -144,7 +180,6 @@ void IceBlock::DrawThroughWalls(Engine* pEngine, Camera* pCamera, Projection* pP
 
 	LPDIRECT3DDEVICE9 pDevice = pEngine->GetDevice();
 
-	// レンダーステートを保存
 	DWORD oldZEnable, oldZWriteEnable, oldAlphaBlend, oldSrcBlend, oldDestBlend, oldCullMode;
 	pDevice->GetRenderState(D3DRS_ZENABLE, &oldZEnable);
 	pDevice->GetRenderState(D3DRS_ZWRITEENABLE, &oldZWriteEnable);
@@ -153,7 +188,6 @@ void IceBlock::DrawThroughWalls(Engine* pEngine, Camera* pCamera, Projection* pP
 	pDevice->GetRenderState(D3DRS_DESTBLEND, &oldDestBlend);
 	pDevice->GetRenderState(D3DRS_CULLMODE, &oldCullMode);
 
-	// 壁貫通設定（Z-test無効、Z-write無効）
 	pDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
 	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 	pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
@@ -161,15 +195,11 @@ void IceBlock::DrawThroughWalls(Engine* pEngine, Camera* pCamera, Projection* pP
 	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
-	// 常に最大サイズで描画（溶け具合は無視）
 	D3DXVECTOR3 maxScale = m_scale;
-
 	D3DXVECTOR3 adjustedPosition = m_position;
 
-	// ★★★ 透明度を調整（壁越しは薄く表示、さらに明るく） ★★★
-	float currentAlpha = m_iceColor.w * alpha * 1.5f;  // ★★★ 1.5倍明るく ★★★
+	float currentAlpha = m_iceColor.w * alpha * f_throughWallAlphaMultiplier;
 
-													   // ワールド行列の構築（最大サイズ）
 	D3DXMATRIX matScale, matRotX, matRotY, matRotZ, matTrans;
 	D3DXMatrixScaling(&matScale, maxScale.x, maxScale.y, maxScale.z);
 	D3DXMatrixRotationX(&matRotX, m_rotation.x);
@@ -179,29 +209,26 @@ void IceBlock::DrawThroughWalls(Engine* pEngine, Camera* pCamera, Projection* pP
 
 	D3DXMATRIX matWorld = matScale * matRotX * matRotY * matRotZ * matTrans;
 
-	// マテリアル更新（明るめに）
 	D3DMATERIAL9 material;
 	ZeroMemory(&material, sizeof(D3DMATERIAL9));
-	material.Diffuse.r = m_iceColor.x * 1.3f;  // ★★★ ディフューズを明るく ★★★
-	material.Diffuse.g = m_iceColor.y * 1.3f;
-	material.Diffuse.b = m_iceColor.z * 1.3f;
+	material.Diffuse.r = m_iceColor.x * f_throughWallDiffuseMultiplier;
+	material.Diffuse.g = m_iceColor.y * f_throughWallDiffuseMultiplier;
+	material.Diffuse.b = m_iceColor.z * f_throughWallDiffuseMultiplier;
 	material.Diffuse.a = currentAlpha;
-	material.Ambient.r = m_iceColor.x * 1.5f;  // ★★★ アンビエントをさらに明るく ★★★
-	material.Ambient.g = m_iceColor.y * 1.5f;
-	material.Ambient.b = m_iceColor.z * 1.5f;
+	material.Ambient.r = m_iceColor.x * f_throughWallAmbientMultiplier;
+	material.Ambient.g = m_iceColor.y * f_throughWallAmbientMultiplier;
+	material.Ambient.b = m_iceColor.z * f_throughWallAmbientMultiplier;
 	material.Ambient.a = currentAlpha;
 	material.Specular.r = 1.0f;
 	material.Specular.g = 1.0f;
 	material.Specular.b = 1.0f;
 	material.Specular.a = 1.0f;
-	material.Power = 32.0f;
+	material.Power = f_specularPower;
 	m_primitiveSphere.SetMaterial(material);
 
-	// 球体の描画
 	m_primitiveSphere.SetWorldTransform(&matWorld);
 	m_primitiveSphere.Draw(pEngine, pCamera, pProj, pAmbient, pLight);
 
-	// レンダーステートを元に戻す
 	pDevice->SetRenderState(D3DRS_ZENABLE, oldZEnable);
 	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, oldZWriteEnable);
 	pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, oldAlphaBlend);
@@ -247,5 +274,4 @@ void IceBlock::UpdateWorldMatrix()
 
 void IceBlock::ReleaseResources()
 {
-	// Primitiveのデストラクタが自動的にリソースを解放
 }
