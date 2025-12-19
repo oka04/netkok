@@ -1,6 +1,4 @@
-﻿// Runner.cpp - 氷状態処理を追加 + 解凍ロジック修正 + meltTargetId同期
-
-#define _USING_V110_SDK71_ 1
+﻿#define _USING_V110_SDK71_ 1
 
 #include "Runner.h"
 
@@ -46,7 +44,6 @@ void Runner::Initialize(Engine* pEngine, Map& map, Projection* projection, Camer
 	m_staminaRecoveryTimer = 0.0f;
 	m_bFatigued = false;
 
-	// ★★★ 氷ブロック初期化 ★★★
 	m_bFrozen = false;
 	m_frozenAmount = 0.0f;
 	m_targetMeltPlayer = 0;
@@ -75,7 +72,6 @@ void Runner::InitializeAtPosition(Engine* pEngine, const D3DXVECTOR3& startPos, 
 	m_staminaRecoveryTimer = 0.0f;
 	m_bFatigued = false;
 
-	// ★★★ 氷ブロック初期化 ★★★
 	m_bFrozen = false;
 	m_frozenAmount = 0.0f;
 	m_targetMeltPlayer = 0;
@@ -108,13 +104,10 @@ void Runner::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 {
 	m_deltaTime = deltaTime;
 
-	// ★★★ 凍結状態でも視点移動は可能 ★★★
 	SetMouseCursor(pEngine, camera);
 
-	// ★★★ 凍結状態の更新（毎フレーム実行）★★★
 	UpdateFrozenState(deltaTime);
 
-	// ★★★ 凍結状態でなければ通常の更新 ★★★
 	if (!m_bFrozen)
 	{
 		Input(pEngine);
@@ -125,29 +118,15 @@ void Runner::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 	}
 	else
 	{
-		// ★★★ 凍結中は完全に動けない ★★★
+		//凍結中は完全に動けない
 		m_speed = 0.0f;
-
-		// ★★★ 凍結中でも左クリック入力だけは受け付ける（他人を助けるため） ★★★
-		// しかし、移動キーなどは無効化
-		unsigned char oldKeyFlag = m_keyFlag;
-		m_keyFlag = 0x00;  // 一旦クリア
-
-						   // 左クリックの状態だけを保持
-		if (pEngine->GetMouseButton(0))
-		{
-			m_keyFlag |= ATTACK_KEY;
-		}
 
 		// 氷ブロックの位置を毎フレーム更新
 		if (m_pIceBlock)
 		{
-			D3DXVECTOR3 centerPos = GetCenterPosition();
-			m_pIceBlock->SetPosition(centerPos);
 			m_pIceBlock->SetMeltAmount(m_frozenAmount);
 		}
 
-		// デバッグログ
 		static DWORD lastLog = 0;
 		DWORD now = timeGetTime();
 		if (now - lastLog > 2000)
@@ -164,18 +143,13 @@ void Runner::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 
 void Runner::DrawMeltGauge(Engine* pEngine, Camera* pCamera, Projection* pProj, float viewerDistance)
 {
-	// 凍結していない場合は描画しない
 	if (!m_bFrozen) return;
 
-	// 一定距離以上離れている場合は描画しない
 	const float MAX_GAUGE_DISTANCE = 10.0f;
 	if (viewerDistance > MAX_GAUGE_DISTANCE) return;
 
-	// プレイヤーの頭上の位置を計算
 	D3DXVECTOR3 headPos = GetCenterPosition();
-	headPos.y += f_height / 2.0f + 0.5f;  // 頭の上0.5m
-
-										  // ワールド座標からスクリーン座標への変換
+	headPos.y += f_height / 2.0f + 0.5f;  
 	D3DVIEWPORT9 viewport;
 	pEngine->GetDevice()->GetViewport(&viewport);
 
@@ -187,15 +161,12 @@ void Runner::DrawMeltGauge(Engine* pEngine, Camera* pCamera, Projection* pProj, 
 	D3DXVECTOR3 screenPos;
 	D3DXVec3Project(&screenPos, &headPos, &viewport, &matProj, &matView, &matIdentity);
 
-	// カメラの後ろにいる場合は描画しない
 	if (screenPos.z > 1.0f || screenPos.z < 0.0f) return;
 
-	// ゲージのサイズと位置
 	int gaugeWidth = 100;
 	int gaugeHeight = 10;
 	int x = (int)screenPos.x - gaugeWidth / 2;
-	int y = (int)screenPos.y - 20;  // 頭の少し上
-
+	int y = (int)screenPos.y - 20;
 	LPDIRECT3DDEVICE9 pDevice = pEngine->GetDevice();
 
 	// レンダーステートの保存
@@ -213,34 +184,31 @@ void Runner::DrawMeltGauge(Engine* pEngine, Camera* pCamera, Projection* pProj, 
 	pDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
 	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 
-	// 外枠（黒、半透明）
+	//外枠（黒、半透明）
 	DrawGaugeRect(pDevice, x - 2, y - 2, gaugeWidth + 4, gaugeHeight + 4, D3DCOLOR_ARGB(200, 0, 0, 0));
 
-	// 背景（暗いグレー）
+	//背景（暗いグレー）
 	DrawGaugeRect(pDevice, x, y, gaugeWidth, gaugeHeight, D3DCOLOR_ARGB(255, 50, 50, 50));
 
-	// 進捗バー（水色→緑へのグラデーション）
-	float progress = m_frozenAmount;  // 0.0 = 完全凍結, 1.0 = 完全解凍
+	//進捗バー（水色→緑へのグラデーション）
+	float progress = m_frozenAmount;
 	int progressWidth = (int)(gaugeWidth * progress);
 
 	if (progressWidth > 0)
 	{
-		// 解凍が進むにつれて色を変化させる
-		// 0%: 水色(100, 200, 255)
-		// 100%: 緑色(100, 255, 100)
+		//解凍が進むにつれて色を変化させる
 		int r = 100;
 		int g = (int)(200 + 55 * progress);
 		int b = (int)(255 - 155 * progress);
 		DrawGaugeRect(pDevice, x, y, progressWidth, gaugeHeight, D3DCOLOR_ARGB(255, r, g, b));
 	}
 
-	// 枠線（白）
-	DrawGaugeRect(pDevice, x, y, gaugeWidth, 1, D3DCOLOR_ARGB(255, 255, 255, 255));  // 上
-	DrawGaugeRect(pDevice, x, y + gaugeHeight - 1, gaugeWidth, 1, D3DCOLOR_ARGB(255, 255, 255, 255));  // 下
-	DrawGaugeRect(pDevice, x, y, 1, gaugeHeight, D3DCOLOR_ARGB(255, 255, 255, 255));  // 左
-	DrawGaugeRect(pDevice, x + gaugeWidth - 1, y, 1, gaugeHeight, D3DCOLOR_ARGB(255, 255, 255, 255));  // 右
+	//枠線（白）
+	DrawGaugeRect(pDevice, x, y, gaugeWidth, 1, D3DCOLOR_ARGB(255, 255, 255, 255)); 
+	DrawGaugeRect(pDevice, x, y + gaugeHeight - 1, gaugeWidth, 1, D3DCOLOR_ARGB(255, 255, 255, 255)); 
+	DrawGaugeRect(pDevice, x, y, 1, gaugeHeight, D3DCOLOR_ARGB(255, 255, 255, 255));
+	DrawGaugeRect(pDevice, x + gaugeWidth - 1, y, 1, gaugeHeight, D3DCOLOR_ARGB(255, 255, 255, 255)); 
 
-																									   // レンダーステートを元に戻す
 	pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, oldAlphaBlend);
 	pDevice->SetRenderState(D3DRS_SRCBLEND, oldSrcBlend);
 	pDevice->SetRenderState(D3DRS_DESTBLEND, oldDestBlend);
@@ -249,14 +217,11 @@ void Runner::DrawMeltGauge(Engine* pEngine, Camera* pCamera, Projection* pProj, 
 }
 void Runner::DrawMeltGaugeThroughWalls(Engine* pEngine, Camera* pCamera, Projection* pProj, float viewerDistance, float alpha)
 {
-	// 凍結していない場合は描画しない
 	if (!m_bFrozen) return;
 
-	// プレイヤーの頭上の位置を計算
 	D3DXVECTOR3 headPos = GetCenterPosition();
-	headPos.y += f_height / 2.0f + 0.5f;  // 頭の上0.5m
+	headPos.y += f_height / 2.0f + 0.5f; 
 
-										  // ワールド座標からスクリーン座標への変換
 	D3DVIEWPORT9 viewport;
 	pEngine->GetDevice()->GetViewport(&viewport);
 
@@ -268,7 +233,6 @@ void Runner::DrawMeltGaugeThroughWalls(Engine* pEngine, Camera* pCamera, Project
 	D3DXVECTOR3 screenPos;
 	D3DXVec3Project(&screenPos, &headPos, &viewport, &matProj, &matView, &matIdentity);
 
-	// 画面外は描画しない
 	if (screenPos.x < 0 || screenPos.x > viewport.Width ||
 		screenPos.y < 0 || screenPos.y > viewport.Height)
 		return;
@@ -277,7 +241,7 @@ void Runner::DrawMeltGaugeThroughWalls(Engine* pEngine, Camera* pCamera, Project
 	int gaugeWidth = 100;
 	int gaugeHeight = 10;
 	int x = (int)screenPos.x - gaugeWidth / 2;
-	int y = (int)screenPos.y - 20;  // 頭の少し上
+	int y = (int)screenPos.y - 20;  
 
 	LPDIRECT3DDEVICE9 pDevice = pEngine->GetDevice();
 
@@ -289,23 +253,22 @@ void Runner::DrawMeltGaugeThroughWalls(Engine* pEngine, Camera* pCamera, Project
 	pDevice->GetRenderState(D3DRS_ZENABLE, &oldZEnable);
 	pDevice->GetRenderState(D3DRS_ZWRITEENABLE, &oldZWrite);
 
-	// ★★★ 壁貫通設定（Z-test無効） ★★★
+	//壁貫通設定（Z-test無効）
 	pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 	pDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
 	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 
-	// アルファ値を適用
 	int alphaValue = (int)(alpha * 255);
 
-	// 外枠（黒、半透明）
+	//外枠（黒、半透明）
 	DrawGaugeRect(pDevice, x - 2, y - 2, gaugeWidth + 4, gaugeHeight + 4, D3DCOLOR_ARGB(alphaValue * 200 / 255, 0, 0, 0));
 
-	// 背景（暗いグレー）
+	//背景（暗いグレー）
 	DrawGaugeRect(pDevice, x, y, gaugeWidth, gaugeHeight, D3DCOLOR_ARGB(alphaValue, 50, 50, 50));
 
-	// 進捗バー（水色→緑へのグラデーション）
+	//進捗バー（水色→緑へのグラデーション）
 	float progress = m_frozenAmount;  // 0.0 = 完全凍結, 1.0 = 完全解凍
 	int progressWidth = (int)(gaugeWidth * progress);
 
@@ -317,13 +280,12 @@ void Runner::DrawMeltGaugeThroughWalls(Engine* pEngine, Camera* pCamera, Project
 		DrawGaugeRect(pDevice, x, y, progressWidth, gaugeHeight, D3DCOLOR_ARGB(alphaValue, r, g, b));
 	}
 
-	// 枠線（白）
-	DrawGaugeRect(pDevice, x, y, gaugeWidth, 1, D3DCOLOR_ARGB(alphaValue, 255, 255, 255));  // 上
-	DrawGaugeRect(pDevice, x, y + gaugeHeight - 1, gaugeWidth, 1, D3DCOLOR_ARGB(alphaValue, 255, 255, 255));  // 下
-	DrawGaugeRect(pDevice, x, y, 1, gaugeHeight, D3DCOLOR_ARGB(alphaValue, 255, 255, 255));  // 左
-	DrawGaugeRect(pDevice, x + gaugeWidth - 1, y, 1, gaugeHeight, D3DCOLOR_ARGB(alphaValue, 255, 255, 255));  // 右
-
-																											  // レンダーステートを元に戻す
+	//枠線（白）
+	DrawGaugeRect(pDevice, x, y, gaugeWidth, 1, D3DCOLOR_ARGB(alphaValue, 255, 255, 255)); 
+	DrawGaugeRect(pDevice, x, y + gaugeHeight - 1, gaugeWidth, 1, D3DCOLOR_ARGB(alphaValue, 255, 255, 255));
+	DrawGaugeRect(pDevice, x, y, 1, gaugeHeight, D3DCOLOR_ARGB(alphaValue, 255, 255, 255)); 
+	DrawGaugeRect(pDevice, x + gaugeWidth - 1, y, 1, gaugeHeight, D3DCOLOR_ARGB(alphaValue, 255, 255, 255));
+																									
 	pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, oldAlphaBlend);
 	pDevice->SetRenderState(D3DRS_SRCBLEND, oldSrcBlend);
 	pDevice->SetRenderState(D3DRS_DESTBLEND, oldDestBlend);
@@ -365,9 +327,8 @@ void Runner::SetFrozen(bool frozen)
 
 	if (frozen)
 	{
-		// ★★★ 凍結開始 ★★★
 		m_frozenAmount = 0.0f;
-		m_bFullyMelted = false;  // ★★★ 再凍結時はリセット ★★★
+		m_bFullyMelted = false;  
 
 		if (m_pIceBlock)
 		{
@@ -381,9 +342,8 @@ void Runner::SetFrozen(bool frozen)
 	}
 	else
 	{
-		// ★★★ 凍結解除 ★★★
 		m_frozenAmount = 1.0f;
-		m_bFullyMelted = true;  // ★★★ 完全解凍フラグをセット ★★★
+		m_bFullyMelted = true;  
 
 		if (m_pIceBlock)
 		{
@@ -403,7 +363,6 @@ void Runner::SetFrozenAmount(float amount)
 		m_pIceBlock->SetMeltAmount(m_frozenAmount);
 	}
 
-	// 完全に溶けたら凍結解除
 	if (m_frozenAmount >= 1.0f && m_bFrozen)
 	{
 		m_bFrozen = false;
@@ -418,24 +377,19 @@ void Runner::UpdateFrozenState(float deltaTime)
 
 	if (m_bFrozen)
 	{
-		// ★★★ 氷ブロックの位置を毎フレーム更新（プレイヤーの中心） ★★★
 		D3DXVECTOR3 centerPos = GetCenterPosition();
 		m_pIceBlock->SetPosition(centerPos);
 
-		// 氷の溶け具合を設定（0.0 = 完全凍結, 1.0 = 完全解凍）
 		m_pIceBlock->SetMeltAmount(m_frozenAmount);
 
-		// 氷ブロック自体の更新
 		m_pIceBlock->Update(deltaTime);
 
-		// 完全に解凍されたら凍結解除
 		if (m_frozenAmount >= 1.0f)
 		{
 			m_bFrozen = false;
 			NET_LOG_F("[Runner] ID=%u 完全解凍", m_clientId);
 		}
 
-		// デバッグログ（頻度を下げる）
 		static std::map<uint32_t, DWORD> lastLog;
 		DWORD now = timeGetTime();
 		if (now - lastLog[m_clientId] > 2000)
@@ -449,7 +403,6 @@ void Runner::UpdateFrozenState(float deltaTime)
 
 void Runner::TryMeltNearbyFrozenPlayer(Engine* pEngine, const std::vector<std::pair<uint32_t, CharacterBase*>>& players, float deltaTime)
 {
-	// ★★★ 自分が凍結中は解凍できない ★★★
 	if (m_bFrozen)
 	{
 		if (m_targetMeltPlayer != 0)
@@ -464,7 +417,6 @@ void Runner::TryMeltNearbyFrozenPlayer(Engine* pEngine, const std::vector<std::p
 
 	if (!isAttackPressed)
 	{
-		// 左クリックを離した
 		if (m_targetMeltPlayer != 0)
 		{
 			NET_LOG_F("[Runner::TryMelt] ID=%u 左クリックを離した - 解凍中止 (ターゲット=%u)",
@@ -474,7 +426,6 @@ void Runner::TryMeltNearbyFrozenPlayer(Engine* pEngine, const std::vector<std::p
 		return;
 	}
 
-	// ★★★ 範囲内の凍結プレイヤーを探す ★★★
 	Runner* closestFrozenRunner = nullptr;
 	float closestDistance = f_meltRange;
 	uint32_t closestId = 0;
@@ -484,7 +435,6 @@ void Runner::TryMeltNearbyFrozenPlayer(Engine* pEngine, const std::vector<std::p
 		uint32_t id = pair.first;
 		CharacterBase* pChar = pair.second;
 
-		// ★★★ 自分自身はスキップ ★★★
 		if (id == m_clientId)
 		{
 			continue;
@@ -517,7 +467,7 @@ void Runner::TryMeltNearbyFrozenPlayer(Engine* pEngine, const std::vector<std::p
 		}
 	}
 
-	// ★★★ ターゲットの更新（実際の解凍処理は行わない）★★★
+	//ターゲットの更新
 	if (closestFrozenRunner)
 	{
 		if (m_targetMeltPlayer != closestId)
@@ -542,12 +492,8 @@ NetPlayerState Runner::GetNetState() const
 {
 	NetPlayerState state = CharacterBase::GetNetState();
 
-	// ★★★ 氷状態を追加 ★★★
 	state.frozen = m_bFrozen ? 1 : 0;
 	state.frozenAmount = m_frozenAmount;
-
-	// ★★★ 解凍ターゲットを追加（基底クラスで既に設定済み）★★★
-	// state.meltTargetId は CharacterBase::GetNetState() で GetMeltTargetId() から取得される
 
 	return state;
 }
@@ -557,23 +503,14 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 {
 	CharacterBase::UpdateFromNetwork(state, light, deltaTime);
 
-	// ★★★ 重要修正: 完全解凍済みの場合は、新たな凍結指示がない限り凍結状態を更新しない ★★★
 	bool wasFrozen = m_bFrozen;
 	bool newFrozen = (state.frozen != 0);
 	float netAmount = state.frozenAmount;
 
-	// ★★★ ケース1: 完全解凍済みで、ネットワークも解凍状態 → 何もしない ★★★
-	if (m_bFullyMelted && !newFrozen)
-	{
-		// 既に完全解凍済み - 何もしない
-		return;
-	}
+	if (m_bFullyMelted && !newFrozen)return;
 
-	// ★★★ ケース2: 完全解凍済みだが、ネットワークが凍結状態 → 古いデータの可能性 ★★★
 	if (m_bFullyMelted && newFrozen)
 	{
-		// 完全解凍済みなのに凍結データが来た
-		// これは遅延によるものなので無視
 		static DWORD lastIgnoreLog = 0;
 		DWORD now = timeGetTime();
 		if (now - lastIgnoreLog > 2000)
@@ -585,7 +522,6 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 		return;
 	}
 
-	// ★★★ ケース3: 新規凍結 ★★★
 	if (!wasFrozen && newFrozen)
 	{
 		m_bFrozen = true;
@@ -602,14 +538,10 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 		NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 新規凍結 amount=%.2f",
 			m_clientId, m_frozenAmount);
 	}
-	// ★★★ ケース4: 凍結継続中 ★★★
 	else if (wasFrozen && newFrozen)
 	{
-		// ネットワークの値を反映（ただし、減少のみ - 解凍の巻き戻しを防ぐ）
 		if (netAmount < m_frozenAmount)
 		{
-			// サーバー側で解凍が進んでいない or 再凍結
-			// ローカルの解凍進行を優先するため、無視
 			static DWORD lastSyncLog = 0;
 			DWORD now = timeGetTime();
 			if (now - lastSyncLog > 2000)
@@ -621,7 +553,6 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 		}
 		else
 		{
-			// サーバー側の方が解凍が進んでいる - 同期
 			m_frozenAmount = netAmount;
 
 			if (m_pIceBlock)
@@ -630,7 +561,6 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 			}
 		}
 
-		// 完全解凍チェック
 		if (m_frozenAmount >= 1.0f)
 		{
 			m_bFrozen = false;
@@ -638,7 +568,6 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 			NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 完全解凍", m_clientId);
 		}
 	}
-	// ★★★ ケース5: 凍結解除 ★★★
 	else if (wasFrozen && !newFrozen)
 	{
 		m_bFrozen = false;
@@ -669,17 +598,14 @@ void Runner::DrawDepth(Engine* pEngine, const D3DXMATRIX* pMatLightVP)
 
 void Runner::DrawEffects(Engine* pEngine, Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight)
 {
-	// ★★★ 凍結中は氷ブロックを描画 ★★★
 	if (m_bFrozen && m_pIceBlock)
 	{
-		// 氷ブロックの描画前に位置を最新の状態に更新
 		D3DXVECTOR3 centerPos = GetCenterPosition();
 		m_pIceBlock->SetPosition(centerPos);
 		m_pIceBlock->SetMeltAmount(m_frozenAmount);
 
 		m_pIceBlock->Draw(pEngine, pCamera, pProj, pAmbient, pLight);
 
-		// デバッグログ（頻度を下げる）
 		static std::map<uint32_t, DWORD> lastLog;
 		DWORD now = timeGetTime();
 		if (now - lastLog[m_clientId] > 2000)

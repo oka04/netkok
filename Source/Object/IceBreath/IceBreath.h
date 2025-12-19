@@ -1,5 +1,4 @@
-﻿// IceBreath.h - 氷の息吹エフェクト
-#pragma once
+﻿#pragma once
 #include <winsock2.h> 
 #include <ws2tcpip.h>
 
@@ -26,7 +25,7 @@ public:
 	void SetPosition(const D3DXVECTOR3& position) { m_position = position; }
 	void SetDirection(const D3DXVECTOR3& direction) { m_breathDirection = direction; }
 
-	// ★★★ ライトの範囲に合わせる ★★★
+	//ライトの範囲に合わせる
 	void SetMaxDistance(float distance) { m_maxDistance = distance; }
 
 	void Update();
@@ -45,7 +44,7 @@ private:
 	DWORD m_activateTime;
 	DWORD m_duration;
 
-	// ★★★ ライトの範囲制限用 ★★★
+	//ライトの範囲制限用
 	float m_maxDistance;
 
 	float f_iceColorR;

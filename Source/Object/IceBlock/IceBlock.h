@@ -1,5 +1,4 @@
-﻿// IceBlock.h - 溶ける氷ブロッククラス（球体版）
-#pragma once
+﻿#pragma once
 
 #include "..\\GameBase.h"
 #include "..\\System\\Engine\\Mesh\\Primitive.h"
@@ -14,21 +13,18 @@ public:
 	IceBlock();
 	~IceBlock();
 
-	void Initialize(Engine* pEngine, float width, float height, float depth,
-		const D3DXVECTOR3& position, float meltDuration = 0.0f);
+	void Initialize(Engine* pEngine, float width, float height, float depth, const D3DXVECTOR3& position, float meltDuration = 0.0f);
 
 	void Update(float deltaTime);
 
-	void Draw(Engine* pEngine, Camera* pCamera, Projection* pProj,
-		AmbientLight* pAmbient, DirectionalLight* pLight);
+	void Draw(Engine* pEngine, Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight);
 
 	void SetMeltAmount(float amount);
 	float GetMeltAmount() const { return m_meltAmount; }
 	bool IsFullyMelted() const { return m_meltAmount >= 1.0f; }
 
 	void SetPosition(const D3DXVECTOR3& position);
-	void DrawThroughWalls(Engine* pEngine, Camera* pCamera, Projection* pProj,
-		AmbientLight* pAmbient, DirectionalLight* pLight, float alpha = 0.5f);
+	void DrawThroughWalls(Engine* pEngine, Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight, float alpha = 0.5f);
 	const D3DXVECTOR3& GetPosition() const { return m_position; }
 
 	void SetRotation(float x, float y, float z);
@@ -56,7 +52,6 @@ private:
 
 	bool m_autoMelt;
 
-	// ★★★ パラメータファイルから読み込む値 ★★★
 	float f_iceColorR;
 	float f_iceColorG;
 	float f_iceColorB;

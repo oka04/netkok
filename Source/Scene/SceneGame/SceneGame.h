@@ -1,6 +1,4 @@
-﻿// SceneGame.h - パラメータ管理追加
-
-#pragma once
+﻿#pragma once
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include "..\\..\\GameBase.h"
@@ -43,9 +41,8 @@ private:
 	void SpawnPlayerWithRole(uint32_t clientId, const std::string& name, const D3DXVECTOR3& pos, PlayerRole role);
 	void DespawnPlayer(uint32_t clientId);
 
-	void CreateShadowMaps();
+	void ReceiveFromServer();
 	void RenderShadowMaps();
-	void ReleaseShadowMaps();
 
 	void CheckBreathHitPlayers();
 	void UpdatePlayerFreezing();
@@ -120,8 +117,6 @@ private:
 
 	void UpdateChaserLights();
 	void ReceiveWorldState();
-
-	// ★★★ パラメータファイルから読み込む値 ★★★
 	float f_maxGaugeDistance;
 	float f_chaserGaugeDistance;
 	float f_wallAlphaFar;

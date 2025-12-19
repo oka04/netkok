@@ -71,7 +71,7 @@ void IceBlock::LoadParameter()
 void IceBlock::Initialize(Engine* pEngine, float width, float height, float depth,
 	const D3DXVECTOR3& position, float meltDuration)
 {
-	LoadParameter();  // ★★★ パラメータ読み込み ★★★
+	LoadParameter(); 
 
 	m_position = position;
 	m_originalSize = D3DXVECTOR3(width, height, depth);
@@ -126,7 +126,6 @@ void IceBlock::Draw(Engine* pEngine, Camera* pCamera, Projection* pProj,
 	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
-	// ★★★ パラメータから読み込んだ値を使用 ★★★
 	float shrinkAmount = 1.0f - (1.0f - f_minScale) * m_meltAmount;
 
 	D3DXVECTOR3 currentScale = m_scale;

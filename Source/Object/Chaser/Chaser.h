@@ -1,5 +1,4 @@
-﻿// Chaser.h - プレイヤー固有の実装 + ブレス攻撃機能 + ヒット判定
-#pragma once
+﻿#pragma once
 
 #include <winsock2.h> 
 #include <ws2tcpip.h>
@@ -44,13 +43,13 @@ public:
 		return centerPos;
 	}
 
-	// ★★★ ブレス中かどうかを取得 ★★★
+	//ブレス中かどうかを取得
 	bool IsBreathing() const { return m_bBreathActive; }
 
-	// ★★★ ブレスのヒット判定 - 新規追加 ★★★
+	//ブレスのヒット判定 - 新規追加
 	void CheckBreathHitPlayers(const std::vector<std::pair<uint32_t, CharacterBase*>>& players);
 
-	// シャドウマップ関連
+	//シャドウマップ関連
 	bool IsShadowMapEnabled() const { return m_bShadowMapEnabled; }
 	LPDIRECT3DTEXTURE9 GetShadowTexture() const { return m_pShadowTexture; }
 	LPDIRECT3DSURFACE9 GetShadowDepthSurface() const { return m_pShadowDepthSurface; }
@@ -66,7 +65,7 @@ private:
 	void UpdateLightMatrices();
 	void CreateScaleBiasMatrix();
 
-	// ★★★ ブレス攻撃関連 ★★★
+	//ブレス攻撃関連
 	void UpdateBreathAttack(Engine* pEngine);
 	bool CanUseBreath() const;
 
@@ -74,7 +73,7 @@ private:
 	float m_lightFov;
 	float m_lightRange;
 
-	// シャドウマップ関連
+	//シャドウマップ関連
 	bool m_bShadowMapEnabled;
 	LPDIRECT3DTEXTURE9 m_pShadowTexture;
 	LPDIRECT3DSURFACE9 m_pShadowSurface;
@@ -84,7 +83,7 @@ private:
 	D3DXMATRIX m_matScaleBias;
 	static const int SHADOW_MAP_SIZE = 1024;
 
-	// ★★★ ブレス攻撃関連メンバー変数 ★★★
+	// ブレス攻撃関連メンバー変数
 	IceBreath* m_pIceBreath;
 	bool m_bBreathActive;
 	bool m_bBreathButtonPressed;

@@ -68,7 +68,7 @@ void SceneGame::Start()
 
 void SceneGame::Initialize()
 {
-	LoadGameParameter();  // ★★★ パラメータ読み込み ★★★
+	LoadGameParameter(); 
 
 	SetBackColor(0x00008000);
 	d_debugFlag = 0;
@@ -257,7 +257,6 @@ void SceneGame::UpdateNetwork()
 		}
 	}
 
-	// ★★★ 修正: 役割が更新されたら即座にライト更新 ★★★
 	if (roleReceived)
 	{
 		UpdateChaserLights();
@@ -303,7 +302,6 @@ void SceneGame::UpdateNetwork()
 					D3DXVECTOR3(spawn.startX, spawn.startY, spawn.startZ),
 					role);
 
-				// ★★★ 修正: プレイヤー追加後すぐにライト更新 ★★★
 				if (role == ROLE_CHASER)
 				{
 					UpdateChaserLights();
@@ -352,7 +350,6 @@ void SceneGame::UpdateLocalPlayer()
 {
 	if (!m_pLocalPlayer) return;
 
-	// ★★★ 逃げる側の場合、凍結状態の変化を監視 ★★★
 	static bool lastFrozenState = false;
 	static float lastFrozenAmount = 0.0f;
 
@@ -364,7 +361,6 @@ void SceneGame::UpdateLocalPlayer()
 			bool currentFrozen = runner->IsFrozen();
 			float currentAmount = runner->GetFrozenAmount();
 
-			// 凍結状態が変化したら即座に送信
 			if (lastFrozenState != currentFrozen)
 			{
 				NET_LOG_F("[SceneGame::UpdateLocalPlayer] ローカルプレイヤー[%u]の凍結状態変化: %s -> %s",
@@ -376,12 +372,10 @@ void SceneGame::UpdateLocalPlayer()
 				lastFrozenState = currentFrozen;
 				lastFrozenAmount = currentAmount;
 			}
-			// 凍結中で溶け具合が変化したら送信
 			else if (currentFrozen && abs(lastFrozenAmount - currentAmount) > 0.01f)
 			{
 				static DWORD lastSync = 0;
 				DWORD now = timeGetTime();
-				// 100msごとに送信（頻度を抑える）
 				if (now - lastSync > 100)
 				{
 					SyncToServer();
@@ -435,22 +429,18 @@ void SceneGame::UpdateRemotePlayers()
 		if (!kv.second || kv.second->IsLocal())
 			continue;
 
-		// 予測移動
 		if (m_bEnablePrediction)
 		{
 			kv.second->PredictMovement(m_deltaTime);
 		}
 
-		// ★★★ リモートの鬼のライトを更新 ★★★
 		if (m_playerRoles[kv.first] == ROLE_CHASER)
 		{
 			Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
 			if (chaser)
 			{
-				// ライトを更新（ライト行列も更新される）
 				chaser->UpdateLight(m_pEngine);
 
-				// ライトをデバイスに設定
 				SpotLight* light = chaser->GetLights();
 				if (light)
 				{
@@ -489,7 +479,7 @@ void SceneGame::UpdateRemotePlayers()
 }
 void SceneGame::CheckBreathHitPlayers()
 {
-	// ★★★ ケース1: ローカル鬼がリモート逃げる側をチェック ★★★
+	//ローカル鬼がリモート逃げる側をチェック
 	if (m_pLocalPlayer && m_localRole == ROLE_CHASER)
 	{
 		Chaser* localChaser = dynamic_cast<Chaser*>(m_pLocalPlayer);
@@ -535,14 +525,12 @@ void SceneGame::CheckBreathHitPlayers()
 		}
 	}
 
-	// ★★★ ケース2: ローカル逃げる側がリモート鬼のブレスをチェック ★★★
+	//ローカル逃げる側がリモート鬼のブレスをチェックx
 	if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
 	{
 		Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
 		if (!localRunner || localRunner->IsFrozen())
-			return;  // 既に凍結していたらチェック不要
-
-					 // すべての鬼のブレスをチェック
+			return;
 		for (auto& kv : m_players)
 		{
 			if (m_playerRoles[kv.first] != ROLE_CHASER)
@@ -552,7 +540,7 @@ void SceneGame::CheckBreathHitPlayers()
 			if (!chaser || !chaser->IsBreathing())
 				continue;
 
-			// この鬼のブレスが当たったかチェック
+			//この鬼のブレスが当たったかチェック
 			SpotLight* light = chaser->GetLights();
 			if (!light)
 				continue;
@@ -577,14 +565,13 @@ void SceneGame::CheckBreathHitPlayers()
 			if (dotProduct < coneThreshold)
 				continue;
 
-			// ★★★ ヒット！自分を凍結 ★★★
+			//自分を凍結
 			localRunner->SetFrozen(true);
 			NET_LOG_F("[SceneGame] ★★★ローカルプレイヤー[%u]が鬼[%u]のブレスに当たった！★★★",
 				m_localClientId, kv.first);
 
-			// 即座に状態を送信
 			SyncToServer();
-			return;  // 1つの鬼に当たったら終了
+			return;
 		}
 	}
 }
@@ -773,10 +760,9 @@ void SceneGame::ReceiveWorldState()
 		{
 			const NetPlayerState& ps = world.players[i];
 
-			// ★★★ 重要修正: 自分の氷状態だけは受信する ★★★
 			if (ps.clientId == m_localClientId)
 			{
-				// ローカルプレイヤーが逃げる側の場合、氷状態のみ更新
+				//ローカルプレイヤーが逃げる側の場合、氷状態のみ更新
 				if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
 				{
 					Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
@@ -787,14 +773,13 @@ void SceneGame::ReceiveWorldState()
 
 						if (!wasFrozen && newFrozen)
 						{
-							// 新規凍結
 							localRunner->SetFrozen(true);
 							NET_LOG_F("[SceneGame::ReceiveWorldState] ★★★ローカルプレイヤー[%u]が凍結された！★★★",
 								m_localClientId);
 						}
 						else if (wasFrozen && newFrozen)
 						{
-							// 凍結継続 - 溶け具合を更新
+							//凍結継続 - 溶け具合を更新
 							float oldAmount = localRunner->GetFrozenAmount();
 
 							if (abs(oldAmount - ps.frozenAmount) > 0.05f && now - lastLogTime > 1000)
@@ -805,67 +790,65 @@ void SceneGame::ReceiveWorldState()
 						}
 						else if (wasFrozen && !newFrozen)
 						{
-							// 凍結解除
+							//凍結解除
 							localRunner->SetFrozen(false);
 							NET_LOG_F("[SceneGame::ReceiveWorldState] ローカルプレイヤー[%u]の凍結解除",
 								m_localClientId);
 						}
 					}
 				}
-				continue;  // 位置などその他の情報はスキップ
-			}
+				continue;
 
-			// ★★★ リモートプレイヤーの状態を更新 ★★★
-			auto it = m_players.find(ps.clientId);
-			if (it != m_players.end() && it->second)
-			{
-				// 基本状態の更新
-				it->second->UpdateFromNetwork(ps, m_light, m_deltaTime);
-
-				// デバッグログ: 氷状態の適用を確認
-				if (ps.frozen != 0 && now - lastLogTime > 3000)
+				auto it = m_players.find(ps.clientId);
+				if (it != m_players.end() && it->second)
 				{
-					NET_LOG_F("[SceneGame::ReceiveWorldState] プレイヤー[%u]に氷状態を適用: frozen=%d amount=%.2f",
-						ps.clientId, ps.frozen, ps.frozenAmount);
-				}
+					//基本状態の更新
+					it->second->UpdateFromNetwork(ps, m_light, m_deltaTime);
 
-				// 鬼のライト情報を即座に適用
-				if (m_playerRoles[ps.clientId] == ROLE_CHASER)
-				{
-					Chaser* chaser = dynamic_cast<Chaser*>(it->second);
-					if (chaser)
+					if (ps.frozen != 0 && now - lastLogTime > 3000)
 					{
-						D3DXVECTOR3 lightPos(ps.lightPosX, ps.lightPosY, ps.lightPosZ);
-						D3DXVECTOR3 lightDir(ps.lightDirX, ps.lightDirY, ps.lightDirZ);
+						NET_LOG_F("[SceneGame::ReceiveWorldState] プレイヤー[%u]に氷状態を適用: frozen=%d amount=%.2f",
+							ps.clientId, ps.frozen, ps.frozenAmount);
+					}
 
-						SpotLight* light = chaser->GetLights();
-						if (light)
+					//鬼のライト情報を即座に適用
+					if (m_playerRoles[ps.clientId] == ROLE_CHASER)
+					{
+						Chaser* chaser = dynamic_cast<Chaser*>(it->second);
+						if (chaser)
 						{
-							light->SetPosition(lightPos);
-							light->SetDirection(lightDir);
-							light->SetRange(ps.lightRange);
+							D3DXVECTOR3 lightPos(ps.lightPosX, ps.lightPosY, ps.lightPosZ);
+							D3DXVECTOR3 lightDir(ps.lightDirX, ps.lightDirY, ps.lightDirZ);
 
-							int lightIndex = 0;
-							if (m_localRole == ROLE_CHASER && m_pLocalPlayer)
+							SpotLight* light = chaser->GetLights();
+							if (light)
 							{
-								lightIndex = 1;
-								for (auto& kv2 : m_players)
+								light->SetPosition(lightPos);
+								light->SetDirection(lightDir);
+								light->SetRange(ps.lightRange);
+
+								int lightIndex = 0;
+								if (m_localRole == ROLE_CHASER && m_pLocalPlayer)
 								{
-									if (kv2.first < ps.clientId && m_playerRoles[kv2.first] == ROLE_CHASER)
+									lightIndex = 1;
+									for (auto& kv2 : m_players)
 									{
-										lightIndex++;
+										if (kv2.first < ps.clientId && m_playerRoles[kv2.first] == ROLE_CHASER)
+										{
+											lightIndex++;
+										}
 									}
 								}
+								light->SetDevice(m_pEngine, lightIndex);
 							}
-							light->SetDevice(m_pEngine, lightIndex);
-						}
 
-						chaser->UpdateLight(m_pEngine);
+							chaser->UpdateLight(m_pEngine);
 
-						if (now - lastLogTime > 3000)
-						{
-							NET_LOG_F("[SceneGame::ReceiveWorldState] プレイヤー[%u]にライト適用: Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
-								ps.clientId, lightPos.x, lightPos.y, lightPos.z, lightDir.x, lightDir.y, lightDir.z);
+							if (now - lastLogTime > 3000)
+							{
+								NET_LOG_F("[SceneGame::ReceiveWorldState] プレイヤー[%u]にライト適用: Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
+									ps.clientId, lightPos.x, lightPos.y, lightPos.z, lightDir.x, lightDir.y, lightDir.z);
+							}
 						}
 					}
 				}
@@ -877,7 +860,7 @@ void SceneGame::ReceiveFromServer()
 {
 	if (!m_pClient) return;
 
-	// ★ 役割割り当ての処理（最優先）
+	// 役割割り当ての処理（最優先）
 	NetRoleAssignment roleAssign;
 	bool roleUpdated = false;
 
@@ -1720,12 +1703,8 @@ void SceneGame::Draw()
 				D3DXVECTOR3 intersection;
 				bool isBlocked = m_map.RayToWallIntersection(cameraPos, targetPos, &intersection);
 
-				if (!isBlocked)
-				{
-					continue;
-				}
+				if (!isBlocked)	continue;
 
-				// ★★★ パラメータファイルの値を使用 ★★★
 				float alpha = f_wallAlphaNear;
 				if (distance > f_wallDistanceMid) alpha = f_wallAlphaMid;
 				else if (distance > f_wallDistanceFar) alpha = f_wallAlphaFar;
@@ -1741,7 +1720,7 @@ void SceneGame::Draw()
 		}
 		else if (m_localRole == ROLE_CHASER)
 		{
-			// ★★★ 鬼は近距離の凍結プレイヤーのみ表示（パラメータから読み込んだ距離） ★★★
+			//鬼は近距離の凍結プレイヤーのみ表示
 			for (auto& kv : m_players)
 			{
 				if (kv.first == m_localClientId) continue;
@@ -1758,16 +1737,10 @@ void SceneGame::Draw()
 				D3DXVECTOR3 intersection;
 				bool isBlocked = m_map.RayToWallIntersection(cameraPos, targetPos, &intersection);
 
-				if (!isBlocked)
-				{
-					continue;
-				}
+				if (!isBlocked)	continue;
 
-				// ★★★ 鬼の表示範囲をパラメータから取得 ★★★
-				if (distance > f_chaserGaugeDistance)
-				{
-					continue;
-				}
+				//鬼の表示範囲をパラメータから取得
+				if (distance > f_chaserGaugeDistance)continue;
 
 				float alpha = f_wallAlphaNear;
 				if (distance > 3.0f) alpha = f_wallAlphaMid;
@@ -1783,7 +1756,7 @@ void SceneGame::Draw()
 		}
 	}
 
-	// ★★★ 通常描画のゲージ表示（逃げる側専用） ★★★
+	//通常描画のゲージ表示（逃げる側専用）
 	if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
 	{
 		D3DXVECTOR3 localPos = m_pLocalPlayer->GetPosition();
@@ -1802,11 +1775,11 @@ void SceneGame::Draw()
 			D3DXVECTOR3 diff = targetPos - localPos;
 			float distance = D3DXVec3Length(&diff);
 
-			// ★★★ パラメータファイルの値を使用 ★★★
+			//パラメータファイルの値を使用
 			runner->DrawMeltGauge(m_pEngine, &m_camera, &m_projection, distance);
 		}
 	}
-	// ★★★ 鬼も近距離の凍結プレイヤーのゲージを通常描画 ★★★
+	//鬼も近距離の凍結プレイヤーのゲージを通常描画 
 	else if (m_pLocalPlayer && m_localRole == ROLE_CHASER)
 	{
 		D3DXVECTOR3 localPos = m_pLocalPlayer->GetPosition();

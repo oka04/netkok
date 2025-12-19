@@ -100,19 +100,12 @@ void Chaser::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 {
 	m_deltaTime = deltaTime;
 
-	// ★★★ ブレス中はカメラ操作も禁止 ★★★
+	Input(pEngine);
+	UpdateBreathAttack(pEngine);
+	
 	if (!m_bBreathActive)
 	{
 		SetMouseCursor(pEngine, camera);
-	}
-
-	Input(pEngine);
-
-	UpdateBreathAttack(pEngine);
-
-	// ★★★ ブレス中は移動を禁止 ★★★
-	if (!m_bBreathActive)
-	{
 		m_speed = f_walkSpeed * m_deltaTime;
 		Move(map);
 	}
@@ -129,10 +122,7 @@ void Chaser::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 
 void Chaser::UpdateBreathAttack(Engine* pEngine)
 {
-	if (!m_bIsLocal)
-		return;
-
-	if (!m_pIceBreath)
+	if (!m_bIsLocal || !m_pIceBreath)
 		return;
 
 	bool isAttackPressed = (m_keyFlag & ATTACK_KEY) != 0;
@@ -141,20 +131,18 @@ void Chaser::UpdateBreathAttack(Engine* pEngine)
 
 	if (m_bBreathActive)
 	{
-		// ★★★ ブレスの方向を下向きに大きく調整（+30度に変更で下向き）★★★
 		D3DXVECTOR3 adjustedDirection = m_depth;
 
-		// 横方向ベクトルを計算
+		
 		D3DXVECTOR3 rightVec;
-		D3DXVECTOR3 upVec(0.0f, 1.0f, 0.0f);
+		D3DXVECTOR3 upVec = UP_DIRECTION;
 		D3DXVec3Cross(&rightVec, &upVec, &m_depth);
 		D3DXVec3Normalize(&rightVec, &rightVec);
 
-		// 正確な上方向ベクトルを計算
+		//正確な上方向ベクトルを計算
 		D3DXVec3Cross(&upVec, &m_depth, &rightVec);
 		D3DXVec3Normalize(&upVec, &upVec);
 
-		// ★★★ 下向きに30度回転（+30度で下向き）★★★
 		D3DXMATRIX matRotation;
 		D3DXMatrixRotationAxis(&matRotation, &rightVec, D3DXToRadian(15.0f));
 		D3DXVec3TransformCoord(&adjustedDirection, &m_depth, &matRotation);
@@ -177,8 +165,7 @@ void Chaser::UpdateBreathAttack(Engine* pEngine)
 		D3DXVECTOR3 adjustedDirection = m_depth;
 
 		D3DXVECTOR3 rightVec;
-		D3DXVECTOR3 upVec(0.0f, 1.0f, 0.0f);
-		D3DXVec3Cross(&rightVec, &upVec, &m_depth);
+		D3DXVec3Cross(&rightVec, &UP_DIRECTION, &m_depth);
 		D3DXVec3Normalize(&rightVec, &rightVec);
 
 		D3DXMATRIX matRotation;
@@ -217,7 +204,6 @@ NetPlayerState Chaser::GetNetState() const
 	state.lightDirZ = light.Direction.z;
 	state.lightRange = light.Range;
 
-	// ★★★ ブレス状態を追加 ★★★
 	state.breathActive = m_bBreathActive ? 1 : 0;
 
 	if (m_pIceBreath && m_bBreathActive)
@@ -287,24 +273,23 @@ void Chaser::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 
 	UpdateLightMatrices();
 
-	// ★★★ ブレス状態の同期 ★★★
 	if (m_pIceBreath)
 	{
 		bool shouldBeActive = (state.breathActive != 0);
 
 		if (shouldBeActive && !m_bBreathActive)
 		{
-			// ブレスを開始
+			//ブレスを開始
 			D3DXVECTOR3 breathPos(state.breathPosX, state.breathPosY, state.breathPosZ);
 			D3DXVECTOR3 breathDir(state.breathDirX, state.breathDirY, state.breathDirZ);
 
-			// 位置が無効な場合はm_eyePositionを使用
+			//x位置が無効な場合はm_eyePositionを使用
 			if (D3DXVec3Length(&breathPos) < 0.01f)
 			{
 				breathPos = m_eyePosition;
 			}
 
-			// 方向が無効な場合はm_depthを使用
+			//方向が無効な場合はm_depthを使用
 			if (D3DXVec3Length(&breathDir) < 0.01f)
 			{
 				breathDir = m_depth;
@@ -319,7 +304,7 @@ void Chaser::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 		}
 		else if (!shouldBeActive && m_bBreathActive)
 		{
-			// ブレスを終了
+			//ブレスを終了
 			m_pIceBreath->Deactivate();
 			m_bBreathActive = false;
 
@@ -327,7 +312,7 @@ void Chaser::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 		}
 		else if (shouldBeActive && m_bBreathActive)
 		{
-			// ブレス継続中 - 位置と方向を更新
+			//ブレス継続中 - 位置と方向を更新
 			D3DXVECTOR3 breathPos(state.breathPosX, state.breathPosY, state.breathPosZ);
 			D3DXVECTOR3 breathDir(state.breathDirX, state.breathDirY, state.breathDirZ);
 
@@ -564,14 +549,12 @@ void Chaser::CheckBreathHitPlayers(const std::vector<std::pair<uint32_t, Charact
 	if (!m_bBreathActive || !m_pIceBreath)
 		return;
 
-	// ★★★ ライトの情報を取得 ★★★
 	const D3DLIGHT9& light = m_spotLight.GetLight();
 	D3DXVECTOR3 lightPos(light.Position.x, light.Position.y, light.Position.z);
 	D3DXVECTOR3 lightDir(light.Direction.x, light.Direction.y, light.Direction.z);
 	float lightRange = light.Range;
 	float lightConeAngle = light.Theta;
 
-	// デバッグログ用
 	static DWORD lastLog = 0;
 	DWORD now = timeGetTime();
 	bool shouldLog = (now - lastLog > 2000);
@@ -593,7 +576,6 @@ void Chaser::CheckBreathHitPlayers(const std::vector<std::pair<uint32_t, Charact
 		uint32_t id = pair.first;
 		CharacterBase* pChar = pair.second;
 
-		// 自分自身はスキップ
 		if (id == m_clientId)
 		{
 			if (shouldLog)
@@ -659,7 +641,6 @@ void Chaser::CheckBreathHitPlayers(const std::vector<std::pair<uint32_t, Charact
 			continue;
 		}
 
-		// ★★★ ヒット！凍結させる ★★★
 		pRunner->SetFrozen(true);
 		frozenCount++;
 

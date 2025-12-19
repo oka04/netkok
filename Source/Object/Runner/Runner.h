@@ -1,5 +1,4 @@
-﻿// Runner.h - 氷状態管理機能を追加 + 解凍ゲージ表示
-#pragma once
+﻿#pragma once
 
 #include <winsock2.h> 
 #include <ws2tcpip.h>
@@ -40,28 +39,20 @@ public:
 
 	virtual void UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& light, float deltaTime) override;
 
-	// ★★★ 氷状態関連 ★★★
 	bool IsFrozen() const { return m_bFrozen; }
 	void SetFrozen(bool frozen);
 	float GetFrozenAmount() const { return m_frozenAmount; }
 	void SetFrozenAmount(float amount);
 	void UpdateFrozenState(float deltaTime);
 	void TryMeltNearbyFrozenPlayer(Engine* pEngine, const std::vector<std::pair<uint32_t, CharacterBase*>>& players, float deltaTime);
-	void DrawMeltGaugeThroughWalls(Engine* pEngine, Camera* pCamera, Projection* pProj,
-		float viewerDistance, float alpha = 0.7f);
+	void DrawMeltGaugeThroughWalls(Engine* pEngine, Camera* pCamera, Projection* pProj, float viewerDistance, float alpha = 0.7f);
 
-	// ★★★ 氷ブロックを取得 ★★★
 	IceBlock* GetIceBlock() const { return m_pIceBlock; }
-	// ★★★ 解凍ゲージ表示 ★★★
 	void DrawMeltGauge(Engine* pEngine, Camera* pCamera, Projection* pProj, float viewerDistance);
 
-	// ★★★ 誰を助けようとしているか取得 ★★★
 	virtual uint32_t GetMeltTargetId() const override { return m_targetMeltPlayer; }
-
-	// ★★★ 解凍速度を取得 ★★★
 	float GetMeltSpeed() const { return f_meltSpeed; }
 
-	// ★★★ 完全解凍済みフラグ ★★★
 	bool IsFullyMelted() const { return m_bFullyMelted; }
 
 private:
@@ -69,7 +60,6 @@ private:
 	void ChangeSpeed();
 	void UpdateStamina(float deltaTime)override;
 
-	// ★★★ ゲージ描画用ヘルパー ★★★
 	void DrawGaugeRect(LPDIRECT3DDEVICE9 pDevice, int x, int y, int width, int height, D3DCOLOR color);
 
 	enum GAUGE_COLOR
@@ -100,12 +90,11 @@ private:
 	float m_staminaRecoveryTimer;
 	bool m_bFatigued;
 
-	// ★★★ 氷状態管理 ★★★
 	bool m_bFrozen;
 	float m_frozenAmount;
 	IceBlock* m_pIceBlock;
 	float f_meltRange;
 	float f_meltSpeed;
 	uint32_t m_targetMeltPlayer;
-	bool m_bFullyMelted;  // ★★★ 完全解凍済みフラグ ★★★
+	bool m_bFullyMelted; 
 };
