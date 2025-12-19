@@ -1738,6 +1738,9 @@ void SceneGame::Draw()
 		}
 		else if (m_localRole == ROLE_CHASER)
 		{
+			// ★★★ 鬼は近距離の凍結プレイヤーのみゲージを表示 ★★★
+			const float CHASER_GAUGE_DISTANCE = 5.0f;  // 5m以内のみゲージ表示
+
 			for (auto& kv : m_players)
 			{
 				if (kv.first == m_localClientId) continue;
@@ -1759,9 +1762,14 @@ void SceneGame::Draw()
 					continue;
 				}
 
-				float alpha = 0.4f;
-				if (distance > 15.0f) alpha = 0.25f;
-				else if (distance > 30.0f) alpha = 0.15f;
+				// ★★★ 鬼は近距離のみ氷ブロックとゲージを表示 ★★★
+				if (distance > CHASER_GAUGE_DISTANCE)
+				{
+					continue;
+				}
+
+				float alpha = 0.5f;  // ★★★ 明るめに設定 ★★★
+				if (distance > 3.0f) alpha = 0.4f;
 
 				IceBlock* iceBlock = runner->GetIceBlock();
 				if (iceBlock)
@@ -1769,11 +1777,8 @@ void SceneGame::Draw()
 					iceBlock->DrawThroughWalls(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light, alpha);
 				}
 
-				const float GAUGE_VISIBLE_DISTANCE = 10.0f;
-				if (distance <= GAUGE_VISIBLE_DISTANCE)
-				{
-					runner->DrawMeltGaugeThroughWalls(m_pEngine, &m_camera, &m_projection, distance, alpha);
-				}
+				// ゲージも表示
+				runner->DrawMeltGaugeThroughWalls(m_pEngine, &m_camera, &m_projection, distance, alpha);
 			}
 		}
 	}
