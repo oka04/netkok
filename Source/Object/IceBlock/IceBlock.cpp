@@ -194,13 +194,21 @@ void IceBlock::DrawThroughWalls(Engine* pEngine, Camera* pCamera, Projection* pP
 	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
-	D3DXVECTOR3 maxScale = m_scale;
+	// ★★★ 修正: 溶け具合を反映したスケールを計算 ★★★
+	float shrinkAmount = 1.0f - (1.0f - f_minScale) * m_meltAmount;
+
+	D3DXVECTOR3 currentScale = m_scale;
+	currentScale.x *= shrinkAmount;
+	currentScale.y *= shrinkAmount;
+	currentScale.z *= shrinkAmount;
+
 	D3DXVECTOR3 adjustedPosition = m_position;
 
-	float currentAlpha = m_iceColor.w * alpha * f_throughWallAlphaMultiplier;
+	// ★★★ 修正: 溶け具合を反映したアルファ値を計算 ★★★
+	float currentAlpha = m_iceColor.w * alpha * f_throughWallAlphaMultiplier * (1.0f - m_meltAmount * f_alphaFadeRate);
 
 	D3DXMATRIX matScale, matRotX, matRotY, matRotZ, matTrans;
-	D3DXMatrixScaling(&matScale, maxScale.x, maxScale.y, maxScale.z);
+	D3DXMatrixScaling(&matScale, currentScale.x, currentScale.y, currentScale.z);
 	D3DXMatrixRotationX(&matRotX, m_rotation.x);
 	D3DXMatrixRotationY(&matRotY, m_rotation.y);
 	D3DXMatrixRotationZ(&matRotZ, m_rotation.z);
@@ -235,6 +243,9 @@ void IceBlock::DrawThroughWalls(Engine* pEngine, Camera* pCamera, Projection* pP
 	pDevice->SetRenderState(D3DRS_DESTBLEND, oldDestBlend);
 	pDevice->SetRenderState(D3DRS_CULLMODE, oldCullMode);
 }
+
+
+
 
 void IceBlock::SetMeltAmount(float amount)
 {
