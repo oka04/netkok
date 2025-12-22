@@ -41,6 +41,7 @@ private:
 	void SpawnPlayerWithRole(uint32_t clientId, const std::string& name, const D3DXVECTOR3& pos, PlayerRole role);
 	void DespawnPlayer(uint32_t clientId);
 
+	void ReceiveFromServer();
 	void RenderShadowMaps();
 
 	void CheckBreathHitPlayers();
