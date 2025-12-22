@@ -578,16 +578,144 @@ void SceneGame::CheckBreathHitPlayers()
 
 void SceneGame::UpdatePlayerFreezing()
 {
+	// ★★★ ホストのみが実際の解凍処理を行う ★★★
+	if (m_bIsHost)
+	{
+		// すべてのRunnerについて、誰が誰を助けているかを確認
+		std::map<uint32_t, std::vector<uint32_t>> targetToHelpers; // 助けられる人 -> 助ける人のリスト
+
+																   // ローカルプレイヤーをチェック
+		if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
+		{
+			Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
+			if (localRunner && !localRunner->IsFrozen())
+			{
+				uint32_t targetId = localRunner->GetMeltTargetId();
+				if (targetId != 0)
+				{
+					targetToHelpers[targetId].push_back(m_localClientId);
+				}
+			}
+		}
+
+		// リモートプレイヤーをチェック
+		for (auto& kv : m_players)
+		{
+			if (m_playerRoles[kv.first] != ROLE_RUNNER)
+				continue;
+
+			Runner* runner = dynamic_cast<Runner*>(kv.second);
+			if (!runner || runner->IsFrozen())
+				continue;
+
+			uint32_t targetId = runner->GetMeltTargetId();
+			if (targetId != 0)
+			{
+				targetToHelpers[targetId].push_back(kv.first);
+			}
+		}
+
+		// 助けられている各プレイヤーの解凍処理
+		for (auto& pair : targetToHelpers)
+		{
+			uint32_t targetId = pair.first;
+			const std::vector<uint32_t>& helpers = pair.second;
+
+			Runner* target = nullptr;
+
+			// ターゲットを探す
+			if (targetId == m_localClientId && m_pLocalPlayer)
+			{
+				target = dynamic_cast<Runner*>(m_pLocalPlayer);
+			}
+			else
+			{
+				auto it = m_players.find(targetId);
+				if (it != m_players.end())
+				{
+					target = dynamic_cast<Runner*>(it->second);
+				}
+			}
+
+			if (!target || !target->IsFrozen())
+				continue;
+
+			// 解凍速度を計算（助ける人数分加算）
+			float totalMeltSpeed = 0.0f;
+			for (uint32_t helperId : helpers)
+			{
+				Runner* helper = nullptr;
+
+				if (helperId == m_localClientId && m_pLocalPlayer)
+				{
+					helper = dynamic_cast<Runner*>(m_pLocalPlayer);
+				}
+				else
+				{
+					auto it = m_players.find(helperId);
+					if (it != m_players.end())
+					{
+						helper = dynamic_cast<Runner*>(it->second);
+					}
+				}
+
+				if (helper)
+				{
+					totalMeltSpeed += helper->GetMeltSpeed();
+				}
+			}
+
+			// 解凍を進める
+			float oldAmount = target->GetFrozenAmount();
+			float newAmount = oldAmount + totalMeltSpeed * m_deltaTime;
+
+			if (newAmount >= 1.0f)
+			{
+				// 完全解凍
+				target->SetFrozenAmount(1.0f);
+				target->SetFrozen(false);
+
+				std::string helperList = "";
+				for (size_t i = 0; i < helpers.size(); i++)
+				{
+					if (i > 0) helperList += ",";
+					helperList += std::to_string(helpers[i]);
+				}
+
+				NET_LOG_F("[SceneGame::UpdatePlayerFreezing] ★★★プレイヤー[%u]が完全解凍！★★★ 助けた人: [%s]",
+					targetId, helperList.c_str());
+			}
+			else
+			{
+				target->SetFrozenAmount(newAmount);
+
+				static DWORD lastMeltLog = 0;
+				DWORD now = timeGetTime();
+				if (now - lastMeltLog > 500)
+				{
+					NET_LOG_F("[SceneGame::UpdatePlayerFreezing] ★解凍進行★ [%u]: %.3f -> %.3f (助ける人=%d人)",
+						targetId, oldAmount, newAmount, (int)helpers.size());
+					lastMeltLog = now;
+				}
+			}
+		}
+	}
+
+	// ★★★ すべてのクライアント（ホスト含む）：ローカルプレイヤーのターゲット設定 ★★★
 	if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
 	{
 		Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
-		if (!localRunner) return;
-
-		if (!localRunner->IsFrozen())
+		if (localRunner && !localRunner->IsFrozen())
 		{
-			// ★★★ 新規追加: ローカルプレイヤーが他のプレイヤーを助ける処理 ★★★
 			std::vector<std::pair<uint32_t, CharacterBase*>> playerList;
 
+			// ローカルプレイヤーをリストに追加（自分は除外される）
+			if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
+			{
+				// 自分は追加しない
+			}
+
+			// リモートプレイヤーをリストに追加
 			for (auto& kv : m_players)
 			{
 				if (m_playerRoles[kv.first] == ROLE_RUNNER)
@@ -596,63 +724,14 @@ void SceneGame::UpdatePlayerFreezing()
 				}
 			}
 
+			// ターゲット設定（左クリック判定など）
 			localRunner->TryMeltNearbyFrozenPlayer(m_pEngine, playerList, m_deltaTime);
-
-			// ★★★ ここから追加: 実際に解凍を進める処理 ★★★
-			uint32_t targetId = localRunner->GetMeltTargetId();
-			if (targetId != 0)
-			{
-				auto targetIt = m_players.find(targetId);
-				if (targetIt != m_players.end() && targetIt->second)
-				{
-					Runner* targetRunner = dynamic_cast<Runner*>(targetIt->second);
-					if (targetRunner && targetRunner->IsFrozen())
-					{
-						float oldAmount = targetRunner->GetFrozenAmount();
-						float meltSpeed = localRunner->GetMeltSpeed();
-						float newAmount = oldAmount + meltSpeed * m_deltaTime;
-
-						if (newAmount >= 1.0f)
-						{
-							newAmount = 1.0f;
-							targetRunner->SetFrozenAmount(1.0f);
-							targetRunner->SetFrozen(false);
-
-							NET_LOG_F("[SceneGame::UpdatePlayerFreezing] ★★★ローカルプレイヤー[%u]が[%u]を完全解凍！★★★",
-								m_localClientId, targetId);
-
-							// サーバーに送信
-							SyncToServer();
-						}
-						else
-						{
-							targetRunner->SetFrozenAmount(newAmount);
-
-							static DWORD lastMeltLog = 0;
-							DWORD now = timeGetTime();
-							if (now - lastMeltLog > 200)
-							{
-								NET_LOG_F("[SceneGame::UpdatePlayerFreezing] ★解凍進行★ [%u]が[%u]を助けている: %.3f -> %.3f",
-									m_localClientId, targetId, oldAmount, newAmount);
-								lastMeltLog = now;
-							}
-
-							// 定期的にサーバーに送信
-							static DWORD lastSync = 0;
-							if (now - lastSync > 100)
-							{
-								SyncToServer();
-								lastSync = now;
-							}
-						}
-					}
-				}
-			}
 
 			static DWORD lastLog = 0;
 			DWORD now = timeGetTime();
 			if (now - lastLog > 1000)
 			{
+				uint32_t targetId = localRunner->GetMeltTargetId();
 				if (targetId != 0)
 				{
 					NET_LOG_F("[SceneGame::UpdatePlayerFreezing] ローカルプレイヤー[%u]が[%u]をターゲット中",
@@ -660,113 +739,9 @@ void SceneGame::UpdatePlayerFreezing()
 				}
 				lastLog = now;
 			}
-			return;
-		}
-
-		// ★★★ 以下は既存のコード（ローカルプレイヤーが凍っている場合の処理）★★★
-		int helperCount = 0;
-		std::vector<uint32_t> helperIds;
-
-		for (auto& kv : m_players)
-		{
-			if (m_playerRoles[kv.first] != ROLE_RUNNER)
-				continue;
-
-			Runner* otherRunner = dynamic_cast<Runner*>(kv.second);
-			if (!otherRunner || otherRunner->IsFrozen())
-				continue;
-
-			uint32_t targetId = otherRunner->GetMeltTargetId();
-			if (targetId == m_localClientId)
-			{
-				helperCount++;
-				helperIds.push_back(kv.first);
-
-				static DWORD lastLog = 0;
-				DWORD now = timeGetTime();
-				if (now - lastLog > 1000)
-				{
-					NET_LOG_F("[SceneGame::UpdatePlayerFreezing] ★プレイヤー[%u]が自分[%u]を助けてくれている★ (meltTarget=%u)",
-						kv.first, m_localClientId, targetId);
-					lastLog = now;
-				}
-			}
-		}
-
-		if (helperCount > 0)
-		{
-			float oldAmount = localRunner->GetFrozenAmount();
-
-			float meltSpeed = localRunner->GetMeltSpeed() * helperCount;
-
-			float newAmount = oldAmount + meltSpeed * m_deltaTime;
-
-			if (newAmount >= 1.0f)
-			{
-				newAmount = 1.0f;
-				localRunner->SetFrozenAmount(1.0f);
-				localRunner->SetFrozen(false);
-
-				std::string helperList = "";
-				for (size_t i = 0; i < helperIds.size(); i++)
-				{
-					if (i > 0) helperList += ",";
-					helperList += std::to_string(helperIds[i]);
-				}
-
-				NET_LOG_F("[SceneGame::UpdatePlayerFreezing] ★★★自分[%u]が完全解凍！★★★ 助けてくれた人: [%s]",
-					m_localClientId, helperList.c_str());
-
-				SyncToServer();
-				return;
-			}
-
-			localRunner->SetFrozenAmount(newAmount);
-
-			static DWORD lastMeltLog = 0;
-			DWORD now = timeGetTime();
-			if (now - lastMeltLog > 200)
-			{
-				NET_LOG_F("[SceneGame::UpdatePlayerFreezing] ★解凍進行★ 自分[%u]: %.3f -> %.3f (助ける人=%d人 速度=%.3f)",
-					m_localClientId, oldAmount, newAmount, helperCount, meltSpeed);
-				lastMeltLog = now;
-			}
-
-			if (abs(newAmount - oldAmount) > 0.01f)
-			{
-				SyncToServer();
-			}
-		}
-		else
-		{
-			static DWORD lastNoHelperLog = 0;
-			DWORD now = timeGetTime();
-			if (now - lastNoHelperLog > 3000)
-			{
-				NET_LOG_F("[SceneGame::UpdatePlayerFreezing] 自分[%u]は凍結中だが、誰も助けてくれていない（プレイヤー数=%d）",
-					m_localClientId, (int)m_players.size());
-
-				for (auto& kv : m_players)
-				{
-					if (m_playerRoles[kv.first] != ROLE_RUNNER)
-						continue;
-
-					Runner* otherRunner = dynamic_cast<Runner*>(kv.second);
-					if (otherRunner)
-					{
-						NET_LOG_F("  プレイヤー[%u]: Frozen=%s meltTarget=%u",
-							kv.first,
-							otherRunner->IsFrozen() ? "Yes" : "No",
-							otherRunner->GetMeltTargetId());
-					}
-				}
-
-				lastNoHelperLog = now;
-			}
 		}
 	}
 }
-
 
 void SceneGame::SyncToServer()
 {
@@ -792,6 +767,7 @@ void SceneGame::SyncToServer()
 		m_pClient->SendPlayerState(state);
 	}
 }
+
 
 void SceneGame::ReceiveWorldState()
 {
@@ -839,6 +815,9 @@ void SceneGame::ReceiveWorldState()
 								NET_LOG_F("[SceneGame::ReceiveWorldState] ローカルプレイヤー[%u]の氷が溶けている: %.2f -> %.2f",
 									m_localClientId, oldAmount, ps.frozenAmount);
 							}
+
+							// ★★★ サーバーからの値を反映 ★★★
+							localRunner->SetFrozenAmount(ps.frozenAmount);
 						}
 						else if (wasFrozen && !newFrozen)
 						{
@@ -849,10 +828,9 @@ void SceneGame::ReceiveWorldState()
 						}
 					}
 				}
-				continue; 
+				continue;
 			}
 
-			// ★★★ ここからリモートプレイヤーの処理 ★★★
 			auto it = m_players.find(ps.clientId);
 			if (it != m_players.end() && it->second)
 			{
@@ -1740,7 +1718,7 @@ void SceneGame::Draw()
 
 		if (m_localRole == ROLE_RUNNER)
 		{
-			// 逃げる側: 既存の処理（変更なし）
+			// 逃げる側: 壁越しの氷ブロックを元の大きさで表示
 			for (auto& kv : m_players)
 			{
 				if (kv.first == m_localClientId) continue;
@@ -1766,7 +1744,8 @@ void SceneGame::Draw()
 				IceBlock* iceBlock = runner->GetIceBlock();
 				if (iceBlock)
 				{
-					iceBlock->DrawThroughWalls(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light, alpha);
+					// ★★★ 第4引数にtrueを追加して、元の大きさで描画 ★★★
+					iceBlock->DrawThroughWallsFullSize(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light, alpha);
 				}
 
 				runner->DrawMeltGaugeThroughWalls(m_pEngine, &m_camera, &m_projection, distance, alpha);
@@ -1774,7 +1753,7 @@ void SceneGame::Draw()
 		}
 		else if (m_localRole == ROLE_CHASER)
 		{
-			// ★★★ 鬼: 氷ブロックは距離に関係なく表示、ゲージは近距離のみ ★★★
+			// 鬼: 氷ブロックは距離に関係なく表示、ゲージは近距離のみ
 			for (auto& kv : m_players)
 			{
 				if (kv.first == m_localClientId) continue;
@@ -1793,14 +1772,15 @@ void SceneGame::Draw()
 
 				if (!isBlocked)	continue;
 
-				// ★★★ 氷ブロックは常に表示（距離制限なし）★★★
+				// ★★★ 氷ブロックは常に表示（距離制限なし、元の大きさ）★★★
 				float alpha = f_wallAlphaNear;
 				if (distance > 3.0f) alpha = f_wallAlphaMid;
 
 				IceBlock* iceBlock = runner->GetIceBlock();
 				if (iceBlock)
 				{
-					iceBlock->DrawThroughWalls(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light, alpha);
+					// ★★★ 鬼も元の大きさで描画 ★★★
+					iceBlock->DrawThroughWallsFullSize(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light, alpha);
 				}
 
 				// ★★★ ゲージは近距離のみ表示 ★★★
@@ -1811,6 +1791,7 @@ void SceneGame::Draw()
 			}
 		}
 	}
+
 
 
 	//通常描画のゲージ表示（逃げる側専用）
@@ -1835,7 +1816,6 @@ void SceneGame::Draw()
 			runner->DrawMeltGauge(m_pEngine, &m_camera, &m_projection, distance);
 		}
 	}
-	// ★★★ 鬼も近距離の凍結プレイヤーのゲージを通常描画 ★★★
 	else if (m_pLocalPlayer && m_localRole == ROLE_CHASER)
 	{
 		D3DXVECTOR3 localPos = m_pLocalPlayer->GetPosition();
@@ -1854,13 +1834,13 @@ void SceneGame::Draw()
 			D3DXVECTOR3 diff = targetPos - localPos;
 			float distance = D3DXVec3Length(&diff);
 
-			// ★★★ 鬼の表示範囲をパラメータから取得 ★★★
 			if (distance <= f_chaserGaugeDistance)
 			{
 				runner->DrawMeltGauge(m_pEngine, &m_camera, &m_projection, distance);
 			}
 		}
 	}
+
 
 #if _DEBUG
 	if (d_debugFlag & DRAW_BOXLINE)
