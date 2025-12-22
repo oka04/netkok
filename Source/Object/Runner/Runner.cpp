@@ -415,6 +415,15 @@ void Runner::TryMeltNearbyFrozenPlayer(Engine* pEngine, const std::vector<std::p
 
 	bool isAttackPressed = (m_keyFlag & ATTACK_KEY) != 0;
 
+	// ★★★ デバッグ: クリック状態を確認 ★★★
+	static DWORD lastClickLog = 0;
+	DWORD now = timeGetTime();
+	if (isAttackPressed && now - lastClickLog > 1000)
+	{
+		NET_LOG_F("[Runner::TryMelt] ★★★ ID=%u 左クリック検出！ KeyFlag=0x%02X ★★★", m_clientId, m_keyFlag);
+		lastClickLog = now;
+	}
+
 	if (!isAttackPressed)
 	{
 		if (m_targetMeltPlayer != 0)
@@ -429,6 +438,10 @@ void Runner::TryMeltNearbyFrozenPlayer(Engine* pEngine, const std::vector<std::p
 	Runner* closestFrozenRunner = nullptr;
 	float closestDistance = f_meltRange;
 	uint32_t closestId = 0;
+
+	// ★★★ デバッグ: プレイヤー検索開始 ★★★
+	int checkedCount = 0;
+	int frozenCount = 0;
 
 	for (const auto& pair : players)
 	{
@@ -451,10 +464,14 @@ void Runner::TryMeltNearbyFrozenPlayer(Engine* pEngine, const std::vector<std::p
 			continue;
 		}
 
+		checkedCount++;
+
 		if (!pRunner->IsFrozen())
 		{
 			continue;
 		}
+
+		frozenCount++;
 
 		D3DXVECTOR3 diff = pRunner->GetPosition() - m_position;
 		float distance = D3DXVec3Length(&diff);
@@ -465,6 +482,13 @@ void Runner::TryMeltNearbyFrozenPlayer(Engine* pEngine, const std::vector<std::p
 			closestFrozenRunner = pRunner;
 			closestId = id;
 		}
+	}
+
+	// ★★★ デバッグ: 検索結果 ★★★
+	if (now - lastClickLog > 1000 && isAttackPressed)
+	{
+		NET_LOG_F("[Runner::TryMelt] ID=%u 検索結果: チェック=%d 凍結=%d 最短距離=%.2f 最短ID=%u",
+			m_clientId, checkedCount, frozenCount, closestDistance, closestId);
 	}
 
 	//ターゲットの更新
@@ -494,10 +518,20 @@ NetPlayerState Runner::GetNetState() const
 
 	state.frozen = m_bFrozen ? 1 : 0;
 	state.frozenAmount = m_frozenAmount;
+	state.meltTargetId = m_targetMeltPlayer; 
+
+											 
+	static DWORD lastLog = 0;
+	DWORD now = timeGetTime();
+	if (m_targetMeltPlayer != 0 && now - lastLog > 1000)
+	{
+		NET_LOG_F("[Runner::GetNetState] ★ID=%u が meltTarget=%u を送信★ Frozen=%d Amount=%.2f",
+			m_clientId, m_targetMeltPlayer, state.frozen, state.frozenAmount);
+		lastLog = now;
+	}
 
 	return state;
 }
-
 
 void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& light, float deltaTime)
 {
@@ -507,8 +541,11 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 	bool newFrozen = (state.frozen != 0);
 	float netAmount = state.frozenAmount;
 
-	// ★★★ meltTargetIdを反映 ★★★
-	m_targetMeltPlayer = state.meltTargetId;
+	// ★★★ meltTargetIdを反映（ローカルプレイヤーは除く）★★★
+	if (!m_bIsLocal)
+	{
+		m_targetMeltPlayer = state.meltTargetId;
+	}
 
 	if (m_bFullyMelted && !newFrozen)
 		return;
