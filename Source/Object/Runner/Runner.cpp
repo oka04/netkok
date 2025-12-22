@@ -507,7 +507,11 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 	bool newFrozen = (state.frozen != 0);
 	float netAmount = state.frozenAmount;
 
-	if (m_bFullyMelted && !newFrozen)return;
+	// ★★★ meltTargetIdを反映 ★★★
+	m_targetMeltPlayer = state.meltTargetId;
+
+	if (m_bFullyMelted && !newFrozen)
+		return;
 
 	if (m_bFullyMelted && newFrozen)
 	{
@@ -540,25 +544,13 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 	}
 	else if (wasFrozen && newFrozen)
 	{
-		if (netAmount < m_frozenAmount)
-		{
-			static DWORD lastSyncLog = 0;
-			DWORD now = timeGetTime();
-			if (now - lastSyncLog > 2000)
-			{
-				NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u ローカル解凍を優先: Local=%.2f Net=%.2f",
-					m_clientId, m_frozenAmount, netAmount);
-				lastSyncLog = now;
-			}
-		}
-		else
-		{
-			m_frozenAmount = netAmount;
+		// ★★★ 修正: ローカルで助けている場合は、ローカルの値を優先しない ★★★
+		// サーバーからの値を常に反映することで、全員が同じ解凍状態を見られる
+		m_frozenAmount = netAmount;
 
-			if (m_pIceBlock)
-			{
-				m_pIceBlock->SetMeltAmount(m_frozenAmount);
-			}
+		if (m_pIceBlock)
+		{
+			m_pIceBlock->SetMeltAmount(m_frozenAmount);
 		}
 
 		if (m_frozenAmount >= 1.0f)
@@ -582,7 +574,6 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 		NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 凍結解除", m_clientId);
 	}
 }
-
 void Runner::Draw(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight)
 {
 	if (m_bIsLocal && m_bFirstPerson)
