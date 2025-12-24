@@ -91,17 +91,32 @@ void SceneGame::Initialize()
 
 	m_bIsHost = m_pClient->IsHost();
 
+	// ★★★ クライアントIDの設定を改善 ★★★
 	if (m_bIsHost)
 	{
 		m_localClientId = 1;
+		NET_LOG_F("[SceneGame::Initialize] ホストとして初期化: ClientID=%u", m_localClientId);
 	}
 	else
 	{
+		// クライアントの場合、サーバーから割り当てられたIDを取得
 		m_localClientId = m_pClient->GetAssignedClientId();
-		if (m_localClientId == 0) m_localClientId = 2;
+
+		// ★★★ デバッグ: 取得したIDを確認 ★★★
+		NET_LOG_F("[SceneGame::Initialize] クライアントとして初期化: GetAssignedClientId()=%u", m_localClientId);
+
+		// IDが0の場合、接続が完了していない可能性がある
+		if (m_localClientId == 0)
+		{
+			NET_LOG("[SceneGame::Initialize] 警告: ClientIDが0です。接続待機中の可能性があります。");
+
+			// 一時的なIDとして2を使用（後で正しいIDに更新される）
+			m_localClientId = 2;
+			NET_LOG_F("[SceneGame::Initialize] 一時ID設定: ClientID=%u", m_localClientId);
+		}
 	}
 
-	NET_LOG_F("[SceneGame] Initialize: IsHost=%d, ClientID=%u", m_bIsHost, m_localClientId);
+	NET_LOG_F("[SceneGame] Initialize完了: IsHost=%d, ClientID=%u", m_bIsHost, m_localClientId);
 
 	m_localRole = ROLE_NONE;
 
@@ -245,10 +260,18 @@ void SceneGame::UpdateNetwork()
 
 			SpawnPlayerWithRole(m_localClientId, myName, startPos, m_localRole);
 
+			// ★★★ デバッグ: 生成後のID確認 ★★★
 			if (m_pLocalPlayer)
 			{
+				NET_LOG_F("[SceneGame] ローカルプレイヤー生成完了: m_clientId=%u, GetClientId()=%u",
+					m_localClientId, m_pLocalPlayer->GetClientId());
+
 				m_pLocalPlayer->Update(m_pEngine, m_map, m_camera, m_light, 0);
 				m_pLocalPlayer->SetFirstPersonCamera(m_pEngine, m_camera);
+			}
+			else
+			{
+				NET_LOG_F("[SceneGame] エラー: ローカルプレイヤーの生成に失敗");
 			}
 
 			m_bInitialSyncDone = true;
@@ -327,10 +350,24 @@ void SceneGame::UpdateNetwork()
 		}
 	}
 
-	if (m_bInitialSyncDone && now - m_lastNetworkSend >= f_networkSendInterval)
+	// ★★★ 修正: ローカルプレイヤーが存在し、IDが正しく設定されている場合のみSyncを送信 ★★★
+	if (m_bInitialSyncDone && m_pLocalPlayer && m_pLocalPlayer->GetClientId() != 0)
 	{
-		SyncToServer();
-		m_lastNetworkSend = now;
+		if (now - m_lastNetworkSend >= f_networkSendInterval)
+		{
+			SyncToServer();
+			m_lastNetworkSend = now;
+		}
+	}
+	else if (m_pLocalPlayer && m_pLocalPlayer->GetClientId() == 0)
+	{
+		// ★★★ デバッグ: IDが0の場合は警告を出す ★★★
+		static DWORD lastWarning = 0;
+		if (now - lastWarning > 1000)
+		{
+			NET_LOG_F("[SceneGame::UpdateNetwork] 警告: ローカルプレイヤーのClientIDが0です！");
+			lastWarning = now;
+		}
 	}
 
 	if (m_bIsHost && m_pServer && now - m_lastWorldBroadcast >= f_worldBroadcastInterval)
@@ -662,9 +699,36 @@ void SceneGame::ProcessPlayerMelting()
 		if (m_playerRoles[kv.first] != ROLE_RUNNER) continue;
 
 		Runner* runner = dynamic_cast<Runner*>(kv.second);
-		if (!runner || runner->IsFrozen()) continue;
+		if (!runner)
+		{
+			continue;
+		}
 
+		// ★★★ デバッグ: 各プレイヤーの状態を確認 ★★★
 		uint32_t targetId = runner->GetMeltTargetId();
+		bool isFrozen = runner->IsFrozen();
+
+		static std::map<uint32_t, uint32_t> lastTargets;
+		static std::map<uint32_t, bool> lastFrozen;
+		DWORD now = timeGetTime();
+		static DWORD lastDebugLog = 0;
+
+		if (now - lastDebugLog > 500 ||
+			lastTargets[kv.first] != targetId ||
+			lastFrozen[kv.first] != isFrozen)
+		{
+			if (targetId != 0 || lastTargets[kv.first] != 0)
+			{
+				NET_LOG_F("[ProcessPlayerMelting] Player[%u]: Frozen=%d, MeltTarget=%u",
+					kv.first, isFrozen, targetId);
+			}
+			lastTargets[kv.first] = targetId;
+			lastFrozen[kv.first] = isFrozen;
+			if (now - lastDebugLog > 500) lastDebugLog = now;
+		}
+
+		if (runner->IsFrozen()) continue;
+
 		if (targetId != 0)
 		{
 			targetToHelpers[targetId].push_back(kv.first);
@@ -820,15 +884,47 @@ void SceneGame::SyncToServer()
 {
 	if (!m_pLocalPlayer || !m_pClient) return;
 
+	// ★★★ デバッグ: Sync前のID確認 ★★★
+	uint32_t localId = m_pLocalPlayer->GetClientId();
+	if (localId == 0)
+	{
+		NET_LOG_F("[SceneGame::SyncToServer] エラー: ローカルプレイヤーのClientIDが0です！ m_localClientId=%u",
+			m_localClientId);
+		// IDが0の場合は送信しない
+		return;
+	}
+
 	NetPlayerState state = m_pLocalPlayer->GetNetState();
 
+	// ★★★ デバッグ: GetNetState()の結果確認 ★★★
+	if (state.clientId != localId)
+	{
+		NET_LOG_F("[SceneGame::SyncToServer] 警告: GetNetState()のIDが一致しません！ GetClientId()=%u, state.clientId=%u",
+			localId, state.clientId);
+	}
+
+	// ★★★ デバッグ: 解凍ターゲットの送信を確認 ★★★
+	static uint32_t lastMeltTarget = 0;
 	static DWORD lastLogTime = 0;
 	DWORD now = timeGetTime();
-	if (now - lastLogTime > 3000)
+
+	if (state.meltTargetId != 0 || lastMeltTarget != 0)
+	{
+		if (state.meltTargetId != lastMeltTarget || now - lastLogTime > 1000)
+		{
+			NET_LOG_F("[SceneGame::SyncToServer] ID=%u meltTarget=%u を送信",
+				state.clientId, state.meltTargetId);
+			lastMeltTarget = state.meltTargetId;
+			lastLogTime = now;
+		}
+	}
+
+	static DWORD lastPositionLog = 0;
+	if (now - lastPositionLog > 3000)
 	{
 		NET_LOG_F("[SceneGame] 送信: ID=%u Pos=(%.1f,%.1f,%.1f) Interval=%dms",
 			state.clientId, state.posX, state.posY, state.posZ, f_networkSendInterval);
-		lastLogTime = now;
+		lastPositionLog = now;
 	}
 
 	if (m_bIsHost && m_pServer)
@@ -913,21 +1009,30 @@ void SceneGame::ReceiveWorldState()
 			auto it = m_players.find(ps.clientId);
 			if (it != m_players.end() && it->second)
 			{
-				// ★★★ 修正: ホストの場合、Runnerの凍結量は更新しない ★★★
+				// ★★★ 修正: ホストの場合、Runnerの凍結量は更新しないが、meltTargetは更新する ★★★
 				if (m_bIsHost && m_playerRoles[ps.clientId] == ROLE_RUNNER)
 				{
 					// Runnerの凍結状態はProcessPlayerMeltingで管理するため、
-					// 凍結量以外の情報（位置、角度など）のみ更新
+					// 凍結量は更新しないが、位置・角度・meltTargetは更新する
 					Runner* runner = dynamic_cast<Runner*>(it->second);
 					if (runner)
 					{
-						// 位置と角度のみ更新（凍結状態は更新しない）
 						NetPlayerState modifiedState = ps;
 						modifiedState.frozen = runner->IsFrozen() ? 1 : 0;
 						modifiedState.frozenAmount = runner->GetFrozenAmount();
-						modifiedState.meltTargetId = runner->GetMeltTargetId();
+						// ★★★ 重要: meltTargetはネットワークから受信した値を使う ★★★
+						// modifiedState.meltTargetId = ps.meltTargetId; // 既にpsから来ている
 
 						it->second->UpdateFromNetwork(modifiedState, m_light, m_deltaTime);
+
+						// ★★★ デバッグ: meltTarget更新確認 ★★★
+						static std::map<uint32_t, uint32_t> lastTargets;
+						if (ps.meltTargetId != lastTargets[ps.clientId])
+						{
+							NET_LOG_F("[ReceiveWorldState] Player[%u]のmeltTarget更新: %u -> %u",
+								ps.clientId, lastTargets[ps.clientId], ps.meltTargetId);
+							lastTargets[ps.clientId] = ps.meltTargetId;
+						}
 					}
 				}
 				else
@@ -1308,13 +1413,11 @@ void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name,
 	}
 
 	bool isLocal = (clientId == m_localClientId);
-	p->SetIsLocal(isLocal);
-	p->SetClientId(clientId);
-	p->SetCharacterName(name);
 
 	D3DXVECTOR3 spawnPos = (pos.x == 0.0f && pos.y == 0.0f && pos.z == 0.0f)
 		? m_map.GetPlayerStartPosition() : pos;
 
+	// ★★★ まずInitialize()を呼ぶ ★★★
 	if (isLocal)
 	{
 		if (role == ROLE_RUNNER)
@@ -1341,16 +1444,28 @@ void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name,
 		}
 	}
 
+	// ★★★ 重要: Initialize()の後にIDと名前を設定（Initialize内でリセットされるため）★★★
+	p->SetIsLocal(isLocal);
+	p->SetClientId(clientId);
+	p->SetCharacterName(name);
 	p->SetPosition(spawnPos);
+
+	// ★★★ デバッグ: 設定後のID確認 ★★★
+	NET_LOG_F("[SceneGame] プレイヤーID設定: IsLocal=%s, ClientID=%u (GetClientId()=%u)",
+		isLocal ? "Yes" : "No", clientId, p->GetClientId());
 
 	m_players[clientId] = p;
 
 	m_playerRoles[clientId] = role;
 
-	NET_LOG_F("[SceneGame] プレイヤー生成完了: ID=%u, Role=%s, Pos=(%.1f,%.1f,%.1f)",
+	NET_LOG_F("[SceneGame] プレイヤー生成完了: ID=%u, Role=%s, Pos=(%.1f,%.1f,%.1f), IsLocal=%s",
 		clientId,
 		(role == ROLE_CHASER) ? "鬼" : (role == ROLE_RUNNER) ? "逃げる側" : "未定",
-		spawnPos.x, spawnPos.y, spawnPos.z);
+		spawnPos.x, spawnPos.y, spawnPos.z,
+		isLocal ? "Yes" : "No");
+
+	// ★★★ デバッグ: 生成されたプレイヤーのID確認 ★★★
+	NET_LOG_F("[SceneGame] プレイヤーのGetClientId()=%u", p->GetClientId());
 
 	NET_LOG_F("[SceneGame] 現在の役割マップ: 総数=%d", (int)m_playerRoles.size());
 	for (auto& kv : m_playerRoles)
