@@ -110,7 +110,7 @@ void Runner::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 
 	if (!m_bFrozen)
 	{
-		Input(pEngine);
+		Input(pEngine);  
 
 		UpdateStamina(deltaTime);
 		ChangeSpeed();
@@ -140,6 +140,7 @@ void Runner::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 	SetThirdPersonFromBehind(pEngine, camera, map);
 	UpdateMatrix(light);
 }
+
 
 void Runner::DrawMeltGauge(Engine* pEngine, Camera* pCamera, Projection* pProj, float viewerDistance)
 {
@@ -532,7 +533,113 @@ NetPlayerState Runner::GetNetState() const
 
 	return state;
 }
+void Runner::UpdateMeltTarget(Engine* pEngine, const std::vector<std::pair<uint32_t, CharacterBase*>>& players, float deltaTime)
+{
+	if (m_bFrozen)
+	{
+		if (m_targetMeltPlayer != 0)
+		{
+			m_targetMeltPlayer = 0;
+			NET_LOG_F("[Runner::UpdateMeltTarget] ID=%u 自分が凍結中なので解凍中止", m_clientId);
+		}
+		return;
+	}
 
+	bool isAttackPressed = (m_keyFlag & ATTACK_KEY) != 0;
+
+	static DWORD lastClickLog = 0;
+	DWORD now = timeGetTime();
+	if (isAttackPressed && now - lastClickLog > 1000)
+	{
+		NET_LOG_F("[Runner::UpdateMeltTarget] ★★★ ID=%u 左クリック検出！ KeyFlag=0x%02X ★★★", m_clientId, m_keyFlag);
+		lastClickLog = now;
+	}
+
+	if (!isAttackPressed)
+	{
+		if (m_targetMeltPlayer != 0)
+		{
+			NET_LOG_F("[Runner::UpdateMeltTarget] ID=%u 左クリックを離した - 解凍中止 (ターゲット=%u)",
+				m_clientId, m_targetMeltPlayer);
+			m_targetMeltPlayer = 0;
+		}
+		return;
+	}
+
+	Runner* closestFrozenRunner = nullptr;
+	float closestDistance = f_meltRange;
+	uint32_t closestId = 0;
+
+	int checkedCount = 0;
+	int frozenCount = 0;
+
+	for (const auto& pair : players)
+	{
+		uint32_t id = pair.first;
+		CharacterBase* pChar = pair.second;
+
+		if (id == m_clientId)
+		{
+			continue;
+		}
+
+		if (!pChar)
+		{
+			continue;
+		}
+
+		Runner* pRunner = dynamic_cast<Runner*>(pChar);
+		if (!pRunner)
+		{
+			continue;
+		}
+
+		checkedCount++;
+
+		if (!pRunner->IsFrozen())
+		{
+			continue;
+		}
+
+		frozenCount++;
+
+		D3DXVECTOR3 diff = pRunner->GetPosition() - m_position;
+		float distance = D3DXVec3Length(&diff);
+
+		if (distance < closestDistance)
+		{
+			closestDistance = distance;
+			closestFrozenRunner = pRunner;
+			closestId = id;
+		}
+	}
+
+	if (now - lastClickLog > 1000 && isAttackPressed)
+	{
+		NET_LOG_F("[Runner::UpdateMeltTarget] ID=%u 検索結果: チェック=%d 凍結=%d 最短距離=%.2f 最短ID=%u",
+			m_clientId, checkedCount, frozenCount, closestDistance, closestId);
+	}
+
+	//ターゲットの更新
+	if (closestFrozenRunner)
+	{
+		if (m_targetMeltPlayer != closestId)
+		{
+			m_targetMeltPlayer = closestId;
+			NET_LOG_F("[Runner] ★★★ID=%u が ID=%u の解凍ターゲットに設定★★★ Distance=%.2f",
+				m_clientId, closestId, closestDistance);
+		}
+	}
+	else
+	{
+		if (m_targetMeltPlayer != 0)
+		{
+			NET_LOG_F("[Runner::UpdateMeltTarget] ID=%u 範囲内に凍結プレイヤーなし - 解凍中止 (前回ターゲット=%u)",
+				m_clientId, m_targetMeltPlayer);
+		}
+		m_targetMeltPlayer = 0;
+	}
+}
 void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& light, float deltaTime)
 {
 	CharacterBase::UpdateFromNetwork(state, light, deltaTime);

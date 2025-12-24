@@ -54,12 +54,12 @@ public:
 	float GetMeltSpeed() const { return f_meltSpeed; }
 
 	bool IsFullyMelted() const { return m_bFullyMelted; }
+	void UpdateMeltTarget(Engine* pEngine, const std::vector<std::pair<uint32_t, CharacterBase*>>& players, float deltaTime);
 
 private:
 	void LoadParameter() override;
 	void ChangeSpeed();
 	void UpdateStamina(float deltaTime)override;
-
 	void DrawGaugeRect(LPDIRECT3DDEVICE9 pDevice, int x, int y, int width, int height, D3DCOLOR color);
 
 	enum GAUGE_COLOR
