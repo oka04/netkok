@@ -362,69 +362,89 @@ void SceneGame::UpdateLocalPlayer()
 		{
 			runner->Update(m_pEngine, m_map, m_camera, m_light, m_deltaTime);
 
-			std::vector<std::pair<uint32_t, CharacterBase*>> playerList;
-			for (auto& kv : m_players)
+			// ★★★ 凍結していない場合のみ、解凍ターゲットを更新 ★★★
+			if (!runner->IsFrozen())
 			{
-				if (m_playerRoles[kv.first] == ROLE_RUNNER)
+				std::vector<std::pair<uint32_t, CharacterBase*>> playerList;
+				for (auto& kv : m_players)
 				{
-					playerList.push_back(kv);
+					if (m_playerRoles[kv.first] == ROLE_RUNNER)
+					{
+						playerList.push_back(kv);
+					}
 				}
-			}
 
-			uint32_t oldTarget = runner->GetMeltTargetId();
-			runner->UpdateMeltTarget(playerList);
-			uint32_t newTarget = runner->GetMeltTargetId();
+				uint32_t oldTarget = runner->GetMeltTargetId();
+				runner->UpdateMeltTarget(playerList);
+				uint32_t newTarget = runner->GetMeltTargetId();
 
-			bool currentFrozen = runner->IsFrozen();
-			float currentAmount = runner->GetFrozenAmount();
-
-			DWORD now = timeGetTime();
-			bool needsSync = false;
-
-			if (lastFrozenState != currentFrozen)
-			{
-				NET_LOG_F("[SceneGame::UpdateLocalPlayer] ローカルプレイヤー[%u]の凍結状態変化: %s -> %s",
-					m_localClientId,
-					lastFrozenState ? "凍結" : "通常",
-					currentFrozen ? "凍結" : "通常");
-				needsSync = true;
-				lastFrozenState = currentFrozen;
-				lastFrozenAmount = currentAmount;
-				lastTargetSyncTime = now;
-				lastAmountSyncTime = now;
-			}
-			else if (currentFrozen && abs(lastFrozenAmount - currentAmount) > 0.05f)
-			{
-				if (now - lastAmountSyncTime > 100)
+				// ★★★ ターゲット変化のログ ★★★
+				if (oldTarget != newTarget)
 				{
+					NET_LOG_F("[SceneGame::UpdateLocalPlayer] 解凍ターゲット変化: %u -> %u",
+						oldTarget, newTarget);
+				}
+
+				bool currentFrozen = runner->IsFrozen();
+				float currentAmount = runner->GetFrozenAmount();
+
+				DWORD now = timeGetTime();
+				bool needsSync = false;
+
+				// ★★★ 凍結状態の変化 ★★★
+				if (lastFrozenState != currentFrozen)
+				{
+					NET_LOG_F("[SceneGame::UpdateLocalPlayer] ローカルプレイヤー[%u]の凍結状態変化: %s -> %s",
+						m_localClientId,
+						lastFrozenState ? "凍結" : "通常",
+						currentFrozen ? "凍結" : "通常");
 					needsSync = true;
+					lastFrozenState = currentFrozen;
 					lastFrozenAmount = currentAmount;
+					lastTargetSyncTime = now;
 					lastAmountSyncTime = now;
 				}
-			}
+				// ★★★ 凍結量の変化 ★★★
+				else if (currentFrozen && abs(lastFrozenAmount - currentAmount) > 0.05f)
+				{
+					if (now - lastAmountSyncTime > 100)
+					{
+						needsSync = true;
+						lastFrozenAmount = currentAmount;
+						lastAmountSyncTime = now;
+					}
+				}
 
-			// ★★★ バグ修正: ターゲット送信頻度を大幅に改善 ★★★
-			if (oldTarget != newTarget)
-			{
-				NET_LOG_F("[SceneGame::UpdateLocalPlayer] 解凍ターゲット変化: %u -> %u",
-					oldTarget, newTarget);
-				needsSync = true;
-				lastMeltTarget = newTarget;
-				lastTargetSyncTime = now;
-			}
-			else if (newTarget != 0)
-			{
-				// ★★★ 重要: ターゲット継続中は毎フレーム送信（50ms制限のみ） ★★★
-				if (now - lastTargetSyncTime > 50)
+				// ★★★ 解凍ターゲットの変化または継続 ★★★
+				if (oldTarget != newTarget)
 				{
 					needsSync = true;
+					lastMeltTarget = newTarget;
 					lastTargetSyncTime = now;
 				}
-			}
+				else if (newTarget != 0)
+				{
+					// ★★★ ターゲット継続中は定期的に送信（100ms間隔）★★★
+					if (now - lastTargetSyncTime > 100)
+					{
+						needsSync = true;
+						lastTargetSyncTime = now;
+					}
+				}
 
-			if (needsSync)
+				// ★★★ 必要に応じてサーバーに同期 ★★★
+				if (needsSync)
+				{
+					SyncToServer();
+				}
+			}
+			else
 			{
-				SyncToServer();
+				// ★★★ 凍結中の場合、ターゲットをクリア ★★★
+				if (runner->GetMeltTargetId() != 0)
+				{
+					NET_LOG_F("[SceneGame::UpdateLocalPlayer] 凍結中のためターゲットをクリア");
+				}
 			}
 		}
 	}
@@ -458,8 +478,7 @@ void SceneGame::UpdateLocalPlayer()
 #else
 	m_bFirstPerson = true;
 #endif
-}
-
+		}
 void SceneGame::UpdateRemotePlayers()
 {
 	static DWORD lastLog = 0;
@@ -622,6 +641,7 @@ void SceneGame::ProcessPlayerMelting()
 
 	std::map<uint32_t, std::vector<uint32_t>> targetToHelpers;
 
+	// ★★★ ローカルプレイヤーの解凍ターゲットを収集 ★★★
 	if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
 	{
 		Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
@@ -635,6 +655,7 @@ void SceneGame::ProcessPlayerMelting()
 		}
 	}
 
+	// ★★★ リモートプレイヤーの解凍ターゲットを収集 ★★★
 	for (auto& kv : m_players)
 	{
 		if (kv.first == m_localClientId) continue;
@@ -650,6 +671,7 @@ void SceneGame::ProcessPlayerMelting()
 		}
 	}
 
+	// ★★★ デバッグログ: 現在の状況 ★★★
 	static DWORD lastSummaryLog = 0;
 	DWORD now = timeGetTime();
 	if (now - lastSummaryLog > 1000)
@@ -672,6 +694,7 @@ void SceneGame::ProcessPlayerMelting()
 
 	bool stateChanged = false;
 
+	// ★★★ 各ターゲットの解凍処理 ★★★
 	for (auto& pair : targetToHelpers)
 	{
 		uint32_t targetId = pair.first;
@@ -679,6 +702,7 @@ void SceneGame::ProcessPlayerMelting()
 
 		Runner* target = nullptr;
 
+		// ★★★ ターゲットを取得（ローカルまたはリモート）★★★
 		if (targetId == m_localClientId && m_pLocalPlayer)
 		{
 			target = dynamic_cast<Runner*>(m_pLocalPlayer);
@@ -703,6 +727,7 @@ void SceneGame::ProcessPlayerMelting()
 			continue;
 		}
 
+		// ★★★ 合計解凍速度を計算 ★★★
 		float totalMeltSpeed = 0.0f;
 		for (uint32_t helperId : helpers)
 		{
@@ -727,9 +752,20 @@ void SceneGame::ProcessPlayerMelting()
 			}
 		}
 
+		// ★★★ 解凍量を更新 ★★★
 		float oldAmount = target->GetFrozenAmount();
 		float newAmount = oldAmount + totalMeltSpeed * m_deltaTime;
 
+		// ★★★ デバッグログ: 解凍前の状態 ★★★
+		static std::map<uint32_t, float> lastLoggedAmount;
+		if (now - lastSummaryLog > 200 || abs(lastLoggedAmount[targetId] - oldAmount) > 0.05f)
+		{
+			NET_LOG_F("[ProcessPlayerMelting] ターゲット[%u] 解凍前: frozen=%d amount=%.3f",
+				targetId, target->IsFrozen(), oldAmount);
+			lastLoggedAmount[targetId] = oldAmount;
+		}
+
+		// ★★★ 完全解凍 ★★★
 		if (newAmount >= 1.0f)
 		{
 			target->SetFrozenAmount(1.0f);
@@ -746,11 +782,13 @@ void SceneGame::ProcessPlayerMelting()
 			NET_LOG_F("[ProcessPlayerMelting] ★★★プレイヤー[%u]が完全解凍！★★★ 助けた人: [%s]",
 				targetId, helperList.c_str());
 		}
+		// ★★★ 解凍進行中 ★★★
 		else if (totalMeltSpeed > 0.0f)
 		{
 			target->SetFrozenAmount(newAmount);
 			stateChanged = true;
 
+			// ★★★ デバッグログ: 解凍進行 ★★★
 			static std::map<uint32_t, DWORD> lastMeltLog;
 			if (now - lastMeltLog[targetId] > 200)
 			{
@@ -758,11 +796,21 @@ void SceneGame::ProcessPlayerMelting()
 					targetId, oldAmount, newAmount, (int)helpers.size(), totalMeltSpeed, m_deltaTime);
 				lastMeltLog[targetId] = now;
 			}
+
+			// ★★★ デバッグログ: 解凍後の状態確認 ★★★
+			float verifyAmount = target->GetFrozenAmount();
+			if (abs(verifyAmount - newAmount) > 0.001f)
+			{
+				NET_LOG_F("[ProcessPlayerMelting] 警告: ターゲット[%u]の凍結量が正しく設定されていない！ 期待=%.3f 実際=%.3f",
+					targetId, newAmount, verifyAmount);
+			}
 		}
 	}
 
+	// ★★★ 状態変化があった場合、即座にブロードキャスト ★★★
 	if (stateChanged && m_pServer)
 	{
+		NET_LOG_F("[ProcessPlayerMelting] 状態変化あり - ワールド状態をブロードキャスト");
 		m_pServer->BroadcastWorldState();
 		m_lastWorldBroadcast = timeGetTime();
 	}
@@ -812,8 +860,16 @@ void SceneGame::ReceiveWorldState()
 		{
 			const NetPlayerState& ps = world.players[i];
 
+			// ★★★ 修正: ローカルプレイヤーはスキップ（ホストが自分で計算するため）★★★
 			if (ps.clientId == m_localClientId)
 			{
+				// ホストの場合、自分の凍結状態は ProcessPlayerMelting で管理するのでスキップ
+				if (m_bIsHost)
+				{
+					continue;
+				}
+
+				// クライアントの場合のみ、サーバーからの凍結状態を反映
 				if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
 				{
 					Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
@@ -857,7 +913,28 @@ void SceneGame::ReceiveWorldState()
 			auto it = m_players.find(ps.clientId);
 			if (it != m_players.end() && it->second)
 			{
-				it->second->UpdateFromNetwork(ps, m_light, m_deltaTime);
+				// ★★★ 修正: ホストの場合、Runnerの凍結量は更新しない ★★★
+				if (m_bIsHost && m_playerRoles[ps.clientId] == ROLE_RUNNER)
+				{
+					// Runnerの凍結状態はProcessPlayerMeltingで管理するため、
+					// 凍結量以外の情報（位置、角度など）のみ更新
+					Runner* runner = dynamic_cast<Runner*>(it->second);
+					if (runner)
+					{
+						// 位置と角度のみ更新（凍結状態は更新しない）
+						NetPlayerState modifiedState = ps;
+						modifiedState.frozen = runner->IsFrozen() ? 1 : 0;
+						modifiedState.frozenAmount = runner->GetFrozenAmount();
+						modifiedState.meltTargetId = runner->GetMeltTargetId();
+
+						it->second->UpdateFromNetwork(modifiedState, m_light, m_deltaTime);
+					}
+				}
+				else
+				{
+					// クライアントの場合、または鬼の場合は通常通り更新
+					it->second->UpdateFromNetwork(ps, m_light, m_deltaTime);
+				}
 
 				if (ps.frozen != 0 && now - lastLogTime > 3000)
 				{
