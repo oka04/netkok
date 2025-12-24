@@ -46,7 +46,6 @@ private:
 	void CheckBreathHitPlayers();
 	void LoadGameParameter();  
 
-	void UpdatePlayerMeltTargets(); 
 	void ProcessPlayerMelting();
 	enum DEBUG_FLAG
 	{

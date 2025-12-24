@@ -139,9 +139,8 @@ void SceneGame::Update()
 		UpdateChaserLights();
 		CheckBreathHitPlayers();
 
-		UpdatePlayerMeltTargets(); 
-		UpdateNetwork();           
-		ProcessPlayerMelting();    
+		// ★★★ 修正: 解凍処理のみ（ターゲット設定はUpdateLocalPlayer内で完了）★★★
+		ProcessPlayerMelting();
 
 		if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
 		{
@@ -201,7 +200,6 @@ void SceneGame::Update()
 		return;
 	}
 }
-
 
 void SceneGame::UpdateNetwork()
 {
@@ -355,42 +353,14 @@ void SceneGame::UpdateLocalPlayer()
 	static bool lastFrozenState = false;
 	static float lastFrozenAmount = 0.0f;
 	static uint32_t lastMeltTarget = 0;
+	static DWORD lastSyncTime = 0;
 
 	if (m_localRole == ROLE_RUNNER)
 	{
 		Runner* runner = dynamic_cast<Runner*>(m_pLocalPlayer);
 		if (runner)
 		{
-			bool currentFrozen = runner->IsFrozen();
-			float currentAmount = runner->GetFrozenAmount();
-
-			//凍結状態が変化した場合は即座に送信
-			if (lastFrozenState != currentFrozen)
-			{
-				NET_LOG_F("[SceneGame::UpdateLocalPlayer] ローカルプレイヤー[%u]の凍結状態変化: %s -> %s",
-					m_localClientId,
-					lastFrozenState ? "凍結" : "通常",
-					currentFrozen ? "凍結" : "通常");
-
-				SyncToServer();
-				lastFrozenState = currentFrozen;
-				lastFrozenAmount = currentAmount;
-			}
-			//凍結中で解凍量が変化した場合も送信（頻度を上げる）
-			else if (currentFrozen && abs(lastFrozenAmount - currentAmount) > 0.01f)
-			{
-				static DWORD lastSync = 0;
-				DWORD now = timeGetTime();
-				if (now - lastSync > 50)
-				{
-					SyncToServer();
-					lastFrozenAmount = currentAmount;
-					lastSync = now;
-				}
-			}
-
-			// ★★★ 修正: Update()の中でターゲット判定が行われるため、Update()の後にチェック ★★★
-			// プレイヤーリストを作成
+			// ★★★ プレイヤーリストを作成 ★★★
 			std::vector<std::pair<uint32_t, CharacterBase*>> playerList;
 			for (auto& kv : m_players)
 			{
@@ -400,18 +370,58 @@ void SceneGame::UpdateLocalPlayer()
 				}
 			}
 
-			// Update()を呼び出す（この中でInput()とUpdateMeltTarget()が呼ばれる）
-			runner->UpdateMeltTarget(m_pEngine, playerList, m_deltaTime);
+			// ★★★ Update()を呼ぶ前にターゲット判定 ★★★
+			runner->UpdateMeltTarget(playerList);
+
+			// ★★★ 通常のUpdate() ★★★
 			runner->Update(m_pEngine, m_map, m_camera, m_light, m_deltaTime);
 
-			// Update()の後にターゲット変化をチェック
+			// ★★★ 状態変化のチェック ★★★
+			bool currentFrozen = runner->IsFrozen();
+			float currentAmount = runner->GetFrozenAmount();
 			uint32_t currentMeltTarget = runner->GetMeltTargetId();
+
+			DWORD now = timeGetTime();
+			bool needsSync = false;
+
+			// 凍結状態が変化した場合は即座に送信
+			if (lastFrozenState != currentFrozen)
+			{
+				NET_LOG_F("[SceneGame::UpdateLocalPlayer] ローカルプレイヤー[%u]の凍結状態変化: %s -> %s",
+					m_localClientId,
+					lastFrozenState ? "凍結" : "通常",
+					currentFrozen ? "凍結" : "通常");
+				needsSync = true;
+				lastFrozenState = currentFrozen;
+				lastFrozenAmount = currentAmount;
+			}
+			// 凍結中で解凍量が大きく変化した場合
+			else if (currentFrozen && abs(lastFrozenAmount - currentAmount) > 0.05f)
+			{
+				if (now - lastSyncTime > 100)  // 100ms制限
+				{
+					needsSync = true;
+					lastFrozenAmount = currentAmount;
+				}
+			}
+
+			// ★★★ ターゲット変化は500ms制限 ★★★
 			if (lastMeltTarget != currentMeltTarget)
 			{
-				NET_LOG_F("[SceneGame::UpdateLocalPlayer] 解凍ターゲット変化: %u -> %u",
-					lastMeltTarget, currentMeltTarget);
+				if (now - lastSyncTime > 500)
+				{
+					NET_LOG_F("[SceneGame::UpdateLocalPlayer] 解凍ターゲット変化: %u -> %u",
+						lastMeltTarget, currentMeltTarget);
+					needsSync = true;
+					lastMeltTarget = currentMeltTarget;
+				}
+			}
+
+			// ★★★ まとめて送信 ★★★
+			if (needsSync)
+			{
 				SyncToServer();
-				lastMeltTarget = currentMeltTarget;
+				lastSyncTime = now;
 			}
 		}
 	}
@@ -441,7 +451,7 @@ void SceneGame::UpdateLocalPlayer()
 			m_pLocalPlayer->SetThirdPersonFromBehind(m_pEngine, m_camera, m_map);
 		m_bFirstPerson = false;
 		break;
-}
+	}
 #else
 	m_bFirstPerson = true;
 #endif
@@ -600,43 +610,6 @@ void SceneGame::CheckBreathHitPlayers()
 
 			SyncToServer();
 			return;
-		}
-	}
-}
-
-
-// ★★★ フェーズ1: ローカルプレイヤーのターゲット設定と送信 ★★★
-void SceneGame::UpdatePlayerMeltTargets()
-{
-	if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
-	{
-		Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
-		if (localRunner && !localRunner->IsFrozen())
-		{
-			std::vector<std::pair<uint32_t, CharacterBase*>> playerList;
-
-			// リモートプレイヤーをリストに追加
-			for (auto& kv : m_players)
-			{
-				if (m_playerRoles[kv.first] == ROLE_RUNNER)
-				{
-					playerList.push_back(kv);
-				}
-			}
-
-			uint32_t oldTarget = localRunner->GetMeltTargetId();
-
-			// ★★★ 修正: Updateメソッド内で既に呼ばれているため、ここでは呼ばない ★★★
-			// localRunner->UpdateMeltTarget(m_pEngine, playerList, m_deltaTime);
-
-			// ★★★ ターゲットが変更されたかチェック ★★★
-			uint32_t newTarget = localRunner->GetMeltTargetId();
-			if (oldTarget != newTarget)
-			{
-				NET_LOG_F("[SceneGame::UpdatePlayerMeltTargets] ターゲット変更: %u -> %u",
-					oldTarget, newTarget);
-				SyncToServer();
-			}
 		}
 	}
 }

@@ -44,7 +44,6 @@ public:
 	float GetFrozenAmount() const { return m_frozenAmount; }
 	void SetFrozenAmount(float amount);
 	void UpdateFrozenState(float deltaTime);
-	void TryMeltNearbyFrozenPlayer(Engine* pEngine, const std::vector<std::pair<uint32_t, CharacterBase*>>& players, float deltaTime);
 	void DrawMeltGaugeThroughWalls(Engine* pEngine, Camera* pCamera, Projection* pProj, float viewerDistance, float alpha = 0.7f);
 
 	IceBlock* GetIceBlock() const { return m_pIceBlock; }
@@ -55,13 +54,13 @@ public:
 
 	bool IsFullyMelted() const { return m_bFullyMelted; }
 	void UpdateMeltTarget(Engine* pEngine, const std::vector<std::pair<uint32_t, CharacterBase*>>& players, float deltaTime);
+	void UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBase*>>& players);
 
 private:
 	void LoadParameter() override;
 	void ChangeSpeed();
 	void UpdateStamina(float deltaTime)override;
 	void DrawGaugeRect(LPDIRECT3DDEVICE9 pDevice, int x, int y, int width, int height, D3DCOLOR color);
-
 	enum GAUGE_COLOR
 	{
 		GREEN,
