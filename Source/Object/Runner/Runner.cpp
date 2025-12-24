@@ -499,6 +499,7 @@ NetPlayerState Runner::GetNetState() const
 
 	return state;
 }
+
 void Runner::UpdateMeltTarget(Engine* pEngine, const std::vector<std::pair<uint32_t, CharacterBase*>>& players, float deltaTime)
 {
 	if (m_bFrozen)
@@ -586,7 +587,6 @@ void Runner::UpdateMeltTarget(Engine* pEngine, const std::vector<std::pair<uint3
 			m_clientId, checkedCount, frozenCount, closestDistance, closestId);
 	}
 
-	//ターゲットの更新
 	if (closestFrozenRunner)
 	{
 		if (m_targetMeltPlayer != closestId)

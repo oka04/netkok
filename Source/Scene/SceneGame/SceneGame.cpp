@@ -68,7 +68,7 @@ void SceneGame::Start()
 
 void SceneGame::Initialize()
 {
-	LoadGameParameter(); 
+	LoadGameParameter();
 
 	SetBackColor(0x00008000);
 	d_debugFlag = 0;
@@ -139,7 +139,6 @@ void SceneGame::Update()
 		UpdateChaserLights();
 		CheckBreathHitPlayers();
 
-		// ★★★ 修正: 解凍処理のみ（ターゲット設定はUpdateLocalPlayer内で完了）★★★
 		ProcessPlayerMelting();
 
 		if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
@@ -361,10 +360,8 @@ void SceneGame::UpdateLocalPlayer()
 		Runner* runner = dynamic_cast<Runner*>(m_pLocalPlayer);
 		if (runner)
 		{
-			// ★★★ 修正1: Update()を先に呼ぶ（Input()を実行させる）★★★
 			runner->Update(m_pEngine, m_map, m_camera, m_light, m_deltaTime);
 
-			// ★★★ 修正2: Update()の後にプレイヤーリストを作成 ★★★
 			std::vector<std::pair<uint32_t, CharacterBase*>> playerList;
 			for (auto& kv : m_players)
 			{
@@ -374,19 +371,16 @@ void SceneGame::UpdateLocalPlayer()
 				}
 			}
 
-			// ★★★ 修正3: Update()の後にターゲット判定（最新のキーフラグを使用）★★★
 			uint32_t oldTarget = runner->GetMeltTargetId();
 			runner->UpdateMeltTarget(playerList);
 			uint32_t newTarget = runner->GetMeltTargetId();
 
-			// ★★★ 状態変化のチェック ★★★
 			bool currentFrozen = runner->IsFrozen();
 			float currentAmount = runner->GetFrozenAmount();
 
 			DWORD now = timeGetTime();
 			bool needsSync = false;
 
-			// 凍結状態が変化した場合は即座に送信
 			if (lastFrozenState != currentFrozen)
 			{
 				NET_LOG_F("[SceneGame::UpdateLocalPlayer] ローカルプレイヤー[%u]の凍結状態変化: %s -> %s",
@@ -399,7 +393,6 @@ void SceneGame::UpdateLocalPlayer()
 				lastTargetSyncTime = now;
 				lastAmountSyncTime = now;
 			}
-			// 凍結中で解凍量が大きく変化した場合
 			else if (currentFrozen && abs(lastFrozenAmount - currentAmount) > 0.05f)
 			{
 				if (now - lastAmountSyncTime > 100)
@@ -410,30 +403,25 @@ void SceneGame::UpdateLocalPlayer()
 				}
 			}
 
-			// ★★★ 修正4: ターゲット変化の判定を修正 ★★★
+			// ★★★ バグ修正: ターゲット送信頻度を大幅に改善 ★★★
 			if (oldTarget != newTarget)
 			{
-				// ターゲットが設定された（0 -> 何か）または解除された（何か -> 0）
-				if (now - lastTargetSyncTime > 100)  // 100ms制限
-				{
-					NET_LOG_F("[SceneGame::UpdateLocalPlayer] 解凍ターゲット変化: %u -> %u",
-						oldTarget, newTarget);
-					needsSync = true;
-					lastMeltTarget = newTarget;
-					lastTargetSyncTime = now;
-				}
+				NET_LOG_F("[SceneGame::UpdateLocalPlayer] 解凍ターゲット変化: %u -> %u",
+					oldTarget, newTarget);
+				needsSync = true;
+				lastMeltTarget = newTarget;
+				lastTargetSyncTime = now;
 			}
 			else if (newTarget != 0)
 			{
-				// ターゲット継続中は定期的に送信（500ms間隔）
-				if (now - lastTargetSyncTime > 500)
+				// ★★★ 重要: ターゲット継続中は毎フレーム送信（50ms制限のみ） ★★★
+				if (now - lastTargetSyncTime > 50)
 				{
 					needsSync = true;
 					lastTargetSyncTime = now;
 				}
 			}
 
-			// ★★★ まとめて送信 ★★★
 			if (needsSync)
 			{
 				SyncToServer();
@@ -466,11 +454,12 @@ void SceneGame::UpdateLocalPlayer()
 			m_pLocalPlayer->SetThirdPersonFromBehind(m_pEngine, m_camera, m_map);
 		m_bFirstPerson = false;
 		break;
-}
+	}
 #else
 	m_bFirstPerson = true;
 #endif
 }
+
 void SceneGame::UpdateRemotePlayers()
 {
 	static DWORD lastLog = 0;
@@ -530,9 +519,9 @@ void SceneGame::UpdateRemotePlayers()
 		lastLog = now;
 	}
 }
+
 void SceneGame::CheckBreathHitPlayers()
 {
-	//ローカル鬼がリモート逃げる側をチェック
 	if (m_pLocalPlayer && m_localRole == ROLE_CHASER)
 	{
 		Chaser* localChaser = dynamic_cast<Chaser*>(m_pLocalPlayer);
@@ -578,12 +567,12 @@ void SceneGame::CheckBreathHitPlayers()
 		}
 	}
 
-	//ローカル逃げる側がリモート鬼のブレスをチェックx
 	if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
 	{
 		Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
 		if (!localRunner || localRunner->IsFrozen())
 			return;
+
 		for (auto& kv : m_players)
 		{
 			if (m_playerRoles[kv.first] != ROLE_CHASER)
@@ -593,7 +582,6 @@ void SceneGame::CheckBreathHitPlayers()
 			if (!chaser || !chaser->IsBreathing())
 				continue;
 
-			//この鬼のブレスが当たったかチェック
 			SpotLight* light = chaser->GetLights();
 			if (!light)
 				continue;
@@ -618,7 +606,6 @@ void SceneGame::CheckBreathHitPlayers()
 			if (dotProduct < coneThreshold)
 				continue;
 
-			//自分を凍結
 			localRunner->SetFrozen(true);
 			NET_LOG_F("[SceneGame] ★★★ローカルプレイヤー[%u]が鬼[%u]のブレスに当たった！★★★",
 				m_localClientId, kv.first);
@@ -629,16 +616,12 @@ void SceneGame::CheckBreathHitPlayers()
 	}
 }
 
-
 void SceneGame::ProcessPlayerMelting()
 {
-	// ホストのみが実際の解凍処理を行う
 	if (!m_bIsHost) return;
 
-	// すべてのRunnerについて、誰が誰を助けているかを確認
 	std::map<uint32_t, std::vector<uint32_t>> targetToHelpers;
 
-	// ローカルプレイヤーのチェック
 	if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
 	{
 		Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
@@ -652,7 +635,6 @@ void SceneGame::ProcessPlayerMelting()
 		}
 	}
 
-	// リモートプレイヤーのチェック
 	for (auto& kv : m_players)
 	{
 		if (kv.first == m_localClientId) continue;
@@ -670,20 +652,26 @@ void SceneGame::ProcessPlayerMelting()
 
 	static DWORD lastSummaryLog = 0;
 	DWORD now = timeGetTime();
-	if (now - lastSummaryLog > 2000)
+	if (now - lastSummaryLog > 1000)
 	{
 		NET_LOG_F("[ProcessPlayerMelting] 状況: 助けられている人=%d",
 			(int)targetToHelpers.size());
 		for (auto& pair : targetToHelpers)
 		{
-			NET_LOG_F("  ターゲット[%u] <- 助ける人: %d人", pair.first, (int)pair.second.size());
+			std::string helperIds = "";
+			for (size_t i = 0; i < pair.second.size(); i++)
+			{
+				if (i > 0) helperIds += ",";
+				helperIds += std::to_string(pair.second[i]);
+			}
+			NET_LOG_F("  ターゲット[%u] <- 助ける人: %d人 [%s]",
+				pair.first, (int)pair.second.size(), helperIds.c_str());
 		}
 		lastSummaryLog = now;
 	}
 
 	bool stateChanged = false;
 
-	// 助けられている各プレイヤーの解凍処理
 	for (auto& pair : targetToHelpers)
 	{
 		uint32_t targetId = pair.first;
@@ -715,7 +703,6 @@ void SceneGame::ProcessPlayerMelting()
 			continue;
 		}
 
-		// 解凍速度を計算
 		float totalMeltSpeed = 0.0f;
 		for (uint32_t helperId : helpers)
 		{
@@ -740,7 +727,6 @@ void SceneGame::ProcessPlayerMelting()
 			}
 		}
 
-		// ★★★ 修正: 解凍を進める（deltaTimeを使用）★★★
 		float oldAmount = target->GetFrozenAmount();
 		float newAmount = oldAmount + totalMeltSpeed * m_deltaTime;
 
@@ -757,7 +743,7 @@ void SceneGame::ProcessPlayerMelting()
 				helperList += std::to_string(helpers[i]);
 			}
 
-			NET_LOG_F("[SceneGame::ProcessPlayerMelting] ★★★プレイヤー[%u]が完全解凍！★★★ 助けた人: [%s]",
+			NET_LOG_F("[ProcessPlayerMelting] ★★★プレイヤー[%u]が完全解凍！★★★ 助けた人: [%s]",
 				targetId, helperList.c_str());
 		}
 		else if (totalMeltSpeed > 0.0f)
@@ -766,16 +752,15 @@ void SceneGame::ProcessPlayerMelting()
 			stateChanged = true;
 
 			static std::map<uint32_t, DWORD> lastMeltLog;
-			if (now - lastMeltLog[targetId] > 500)
+			if (now - lastMeltLog[targetId] > 200)
 			{
-				NET_LOG_F("[SceneGame::ProcessPlayerMelting] ★解凍進行★ [%u]: %.3f -> %.3f (助ける人=%d人 速度=%.3f)",
-					targetId, oldAmount, newAmount, (int)helpers.size(), totalMeltSpeed);
+				NET_LOG_F("[ProcessPlayerMelting] ★解凍進行★ [%u]: %.3f -> %.3f (助ける人=%d人 速度=%.3f deltaTime=%.4f)",
+					targetId, oldAmount, newAmount, (int)helpers.size(), totalMeltSpeed, m_deltaTime);
 				lastMeltLog[targetId] = now;
 			}
 		}
 	}
 
-	// ★★★ 修正: 変更があった場合は即座にブロードキャスト ★★★
 	if (stateChanged && m_pServer)
 	{
 		m_pServer->BroadcastWorldState();
@@ -808,7 +793,6 @@ void SceneGame::SyncToServer()
 	}
 }
 
-
 void SceneGame::ReceiveWorldState()
 {
 	if (!m_pClient) return;
@@ -830,7 +814,6 @@ void SceneGame::ReceiveWorldState()
 
 			if (ps.clientId == m_localClientId)
 			{
-				// ★★★ ローカルプレイヤーの場合 ★★★
 				if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
 				{
 					Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
@@ -841,7 +824,6 @@ void SceneGame::ReceiveWorldState()
 
 						if (!wasFrozen && newFrozen)
 						{
-							// ★★★ 新規凍結 - サーバーの状態を優先 ★★★
 							localRunner->SetFrozen(true);
 							localRunner->SetFrozenAmount(ps.frozenAmount);
 							NET_LOG_F("[SceneGame::ReceiveWorldState] ★★★ローカルプレイヤー[%u]が凍結された！★★★",
@@ -849,11 +831,9 @@ void SceneGame::ReceiveWorldState()
 						}
 						else if (wasFrozen && newFrozen)
 						{
-							// ★★★ 凍結継続 - サーバーの解凍状態を反映 ★★★
 							float localAmount = localRunner->GetFrozenAmount();
 							float serverAmount = ps.frozenAmount;
 
-							// ★★★ サーバーの値を常に反映（全員が同じ状態を見るため） ★★★
 							localRunner->SetFrozenAmount(serverAmount);
 
 							if (now - lastLogTime > 1000 && abs(localAmount - serverAmount) > 0.05f)
@@ -864,7 +844,6 @@ void SceneGame::ReceiveWorldState()
 						}
 						else if (wasFrozen && !newFrozen)
 						{
-							// ★★★ 凍結解除 ★★★
 							localRunner->SetFrozen(false);
 							localRunner->SetFrozenAmount(1.0f);
 							NET_LOG_F("[SceneGame::ReceiveWorldState] ローカルプレイヤー[%u]の凍結解除",
@@ -878,17 +857,14 @@ void SceneGame::ReceiveWorldState()
 			auto it = m_players.find(ps.clientId);
 			if (it != m_players.end() && it->second)
 			{
-				// ★★★ 基本状態の更新 ★★★
 				it->second->UpdateFromNetwork(ps, m_light, m_deltaTime);
 
-				// ★★★ デバッグログ: 凍結状態 ★★★
 				if (ps.frozen != 0 && now - lastLogTime > 3000)
 				{
 					NET_LOG_F("[SceneGame::ReceiveWorldState] プレイヤー[%u]に氷状態を適用: frozen=%d amount=%.2f meltTarget=%u",
 						ps.clientId, ps.frozen, ps.frozenAmount, ps.meltTargetId);
 				}
 
-				// ★★★ 鬼のライト情報を即座に適用 ★★★
 				if (m_playerRoles[ps.clientId] == ROLE_CHASER)
 				{
 					Chaser* chaser = dynamic_cast<Chaser*>(it->second);
@@ -925,187 +901,6 @@ void SceneGame::ReceiveWorldState()
 						{
 							NET_LOG_F("[SceneGame::ReceiveWorldState] プレイヤー[%u]にライト適用: Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
 								ps.clientId, lightPos.x, lightPos.y, lightPos.z, lightDir.x, lightDir.y, lightDir.z);
-						}
-					}
-				}
-			}
-		}
-	}
-}
-void SceneGame::ReceiveFromServer()
-{
-	if (!m_pClient) return;
-
-	// 役割割り当ての処理（最優先）
-	NetRoleAssignment roleAssign;
-	bool roleUpdated = false;
-
-	while (m_pClient->PopRoleAssignment(roleAssign))
-	{
-		roleUpdated = true;
-		m_playerRoles[roleAssign.clientId] = roleAssign.role;
-
-		NET_LOG_F("[SceneGame] 役割受信: ID=%u Role=%s",
-			roleAssign.clientId,
-			(roleAssign.role == ROLE_CHASER) ? "鬼" : "逃げる側");
-
-		// 既存プレイヤーの役割変更は行わない
-		auto it = m_players.find(roleAssign.clientId);
-		if (it != m_players.end() && it->second)
-		{
-			NET_LOG_F("[SceneGame] プレイヤー %u は既に生成済み", roleAssign.clientId);
-			continue;
-		}
-
-		// 自分の役割が決定したらローカルプレイヤーを生成
-		if (roleAssign.clientId == m_localClientId && !m_pLocalPlayer)
-		{
-			m_localRole = roleAssign.role;
-
-			D3DXVECTOR3 startPos = m_map.GetPlayerStartPosition();
-			std::string myName = m_pClient->GetPlayerName();
-
-			NET_LOG_F("[SceneGame] ローカルプレイヤー生成: Role=%s",
-				(m_localRole == ROLE_CHASER) ? "鬼" : "逃げる側");
-
-			SpawnPlayerWithRole(m_localClientId, myName, startPos, m_localRole);
-
-			// 初期カメラ設定
-			if (m_pLocalPlayer)
-			{
-				m_pLocalPlayer->Update(m_pEngine, m_map, m_camera, m_light, 0);
-				m_pLocalPlayer->SetFirstPersonCamera(m_pEngine, m_camera);
-			}
-		}
-	}
-
-	// 役割が更新されたらライトを再収集
-	if (roleUpdated)
-	{
-		UpdateChaserLights();
-	}
-
-	// プレイヤーのスポーン処理
-	NetPlayerSpawn spawn;
-	while (m_pClient->PopPlayerSpawn(spawn))
-	{
-		if (spawn.clientId != m_localClientId)
-		{
-			NET_LOG_F("[SceneGame] 新規プレイヤー参加: ID=%u, Name=%s",
-				spawn.clientId, spawn.name);
-
-			if (m_players.find(spawn.clientId) != m_players.end())
-			{
-				NET_LOG_F("[SceneGame] プレイヤー %u は既に存在 - スキップ", spawn.clientId);
-				continue;
-			}
-
-			PlayerRole role = ROLE_RUNNER;
-			auto roleIt = m_playerRoles.find(spawn.clientId);
-			if (roleIt != m_playerRoles.end())
-			{
-				role = roleIt->second;
-				NET_LOG_F("[SceneGame] 役割情報あり: %s",
-					(role == ROLE_CHASER) ? "鬼" : "逃げる側");
-			}
-
-			SpawnPlayerWithRole(spawn.clientId, spawn.name,
-				D3DXVECTOR3(spawn.startX, spawn.startY, spawn.startZ),
-				role);
-
-			// 鬼が追加されたらライトを更新
-			if (role == ROLE_CHASER)
-			{
-				UpdateChaserLights();
-			}
-		}
-	}
-
-	// プレイヤーの削除処理
-	uint32_t despawnId;
-	while (m_pClient->PopPlayerDespawn(despawnId))
-	{
-		if (despawnId != m_localClientId)
-		{
-			NET_LOG_F("[SceneGame] プレイヤー退出: ID=%u", despawnId);
-
-			// 鬼が退出したらライトを更新
-			if (m_playerRoles[despawnId] == ROLE_CHASER)
-			{
-				DespawnPlayer(despawnId);
-				UpdateChaserLights();
-			}
-			else
-			{
-				DespawnPlayer(despawnId);
-			}
-		}
-	}
-
-	// ワールド状態の同期
-	NetWorldState world;
-	if (m_pClient->GetWorldState(world))
-	{
-		static DWORD lastLogTime = 0;
-		DWORD now = timeGetTime();
-		if (now - lastLogTime > 3000)
-		{
-			NET_LOG_F("[SceneGame] ワールド状態受信: プレイヤー数=%d", (int)world.playerCount);
-			lastLogTime = now;
-		}
-
-		for (int i = 0; i < world.playerCount; ++i)
-		{
-			const NetPlayerState& ps = world.players[i];
-
-			if (ps.clientId == m_localClientId) continue;
-
-			auto it = m_players.find(ps.clientId);
-			if (it != m_players.end() && it->second)
-			{
-				it->second->UpdateFromNetwork(ps, m_light, m_deltaTime);
-
-				// ★★★ 追加: ネットワーク更新後もライトを更新 ★★★
-				if (m_playerRoles[ps.clientId] == ROLE_CHASER)
-				{
-					Chaser* chaser = dynamic_cast<Chaser*>(it->second);
-					if (chaser)
-					{
-						chaser->UpdateLight(m_pEngine);
-					}
-				}
-			}
-			else
-			{
-				NET_LOG_F("[SceneGame] 未生成プレイヤーを発見: ID=%u - 仮生成", ps.clientId);
-
-				PlayerRole role = ROLE_RUNNER;
-				auto roleIt = m_playerRoles.find(ps.clientId);
-				if (roleIt != m_playerRoles.end())
-				{
-					role = roleIt->second;
-				}
-
-				SpawnPlayerWithRole(ps.clientId, "Player",
-					D3DXVECTOR3(ps.posX, ps.posY, ps.posZ),
-					role);
-
-				if (role == ROLE_CHASER)
-				{
-					UpdateChaserLights();
-				}
-
-				if (m_players.find(ps.clientId) != m_players.end())
-				{
-					m_players[ps.clientId]->UpdateFromNetwork(ps, m_light, m_deltaTime);
-
-					// ★★★ 新規生成直後もライトを更新 ★★★
-					if (role == ROLE_CHASER)
-					{
-						Chaser* chaser = dynamic_cast<Chaser*>(m_players[ps.clientId]);
-						if (chaser)
-						{
-							chaser->UpdateLight(m_pEngine);
 						}
 					}
 				}
@@ -1151,7 +946,6 @@ void SceneGame::RenderShadowMaps()
 			m_pLocalPlayer ? (m_pLocalPlayer->IsLocal() ? "Yes" : "No") : "N/A");
 	}
 
-	// 現在のレンダーターゲットと深度バッファを退避
 	LPDIRECT3DSURFACE9 pOldBackBuffer = nullptr;
 	LPDIRECT3DSURFACE9 pOldDepthBuffer = nullptr;
 	pDevice->GetRenderTarget(0, &pOldBackBuffer);
@@ -1168,7 +962,6 @@ void SceneGame::RenderShadowMaps()
 
 	int shadowMapCount = 0;
 
-	// ★★★ 鬼のシャドウマップを生成 ★★★
 	for (auto& kv : m_players)
 	{
 		if (shouldLog)
@@ -1244,12 +1037,10 @@ void SceneGame::RenderShadowMaps()
 
 		pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFFFFFFFF, 1.0f, 0);
 
-		// ★★★ ライト行列を取得して設定 ★★★
 		D3DXMATRIX matLightView = chaser->GetLightViewMatrix();
 		D3DXMATRIX matLightProj = chaser->GetLightProjectionMatrix();
 		D3DXMATRIX matLightVP = matLightView * matLightProj;
 
-		// ★★★ デバイスに行列を設定 ★★★
 		pDevice->SetTransform(D3DTS_VIEW, &matLightView);
 		pDevice->SetTransform(D3DTS_PROJECTION, &matLightProj);
 
@@ -1262,7 +1053,6 @@ void SceneGame::RenderShadowMaps()
 
 		m_map.DrawMapDepth(m_pEngine, &matLightVP);
 
-		// ★★★ すべてのプレイヤーの影を描画（鬼自身以外） ★★★
 		if (shouldLog)
 		{
 			NET_LOG_F("[RenderShadowMaps] プレイヤーの影描画開始（鬼[%u]以外）", kv.first);
@@ -1289,7 +1079,6 @@ void SceneGame::RenderShadowMaps()
 			drawnCount++;
 		}
 
-		// ★★★ ローカルプレイヤーが鬼でない場合、追加で描画 ★★★
 		if (m_pLocalPlayer && m_localClientId != kv.first)
 		{
 			bool alreadyDrawn = false;
@@ -1335,7 +1124,6 @@ void SceneGame::RenderShadowMaps()
 		lastLog = now;
 	}
 
-	// ステートを元に戻す
 	pDevice->SetRenderTarget(0, pOldBackBuffer);
 	pDevice->SetDepthStencilSurface(pOldDepthBuffer);
 	pDevice->SetViewport(&oldViewport);
@@ -1348,7 +1136,6 @@ void SceneGame::RenderShadowMaps()
 	if (pOldDepthBuffer) pOldDepthBuffer->Release();
 }
 
-// SceneGame.cpp の UpdateChaserLights() メソッド - 完全修正版
 void SceneGame::UpdateChaserLights()
 {
 	m_chaserLights.clear();
@@ -1356,7 +1143,6 @@ void SceneGame::UpdateChaserLights()
 	static DWORD lastLog = 0;
 	DWORD now = timeGetTime();
 
-	// ★★★ 修正1: ローカルプレイヤーが鬼の場合を追加 ★★★
 	if (m_pLocalPlayer && m_localRole == ROLE_CHASER)
 	{
 		Chaser* localChaser = dynamic_cast<Chaser*>(m_pLocalPlayer);
@@ -1378,18 +1164,14 @@ void SceneGame::UpdateChaserLights()
 		}
 	}
 
-	// ★★★ 修正2: リモートプレイヤーの鬼を追加 ★★★
 	for (auto& kv : m_players)
 	{
-		// ローカルプレイヤーはスキップ（既に追加済み）
 		if (kv.first == m_localClientId)
 			continue;
 
-		// プレイヤーが存在しない場合はスキップ
 		if (!kv.second)
 			continue;
 
-		// 役割が鬼でない場合はスキップ
 		auto roleIt = m_playerRoles.find(kv.first);
 		if (roleIt == m_playerRoles.end() || roleIt->second != ROLE_CHASER)
 			continue;
@@ -1420,6 +1202,7 @@ void SceneGame::UpdateChaserLights()
 		lastLog = now;
 	}
 }
+
 void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name,
 	const D3DXVECTOR3& pos, PlayerRole role)
 {
@@ -1431,7 +1214,6 @@ void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name,
 
 	CharacterBase* p = nullptr;
 
-	// 役割に応じてRunnerまたはChaserを生成
 	if (role == ROLE_RUNNER)
 	{
 		p = new Runner();
@@ -1444,7 +1226,6 @@ void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name,
 	}
 	else
 	{
-		// デフォルトでRunnerを生成
 		p = new Runner();
 		NET_LOG_F("[SceneGame] 役割未定だがRunnerとして仮生成: ID=%u, Name=%s", clientId, name.c_str());
 	}
@@ -1459,7 +1240,6 @@ void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name,
 
 	if (isLocal)
 	{
-		// ローカルプレイヤー
 		if (role == ROLE_RUNNER)
 		{
 			((Runner*)p)->Initialize(m_pEngine, m_map, &m_projection, m_camera, m_light);
@@ -1472,7 +1252,6 @@ void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name,
 	}
 	else
 	{
-		// リモートプレイヤー
 		if (role == ROLE_RUNNER)
 		{
 			((Runner*)p)->InitializeAtPosition(m_pEngine, spawnPos, &m_projection,
@@ -1487,10 +1266,8 @@ void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name,
 
 	p->SetPosition(spawnPos);
 
-	// ★★★ 重要: プレイヤーをマップに追加 ★★★
 	m_players[clientId] = p;
 
-	// ★★★ 重要: 役割を確実に設定 ★★★
 	m_playerRoles[clientId] = role;
 
 	NET_LOG_F("[SceneGame] プレイヤー生成完了: ID=%u, Role=%s, Pos=(%.1f,%.1f,%.1f)",
@@ -1498,7 +1275,6 @@ void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name,
 		(role == ROLE_CHASER) ? "鬼" : (role == ROLE_RUNNER) ? "逃げる側" : "未定",
 		spawnPos.x, spawnPos.y, spawnPos.z);
 
-	// ★★★ デバッグ: 役割マップの内容を確認 ★★★
 	NET_LOG_F("[SceneGame] 現在の役割マップ: 総数=%d", (int)m_playerRoles.size());
 	for (auto& kv : m_playerRoles)
 	{
@@ -1763,7 +1539,6 @@ void SceneGame::Draw()
 
 		if (m_localRole == ROLE_RUNNER)
 		{
-			// 逃げる側: 壁越しの氷ブロックを解凍の進行に応じて表示
 			for (auto& kv : m_players)
 			{
 				if (kv.first == m_localClientId) continue;
@@ -1789,7 +1564,6 @@ void SceneGame::Draw()
 				IceBlock* iceBlock = runner->GetIceBlock();
 				if (iceBlock)
 				{
-					// ★★★ 修正: DrawThroughWallsを使って解凍の進行を反映 ★★★
 					iceBlock->DrawThroughWalls(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light, alpha);
 				}
 
@@ -1798,7 +1572,6 @@ void SceneGame::Draw()
 		}
 		else if (m_localRole == ROLE_CHASER)
 		{
-			// 鬼: 氷ブロックは距離に関係なく表示（解凍の進行も反映）、ゲージは近距離のみ
 			for (auto& kv : m_players)
 			{
 				if (kv.first == m_localClientId) continue;
@@ -1817,18 +1590,15 @@ void SceneGame::Draw()
 
 				if (!isBlocked)	continue;
 
-				// ★★★ 氷ブロックは常に表示（解凍の進行を反映）★★★
 				float alpha = f_wallAlphaNear;
 				if (distance > 3.0f) alpha = f_wallAlphaMid;
 
 				IceBlock* iceBlock = runner->GetIceBlock();
 				if (iceBlock)
 				{
-					// ★★★ 修正: DrawThroughWallsを使って解凍の進行を反映 ★★★
 					iceBlock->DrawThroughWalls(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light, alpha);
 				}
 
-				// ★★★ ゲージは近距離のみ表示 ★★★
 				if (distance <= f_chaserGaugeDistance)
 				{
 					runner->DrawMeltGaugeThroughWalls(m_pEngine, &m_camera, &m_projection, distance, alpha);
@@ -1837,8 +1607,6 @@ void SceneGame::Draw()
 		}
 	}
 
-
-	//通常描画のゲージ表示（逃げる側専用）
 	if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
 	{
 		D3DXVECTOR3 localPos = m_pLocalPlayer->GetPosition();
@@ -1885,7 +1653,6 @@ void SceneGame::Draw()
 		}
 	}
 
-
 #if _DEBUG
 	if (d_debugFlag & DRAW_BOXLINE)
 	{
@@ -1912,9 +1679,9 @@ void SceneGame::Draw()
 #if _DEBUG
 	if (!(d_debugFlag & DISPLAY_DEBUG_STRING))
 	{
-		m_pEngine->DrawPrintf(50, 950, FONT_GOTHIC40, Color::WHITE, "DEL : %f", m_deltaTime);
-		m_pEngine->DrawPrintf(50, 1000, FONT_GOTHIC40, Color::WHITE, "FPS : %f", (float)m_pEngine->GetFPS());
-		m_pEngine->DrawPrintf(50, 900, FONT_GOTHIC40, Color::CYAN, "Players: %d (Drawn: %d) Lights: %d",
+		m_pEngine->DrawPrintf(0, 50, FONT_GOTHIC40, Color::WHITE, "DEL : %f", m_deltaTime);
+		m_pEngine->DrawPrintf(0, 100, FONT_GOTHIC40, Color::WHITE, "FPS : %f", (float)m_pEngine->GetFPS());
+		m_pEngine->DrawPrintf(0, 900, FONT_GOTHIC40, Color::CYAN, "Players: %d (Drawn: %d) Lights: %d",
 			(int)m_players.size() + (m_pLocalPlayer ? 1 : 0), drawnCount, (int)spotLights.size());
 
 		if (d_debugFlag & DRAW_PLAYER_STATE && m_pLocalPlayer)
@@ -1992,6 +1759,7 @@ void SceneGame::Draw()
 	m_fade.Draw(m_pEngine);
 	m_pEngine->SpriteEnd();
 }
+
 void SceneGame::PostEffect()
 {
 }
@@ -2059,6 +1827,7 @@ void SceneGame::UpdateDebugFlag()
 
 	if (m_pEngine->GetKeyStateSync(DIK_F11)) d_debugFlag ^= DISPLAY_DEBUG_STRING;
 }
+
 #ifdef USE_IMGUI
 void SceneGame::ImGuiFrameProcess()
 {
