@@ -614,7 +614,6 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 	bool newFrozen = (state.frozen != 0);
 	float netAmount = state.frozenAmount;
 
-	// ★★★ meltTargetIdを反映（ローカルプレイヤーは除く）★★★
 	if (!m_bIsLocal)
 	{
 		m_targetMeltPlayer = state.meltTargetId;
@@ -625,14 +624,6 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 
 	if (m_bFullyMelted && newFrozen)
 	{
-		static DWORD lastIgnoreLog = 0;
-		DWORD now = timeGetTime();
-		if (now - lastIgnoreLog > 2000)
-		{
-			NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 完全解凍済みなので凍結データを無視",
-				m_clientId);
-			lastIgnoreLog = now;
-		}
 		return;
 	}
 
@@ -654,8 +645,8 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 	}
 	else if (wasFrozen && newFrozen)
 	{
-		// ★★★ 修正: ローカルで助けている場合は、ローカルの値を優先しない ★★★
-		// サーバーからの値を常に反映することで、全員が同じ解凍状態を見られる
+		// ★★★ 修正: 常にサーバーの値を反映（ホストの計算結果）★★★
+		float oldAmount = m_frozenAmount;
 		m_frozenAmount = netAmount;
 
 		if (m_pIceBlock)
@@ -668,6 +659,18 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 			m_bFrozen = false;
 			m_bFullyMelted = true;
 			NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 完全解凍", m_clientId);
+		}
+		else
+		{
+			// ★★★ デバッグ: 解凍の進行を確認 ★★★
+			static std::map<uint32_t, DWORD> lastLog;
+			DWORD now = timeGetTime();
+			if (now - lastLog[m_clientId] > 1000 && abs(oldAmount - netAmount) > 0.01f)
+			{
+				NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 解凍更新: %.3f -> %.3f",
+					m_clientId, oldAmount, netAmount);
+				lastLog[m_clientId] = now;
+			}
 		}
 	}
 	else if (wasFrozen && !newFrozen)
