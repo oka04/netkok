@@ -138,8 +138,10 @@ void SceneGame::Update()
 
 		UpdateChaserLights();
 		CheckBreathHitPlayers();
-		UpdatePlayerFreezing();
 
+		UpdatePlayerMeltTargets(); 
+		UpdateNetwork();           
+		ProcessPlayerMelting();    
 
 		if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
 		{
@@ -588,9 +590,9 @@ void SceneGame::CheckBreathHitPlayers()
 }
 
 
-void SceneGame::UpdatePlayerFreezing()
+// ★★★ フェーズ1: ローカルプレイヤーのターゲット設定と送信 ★★★
+void SceneGame::UpdatePlayerMeltTargets()
 {
-	// ★★★ 修正: 先にローカルプレイヤーのターゲットを更新（ホストの解凍処理の前）★★★
 	if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
 	{
 		Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
@@ -598,7 +600,7 @@ void SceneGame::UpdatePlayerFreezing()
 		{
 			std::vector<std::pair<uint32_t, CharacterBase*>> playerList;
 
-			// リモートプレイヤーをリストに追加
+			// すべてのRunnerをリストに追加（m_playersから）
 			for (auto& kv : m_players)
 			{
 				if (m_playerRoles[kv.first] == ROLE_RUNNER)
@@ -607,197 +609,200 @@ void SceneGame::UpdatePlayerFreezing()
 				}
 			}
 
-			// ★★★ 前回のターゲットを保存 ★★★
+			// 前回のターゲットを保存
 			uint32_t oldTarget = localRunner->GetMeltTargetId();
 
 			// ターゲット設定（左クリック判定など）
 			localRunner->TryMeltNearbyFrozenPlayer(m_pEngine, playerList, m_deltaTime);
 
-			// ★★★ ターゲットが変更された場合は即座に送信 ★★★
+			// ターゲットが変更された場合は即座に送信
 			uint32_t newTarget = localRunner->GetMeltTargetId();
 			if (oldTarget != newTarget)
 			{
-				NET_LOG_F("[SceneGame::UpdatePlayerFreezing] ターゲット変更: %u -> %u",
+				NET_LOG_F("[SceneGame::UpdatePlayerMeltTargets] ターゲット変更: %u -> %u",
 					oldTarget, newTarget);
 				SyncToServer();
 			}
 		}
 	}
+}
 
-	// ★★★ ホストのみが実際の解凍処理を行う（ローカルプレイヤーのターゲット更新後）★★★
-	if (m_bIsHost)
+// ★★★ フェーズ2: 実際の解凍処理（ホストのみ、最新の状態を使用）★★★
+void SceneGame::ProcessPlayerMelting()
+{
+	// ホストのみが実際の解凍処理を行う
+	if (!m_bIsHost) return;
+
+	// すべてのRunnerについて、誰が誰を助けているかを確認
+	std::map<uint32_t, std::vector<uint32_t>> targetToHelpers; // 助けられる人 -> 助ける人のリスト
+
+															   // ローカルプレイヤーのチェック
+	if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
 	{
-		// すべてのRunnerについて、誰が誰を助けているかを確認
-		std::map<uint32_t, std::vector<uint32_t>> targetToHelpers; // 助けられる人 -> 助ける人のリスト
-
-																   // ★★★ ローカルプレイヤーのチェック（既にターゲット更新済み）★★★
-		if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
+		Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
+		if (localRunner && !localRunner->IsFrozen())
 		{
-			Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
-			if (localRunner && !localRunner->IsFrozen())
-			{
-				uint32_t targetId = localRunner->GetMeltTargetId();
-				if (targetId != 0)
-				{
-					targetToHelpers[targetId].push_back(m_localClientId);
-
-					static DWORD lastLog = 0;
-					DWORD now = timeGetTime();
-					if (now - lastLog > 1000)
-					{
-						NET_LOG_F("[UpdatePlayerFreezing] ★ローカル[%u]が[%u]をターゲット中★",
-							m_localClientId, targetId);
-						lastLog = now;
-					}
-				}
-			}
-		}
-
-		// ★★★ リモートプレイヤーのチェック ★★★
-		int remoteRunnerCount = 0;
-		int helpingCount = 0;
-
-		for (auto& kv : m_players)
-		{
-			if (kv.first == m_localClientId) continue; // ローカルプレイヤーは上で処理済み
-			if (m_playerRoles[kv.first] != ROLE_RUNNER) continue;
-
-			remoteRunnerCount++;
-
-			Runner* runner = dynamic_cast<Runner*>(kv.second);
-			if (!runner || runner->IsFrozen()) continue;
-
-			uint32_t targetId = runner->GetMeltTargetId();
+			uint32_t targetId = localRunner->GetMeltTargetId();
 			if (targetId != 0)
 			{
-				targetToHelpers[targetId].push_back(kv.first);
-				helpingCount++;
+				targetToHelpers[targetId].push_back(m_localClientId);
 
 				static DWORD lastLog = 0;
 				DWORD now = timeGetTime();
 				if (now - lastLog > 1000)
 				{
-					NET_LOG_F("[UpdatePlayerFreezing] ★リモート[%u]が[%u]をターゲット中★",
-						kv.first, targetId);
+					NET_LOG_F("[ProcessPlayerMelting] ★ローカル[%u]が[%u]をターゲット中★",
+						m_localClientId, targetId);
 					lastLog = now;
 				}
 			}
 		}
+	}
 
-		// ★★★ デバッグ: 全体の状況 ★★★
-		static DWORD lastSummaryLog = 0;
-		DWORD now = timeGetTime();
-		if (now - lastSummaryLog > 2000)
+	// リモートプレイヤーのチェック
+	int remoteRunnerCount = 0;
+	int helpingCount = 0;
+
+	for (auto& kv : m_players)
+	{
+		if (kv.first == m_localClientId) continue; // ローカルプレイヤーは上で処理済み
+		if (m_playerRoles[kv.first] != ROLE_RUNNER) continue;
+
+		remoteRunnerCount++;
+
+		Runner* runner = dynamic_cast<Runner*>(kv.second);
+		if (!runner || runner->IsFrozen()) continue;
+
+		uint32_t targetId = runner->GetMeltTargetId();
+		if (targetId != 0)
 		{
-			NET_LOG_F("[UpdatePlayerFreezing] 状況: リモートRunner=%d 助けている人=%d 助けられている人=%d",
-				remoteRunnerCount, helpingCount, (int)targetToHelpers.size());
-			lastSummaryLog = now;
+			targetToHelpers[targetId].push_back(kv.first);
+			helpingCount++;
+
+			static DWORD lastLog = 0;
+			DWORD now = timeGetTime();
+			if (now - lastLog > 1000)
+			{
+				NET_LOG_F("[ProcessPlayerMelting] ★リモート[%u]が[%u]をターゲット中★",
+					kv.first, targetId);
+				lastLog = now;
+			}
+		}
+	}
+
+	// デバッグ: 全体の状況
+	static DWORD lastSummaryLog = 0;
+	DWORD now = timeGetTime();
+	if (now - lastSummaryLog > 2000)
+	{
+		NET_LOG_F("[ProcessPlayerMelting] 状況: リモートRunner=%d 助けている人=%d 助けられている人=%d",
+			remoteRunnerCount, helpingCount, (int)targetToHelpers.size());
+		lastSummaryLog = now;
+	}
+
+	// 変更があったかどうかを追跡
+	bool stateChanged = false;
+
+	// 助けられている各プレイヤーの解凍処理
+	for (auto& pair : targetToHelpers)
+	{
+		uint32_t targetId = pair.first;
+		const std::vector<uint32_t>& helpers = pair.second;
+
+		Runner* target = nullptr;
+
+		// ターゲットを探す
+		if (targetId == m_localClientId && m_pLocalPlayer)
+		{
+			target = dynamic_cast<Runner*>(m_pLocalPlayer);
+		}
+		else
+		{
+			auto it = m_players.find(targetId);
+			if (it != m_players.end())
+			{
+				target = dynamic_cast<Runner*>(it->second);
+			}
 		}
 
-		// ★★★ 変更があったかどうかを追跡 ★★★
-		bool stateChanged = false;
-
-		// 助けられている各プレイヤーの解凍処理
-		for (auto& pair : targetToHelpers)
+		if (!target)
 		{
-			uint32_t targetId = pair.first;
-			const std::vector<uint32_t>& helpers = pair.second;
+			NET_LOG_F("[ProcessPlayerMelting] 警告: ターゲット[%u]が見つからない", targetId);
+			continue;
+		}
 
-			Runner* target = nullptr;
+		if (!target->IsFrozen())
+		{
+			NET_LOG_F("[ProcessPlayerMelting] 警告: ターゲット[%u]は凍結していない", targetId);
+			continue;
+		}
 
-			// ターゲットを探す
-			if (targetId == m_localClientId && m_pLocalPlayer)
+		// 解凍速度を計算（助ける人数分加算）
+		float totalMeltSpeed = 0.0f;
+		for (uint32_t helperId : helpers)
+		{
+			Runner* helper = nullptr;
+
+			if (helperId == m_localClientId && m_pLocalPlayer)
 			{
-				target = dynamic_cast<Runner*>(m_pLocalPlayer);
+				helper = dynamic_cast<Runner*>(m_pLocalPlayer);
 			}
 			else
 			{
-				auto it = m_players.find(targetId);
+				auto it = m_players.find(helperId);
 				if (it != m_players.end())
 				{
-					target = dynamic_cast<Runner*>(it->second);
+					helper = dynamic_cast<Runner*>(it->second);
 				}
 			}
 
-			if (!target)
+			if (helper)
 			{
-				NET_LOG_F("[UpdatePlayerFreezing] 警告: ターゲット[%u]が見つからない", targetId);
-				continue;
-			}
-
-			if (!target->IsFrozen())
-			{
-				NET_LOG_F("[UpdatePlayerFreezing] 警告: ターゲット[%u]は凍結していない", targetId);
-				continue;
-			}
-
-			// 解凍速度を計算（助ける人数分加算）
-			float totalMeltSpeed = 0.0f;
-			for (uint32_t helperId : helpers)
-			{
-				Runner* helper = nullptr;
-
-				if (helperId == m_localClientId && m_pLocalPlayer)
-				{
-					helper = dynamic_cast<Runner*>(m_pLocalPlayer);
-				}
-				else
-				{
-					auto it = m_players.find(helperId);
-					if (it != m_players.end())
-					{
-						helper = dynamic_cast<Runner*>(it->second);
-					}
-				}
-
-				if (helper)
-				{
-					totalMeltSpeed += helper->GetMeltSpeed();
-				}
-			}
-
-			// 解凍を進める
-			float oldAmount = target->GetFrozenAmount();
-			float newAmount = oldAmount + totalMeltSpeed * m_deltaTime;
-
-			if (newAmount >= 1.0f)
-			{
-				// 完全解凍
-				target->SetFrozenAmount(1.0f);
-				target->SetFrozen(false);
-				stateChanged = true;
-
-				std::string helperList = "";
-				for (size_t i = 0; i < helpers.size(); i++)
-				{
-					if (i > 0) helperList += ",";
-					helperList += std::to_string(helpers[i]);
-				}
-
-				NET_LOG_F("[SceneGame::UpdatePlayerFreezing] ★★★プレイヤー[%u]が完全解凍！★★★ 助けた人: [%s]",
-					targetId, helperList.c_str());
-			}
-			else if (abs(newAmount - oldAmount) > 0.001f)
-			{
-				target->SetFrozenAmount(newAmount);
-				stateChanged = true;
-
-				static DWORD lastMeltLog = 0;
-				if (now - lastMeltLog > 500)
-				{
-					NET_LOG_F("[SceneGame::UpdatePlayerFreezing] ★解凍進行★ [%u]: %.3f -> %.3f (助ける人=%d人 速度=%.3f)",
-						targetId, oldAmount, newAmount, (int)helpers.size(), totalMeltSpeed);
-					lastMeltLog = now;
-				}
+				totalMeltSpeed += helper->GetMeltSpeed();
 			}
 		}
 
-		// ★★★ 変更があった場合は即座にブロードキャスト ★★★
-		if (stateChanged && m_pServer)
+		// 解凍を進める
+		float oldAmount = target->GetFrozenAmount();
+		float newAmount = oldAmount + totalMeltSpeed * m_deltaTime;
+
+		if (newAmount >= 1.0f)
 		{
-			m_lastWorldBroadcast = timeGetTime();
-			m_pServer->BroadcastWorldState();
+			// 完全解凍
+			target->SetFrozenAmount(1.0f);
+			target->SetFrozen(false);
+			stateChanged = true;
+
+			std::string helperList = "";
+			for (size_t i = 0; i < helpers.size(); i++)
+			{
+				if (i > 0) helperList += ",";
+				helperList += std::to_string(helpers[i]);
+			}
+
+			NET_LOG_F("[SceneGame::ProcessPlayerMelting] ★★★プレイヤー[%u]が完全解凍！★★★ 助けた人: [%s]",
+				targetId, helperList.c_str());
 		}
+		else if (abs(newAmount - oldAmount) > 0.001f)
+		{
+			target->SetFrozenAmount(newAmount);
+			stateChanged = true;
+
+			static DWORD lastMeltLog = 0;
+			if (now - lastMeltLog > 500)
+			{
+				NET_LOG_F("[SceneGame::ProcessPlayerMelting] ★解凍進行★ [%u]: %.3f -> %.3f (助ける人=%d人 速度=%.3f)",
+					targetId, oldAmount, newAmount, (int)helpers.size(), totalMeltSpeed);
+				lastMeltLog = now;
+			}
+		}
+	}
+
+	// 変更があった場合は即座にブロードキャスト
+	if (stateChanged && m_pServer)
+	{
+		m_lastWorldBroadcast = timeGetTime();
+		m_pServer->BroadcastWorldState();
 	}
 }
 

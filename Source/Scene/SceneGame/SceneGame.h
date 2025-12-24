@@ -44,9 +44,10 @@ private:
 	void RenderShadowMaps();
 
 	void CheckBreathHitPlayers();
-	void UpdatePlayerFreezing();
-	void LoadGameParameter();  // ★★★ パラメータ読み込み追加 ★★★
+	void LoadGameParameter();  
 
+	void UpdatePlayerMeltTargets(); 
+	void ProcessPlayerMelting();
 	enum DEBUG_FLAG
 	{
 		DRAW_PLAYER_STATE = 1 << 0,
