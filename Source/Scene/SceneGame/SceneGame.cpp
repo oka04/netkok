@@ -260,7 +260,6 @@ void SceneGame::UpdateNetwork()
 
 			SpawnPlayerWithRole(m_localClientId, myName, startPos, m_localRole);
 
-			// ★★★ デバッグ: 生成後のID確認 ★★★
 			if (m_pLocalPlayer)
 			{
 				NET_LOG_F("[SceneGame] ローカルプレイヤー生成完了: m_clientId=%u, GetClientId()=%u",
@@ -331,57 +330,17 @@ void SceneGame::UpdateNetwork()
 			}
 		}
 
-		uint32_t despawnId;
-		while (m_pClient->PopPlayerDespawn(despawnId))
-		{
-			if (despawnId != m_localClientId)
-			{
-				NET_LOG_F("[SceneGame] プレイヤー退出: ID=%u", despawnId);
-				if (m_playerRoles[despawnId] == ROLE_CHASER)
-				{
-					DespawnPlayer(despawnId);
-					UpdateChaserLights();
-				}
-				else
-				{
-					DespawnPlayer(despawnId);
-				}
-			}
-		}
-	}
-
-	// ★★★ 修正: ローカルプレイヤーが存在し、IDが正しく設定されている場合のみSyncを送信 ★★★
-	if (m_bInitialSyncDone && m_pLocalPlayer && m_pLocalPlayer->GetClientId() != 0)
-	{
-		if (now - m_lastNetworkSend >= f_networkSendInterval)
-		{
-			SyncToServer();
-			m_lastNetworkSend = now;
-		}
-	}
-	else if (m_pLocalPlayer && m_pLocalPlayer->GetClientId() == 0)
-	{
-		// ★★★ デバッグ: IDが0の場合は警告を出す ★★★
-		static DWORD lastWarning = 0;
-		if (now - lastWarning > 1000)
-		{
-			NET_LOG_F("[SceneGame::UpdateNetwork] 警告: ローカルプレイヤーのClientIDが0です！");
-			lastWarning = now;
-		}
-	}
-
-	if (m_bIsHost && m_pServer && now - m_lastWorldBroadcast >= f_worldBroadcastInterval)
-	{
-		m_pServer->BroadcastWorldState();
-		m_lastWorldBroadcast = now;
-	}
-
-	if (m_bInitialSyncDone)
-	{
 		ReceiveWorldState();
+
+		// ★★★ デバッグ: 定期的に呼び出し確認 ★★★
+		static DWORD lastReceiveLog = 0;
+		if (now - lastReceiveLog > 2000)
+		{
+			NET_LOG_F("[SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=%d", m_bIsHost);
+			lastReceiveLog = now;
+		}
 	}
 }
-
 void SceneGame::UpdateLocalPlayer()
 {
 	if (!m_pLocalPlayer) return;
@@ -396,7 +355,7 @@ void SceneGame::UpdateLocalPlayer()
 		{
 			// プレイヤーリストを作成
 			std::vector<std::pair<uint32_t, CharacterBase*>> playerList;
-			
+
 			// リモートプレイヤーを追加
 			for (auto& kv : m_players)
 			{
@@ -723,14 +682,19 @@ void SceneGame::ProcessPlayerMelting()
 					helperList += std::to_string(helpers[i]);
 				}
 
-				NET_LOG_F("[ProcessPlayerMelting] ★★★プレイヤー[%u]が完全解凍！★★★ 助けた人: [%s] frozen=false amount=1.0確定",
+				NET_LOG_F("[ProcessPlayerMelting] ★★★★★プレイヤー[%u]が完全解凍！★★★★★ 助けた人: [%s]",
 					targetId, helperList.c_str());
 
 				// ★★★ 完全解凍後の状態を即座に確認 ★★★
 				bool verifyFrozen = target->IsFrozen();
 				float verifyAmount = target->GetFrozenAmount();
-				NET_LOG_F("[ProcessPlayerMelting] 完全解凍後の状態確認: ID=%u frozen=%d amount=%.3f",
+				NET_LOG_F("[ProcessPlayerMelting] 完全解凍後の状態確認: ID=%u IsFrozen()=%d GetFrozenAmount()=%.3f",
 					targetId, verifyFrozen, verifyAmount);
+
+				if (verifyFrozen)
+				{
+					NET_LOG_F("[ProcessPlayerMelting] ★警告★ ID=%u は解凍したはずなのにまだ frozen=true です！", targetId);
+				}
 			}
 			// ★★★ 解凍進行中 ★★★
 			else
@@ -810,7 +774,7 @@ void SceneGame::ReceiveWorldState()
 					continue;
 				}
 
-				// クライアントの場合、サーバーの状態を反映
+				// ★★★ クライアントの場合、サーバーの状態を強制的に反映 ★★★
 				if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
 				{
 					Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
@@ -821,15 +785,28 @@ void SceneGame::ReceiveWorldState()
 						float localAmount = localRunner->GetFrozenAmount();
 						float serverAmount = ps.frozenAmount;
 
+						// ★★★ 最優先: サーバーが解凍完了を通知している場合 ★★★
+						if (wasFrozen && !newFrozen)
+						{
+							localRunner->SetFrozen(false);
+							localRunner->SetFrozenAmount(1.0f);
+
+							NET_LOG_F("[SceneGame::ReceiveWorldState] ★★★★★ローカルプレイヤー[%u]が完全解凍！動けるようになりました！★★★★★",
+								m_localClientId);
+
+							// 動作確認
+							NET_LOG_F("[SceneGame::ReceiveWorldState] 状態確認: IsFrozen()=%d GetFrozenAmount()=%.3f",
+								localRunner->IsFrozen(), localRunner->GetFrozenAmount());
+						}
 						// 新規凍結
-						if (!wasFrozen && newFrozen)
+						else if (!wasFrozen && newFrozen)
 						{
 							localRunner->SetFrozen(true);
 							localRunner->SetFrozenAmount(serverAmount);
 							NET_LOG_F("[SceneGame::ReceiveWorldState] ★★★ローカルプレイヤー[%u]が凍結された！★★★",
 								m_localClientId);
 						}
-						// 凍結継続中
+						// 凍結継続中 - 解凍進行
 						else if (wasFrozen && newFrozen)
 						{
 							// サーバーの値が大きい場合のみ更新（解凍進行）
@@ -844,15 +821,17 @@ void SceneGame::ReceiveWorldState()
 										m_localClientId, localAmount, serverAmount);
 									lastUpdateLog = now;
 								}
+
+								// ★★★ 0.99以上で完全解凍とみなす ★★★
+								if (serverAmount >= 0.99f)
+								{
+									localRunner->SetFrozen(false);
+									localRunner->SetFrozenAmount(1.0f);
+
+									NET_LOG_F("[SceneGame::ReceiveWorldState] ★★★★★ローカルプレイヤー[%u]が完全解凍！（amount>=0.99）★★★★★",
+										m_localClientId);
+								}
 							}
-						}
-						// 凍結解除
-						else if (wasFrozen && !newFrozen)
-						{
-							localRunner->SetFrozen(false);
-							localRunner->SetFrozenAmount(1.0f);
-							NET_LOG_F("[SceneGame::ReceiveWorldState] ローカルプレイヤー[%u]の凍結解除",
-								m_localClientId);
 						}
 					}
 				}
@@ -945,7 +924,6 @@ void SceneGame::ReceiveWorldState()
 		}
 	}
 }
-
 void SceneGame::SyncToServer()
 {
 	if (!m_pLocalPlayer || !m_pClient) return;
