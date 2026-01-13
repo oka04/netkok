@@ -956,54 +956,45 @@ void SceneGame::ReceiveWorldState()
 		{
 			const NetPlayerState& ps = world.players[i];
 
-			// ★★★ 修正: ローカルプレイヤーはスキップ（ホストが自分で計算するため）★★★
-			if (ps.clientId == m_localClientId)
-			{
-				// ホストの場合、自分の凍結状態は ProcessPlayerMelting で管理するのでスキップ
-				if (m_bIsHost)
-				{
-					continue;
-				}
-
+			
+				
 				// クライアントの場合のみ、サーバーからの凍結状態を反映
-				if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
+			if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
+			{
+				Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
+				if (localRunner)
 				{
-					Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
-					if (localRunner)
+					bool wasFrozen = localRunner->IsFrozen();
+					bool newFrozen = (ps.frozen != 0);
+
+					if (!wasFrozen && newFrozen)
 					{
-						bool wasFrozen = localRunner->IsFrozen();
-						bool newFrozen = (ps.frozen != 0);
+						localRunner->SetFrozen(true);
+						localRunner->SetFrozenAmount(ps.frozenAmount);
+						NET_LOG_F("[SceneGame::ReceiveWorldState] ★★★ローカルプレイヤー[%u]が凍結された！★★★",
+							m_localClientId);
+					}
+					else if (wasFrozen && newFrozen)
+					{
+						float localAmount = localRunner->GetFrozenAmount();
+						float serverAmount = ps.frozenAmount;
 
-						if (!wasFrozen && newFrozen)
-						{
-							localRunner->SetFrozen(true);
-							localRunner->SetFrozenAmount(ps.frozenAmount);
-							NET_LOG_F("[SceneGame::ReceiveWorldState] ★★★ローカルプレイヤー[%u]が凍結された！★★★",
-								m_localClientId);
-						}
-						else if (wasFrozen && newFrozen)
-						{
-							float localAmount = localRunner->GetFrozenAmount();
-							float serverAmount = ps.frozenAmount;
+						localRunner->SetFrozenAmount(serverAmount);
 
-							localRunner->SetFrozenAmount(serverAmount);
-
-							if (now - lastLogTime > 1000 && abs(localAmount - serverAmount) > 0.05f)
-							{
-								NET_LOG_F("[SceneGame::ReceiveWorldState] ローカルプレイヤー[%u]の氷状態更新: Local=%.2f -> Server=%.2f",
-									m_localClientId, localAmount, serverAmount);
-							}
-						}
-						else if (wasFrozen && !newFrozen)
+						if (now - lastLogTime > 1000 && abs(localAmount - serverAmount) > 0.05f)
 						{
-							localRunner->SetFrozen(false);
-							localRunner->SetFrozenAmount(1.0f);
-							NET_LOG_F("[SceneGame::ReceiveWorldState] ローカルプレイヤー[%u]の凍結解除",
-								m_localClientId);
+							NET_LOG_F("[SceneGame::ReceiveWorldState] ローカルプレイヤー[%u]の氷状態更新: Local=%.2f -> Server=%.2f",
+								m_localClientId, localAmount, serverAmount);
 						}
 					}
+					else if (wasFrozen && !newFrozen)
+					{
+						localRunner->SetFrozen(false);
+						localRunner->SetFrozenAmount(1.0f);
+						NET_LOG_F("[SceneGame::ReceiveWorldState] ローカルプレイヤー[%u]の凍結解除",
+							m_localClientId);
+					}
 				}
-				continue;
 			}
 
 			auto it = m_players.find(ps.clientId);
@@ -1071,7 +1062,7 @@ void SceneGame::ReceiveWorldState()
 									if (kv2.first < ps.clientId && m_playerRoles[kv2.first] == ROLE_CHASER)
 									{
 										lightIndex++;
-									}
+									} 
 								}
 							}
 							light->SetDevice(m_pEngine, lightIndex);
