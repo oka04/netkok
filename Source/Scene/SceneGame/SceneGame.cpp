@@ -956,10 +956,8 @@ void SceneGame::ReceiveWorldState()
 		{
 			const NetPlayerState& ps = world.players[i];
 
-			
-				
-				// クライアントの場合のみ、サーバーからの凍結状態を反映
-			if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
+			// ★★★ ローカルプレイヤーの凍結状態をサーバーから反映 ★★★
+			if (ps.clientId == m_localClientId && m_pLocalPlayer && m_localRole == ROLE_RUNNER)
 			{
 				Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
 				if (localRunner)
@@ -997,40 +995,12 @@ void SceneGame::ReceiveWorldState()
 				}
 			}
 
+			// ★★★ リモートプレイヤーの状態を更新 ★★★
 			auto it = m_players.find(ps.clientId);
 			if (it != m_players.end() && it->second)
 			{
-				// ★★★ 修正: ホストの場合、Runnerの凍結量は更新しないが、meltTargetは更新する ★★★
-				if (m_bIsHost && m_playerRoles[ps.clientId] == ROLE_RUNNER)
-				{
-					// Runnerの凍結状態はProcessPlayerMeltingで管理するため、
-					// 凍結量は更新しないが、位置・角度・meltTargetは更新する
-					Runner* runner = dynamic_cast<Runner*>(it->second);
-					if (runner)
-					{
-						NetPlayerState modifiedState = ps;
-						modifiedState.frozen = runner->IsFrozen() ? 1 : 0;
-						modifiedState.frozenAmount = runner->GetFrozenAmount();
-						// ★★★ 重要: meltTargetはネットワークから受信した値を使う ★★★
-						// modifiedState.meltTargetId = ps.meltTargetId; // 既にpsから来ている
-
-						it->second->UpdateFromNetwork(modifiedState, m_light, m_deltaTime);
-
-						// ★★★ デバッグ: meltTarget更新確認 ★★★
-						static std::map<uint32_t, uint32_t> lastTargets;
-						if (ps.meltTargetId != lastTargets[ps.clientId])
-						{
-							NET_LOG_F("[ReceiveWorldState] Player[%u]のmeltTarget更新: %u -> %u",
-								ps.clientId, lastTargets[ps.clientId], ps.meltTargetId);
-							lastTargets[ps.clientId] = ps.meltTargetId;
-						}
-					}
-				}
-				else
-				{
-					// クライアントの場合、または鬼の場合は通常通り更新
-					it->second->UpdateFromNetwork(ps, m_light, m_deltaTime);
-				}
+				// ★★★ 修正: すべてのプレイヤーの凍結状態をサーバーから反映 ★★★
+				it->second->UpdateFromNetwork(ps, m_light, m_deltaTime);
 
 				if (ps.frozen != 0 && now - lastLogTime > 3000)
 				{
@@ -1038,6 +1008,7 @@ void SceneGame::ReceiveWorldState()
 						ps.clientId, ps.frozen, ps.frozenAmount, ps.meltTargetId);
 				}
 
+				// ★★★ Chaserのライト情報を更新 ★★★
 				if (m_playerRoles[ps.clientId] == ROLE_CHASER)
 				{
 					Chaser* chaser = dynamic_cast<Chaser*>(it->second);
@@ -1062,7 +1033,7 @@ void SceneGame::ReceiveWorldState()
 									if (kv2.first < ps.clientId && m_playerRoles[kv2.first] == ROLE_CHASER)
 									{
 										lightIndex++;
-									} 
+									}
 								}
 							}
 							light->SetDevice(m_pEngine, lightIndex);

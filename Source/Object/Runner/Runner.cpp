@@ -614,18 +614,10 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 	bool newFrozen = (state.frozen != 0);
 	float netAmount = state.frozenAmount;
 
+	// ★★★ リモートプレイヤーの場合、meltTargetを更新 ★★★
 	if (!m_bIsLocal)
 	{
 		m_targetMeltPlayer = state.meltTargetId;
-	}
-
-	// ★★★ 修正: 完全解凍済みの場合、再凍結を防ぐ ★★★
-	if (m_bFullyMelted && !newFrozen)
-		return;
-
-	if (m_bFullyMelted && newFrozen)
-	{
-		return;
 	}
 
 	// ★★★ 新規凍結 ★★★
@@ -648,7 +640,6 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 	// ★★★ 凍結継続中の更新 ★★★
 	else if (wasFrozen && newFrozen)
 	{
-		// ★★★ 修正: 凍結量を常に反映 ★★★
 		float oldAmount = m_frozenAmount;
 		m_frozenAmount = netAmount;
 
