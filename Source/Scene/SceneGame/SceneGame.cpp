@@ -732,23 +732,20 @@ void SceneGame::ProcessPlayerMelting()
 	// ★★★ デバッグログ: 現在の状況 ★★★
 	static DWORD lastSummaryLog = 0;
 	DWORD now = timeGetTime();
-	if (now - lastSummaryLog > 1000)
+	if (now - lastSummaryLog > 1000 && targetToHelpers.size() > 0)
 	{
-		if (targetToHelpers.size() > 0)
+		NET_LOG_F("[ProcessPlayerMelting] 状況: 助けられている人=%d",
+			(int)targetToHelpers.size());
+		for (auto& pair : targetToHelpers)
 		{
-			NET_LOG_F("[ProcessPlayerMelting] 状況: 助けられている人=%d",
-				(int)targetToHelpers.size());
-			for (auto& pair : targetToHelpers)
+			std::string helperIds = "";
+			for (size_t i = 0; i < pair.second.size(); i++)
 			{
-				std::string helperIds = "";
-				for (size_t i = 0; i < pair.second.size(); i++)
-				{
-					if (i > 0) helperIds += ",";
-					helperIds += std::to_string(pair.second[i]);
-				}
-				NET_LOG_F("  ターゲット[%u] <- 助ける人: %d人 [%s]",
-					pair.first, (int)pair.second.size(), helperIds.c_str());
+				if (i > 0) helperIds += ",";
+				helperIds += std::to_string(pair.second[i]);
 			}
+			NET_LOG_F("  ターゲット[%u] <- 助ける人: %d人 [%s]",
+				pair.first, (int)pair.second.size(), helperIds.c_str());
 		}
 		lastSummaryLog = now;
 	}
@@ -783,6 +780,13 @@ void SceneGame::ProcessPlayerMelting()
 			continue;
 		}
 
+		// ★★★ 既に解凍完了している場合はスキップ ★★★
+		if (!target->IsFrozen() && target->GetFrozenAmount() >= 1.0f)
+		{
+			continue;
+		}
+
+		// ★★★ まだ凍結中の場合のみ処理 ★★★
 		if (!target->IsFrozen())
 		{
 			continue;
@@ -824,7 +828,7 @@ void SceneGame::ProcessPlayerMelting()
 			if (newAmount >= 1.0f)
 			{
 				target->SetFrozenAmount(1.0f);
-				target->SetFrozen(false);
+				target->SetFrozen(false); // ★★★ これでamountが1.0に保たれる ★★★
 				stateChanged = true;
 
 				std::string helperList = "";
@@ -834,7 +838,7 @@ void SceneGame::ProcessPlayerMelting()
 					helperList += std::to_string(helpers[i]);
 				}
 
-				NET_LOG_F("[ProcessPlayerMelting] ★★★プレイヤー[%u]が完全解凍！★★★ 助けた人: [%s]",
+				NET_LOG_F("[ProcessPlayerMelting] ★★★プレイヤー[%u]が完全解凍！★★★ 助けた人: [%s] amount=1.0維持",
 					targetId, helperList.c_str());
 			}
 			// ★★★ 解凍進行中 ★★★
@@ -939,7 +943,7 @@ void SceneGame::ReceiveWorldState()
 		DWORD now = timeGetTime();
 		if (now - lastLogTime > 3000)
 		{
-			NET_LOG_F("[SceneGame] ワールド状態受信: プレイヤー数=%d", (int)world.playerCount);
+			NET_LOG_F("[SceneGame::ReceiveWorldState] ワールド状態受信: プレイヤー数=%d", (int)world.playerCount);
 			lastLogTime = now;
 		}
 
@@ -970,7 +974,7 @@ void SceneGame::ReceiveWorldState()
 
 						localRunner->SetFrozenAmount(serverAmount);
 
-						if (now - lastLogTime > 1000 && abs(localAmount - serverAmount) > 0.05f)
+						if (now - lastLogTime > 500 && abs(localAmount - serverAmount) > 0.05f)
 						{
 							NET_LOG_F("[SceneGame::ReceiveWorldState] ローカルプレイヤー[%u]の氷状態更新: Local=%.2f -> Server=%.2f",
 								m_localClientId, localAmount, serverAmount);
@@ -979,9 +983,14 @@ void SceneGame::ReceiveWorldState()
 					else if (wasFrozen && !newFrozen)
 					{
 						localRunner->SetFrozen(false);
-						localRunner->SetFrozenAmount(1.0f);
-						NET_LOG_F("[SceneGame::ReceiveWorldState] ローカルプレイヤー[%u]の凍結解除",
-							m_localClientId);
+						localRunner->SetFrozenAmount(max(1.0f, ps.frozenAmount));
+						NET_LOG_F("[SceneGame::ReceiveWorldState] ローカルプレイヤー[%u]の凍結解除 amount=%.2f",
+							m_localClientId, localRunner->GetFrozenAmount());
+					}
+					else if (!wasFrozen && !newFrozen && ps.frozenAmount >= 1.0f)
+					{
+						// ★★★ 解凍完了状態の維持 ★★★
+						localRunner->SetFrozenAmount(ps.frozenAmount);
 					}
 				}
 			}
@@ -995,8 +1004,12 @@ void SceneGame::ReceiveWorldState()
 
 				if (ps.frozen != 0 && now - lastLogTime > 3000)
 				{
-					NET_LOG_F("[SceneGame::ReceiveWorldState] プレイヤー[%u]に氷状態を適用: frozen=%d amount=%.2f meltTarget=%u",
-						ps.clientId, ps.frozen, ps.frozenAmount, ps.meltTargetId);
+					Runner* runner = dynamic_cast<Runner*>(it->second);
+					if (runner)
+					{
+						NET_LOG_F("[SceneGame::ReceiveWorldState] プレイヤー[%u]に氷状態を適用: frozen=%d amount=%.2f meltTarget=%u",
+							ps.clientId, ps.frozen, ps.frozenAmount, ps.meltTargetId);
+					}
 				}
 
 				// ★★★ Chaserのライト情報を更新 ★★★

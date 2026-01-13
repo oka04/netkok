@@ -318,7 +318,6 @@ void Runner::DrawGaugeRect(LPDIRECT3DDEVICE9 pDevice, int x, int y, int width, i
 	pDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertices, sizeof(VERTEX_2D));
 }
 
-
 void Runner::SetFrozen(bool frozen)
 {
 	if (m_bFrozen == frozen)
@@ -328,8 +327,9 @@ void Runner::SetFrozen(bool frozen)
 
 	if (frozen)
 	{
+		// ★★★ 凍結開始: amount を 0.0 に設定 ★★★
 		m_frozenAmount = 0.0f;
-		m_bFullyMelted = false;  
+		m_bFullyMelted = false;
 
 		if (m_pIceBlock)
 		{
@@ -343,15 +343,16 @@ void Runner::SetFrozen(bool frozen)
 	}
 	else
 	{
+		// ★★★ 凍結解除: amount を 1.0 に設定（0.0にしない）★★★
 		m_frozenAmount = 1.0f;
-		m_bFullyMelted = true;  
+		m_bFullyMelted = true;
 
 		if (m_pIceBlock)
 		{
 			m_pIceBlock->SetMeltAmount(1.0f);
 		}
 
-		NET_LOG_F("[Runner] ID=%u 凍結解除（完全解凍）", m_clientId);
+		NET_LOG_F("[Runner] ID=%u 凍結解除（完全解凍） amount=1.0", m_clientId);
 	}
 }
 
@@ -365,23 +366,25 @@ void Runner::SetFrozenAmount(float amount)
 	}
 
 	// ★★★ デバッグ: 設定後の値を確認 ★★★
-	static DWORD lastLog = 0;
+	static std::map<uint32_t, DWORD> lastLog;
 	DWORD now = timeGetTime();
-	if (now - lastLog > 200)
+	if (now - lastLog[m_clientId] > 500)
 	{
-		NET_LOG_F("[Runner::SetFrozenAmount] ID=%u amount設定: %.3f -> %.3f",
-			m_clientId, amount, m_frozenAmount);
-		lastLog = now;
+		NET_LOG_F("[Runner::SetFrozenAmount] ID=%u amount設定: %.3f (frozen=%d)",
+			m_clientId, m_frozenAmount, m_bFrozen);
+		lastLog[m_clientId] = now;
 	}
 
-	// ★★★ 重要: 1.0に達したら凍結解除 ★★★
+	// ★★★ 重要: 1.0に達したら凍結解除（ただしamountは1.0を保持）★★★
 	if (m_frozenAmount >= 1.0f && m_bFrozen)
 	{
 		m_bFrozen = false;
 		m_bFullyMelted = true;
-		NET_LOG_F("[Runner::SetFrozenAmount] ID=%u 完全解凍（SetFrozenAmount経由）", m_clientId);
+		m_frozenAmount = 1.0f; // ★★★ 1.0を保持 ★★★
+		NET_LOG_F("[Runner::SetFrozenAmount] ID=%u 完全解凍 amount=1.0維持", m_clientId);
 	}
 }
+
 
 void Runner::UpdateFrozenState(float deltaTime)
 {
@@ -392,27 +395,37 @@ void Runner::UpdateFrozenState(float deltaTime)
 	{
 		D3DXVECTOR3 centerPos = GetCenterPosition();
 		m_pIceBlock->SetPosition(centerPos);
-
 		m_pIceBlock->SetMeltAmount(m_frozenAmount);
-
 		m_pIceBlock->Update(deltaTime);
-
-		if (m_frozenAmount >= 1.0f)
-		{
-			m_bFrozen = false;
-			NET_LOG_F("[Runner] ID=%u 完全解凍", m_clientId);
-		}
 
 		static std::map<uint32_t, DWORD> lastLog;
 		DWORD now = timeGetTime();
 		if (now - lastLog[m_clientId] > 2000)
 		{
-			NET_LOG_F("[Runner] ID=%u 凍結中: amount=%.2f Pos=(%.1f,%.1f,%.1f)",
+			NET_LOG_F("[Runner::UpdateFrozenState] ID=%u 凍結中: amount=%.2f Pos=(%.1f,%.1f,%.1f)",
 				m_clientId, m_frozenAmount, centerPos.x, centerPos.y, centerPos.z);
 			lastLog[m_clientId] = now;
 		}
 	}
+	else if (m_frozenAmount >= 1.0f)
+	{
+		// ★★★ 完全解凍後も氷ブロックを更新（徐々に消える演出用）★★★
+		D3DXVECTOR3 centerPos = GetCenterPosition();
+		m_pIceBlock->SetPosition(centerPos);
+		m_pIceBlock->SetMeltAmount(1.0f);
+		m_pIceBlock->Update(deltaTime);
+
+		static std::map<uint32_t, DWORD> lastLog;
+		DWORD now = timeGetTime();
+		if (now - lastLog[m_clientId] > 2000)
+		{
+			NET_LOG_F("[Runner::UpdateFrozenState] ID=%u 解凍完了後: amount=%.2f",
+				m_clientId, m_frozenAmount);
+			lastLog[m_clientId] = now;
+		}
+	}
 }
+
 
 void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBase*>>& players)
 {
@@ -694,8 +707,8 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 	{
 		float oldAmount = m_frozenAmount;
 
-		// ★★★ 重要: 解凍は進行のみ許可（後退は許可しない）★★★
-		if (netAmount > m_frozenAmount)
+		// ★★★ 重要: サーバーからの値を信頼して更新 ★★★
+		if (abs(netAmount - m_frozenAmount) > 0.001f)
 		{
 			m_frozenAmount = netAmount;
 
@@ -720,22 +733,34 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 		{
 			m_bFrozen = false;
 			m_bFullyMelted = true;
+			m_frozenAmount = 1.0f; // ★★★ 1.0を保持 ★★★
 			NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 完全解凍", m_clientId);
 		}
 	}
-	// ★★★ 凍結解除 ★★★
+	// ★★★ 凍結解除（外部要因） ★★★
 	else if (wasFrozen && !newFrozen)
 	{
 		m_bFrozen = false;
-		m_frozenAmount = 1.0f;
+		m_frozenAmount = max(1.0f, netAmount); // ★★★ 最低でも1.0 ★★★
 		m_bFullyMelted = true;
 
 		if (m_pIceBlock)
 		{
-			m_pIceBlock->SetMeltAmount(1.0f);
+			m_pIceBlock->SetMeltAmount(m_frozenAmount);
 		}
 
-		NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 凍結解除", m_clientId);
+		NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 凍結解除 amount=%.2f",
+			m_clientId, m_frozenAmount);
+	}
+	// ★★★ 解凍完了後の状態維持 ★★★
+	else if (!wasFrozen && !newFrozen && netAmount >= 1.0f)
+	{
+		// ★★★ 解凍完了状態を維持 ★★★
+		m_frozenAmount = netAmount;
+		if (m_pIceBlock)
+		{
+			m_pIceBlock->SetMeltAmount(m_frozenAmount);
+		}
 	}
 }
 void Runner::Draw(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight)
