@@ -869,7 +869,6 @@ void SceneGame::ProcessPlayerMelting()
 	// ★★★ 状態変化があった場合、即座にブロードキャスト ★★★
 	if (stateChanged && m_pServer)
 	{
-		NET_LOG_F("[ProcessPlayerMelting] 状態変化あり - ワールド状態をブロードキャスト");
 		m_pServer->BroadcastWorldState();
 		m_lastWorldBroadcast = timeGetTime();
 	}
@@ -951,55 +950,64 @@ void SceneGame::ReceiveWorldState()
 		{
 			const NetPlayerState& ps = world.players[i];
 
-			// ★★★ ローカルプレイヤーの凍結状態をサーバーから反映 ★★★
-			if (ps.clientId == m_localClientId && m_pLocalPlayer && m_localRole == ROLE_RUNNER)
+			// ★★★ ローカルプレイヤーは更新しない（ホストの場合）★★★
+			if (ps.clientId == m_localClientId)
 			{
-				Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
-				if (localRunner)
+				// ★★★ ホストの場合、自分の状態はサーバーから受信しない ★★★
+				if (m_bIsHost)
 				{
-					bool wasFrozen = localRunner->IsFrozen();
-					bool newFrozen = (ps.frozen != 0);
+					continue;
+				}
 
-					if (!wasFrozen && newFrozen)
+				// ★★★ クライアントの場合のみサーバーから反映 ★★★
+				if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
+				{
+					Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
+					if (localRunner)
 					{
-						localRunner->SetFrozen(true);
-						localRunner->SetFrozenAmount(ps.frozenAmount);
-						NET_LOG_F("[SceneGame::ReceiveWorldState] ★★★ローカルプレイヤー[%u]が凍結された！★★★",
-							m_localClientId);
-					}
-					else if (wasFrozen && newFrozen)
-					{
-						float localAmount = localRunner->GetFrozenAmount();
-						float serverAmount = ps.frozenAmount;
+						bool wasFrozen = localRunner->IsFrozen();
+						bool newFrozen = (ps.frozen != 0);
 
-						localRunner->SetFrozenAmount(serverAmount);
-
-						if (now - lastLogTime > 500 && abs(localAmount - serverAmount) > 0.05f)
+						if (!wasFrozen && newFrozen)
 						{
-							NET_LOG_F("[SceneGame::ReceiveWorldState] ローカルプレイヤー[%u]の氷状態更新: Local=%.2f -> Server=%.2f",
-								m_localClientId, localAmount, serverAmount);
+							localRunner->SetFrozen(true);
+							localRunner->SetFrozenAmount(ps.frozenAmount);
+							NET_LOG_F("[SceneGame::ReceiveWorldState] ★★★ローカルプレイヤー[%u]が凍結された！★★★",
+								m_localClientId);
+						}
+						else if (wasFrozen && newFrozen)
+						{
+							float localAmount = localRunner->GetFrozenAmount();
+							float serverAmount = ps.frozenAmount;
+
+							// ★★★ サーバーの値が大きい場合のみ更新 ★★★
+							if (serverAmount > localAmount)
+							{
+								localRunner->SetFrozenAmount(serverAmount);
+
+								if (now - lastLogTime > 500)
+								{
+									NET_LOG_F("[SceneGame::ReceiveWorldState] ローカルプレイヤー[%u]の氷状態更新: Local=%.3f -> Server=%.3f",
+										m_localClientId, localAmount, serverAmount);
+								}
+							}
+						}
+						else if (wasFrozen && !newFrozen)
+						{
+							localRunner->SetFrozen(false);
+							localRunner->SetFrozenAmount(max(1.0f, ps.frozenAmount));
+							NET_LOG_F("[SceneGame::ReceiveWorldState] ローカルプレイヤー[%u]の凍結解除 amount=%.3f",
+								m_localClientId, localRunner->GetFrozenAmount());
 						}
 					}
-					else if (wasFrozen && !newFrozen)
-					{
-						localRunner->SetFrozen(false);
-						localRunner->SetFrozenAmount(max(1.0f, ps.frozenAmount));
-						NET_LOG_F("[SceneGame::ReceiveWorldState] ローカルプレイヤー[%u]の凍結解除 amount=%.2f",
-							m_localClientId, localRunner->GetFrozenAmount());
-					}
-					else if (!wasFrozen && !newFrozen && ps.frozenAmount >= 1.0f)
-					{
-						// ★★★ 解凍完了状態の維持 ★★★
-						localRunner->SetFrozenAmount(ps.frozenAmount);
-					}
 				}
+				continue;
 			}
 
 			// ★★★ リモートプレイヤーの状態を更新 ★★★
 			auto it = m_players.find(ps.clientId);
 			if (it != m_players.end() && it->second)
 			{
-				// ★★★ 修正: すべてのプレイヤーの凍結状態をサーバーから反映 ★★★
 				it->second->UpdateFromNetwork(ps, m_light, m_deltaTime);
 
 				if (ps.frozen != 0 && now - lastLogTime > 3000)
@@ -1007,7 +1015,7 @@ void SceneGame::ReceiveWorldState()
 					Runner* runner = dynamic_cast<Runner*>(it->second);
 					if (runner)
 					{
-						NET_LOG_F("[SceneGame::ReceiveWorldState] プレイヤー[%u]に氷状態を適用: frozen=%d amount=%.2f meltTarget=%u",
+						NET_LOG_F("[SceneGame::ReceiveWorldState] プレイヤー[%u]に氷状態を適用: frozen=%d amount=%.3f meltTarget=%u",
 							ps.clientId, ps.frozen, ps.frozenAmount, ps.meltTargetId);
 					}
 				}
@@ -1044,12 +1052,6 @@ void SceneGame::ReceiveWorldState()
 						}
 
 						chaser->UpdateLight(m_pEngine);
-
-						if (now - lastLogTime > 3000)
-						{
-							NET_LOG_F("[SceneGame::ReceiveWorldState] プレイヤー[%u]にライト適用: Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
-								ps.clientId, lightPos.x, lightPos.y, lightPos.z, lightDir.x, lightDir.y, lightDir.z);
-						}
 					}
 				}
 			}
