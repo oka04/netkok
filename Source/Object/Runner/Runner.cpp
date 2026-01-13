@@ -364,10 +364,22 @@ void Runner::SetFrozenAmount(float amount)
 		m_pIceBlock->SetMeltAmount(m_frozenAmount);
 	}
 
+	// ★★★ デバッグ: 設定後の値を確認 ★★★
+	static DWORD lastLog = 0;
+	DWORD now = timeGetTime();
+	if (now - lastLog > 200)
+	{
+		NET_LOG_F("[Runner::SetFrozenAmount] ID=%u amount設定: %.3f -> %.3f",
+			m_clientId, amount, m_frozenAmount);
+		lastLog = now;
+	}
+
+	// ★★★ 重要: 1.0に達したら凍結解除 ★★★
 	if (m_frozenAmount >= 1.0f && m_bFrozen)
 	{
 		m_bFrozen = false;
-		NET_LOG_F("[Runner] ID=%u 完全解凍（SetFrozenAmount経由）", m_clientId);
+		m_bFullyMelted = true;
+		NET_LOG_F("[Runner::SetFrozenAmount] ID=%u 完全解凍（SetFrozenAmount経由）", m_clientId);
 	}
 }
 
@@ -681,11 +693,26 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 	else if (wasFrozen && newFrozen)
 	{
 		float oldAmount = m_frozenAmount;
-		m_frozenAmount = netAmount;
 
-		if (m_pIceBlock)
+		// ★★★ 重要: 解凍は進行のみ許可（後退は許可しない）★★★
+		if (netAmount > m_frozenAmount)
 		{
-			m_pIceBlock->SetMeltAmount(m_frozenAmount);
+			m_frozenAmount = netAmount;
+
+			if (m_pIceBlock)
+			{
+				m_pIceBlock->SetMeltAmount(m_frozenAmount);
+			}
+
+			// ★★★ デバッグ: 解凍の進行を確認 ★★★
+			static std::map<uint32_t, DWORD> lastLog;
+			DWORD now = timeGetTime();
+			if (now - lastLog[m_clientId] > 200)
+			{
+				NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 解凍更新: %.3f -> %.3f",
+					m_clientId, oldAmount, netAmount);
+				lastLog[m_clientId] = now;
+			}
 		}
 
 		// ★★★ 完全解凍の判定 ★★★
@@ -694,18 +721,6 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 			m_bFrozen = false;
 			m_bFullyMelted = true;
 			NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 完全解凍", m_clientId);
-		}
-		else
-		{
-			// ★★★ デバッグ: 解凍の進行を確認 ★★★
-			static std::map<uint32_t, DWORD> lastLog;
-			DWORD now = timeGetTime();
-			if (now - lastLog[m_clientId] > 500 && abs(oldAmount - netAmount) > 0.01f)
-			{
-				NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 解凍更新: %.3f -> %.3f",
-					m_clientId, oldAmount, netAmount);
-				lastLog[m_clientId] = now;
-			}
 		}
 	}
 	// ★★★ 凍結解除 ★★★
