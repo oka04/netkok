@@ -350,10 +350,14 @@ void Runner::SetFrozen(bool frozen)
 
 		NET_LOG_F("[Runner::SetFrozen] ID=%u 凍結解除 amount=1.0", m_clientId);
 	}
-	else if (!frozen && !wasFrozen && wasFullyMelted)
+	else if (!frozen && !wasFrozen)
 	{
 		// ★★★ 解凍完了状態を維持 ★★★
-		m_frozenAmount = 1.0f;
+		if (m_frozenAmount < 1.0f)
+		{
+			m_frozenAmount = 1.0f;
+		}
+		m_bFullyMelted = true;
 
 		if (m_pIceBlock)
 		{
@@ -424,44 +428,54 @@ void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBas
 		return;
 	}
 
+	// ★★★ 左クリック（攻撃キー）が押されているかチェック ★★★
+	bool isHelpingButtonPressed = (m_keyFlag & ATTACK_KEY) != 0;
+
 	uint32_t oldTarget = m_targetMeltPlayer;
 	m_targetMeltPlayer = 0;
 
-	D3DXVECTOR3 myPos = GetCenterPosition();
-	float minDist = f_meltRange;
-
-	for (const auto& kv : players)
+	// ★★★ 左クリックが押されている場合のみ、ターゲットを検索 ★★★
+	if (isHelpingButtonPressed)
 	{
-		if (kv.first == m_clientId) continue;
+		D3DXVECTOR3 myPos = GetCenterPosition();
+		float minDist = f_meltRange;
 
-		Runner* other = dynamic_cast<Runner*>(kv.second);
-		if (!other || !other->IsFrozen()) continue;
-
-		D3DXVECTOR3 otherPos = other->GetCenterPosition();
-		D3DXVECTOR3 diff = otherPos - myPos;
-		float dist = D3DXVec3Length(&diff);
-
-		if (dist < minDist)
+		for (const auto& kv : players)
 		{
-			minDist = dist;
-			m_targetMeltPlayer = kv.first;
+			if (kv.first == m_clientId) continue;
+
+			Runner* other = dynamic_cast<Runner*>(kv.second);
+			if (!other || !other->IsFrozen()) continue;
+
+			D3DXVECTOR3 otherPos = other->GetCenterPosition();
+			D3DXVECTOR3 diff = otherPos - myPos;
+			float dist = D3DXVec3Length(&diff);
+
+			if (dist < minDist)
+			{
+				minDist = dist;
+				m_targetMeltPlayer = kv.first;
+			}
+		}
+
+		// ★★★ ターゲットが見つかった場合のログ ★★★
+		static DWORD lastLog = 0;
+		DWORD now = timeGetTime();
+		if (m_targetMeltPlayer != oldTarget || (m_targetMeltPlayer != 0 && now - lastLog > 1000))
+		{
+			if (m_targetMeltPlayer != 0)
+			{
+				NET_LOG_F("[Runner::UpdateMeltTarget] ID=%u が ID=%u を助けている（距離=%.2f 左クリック中）",
+					m_clientId, m_targetMeltPlayer, minDist);
+			}
+			lastLog = now;
 		}
 	}
 
-	static DWORD lastLog = 0;
-	DWORD now = timeGetTime();
-	if (m_targetMeltPlayer != oldTarget || (m_targetMeltPlayer != 0 && now - lastLog > 1000))
+	// ★★★ 左クリックを離した場合のログ ★★★
+	if (!isHelpingButtonPressed && oldTarget != 0)
 	{
-		if (m_targetMeltPlayer != 0)
-		{
-			NET_LOG_F("[Runner::UpdateMeltTarget] ID=%u が ID=%u を助けている（距離=%.2f）",
-				m_clientId, m_targetMeltPlayer, minDist);
-		}
-		else if (oldTarget != 0)
-		{
-			NET_LOG_F("[Runner::UpdateMeltTarget] ID=%u が助けるのをやめた", m_clientId);
-		}
-		lastLog = now;
+		NET_LOG_F("[Runner::UpdateMeltTarget] ID=%u が助けるのをやめた（左クリック離した）", m_clientId);
 	}
 }
 
@@ -479,11 +493,36 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 	CharacterBase::UpdateFromNetwork(state, light, deltaTime);
 
 	bool wasFrozen = m_bFrozen;
+	bool wasFullyMelted = m_bFullyMelted;
 	bool newFrozen = (state.frozen != 0);
 	float netAmount = state.frozenAmount;
 
 	static std::map<uint32_t, DWORD> lastLogTime;
 	DWORD now = timeGetTime();
+
+	// ★★★ 重要: 完全解凍後に古い凍結状態を受信しても無視 ★★★
+	if (!wasFrozen && wasFullyMelted && m_frozenAmount >= 1.0f)
+	{
+		// 完全解凍済みの場合
+		if (newFrozen && netAmount < 0.5f)
+		{
+			// 古い凍結状態を無視
+			static std::map<uint32_t, DWORD> lastIgnoreLog;
+			if (now - lastIgnoreLog[m_clientId] > 1000)
+			{
+				NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 完全解凍済み - 古い凍結状態を無視 (server: frozen=%d amount=%.3f)",
+					m_clientId, newFrozen, netAmount);
+				lastIgnoreLog[m_clientId] = now;
+			}
+			return; // 状態を更新しない
+		}
+		else if (newFrozen && netAmount > 0.5f)
+		{
+			// 新規凍結として扱う（amountが0に近い値から再開）
+			NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 完全解凍後の新規凍結を検出", m_clientId);
+			// この場合は続行して処理
+		}
+	}
 
 	// ★★★ 新規凍結 ★★★
 	if (!wasFrozen && newFrozen)
@@ -554,7 +593,7 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 	else if (wasFrozen && !newFrozen)
 	{
 		m_bFrozen = false;
-		m_frozenAmount = max(1.0f, netAmount);
+		m_frozenAmount = 1.0f;  // 常に1.0に設定
 		m_bFullyMelted = true;
 		m_targetMeltPlayer = 0;
 
@@ -563,18 +602,19 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 			m_pIceBlock->SetMeltAmount(m_frozenAmount);
 		}
 
-		NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 凍結解除 amount=%.3f",
-			m_clientId, m_frozenAmount);
+		NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 凍結解除 amount=1.0（固定）",
+			m_clientId);
 	}
 	// ★★★ 解凍完了後の状態維持 ★★★
-	else if (!wasFrozen && !newFrozen && netAmount >= 1.0f)
+	else if (!wasFrozen && !newFrozen)
 	{
-		if (netAmount > m_frozenAmount)
+		// 解凍完了状態を維持
+		if (m_frozenAmount < 1.0f)
 		{
-			m_frozenAmount = netAmount;
+			m_frozenAmount = 1.0f;
 			if (m_pIceBlock)
 			{
-				m_pIceBlock->SetMeltAmount(m_frozenAmount);
+				m_pIceBlock->SetMeltAmount(1.0f);
 			}
 		}
 	}
