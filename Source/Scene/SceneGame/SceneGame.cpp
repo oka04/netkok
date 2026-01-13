@@ -692,7 +692,6 @@ void SceneGame::CheckBreathHitPlayers()
 		}
 	}
 }
-
 void SceneGame::ProcessPlayerMelting()
 {
 	if (!m_bIsHost) return;
@@ -751,6 +750,7 @@ void SceneGame::ProcessPlayerMelting()
 	}
 
 	bool stateChanged = false;
+	bool completelyMelted = false;
 
 	// ★★★ 各ターゲットの解凍処理 ★★★
 	for (auto& pair : targetToHelpers)
@@ -827,9 +827,11 @@ void SceneGame::ProcessPlayerMelting()
 			// ★★★ 完全解凍チェック ★★★
 			if (newAmount >= 1.0f)
 			{
+				// ★★★ 重要: まずfrozenAmountを1.0に設定してから、frozenをfalseにする ★★★
 				target->SetFrozenAmount(1.0f);
-				target->SetFrozen(false); // ★★★ これでamountが1.0に保たれる ★★★
+				target->SetFrozen(false);
 				stateChanged = true;
+				completelyMelted = true;
 
 				std::string helperList = "";
 				for (size_t i = 0; i < helpers.size(); i++)
@@ -866,14 +868,26 @@ void SceneGame::ProcessPlayerMelting()
 		}
 	}
 
-	// ★★★ 状態変化があった場合、即座にブロードキャスト ★★★
-	if (stateChanged && m_pServer)
+	// ★★★ 完全解凍時は即座にブロードキャスト ★★★
+	if (completelyMelted && m_pServer)
 	{
 		m_pServer->BroadcastWorldState();
 		m_lastWorldBroadcast = timeGetTime();
+		NET_LOG_F("[ProcessPlayerMelting] 完全解凍により即座にワールド状態をブロードキャスト");
+	}
+	// ★★★ 解凍進行中も定期的にブロードキャスト（100ms間隔）★★★
+	else if (stateChanged && m_pServer)
+	{
+		static DWORD lastMeltingBroadcast = 0;
+		now = timeGetTime();
+		if (now - lastMeltingBroadcast > 100)
+		{
+			m_pServer->BroadcastWorldState();
+			m_lastWorldBroadcast = now;
+			lastMeltingBroadcast = now;
+		}
 	}
 }
-
 void SceneGame::SyncToServer()
 {
 	if (!m_pLocalPlayer || !m_pClient) return;
@@ -980,8 +994,8 @@ void SceneGame::ReceiveWorldState()
 							float localAmount = localRunner->GetFrozenAmount();
 							float serverAmount = ps.frozenAmount;
 
-							// ★★★ サーバーの値が大きい場合のみ更新 ★★★
-							if (serverAmount > localAmount)
+							// ★★★ サーバーの値が大きい場合のみ更新（解凍進行）★★★
+							if (serverAmount > localAmount + 0.001f)
 							{
 								localRunner->SetFrozenAmount(serverAmount);
 
