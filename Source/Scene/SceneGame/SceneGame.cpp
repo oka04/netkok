@@ -386,157 +386,38 @@ void SceneGame::UpdateLocalPlayer()
 {
 	if (!m_pLocalPlayer) return;
 
-	static bool lastFrozenState = false;
-	static float lastFrozenAmount = 0.0f;
-	static uint32_t lastMeltTarget = 0;
-	static DWORD lastTargetSyncTime = 0;
-	static DWORD lastAmountSyncTime = 0;
+	m_pLocalPlayer->Update(m_pEngine, m_map, m_camera, m_light, m_deltaTime);
 
+	// ★★★ ローカルプレイヤーがRunnerの場合、解凍ターゲットを更新 ★★★
 	if (m_localRole == ROLE_RUNNER)
 	{
-		Runner* runner = dynamic_cast<Runner*>(m_pLocalPlayer);
-		if (runner)
+		Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
+		if (localRunner && !localRunner->IsFrozen())
 		{
-			runner->Update(m_pEngine, m_map, m_camera, m_light, m_deltaTime);
+			// プレイヤーリストを作成
+			std::vector<std::pair<uint32_t, CharacterBase*>> playerList;
 
-			// ★★★ 凍結していない場合のみ、解凍ターゲットを更新 ★★★
-			if (!runner->IsFrozen())
+			// リモートプレイヤーを追加
+			for (auto& kv : m_players)
 			{
-				// ★★★ プレイヤーリストを作成（自分以外のすべてのプレイヤー）★★★
-				std::vector<std::pair<uint32_t, CharacterBase*>> playerList;
-
-				// リモートプレイヤーを追加
-				for (auto& kv : m_players)
+				if (kv.first != m_localClientId && kv.second)
 				{
-					if (kv.first != m_localClientId && kv.second)
-					{
-						playerList.push_back(kv);
-					}
-				}
-
-				// ★★★ デバッグ: プレイヤーリストの内容を確認 ★★★
-				static DWORD lastListLog = 0;
-				DWORD now = timeGetTime();
-				if (now - lastListLog > 2000)
-				{
-					NET_LOG_F("[UpdateLocalPlayer] プレイヤーリスト: 総数=%d", (int)playerList.size());
-					for (auto& p : playerList)
-					{
-						Runner* r = dynamic_cast<Runner*>(p.second);
-						if (r)
-						{
-							NET_LOG_F("  Player[%u]: Frozen=%d Amount=%.2f Pos=(%.1f,%.1f,%.1f)",
-								p.first, r->IsFrozen(), r->GetFrozenAmount(),
-								r->GetPosition().x, r->GetPosition().y, r->GetPosition().z);
-						}
-					}
-					lastListLog = now;
-				}
-
-				uint32_t oldTarget = runner->GetMeltTargetId();
-				runner->UpdateMeltTarget(playerList);
-				uint32_t newTarget = runner->GetMeltTargetId();
-
-				// ★★★ ターゲット変化のログ ★★★
-				if (oldTarget != newTarget)
-				{
-					NET_LOG_F("[SceneGame::UpdateLocalPlayer] 解凍ターゲット変化: %u -> %u",
-						oldTarget, newTarget);
-				}
-
-				bool currentFrozen = runner->IsFrozen();
-				float currentAmount = runner->GetFrozenAmount();
-
-				bool needsSync = false;
-
-				// ★★★ 凍結状態の変化 ★★★
-				if (lastFrozenState != currentFrozen)
-				{
-					NET_LOG_F("[SceneGame::UpdateLocalPlayer] ローカルプレイヤー[%u]の凍結状態変化: %s -> %s",
-						m_localClientId,
-						lastFrozenState ? "凍結" : "通常",
-						currentFrozen ? "凍結" : "通常");
-					needsSync = true;
-					lastFrozenState = currentFrozen;
-					lastFrozenAmount = currentAmount;
-					lastTargetSyncTime = now;
-					lastAmountSyncTime = now;
-				}
-				// ★★★ 凍結量の変化 ★★★
-				else if (currentFrozen && abs(lastFrozenAmount - currentAmount) > 0.05f)
-				{
-					if (now - lastAmountSyncTime > 100)
-					{
-						needsSync = true;
-						lastFrozenAmount = currentAmount;
-						lastAmountSyncTime = now;
-					}
-				}
-
-				// ★★★ 解凍ターゲットの変化または継続 ★★★
-				if (oldTarget != newTarget)
-				{
-					needsSync = true;
-					lastMeltTarget = newTarget;
-					lastTargetSyncTime = now;
-				}
-				else if (newTarget != 0)
-				{
-					// ★★★ ターゲット継続中は定期的に送信（100ms間隔）★★★
-					if (now - lastTargetSyncTime > 100)
-					{
-						needsSync = true;
-						lastTargetSyncTime = now;
-					}
-				}
-
-				// ★★★ 必要に応じてサーバーに同期 ★★★
-				if (needsSync)
-				{
-					SyncToServer();
+					playerList.push_back(kv);
 				}
 			}
-			else
-			{
-				// ★★★ 凍結中の場合、ターゲットをクリア ★★★
-				if (runner->GetMeltTargetId() != 0)
-				{
-					NET_LOG_F("[SceneGame::UpdateLocalPlayer] 凍結中のためターゲットをクリア");
-				}
-			}
-		}
-	}
-	else if (m_localRole == ROLE_CHASER)
-	{
-		Chaser* chaser = dynamic_cast<Chaser*>(m_pLocalPlayer);
-		if (chaser)
-		{
-			chaser->Update(m_pEngine, m_map, m_camera, m_light, m_deltaTime);
-			chaser->UpdateLight(m_pEngine);
-		}
-		}
 
-#if _DEBUG
-	switch (d_viewPointCount)
+			// 解凍ターゲットを更新
+			localRunner->UpdateMeltTarget(playerList);
+		}
+	}
+
+	DWORD now = timeGetTime();
+	if (now - m_lastNetworkSend >= f_networkSendInterval)
 	{
-	case VIEW_GAME:
-		m_bFirstPerson = true;
-		break;
-	case VIEW_FIRST:
-		if (m_pLocalPlayer)
-			m_pLocalPlayer->SetFirstPersonCamera(m_pEngine, m_camera);
-		m_bFirstPerson = true;
-		break;
-	case VIEW_THIRD:
-		if (m_pLocalPlayer)
-			m_pLocalPlayer->SetThirdPersonFromBehind(m_pEngine, m_camera, m_map);
-		m_bFirstPerson = false;
-		break;
+		SyncToServer();
+		m_lastNetworkSend = now;
 	}
-#else
-	m_bFirstPerson = true;
-#endif
-	}
+}
 void SceneGame::UpdateRemotePlayers()
 {
 	static DWORD lastLog = 0;
