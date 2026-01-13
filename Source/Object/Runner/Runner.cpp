@@ -404,49 +404,85 @@ void Runner::UpdateFrozenState(float deltaTime)
 
 void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBase*>>& players)
 {
+	// ★★★ 自分が凍結中はターゲットをクリア ★★★
 	if (m_bFrozen)
 	{
 		if (m_targetMeltPlayer != 0)
 		{
 			m_targetMeltPlayer = 0;
+			NET_LOG_F("[Runner::UpdateMeltTarget] ID=%u 自分が凍結中なのでターゲットクリア", m_clientId);
 		}
 		return;
 	}
 
+	// ★★★ 左クリックの状態を確認 ★★★
 	bool isAttackPressed = (m_keyFlag & ATTACK_KEY) != 0;
 
+	static DWORD lastClickLog = 0;
+	DWORD now = timeGetTime();
+	if (isAttackPressed && now - lastClickLog > 1000)
+	{
+		NET_LOG_F("[Runner::UpdateMeltTarget] ★★★ ID=%u 左クリック検出！ KeyFlag=0x%02X ★★★",
+			m_clientId, m_keyFlag);
+		lastClickLog = now;
+	}
+
+	// ★★★ 左クリックが離されたらターゲットクリア ★★★
 	if (!isAttackPressed)
 	{
 		if (m_targetMeltPlayer != 0)
 		{
+			NET_LOG_F("[Runner::UpdateMeltTarget] ID=%u 左クリックを離した - 解凍中止 (ターゲット=%u)",
+				m_clientId, m_targetMeltPlayer);
 			m_targetMeltPlayer = 0;
 		}
 		return;
 	}
 
+	// ★★★ 範囲内の凍結したRunnerを探す ★★★
 	Runner* closestFrozenRunner = nullptr;
 	float closestDistance = f_meltRange;
 	uint32_t closestId = 0;
+
+	int checkedCount = 0;
+	int frozenCount = 0;
 
 	for (const auto& pair : players)
 	{
 		uint32_t id = pair.first;
 		CharacterBase* pChar = pair.second;
 
-		if (id == m_clientId || !pChar)
+		// ★★★ 自分はスキップ ★★★
+		if (id == m_clientId)
+		{
+			continue;
+		}
+
+		if (!pChar)
 		{
 			continue;
 		}
 
 		Runner* pRunner = dynamic_cast<Runner*>(pChar);
-		if (!pRunner || !pRunner->IsFrozen())
+		if (!pRunner)
 		{
 			continue;
 		}
 
+		checkedCount++;
+
+		// ★★★ 凍結していないプレイヤーはスキップ ★★★
+		if (!pRunner->IsFrozen())
+		{
+			continue;
+		}
+
+		frozenCount++;
+
 		D3DXVECTOR3 diff = pRunner->GetPosition() - m_position;
 		float distance = D3DXVec3Length(&diff);
 
+		// ★★★ 範囲内で最も近いプレイヤーを記憶 ★★★
 		if (distance < closestDistance)
 		{
 			closestDistance = distance;
@@ -455,26 +491,30 @@ void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBas
 		}
 	}
 
-	// ターゲットの更新（静かに）
+	// ★★★ デバッグログ ★★★
+	if (now - lastClickLog > 1000 && isAttackPressed)
+	{
+		NET_LOG_F("[Runner::UpdateMeltTarget] ID=%u 検索結果: チェック=%d 凍結=%d 最短距離=%.2f 最短ID=%u",
+			m_clientId, checkedCount, frozenCount, closestDistance, closestId);
+	}
+
+	// ★★★ ターゲットを設定 ★★★
 	if (closestFrozenRunner)
 	{
 		if (m_targetMeltPlayer != closestId)
 		{
 			m_targetMeltPlayer = closestId;
-
-			// デバッグログ（頻度を下げる）
-			static DWORD lastLog = 0;
-			DWORD now = timeGetTime();
-			if (now - lastLog > 500)
-			{
-				NET_LOG_F("[Runner::UpdateMeltTarget] ID=%u -> ターゲット=%u Distance=%.2f",
-					m_clientId, closestId, closestDistance);
-				lastLog = now;
-			}
+			NET_LOG_F("[Runner] ★★★ID=%u が ID=%u の解凍ターゲットに設定★★★ Distance=%.2f",
+				m_clientId, closestId, closestDistance);
 		}
 	}
 	else
 	{
+		if (m_targetMeltPlayer != 0)
+		{
+			NET_LOG_F("[Runner::UpdateMeltTarget] ID=%u 範囲内に凍結プレイヤーなし - 解凍中止 (前回ターゲット=%u)",
+				m_clientId, m_targetMeltPlayer);
+		}
 		m_targetMeltPlayer = 0;
 	}
 }

@@ -402,13 +402,35 @@ void SceneGame::UpdateLocalPlayer()
 			// ★★★ 凍結していない場合のみ、解凍ターゲットを更新 ★★★
 			if (!runner->IsFrozen())
 			{
+				// ★★★ プレイヤーリストを作成（自分以外のすべてのプレイヤー）★★★
 				std::vector<std::pair<uint32_t, CharacterBase*>> playerList;
+
+				// リモートプレイヤーを追加
 				for (auto& kv : m_players)
 				{
-					if (m_playerRoles[kv.first] == ROLE_RUNNER)
+					if (kv.first != m_localClientId && kv.second)
 					{
 						playerList.push_back(kv);
 					}
+				}
+
+				// ★★★ デバッグ: プレイヤーリストの内容を確認 ★★★
+				static DWORD lastListLog = 0;
+				DWORD now = timeGetTime();
+				if (now - lastListLog > 2000)
+				{
+					NET_LOG_F("[UpdateLocalPlayer] プレイヤーリスト: 総数=%d", (int)playerList.size());
+					for (auto& p : playerList)
+					{
+						Runner* r = dynamic_cast<Runner*>(p.second);
+						if (r)
+						{
+							NET_LOG_F("  Player[%u]: Frozen=%d Amount=%.2f Pos=(%.1f,%.1f,%.1f)",
+								p.first, r->IsFrozen(), r->GetFrozenAmount(),
+								r->GetPosition().x, r->GetPosition().y, r->GetPosition().z);
+						}
+					}
+					lastListLog = now;
 				}
 
 				uint32_t oldTarget = runner->GetMeltTargetId();
@@ -425,7 +447,6 @@ void SceneGame::UpdateLocalPlayer()
 				bool currentFrozen = runner->IsFrozen();
 				float currentAmount = runner->GetFrozenAmount();
 
-				DWORD now = timeGetTime();
 				bool needsSync = false;
 
 				// ★★★ 凍結状態の変化 ★★★
@@ -493,7 +514,7 @@ void SceneGame::UpdateLocalPlayer()
 			chaser->Update(m_pEngine, m_map, m_camera, m_light, m_deltaTime);
 			chaser->UpdateLight(m_pEngine);
 		}
-	}
+		}
 
 #if _DEBUG
 	switch (d_viewPointCount)
@@ -515,7 +536,7 @@ void SceneGame::UpdateLocalPlayer()
 #else
 	m_bFirstPerson = true;
 #endif
-		}
+	}
 void SceneGame::UpdateRemotePlayers()
 {
 	static DWORD lastLog = 0;
@@ -688,6 +709,15 @@ void SceneGame::ProcessPlayerMelting()
 			if (targetId != 0)
 			{
 				targetToHelpers[targetId].push_back(m_localClientId);
+
+				static DWORD lastLog = 0;
+				DWORD now = timeGetTime();
+				if (now - lastLog > 1000)
+				{
+					NET_LOG_F("[ProcessPlayerMelting] ローカルプレイヤー[%u]がターゲット[%u]を助けようとしている",
+						m_localClientId, targetId);
+					lastLog = now;
+				}
 			}
 		}
 	}
@@ -699,21 +729,17 @@ void SceneGame::ProcessPlayerMelting()
 		if (m_playerRoles[kv.first] != ROLE_RUNNER) continue;
 
 		Runner* runner = dynamic_cast<Runner*>(kv.second);
-		if (!runner)
-		{
-			continue;
-		}
+		if (!runner) continue;
 
-		// ★★★ デバッグ: 各プレイヤーの状態を確認 ★★★
 		uint32_t targetId = runner->GetMeltTargetId();
 		bool isFrozen = runner->IsFrozen();
 
 		static std::map<uint32_t, uint32_t> lastTargets;
 		static std::map<uint32_t, bool> lastFrozen;
-		DWORD now = timeGetTime();
 		static DWORD lastDebugLog = 0;
+		DWORD now = timeGetTime();
 
-		if (now - lastDebugLog > 500 ||
+		if (now - lastDebugLog > 1000 ||
 			lastTargets[kv.first] != targetId ||
 			lastFrozen[kv.first] != isFrozen)
 		{
@@ -724,7 +750,7 @@ void SceneGame::ProcessPlayerMelting()
 			}
 			lastTargets[kv.first] = targetId;
 			lastFrozen[kv.first] = isFrozen;
-			if (now - lastDebugLog > 500) lastDebugLog = now;
+			if (now - lastDebugLog > 1000) lastDebugLog = now;
 		}
 
 		if (runner->IsFrozen()) continue;
@@ -820,7 +846,6 @@ void SceneGame::ProcessPlayerMelting()
 		float oldAmount = target->GetFrozenAmount();
 		float newAmount = oldAmount + totalMeltSpeed * m_deltaTime;
 
-		// ★★★ デバッグログ: 解凍前の状態 ★★★
 		static std::map<uint32_t, float> lastLoggedAmount;
 		if (now - lastSummaryLog > 200 || abs(lastLoggedAmount[targetId] - oldAmount) > 0.05f)
 		{
@@ -852,7 +877,6 @@ void SceneGame::ProcessPlayerMelting()
 			target->SetFrozenAmount(newAmount);
 			stateChanged = true;
 
-			// ★★★ デバッグログ: 解凍進行 ★★★
 			static std::map<uint32_t, DWORD> lastMeltLog;
 			if (now - lastMeltLog[targetId] > 200)
 			{
@@ -861,7 +885,6 @@ void SceneGame::ProcessPlayerMelting()
 				lastMeltLog[targetId] = now;
 			}
 
-			// ★★★ デバッグログ: 解凍後の状態確認 ★★★
 			float verifyAmount = target->GetFrozenAmount();
 			if (abs(verifyAmount - newAmount) > 0.001f)
 			{
