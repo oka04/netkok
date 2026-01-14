@@ -810,7 +810,7 @@ void SceneGame::ReceiveWorldState()
 					continue;
 				}
 
-				// クライアントの場合、サーバーの状態を反映
+				// ★★★ クライアントの場合、凍結状態のみ反映（meltTargetは上書きしない）★★★
 				if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
 				{
 					Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
@@ -821,50 +821,63 @@ void SceneGame::ReceiveWorldState()
 						float localAmount = localRunner->GetFrozenAmount();
 						float serverAmount = ps.frozenAmount;
 
-						// ★★★ 完全解凍の優先処理 ★★★
+						// ★★★ 凍結解除 ★★★
 						if (wasFrozen && !newFrozen)
 						{
-							// 凍結解除
 							localRunner->SetFrozen(false);
 							localRunner->SetFrozenAmount(1.0f);
-							NET_LOG_F("[SceneGame::ReceiveWorldState] ★★★ローカルプレイヤー[%u]の凍結解除！★★★ frozen=%d amount=%.3f",
-								m_localClientId, ps.frozen, ps.frozenAmount);
+							if (localRunner->GetIceBlock())
+							{
+								localRunner->GetIceBlock()->SetMeltAmount(1.0f);
+							}
+							NET_LOG_F("[SceneGame::ReceiveWorldState] ★★★クライアント[%u]凍結解除！★★★",
+								m_localClientId);
 						}
-						// 新規凍結
+						// ★★★ 新規凍結 ★★★
 						else if (!wasFrozen && newFrozen)
 						{
 							localRunner->SetFrozen(true);
 							localRunner->SetFrozenAmount(serverAmount);
-							NET_LOG_F("[SceneGame::ReceiveWorldState] ★★★ローカルプレイヤー[%u]が凍結された！★★★",
-								m_localClientId);
+							if (localRunner->GetIceBlock())
+							{
+								localRunner->GetIceBlock()->SetMeltAmount(serverAmount);
+							}
+							NET_LOG_F("[SceneGame::ReceiveWorldState] クライアント[%u]凍結された amount=%.3f",
+								m_localClientId, serverAmount);
 						}
-						// 凍結継続中
+						// ★★★ 凍結継続中 - 解凍進行を反映 ★★★
 						else if (wasFrozen && newFrozen)
 						{
-							// サーバーの値が大きい場合のみ更新（解凍進行）
-							if (serverAmount > localAmount + 0.001f)
+							if (serverAmount != localAmount)
 							{
 								localRunner->SetFrozenAmount(serverAmount);
+								if (localRunner->GetIceBlock())
+								{
+									localRunner->GetIceBlock()->SetMeltAmount(serverAmount);
+								}
 
 								static DWORD lastUpdateLog = 0;
-								if (now - lastUpdateLog > 200)
+								if (now - lastUpdateLog > 100)
 								{
-									NET_LOG_F("[SceneGame::ReceiveWorldState] ローカルプレイヤー[%u]解凍進行: %.3f -> %.3f",
+									NET_LOG_F("[SceneGame::ReceiveWorldState] クライアント[%u]解凍進行: %.3f -> %.3f",
 										m_localClientId, localAmount, serverAmount);
 									lastUpdateLog = now;
 								}
 
-								// ★★★ 完全解凍判定を追加 ★★★
+								// ★★★ 完全解凍判定 ★★★
 								if (serverAmount >= 1.0f)
 								{
 									localRunner->SetFrozen(false);
 									localRunner->SetFrozenAmount(1.0f);
-									NET_LOG_F("[SceneGame::ReceiveWorldState] ★★★ローカルプレイヤー[%u]が完全解凍！★★★",
+									if (localRunner->GetIceBlock())
+									{
+										localRunner->GetIceBlock()->SetMeltAmount(1.0f);
+									}
+									NET_LOG_F("[SceneGame::ReceiveWorldState] ★★★クライアント[%u]完全解凍！★★★",
 										m_localClientId);
 								}
 							}
 						}
-
 					}
 				}
 				continue;

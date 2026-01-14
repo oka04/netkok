@@ -580,13 +580,14 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 		}
 	}
 
-	// ★★★ meltTargetIdの更新 ★★★
-	if (state.meltTargetId != m_targetMeltPlayer)
+	// ★★★ meltTargetIdの更新（リモートプレイヤーの場合のみ）★★★
+	// ローカルプレイヤーの場合、UpdateMeltTarget()で設定されるのでここでは上書きしない
+	if (!m_bIsLocal && state.meltTargetId != m_targetMeltPlayer)
 	{
 		static std::map<uint32_t, DWORD> lastMeltLog;
 		if (now - lastMeltLog[m_clientId] > 1000)
 		{
-			NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u meltTarget更新: %u -> %u",
+			NET_LOG_F("[Runner::UpdateFromNetwork] リモート[%u] meltTarget更新: %u -> %u",
 				m_clientId, m_targetMeltPlayer, state.meltTargetId);
 			lastMeltLog[m_clientId] = now;
 		}
