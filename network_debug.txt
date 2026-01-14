@@ -2,434 +2,1516 @@
 Network Debug Log
 ===========================================
 
-[09:12:07] ========================================
-[09:12:07] ClientManager 初期化開始
-[09:12:07] ========================================
-[09:12:07] [ClientManager] ENet初期化成功
-[09:12:07] [ClientManager] Discovery作成
-[09:12:07] [Discovery/Listener] スレッド開始
-[09:12:07] [Discovery/Listener] WSAStartup成功
-[09:12:07] [ClientManager] Discoveryリスナー起動 (ポート:12346)
-[09:12:07] [Discovery/Listener] ソケット作成成功
-[09:12:07] [Discovery/Listener] bind成功 ポート:12346
-[09:12:07] [Discovery/Listener] 受信ループ開始
-[09:12:12] [Discovery/Listener] 生存確認 ループ:50
-[09:12:12] ========================================
-[09:12:12] [SceneSelectHost] サーバー作成開始: NEMU
-[09:12:12] [Client] 切断
-[09:12:12] [ServerManager] ホスト名設定: Player635
-[09:12:12] [SceneSelectHost] サーバー名設定: NEMU
-[09:12:12] [SceneSelectHost] ホスト名設定: Player635
-[09:12:12] [Discovery/Advertiser] スレッド開始
-[09:12:12] [Discovery/Advertiser] WSAStartup成功
-[09:12:12] [ServerManager] サーバー起動: ポート=12651
-[09:12:12] [Discovery/Advertiser] ソケット作成成功
-[09:12:12] [Discovery/Advertiser] SO_BROADCAST設定成功
-[09:12:12] [Discovery/Advertiser] ブロードキャストループ開始
-[09:12:12] [SceneSelectHost] サーバー起動成功: ポート=12651
-[09:12:12] [Discovery/Advertiser] 送信データ: port=12651 player=1/8 state=0 name='NEMU'
-[09:12:12] [Discovery/Advertiser] ブロードキャスト送信 #1: サイズ=22 bytes (port=12651)
-[09:12:12] [Discovery/Listener] パケット受信! サイズ:22 bytes
-[09:12:12] [Discovery/Listener] マジック一致確認
-[09:12:12] [Discovery/Listener] プロトコルバージョン: 256
-[09:12:12] [Discovery/Listener] ポート（変換後）: 12651
-[09:12:12] [Discovery/Listener] プレイヤー数: 1
-[09:12:12] [Discovery/Listener] 最大プレイヤー数: 8
-[09:12:12] [ClientManager] ConnectToServer: 127.0.0.1:12651
-[09:12:12] [Discovery/Listener] ステート: 0
-[09:12:12] [Discovery/Listener] 名前の長さ: 4
-[09:12:12] [Discovery/Listener] サーバー名: 'NEMU'
-[09:12:12] [Discovery/Listener] ★サーバー検出★: NEMU @ 172.20.145.8:12651 (1/8) state=0
-[09:12:12] [ClientManager] クライアントホスト作成成功
-[09:12:12] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[09:12:12] [ClientManager] ホスト接続 - サーバー名は接続後に取得
-[09:12:12] [ClientManager] 接続要求送信 (ホスト判定: true)
-[09:12:12] [SceneSelectHost] ロビーに遷移
-[09:12:12] [SceneLobby] ホストとしてロビー開始: サーバー名='NEMU'
-[09:12:12] [SceneLobby] Start完了
-[09:12:12] [ClientManager] サーバー接続成功（ENET_EVENT_TYPE_CONNECT受信）
-[09:12:12] [ClientManager] JOIN送信: Player635
-[09:12:12] [ClientManager] JOIN送信完了: Player635
-[09:12:12] [ServerManager] クライアント接続: ID=1 (現在1人)
-[09:12:12] [ServerManager] ProcessJoin: データ長=10
-[09:12:12] [ServerManager] 名前長さ: 9
-[09:12:12] [ServerManager] 受信した名前: 'Player635'
-[09:12:12] [ServerManager] ホストのJOIN受信: Player635 (ID=1)
-[09:12:12] [ServerManager] JoinAck送信: ClientID=1
-[09:12:12] [ServerManager] 新規参加者にホスト情報を送信: Player635 Pos=(0.0,0.0,0.0)
-[09:12:12] [ServerManager] 新規参加者情報をブロードキャスト: Player635 (ID=1)
-[09:12:12] [ServerManager] ロビー更新をブロードキャスト
-[09:12:12] [ServerManager] BroadcastLobbyUpdate: 1 人
-[09:12:12] [ServerManager] プレイヤー1: 'Player635' (長さ:9)
-[09:12:12] [ServerManager] 送信データサイズ: 12 bytes
-[09:12:12] [ClientManager] クライアントID割り当て: 1
-[09:12:12] [ClientManager] プレイヤー生成通知: ID=1, Name=Player635
-[09:12:12] [ClientManager] プレイヤー生成通知: ID=1, Name=Player635
-[09:12:12] [ClientManager] ProcessLobbyUpdate: データ長=12
-[09:12:12] [ClientManager] プレイヤー数: 1
-[09:12:12] [ClientManager] プレイヤー1 名前長さ: 9
-[09:12:12] [ClientManager] プレイヤー1: 'Player635'
-[09:12:12] [ClientManager] ロビー更新完了: 1 人
-[09:12:17] [Discovery/Listener] 生存確認 ループ:100
-[09:12:17] [Discovery/Advertiser] 送信データ: port=12651 player=1/8 state=0 name='NEMU'
-[09:12:17] [Discovery/Advertiser] ブロードキャスト送信 #2: サイズ=22 bytes (port=12651)
-[09:12:17] [Discovery/Listener] パケット受信! サイズ:22 bytes
-[09:12:17] [Discovery/Listener] マジック一致確認
-[09:12:17] [Discovery/Listener] プロトコルバージョン: 256
-[09:12:17] [Discovery/Listener] ポート（変換後）: 12651
-[09:12:17] [Discovery/Listener] プレイヤー数: 1
-[09:12:17] [Discovery/Listener] 最大プレイヤー数: 8
-[09:12:17] [Discovery/Listener] ステート: 0
-[09:12:17] [Discovery/Listener] 名前の長さ: 4
-[09:12:17] [Discovery/Listener] サーバー名: 'NEMU'
-[09:12:17] [Discovery/Listener] ★サーバー検出★: NEMU @ 172.20.145.8:12651 (1/8) state=0
-[09:12:17] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[09:12:20] [ServerManager] クライアント接続: ID=2 (現在2人)
-[09:12:20] [ServerManager] ProcessJoin: データ長=10
-[09:12:20] [ServerManager] 名前長さ: 9
-[09:12:20] [ServerManager] 受信した名前: 'Player129'
-[09:12:20] [ServerManager] クライアントのJOIN受信: Player129 (ID=2)
-[09:12:20] [ServerManager] JoinAck送信: ClientID=2
-[09:12:20] [ServerManager] 新規参加者にホスト情報を送信: Player635 Pos=(0.0,0.0,0.0)
-[09:12:20] [ServerManager] 新規参加者情報をブロードキャスト: Player129 (ID=2)
-[09:12:20] [ServerManager] ロビー更新をブロードキャスト
-[09:12:20] [ServerManager] BroadcastLobbyUpdate: 2 人
-[09:12:20] [ServerManager] プレイヤー1: 'Player635' (長さ:9)
-[09:12:20] [ServerManager] プレイヤー2: 'Player129' (長さ:9)
-[09:12:20] [ServerManager] 送信データサイズ: 22 bytes
-[09:12:20] [ClientManager] プレイヤー生成通知: ID=2, Name=Player129
-[09:12:20] [ClientManager] ProcessLobbyUpdate: データ長=22
-[09:12:20] [ClientManager] プレイヤー数: 2
-[09:12:20] [ClientManager] プレイヤー1 名前長さ: 9
-[09:12:20] [ClientManager] プレイヤー1: 'Player635'
-[09:12:20] [ClientManager] プレイヤー2 名前長さ: 9
-[09:12:20] [ClientManager] プレイヤー2: 'Player129'
-[09:12:20] [ClientManager] ロビー更新完了: 2 人
-[09:12:22] [Discovery/Listener] 生存確認 ループ:150
-[09:12:22] [Discovery/Advertiser] 送信データ: port=12651 player=2/8 state=0 name='NEMU'
-[09:12:22] [Discovery/Advertiser] ブロードキャスト送信 #3: サイズ=22 bytes (port=12651)
-[09:12:22] [Discovery/Listener] パケット受信! サイズ:22 bytes
-[09:12:22] [Discovery/Listener] マジック一致確認
-[09:12:22] [Discovery/Listener] プロトコルバージョン: 256
-[09:12:22] [Discovery/Listener] ポート（変換後）: 12651
-[09:12:22] [Discovery/Listener] プレイヤー数: 2
-[09:12:22] [Discovery/Listener] 最大プレイヤー数: 8
-[09:12:22] [Discovery/Listener] ステート: 0
-[09:12:22] [Discovery/Listener] 名前の長さ: 4
-[09:12:22] [Discovery/Listener] サーバー名: 'NEMU'
-[09:12:22] [Discovery/Listener] ★サーバー検出★: NEMU @ 172.20.145.8:12651 (2/8) state=0
-[09:12:22] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[09:12:27] [Discovery/Listener] 生存確認 ループ:200
-[09:12:27] [Discovery/Advertiser] 送信データ: port=12651 player=2/8 state=0 name='NEMU'
-[09:12:27] [Discovery/Advertiser] ブロードキャスト送信 #4: サイズ=22 bytes (port=12651)
-[09:12:27] [Discovery/Listener] パケット受信! サイズ:22 bytes
-[09:12:27] [Discovery/Listener] マジック一致確認
-[09:12:27] [Discovery/Listener] プロトコルバージョン: 256
-[09:12:27] [Discovery/Listener] ポート（変換後）: 12651
-[09:12:27] [Discovery/Listener] プレイヤー数: 2
-[09:12:27] [Discovery/Listener] 最大プレイヤー数: 8
-[09:12:27] [Discovery/Listener] ステート: 0
-[09:12:27] [Discovery/Listener] 名前の長さ: 4
-[09:12:27] [Discovery/Listener] サーバー名: 'NEMU'
-[09:12:27] [Discovery/Listener] ★サーバー検出★: NEMU @ 172.20.145.8:12651 (2/8) state=0
-[09:12:27] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[09:12:29] [ServerManager] クライアント接続: ID=3 (現在3人)
-[09:12:29] [ServerManager] ProcessJoin: データ長=10
-[09:12:29] [ServerManager] 名前長さ: 9
-[09:12:29] [ServerManager] 受信した名前: 'Player694'
-[09:12:29] [ServerManager] クライアントのJOIN受信: Player694 (ID=3)
-[09:12:29] [ServerManager] JoinAck送信: ClientID=3
-[09:12:29] [ServerManager] 新規参加者にホスト情報を送信: Player635 Pos=(0.0,0.0,0.0)
-[09:12:29] [ServerManager] 新規参加者に既存プレイヤー情報を送信: Player129 (ID=2) Pos=(0.0,0.0,0.0)
-[09:12:29] [ServerManager] 新規参加者情報をブロードキャスト: Player694 (ID=3)
-[09:12:29] [ServerManager] ロビー更新をブロードキャスト
-[09:12:29] [ServerManager] BroadcastLobbyUpdate: 3 人
-[09:12:29] [ServerManager] プレイヤー1: 'Player635' (長さ:9)
-[09:12:29] [ServerManager] プレイヤー2: 'Player129' (長さ:9)
-[09:12:29] [ServerManager] プレイヤー3: 'Player694' (長さ:9)
-[09:12:29] [ServerManager] 送信データサイズ: 32 bytes
-[09:12:29] [ClientManager] プレイヤー生成通知: ID=3, Name=Player694
-[09:12:29] [ClientManager] ProcessLobbyUpdate: データ長=32
-[09:12:29] [ClientManager] プレイヤー数: 3
-[09:12:29] [ClientManager] プレイヤー1 名前長さ: 9
-[09:12:29] [ClientManager] プレイヤー1: 'Player635'
-[09:12:29] [ClientManager] プレイヤー2 名前長さ: 9
-[09:12:29] [ClientManager] プレイヤー2: 'Player129'
-[09:12:29] [ClientManager] プレイヤー3 名前長さ: 9
-[09:12:29] [ClientManager] プレイヤー3: 'Player694'
-[09:12:29] [ClientManager] ロビー更新完了: 3 人
-[09:12:30] [SceneLobby] ゲーム開始ボタン押下
-[09:12:30] [ServerManager] 役割割り当て開始
-[09:12:30] [ServerManager] ホストをリストに追加: ID=1
-[09:12:30] [ServerManager] クライアントをリストに追加: ID=2 Name=Player129
-[09:12:30] [ServerManager] クライアントをリストに追加: ID=3 Name=Player694
-[09:12:30] [ServerManager] 総プレイヤー数: 3
-[09:12:30] [ServerManager] 総人数=3 鬼=1 逃げる側=2
-[09:12:30] [ServerManager] シャッフル後のID順:
-[09:12:30]   位置0: ID=3
-[09:12:30]   位置1: ID=1
-[09:12:30]   位置2: ID=2
-[09:12:30] [ServerManager] クライアント Player694 (ID=3) の役割: 鬼
-[09:12:30] [ServerManager] ホスト(ID=1 Name=Player635)の役割: 逃げる側
-[09:12:30] [ServerManager] クライアント Player635 (ID=1) の役割: 逃げる側
-[09:12:30] [ServerManager] クライアント Player129 (ID=2) の役割: 逃げる側
-[09:12:30] [ServerManager] 役割割り当て完了
-[09:12:30] [ServerManager] 割り当て結果確認: 鬼=1 逃げる側=2
-[09:12:30] [ServerManager] 役割割り当てをブロードキャスト
-[09:12:30] [ServerManager] ホスト(ID=1)の役割送信: 逃げる側
-[09:12:30] [ServerManager] クライアント Player635 (ID=1)の役割送信: 逃げる側
-[09:12:30] [ServerManager] クライアント Player129 (ID=2)の役割送信: 逃げる側
-[09:12:30] [ServerManager] クライアント Player694 (ID=3)の役割送信: 鬼
-[09:12:30] [ServerManager] 役割割り当てブロードキャスト完了
-[09:12:30] [ServerManager] 役割割り当てをブロードキャスト
-[09:12:30] [ServerManager] ホスト(ID=1)の役割送信: 逃げる側
-[09:12:30] [ServerManager] クライアント Player635 (ID=1)の役割送信: 逃げる側
-[09:12:30] [ServerManager] クライアント Player129 (ID=2)の役割送信: 逃げる側
-[09:12:30] [ServerManager] クライアント Player694 (ID=3)の役割送信: 鬼
-[09:12:30] [ServerManager] 役割割り当てブロードキャスト完了
-[09:12:30] [ServerManager] 役割割り当てをブロードキャスト
-[09:12:30] [ServerManager] ホスト(ID=1)の役割送信: 逃げる側
-[09:12:30] [ServerManager] クライアント Player635 (ID=1)の役割送信: 逃げる側
-[09:12:30] [ServerManager] クライアント Player129 (ID=2)の役割送信: 逃げる側
-[09:12:30] [ServerManager] クライアント Player694 (ID=3)の役割送信: 鬼
-[09:12:30] [ServerManager] 役割割り当てブロードキャスト完了
-[09:12:30] [ServerManager] 役割割り当て送信完了（3回送信）
-[09:12:30] [ServerManager] ゲーム開始 - 役割割り当て済み
-[09:12:30] [ClientManager] 自分の役割が決定: 逃げる側 (ID=1)
-[09:12:30] [ClientManager] 自分の役割が決定: 逃げる側 (ID=1)
-[09:12:30] [ClientManager] 他プレイヤーの役割: ID=2 逃げる側
-[09:12:30] [ClientManager] 他プレイヤーの役割: ID=3 鬼
-[09:12:30] [ClientManager] 自分の役割が決定: 逃げる側 (ID=1)
-[09:12:30] [ClientManager] 自分の役割が決定: 逃げる側 (ID=1)
-[09:12:30] [ClientManager] 他プレイヤーの役割: ID=2 逃げる側
-[09:12:30] [ClientManager] 他プレイヤーの役割: ID=3 鬼
-[09:12:30] [ClientManager] 自分の役割が決定: 逃げる側 (ID=1)
-[09:12:30] [ClientManager] 自分の役割が決定: 逃げる側 (ID=1)
-[09:12:30] [ClientManager] 他プレイヤーの役割: ID=2 逃げる側
-[09:12:30] [ClientManager] 他プレイヤーの役割: ID=3 鬼
-[09:12:30] [ClientManager] ゲーム開始通知受信
-[09:12:30] [SceneLobby] ゲーム開始 - ゲームシーンへ遷移
-[09:12:31] [Map::DrawMap] ライト数: 0 シャドウマップ数: -1
-[09:12:31] [SceneGame::Initialize] ホストとして初期化: ClientID=1
-[09:12:31] [SceneGame] Initialize完了: IsHost=1, ClientID=1
-[09:12:31] [SceneGame] 初期化完了 - 役割割り当て待機中
-[09:12:31] [SceneGame] 役割受信: ID=1 Role=逃げる側
-[09:12:31] [SceneGame] ローカルプレイヤー即座に生成: Role=逃げる側
-[09:12:31] [SceneGame] Runnerを生成: ID=1, Name=Player635
-[09:12:32] [Discovery/Listener] 生存確認 ループ:250
-[09:12:32] [Discovery/Advertiser] 送信データ: port=12651 player=3/8 state=1 name='NEMU'
-[09:12:32] [Discovery/Advertiser] ブロードキャスト送信 #5: サイズ=22 bytes (port=12651)
-[09:12:32] [Discovery/Listener] パケット受信! サイズ:22 bytes
-[09:12:32] [Discovery/Listener] マジック一致確認
-[09:12:32] [Discovery/Listener] プロトコルバージョン: 256
-[09:12:32] [Discovery/Listener] ポート（変換後）: 12651
-[09:12:32] [Discovery/Listener] プレイヤー数: 3
-[09:12:32] [Discovery/Listener] 最大プレイヤー数: 8
-[09:12:32] [Discovery/Listener] ステート: 1
-[09:12:32] [Discovery/Listener] 名前の長さ: 4
-[09:12:32] [Discovery/Listener] サーバー名: 'NEMU'
-[09:12:32] [Discovery/Listener] ★サーバー検出★: NEMU @ 172.20.145.8:12651 (3/8) state=1
-[09:12:32] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[09:12:33] [SceneGame] プレイヤーID設定: IsLocal=Yes, ClientID=1 (GetClientId()=1)
-[09:12:33] [SceneGame] プレイヤー生成完了: ID=1, Role=逃げる側, Pos=(7.5,0.5,72.5), IsLocal=Yes
-[09:12:33] [SceneGame] プレイヤーのGetClientId()=1
-[09:12:33] [SceneGame] 現在の役割マップ: 総数=1
-[09:12:33]   ID=1 -> 逃げる側
-[09:12:33] [SceneGame] ローカルプレイヤー生成完了: m_clientId=1, GetClientId()=1
-[09:12:33] [Runner::Update] ID=1 通常状態: Frozen=0 Amount=0.000 Speed=0.000
-[09:12:33] [SceneGame] 初期同期完了（役割受信）
-[09:12:33] [SceneGame] 役割受信: ID=1 Role=逃げる側
-[09:12:33] [SceneGame] 役割受信: ID=2 Role=逃げる側
-[09:12:33] [SceneGame] 役割受信: ID=3 Role=鬼
-[09:12:33] [SceneGame] 役割受信: ID=1 Role=逃げる側
-[09:12:33] [SceneGame] 役割受信: ID=1 Role=逃げる側
-[09:12:33] [SceneGame] 役割受信: ID=2 Role=逃げる側
-[09:12:33] [SceneGame] 役割受信: ID=3 Role=鬼
-[09:12:33] [SceneGame] 役割受信: ID=1 Role=逃げる側
-[09:12:33] [SceneGame] 役割受信: ID=1 Role=逃げる側
-[09:12:33] [SceneGame] 役割受信: ID=2 Role=逃げる側
-[09:12:33] [SceneGame] 役割受信: ID=3 Role=鬼
-[09:12:33] [UpdateChaserLights] ライト収集完了: 0 個
-[09:12:33] [SceneGame] リモートプレイヤー参加: ID=2, Name=Player129
-[09:12:33] [SceneGame] Runnerを生成: ID=2, Name=Player129
-[09:12:35] [SceneGame] プレイヤーID設定: IsLocal=No, ClientID=2 (GetClientId()=2)
-[09:12:35] [SceneGame] プレイヤー生成完了: ID=2, Role=逃げる側, Pos=(7.5,0.5,72.5), IsLocal=No
-[09:12:35] [SceneGame] プレイヤーのGetClientId()=2
-[09:12:35] [SceneGame] 現在の役割マップ: 総数=3
-[09:12:35]   ID=1 -> 逃げる側
-[09:12:35]   ID=2 -> 逃げる側
-[09:12:35]   ID=3 -> 鬼
-[09:12:35] [SceneGame] リモートプレイヤー参加: ID=3, Name=Player694
-[09:12:35] [SceneGame] Chaserを生成: ID=3, Name=Player694
-[09:12:35] [Chaser] シャドウマップ作成成功: ID=0
-[09:12:35] [Chaser] IceBreath生成: ID=0 Range=8.00
-[09:12:35] [SceneGame] プレイヤーID設定: IsLocal=No, ClientID=3 (GetClientId()=3)
-[09:12:35] [SceneGame] プレイヤー生成完了: ID=3, Role=鬼, Pos=(7.5,0.5,72.5), IsLocal=No
-[09:12:35] [SceneGame] プレイヤーのGetClientId()=3
-[09:12:35] [SceneGame] 現在の役割マップ: 総数=3
-[09:12:35]   ID=1 -> 逃げる側
-[09:12:35]   ID=2 -> 逃げる側
-[09:12:35]   ID=3 -> 鬼
-[09:12:35] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
-[09:12:35] [Chaser::UpdateLightMatrices] ID=3 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
-[09:12:35] [Chaser::UpdateLight] ID=3 Pos=(7.5,1.8,72.5) Dir=(-0.03,0.00,-1.00) IsLocal=No
-[09:12:35] [RenderShadowMaps] ========== 開始 ==========
-[09:12:35] [RenderShadowMaps] m_players数=3 ローカルID=1 ローカルRole=逃げる側
-[09:12:35] [RenderShadowMaps] m_playersの内容:
-[09:12:35]   Player[1]: Exists=Yes Role=逃げる側 Ptr=0C805DF0
-[09:12:35]   Player[2]: Exists=Yes Role=逃げる側 Ptr=0077D580
-[09:12:35]   Player[3]: Exists=Yes Role=鬼 Ptr=1BB05140
-[09:12:35] [RenderShadowMaps] m_pLocalPlayer: Ptr=0C805DF0 IsLocal=Yes
-[09:12:35] [RenderShadowMaps] ループ開始: Player[1]
-[09:12:35] [RenderShadowMaps] スキップ: Player[1] - 役割が鬼ではない（逃げる側）
-[09:12:35] [RenderShadowMaps] ループ開始: Player[2]
-[09:12:35] [RenderShadowMaps] スキップ: Player[2] - 役割が鬼ではない（逃げる側）
-[09:12:35] [RenderShadowMaps] ループ開始: Player[3]
-[09:12:35] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成開始 ==========
-[09:12:35] [RenderShadowMaps] ライト行列設定: View._41=5.50, _42=-1.80, _43=72.68
-[09:12:35] [RenderShadowMaps] マップの深度描画
-[09:12:35] [Map::DrawMapDepth] 壁の数=36 行列: _41=4.61, _42=-1.51, _43=80.01
-[09:12:35] [RenderShadowMaps] プレイヤーの影描画開始（鬼[3]以外）
-[09:12:35]   Player[1]: DrawDepth呼び出し開始
-[09:12:35]   Player[1]: DrawDepth呼び出し完了
-[09:12:35]   Player[2]: DrawDepth呼び出し開始
-[09:12:35]   Player[2]: DrawDepth呼び出し完了
-[09:12:35]   Player[3]: スキップ（鬼自身）
-[09:12:35]   LocalPlayer[1]: スキップ（m_playersに登録済み）
-[09:12:35] [RenderShadowMaps] プレイヤーの影描画完了: 2体描画
-[09:12:35] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成完了 ==========
-[09:12:35] [RenderShadowMaps] 完了: シャドウマップ生成数=1
-[09:12:35] [RenderShadowMaps] ========== 終了 ==========
-[09:12:35] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
-[09:12:35]   Light[0] Pos=(7.5,1.8,72.5) Dir=(-0.03,0.00,-1.00) ShadowMap=有効
-[09:12:35] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
-[09:12:35] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
-[09:12:35] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
-[09:12:35] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
-[09:12:35] [SceneGame] フェードイン完了 - ゲーム開始
-[09:12:35] [SceneGame] 送信: ID=1 Pos=(7.5,0.5,72.5) Interval=16ms
-[09:12:35] [SceneGame::UpdateRemotePlayers] リモート鬼 ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(-0.03,0.00,-1.00)
-[09:12:36] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(-0.03,0.00,-1.00)
-[09:12:36] [UpdateChaserLights] ライト収集完了: 1 個
-[09:12:37] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
-[09:12:37] [Discovery/Listener] 生存確認 ループ:300
-[09:12:37] [Discovery/Advertiser] 送信データ: port=12651 player=3/8 state=1 name='NEMU'
-[09:12:37] [Discovery/Advertiser] ブロードキャスト送信 #6: サイズ=22 bytes (port=12651)
-[09:12:37] [Discovery/Listener] パケット受信! サイズ:22 bytes
-[09:12:37] [Discovery/Listener] マジック一致確認
-[09:12:37] [Discovery/Listener] プロトコルバージョン: 256
-[09:12:37] [Discovery/Listener] ポート（変換後）: 12651
-[09:12:37] [Discovery/Listener] プレイヤー数: 3
-[09:12:37] [Discovery/Listener] 最大プレイヤー数: 8
-[09:12:37] [Discovery/Listener] ステート: 1
-[09:12:37] [Discovery/Listener] 名前の長さ: 4
-[09:12:37] [Discovery/Listener] サーバー名: 'NEMU'
-[09:12:37] [Discovery/Listener] ★サーバー検出★: NEMU @ 172.20.145.8:12651 (3/8) state=1
-[09:12:37] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[09:12:38] [Runner::Update] ID=1 通常状態: Frozen=0 Amount=0.000 Speed=0.040
-[09:12:38] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
-[09:12:38]   Light[0] Pos=(7.5,1.8,72.5) Dir=(-0.03,0.00,-1.00) ShadowMap=有効
-[09:12:38] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
-[09:12:38] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
-[09:12:38] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
-[09:12:38] [SceneGame] 送信: ID=1 Pos=(6.9,0.5,71.6) Interval=16ms
-[09:12:39] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(-0.03,0.00,-1.00)
-[09:12:39] [UpdateChaserLights] ライト収集完了: 1 個
-[09:12:39] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
-[09:12:40] [Chaser::UpdateLightMatrices] ID=3 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
-[09:12:40] [Chaser::UpdateLight] ID=3 Pos=(7.5,1.8,72.5) Dir=(-0.03,0.00,-1.00) IsLocal=No
-[09:12:40] [RenderShadowMaps] ========== 開始 ==========
-[09:12:40] [RenderShadowMaps] m_players数=3 ローカルID=1 ローカルRole=逃げる側
-[09:12:40] [RenderShadowMaps] m_playersの内容:
-[09:12:40]   Player[1]: Exists=Yes Role=逃げる側 Ptr=0C805DF0
-[09:12:40]   Player[2]: Exists=Yes Role=逃げる側 Ptr=0077D580
-[09:12:40]   Player[3]: Exists=Yes Role=鬼 Ptr=1BB05140
-[09:12:40] [RenderShadowMaps] m_pLocalPlayer: Ptr=0C805DF0 IsLocal=Yes
-[09:12:40] [RenderShadowMaps] ループ開始: Player[1]
-[09:12:40] [RenderShadowMaps] スキップ: Player[1] - 役割が鬼ではない（逃げる側）
-[09:12:40] [RenderShadowMaps] ループ開始: Player[2]
-[09:12:40] [RenderShadowMaps] スキップ: Player[2] - 役割が鬼ではない（逃げる側）
-[09:12:40] [RenderShadowMaps] ループ開始: Player[3]
-[09:12:40] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成開始 ==========
-[09:12:40] [RenderShadowMaps] ライト行列設定: View._41=5.50, _42=-1.80, _43=72.68
-[09:12:40] [RenderShadowMaps] マップの深度描画
-[09:12:40] [Map::DrawMapDepth] 壁の数=36 行列: _41=4.61, _42=-1.51, _43=80.01
-[09:12:40] [RenderShadowMaps] プレイヤーの影描画開始（鬼[3]以外）
-[09:12:40]   Player[1]: DrawDepth呼び出し開始
-[09:12:40]   Player[1]: DrawDepth呼び出し完了
-[09:12:40]   Player[2]: DrawDepth呼び出し開始
-[09:12:40]   Player[2]: DrawDepth呼び出し完了
-[09:12:40]   Player[3]: スキップ（鬼自身）
-[09:12:40]   LocalPlayer[1]: スキップ（m_playersに登録済み）
-[09:12:40] [RenderShadowMaps] プレイヤーの影描画完了: 2体描画
-[09:12:40] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成完了 ==========
-[09:12:40] [RenderShadowMaps] 完了: シャドウマップ生成数=1
-[09:12:40] [RenderShadowMaps] ========== 終了 ==========
-[09:12:40] [SceneGame::UpdateRemotePlayers] リモート鬼 ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(-0.03,0.00,-1.00)
-[09:12:41] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
-[09:12:41]   Light[0] Pos=(7.5,1.8,72.5) Dir=(-0.03,0.00,-1.00) ShadowMap=有効
-[09:12:41] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
-[09:12:41] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
-[09:12:41] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
-[09:12:41] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
-[09:12:41] [SceneGame] 送信: ID=1 Pos=(8.5,0.5,70.3) Interval=16ms
-[09:12:42] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(-0.03,0.00,-1.00)
-[09:12:42] [UpdateChaserLights] ライト収集完了: 1 個
-[09:12:42] [Discovery/Listener] 生存確認 ループ:350
-[09:12:42] [Discovery/Advertiser] 送信データ: port=12651 player=3/8 state=1 name='NEMU'
-[09:12:42] [Discovery/Advertiser] ブロードキャスト送信 #7: サイズ=22 bytes (port=12651)
-[09:12:42] [Discovery/Listener] パケット受信! サイズ:22 bytes
-[09:12:42] [Discovery/Listener] マジック一致確認
-[09:12:42] [Discovery/Listener] プロトコルバージョン: 256
-[09:12:42] [Discovery/Listener] ポート（変換後）: 12651
-[09:12:42] [Discovery/Listener] プレイヤー数: 3
-[09:12:42] [Discovery/Listener] 最大プレイヤー数: 8
-[09:12:42] [Discovery/Listener] ステート: 1
-[09:12:42] [Discovery/Listener] 名前の長さ: 4
-[09:12:42] [Discovery/Listener] サーバー名: 'NEMU'
-[09:12:42] [Discovery/Listener] ★サーバー検出★: NEMU @ 172.20.145.8:12651 (3/8) state=1
-[09:12:42] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[09:12:43] [Runner::Update] ID=1 通常状態: Frozen=0 Amount=0.000 Speed=0.032
-[09:12:43] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
-[09:12:44] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
-[09:12:44]   Light[0] Pos=(7.5,1.8,72.5) Dir=(-0.03,0.00,-1.00) ShadowMap=有効
-[09:12:44] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
-[09:12:44] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
-[09:12:44] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
-[09:12:44] [SceneGame] 送信: ID=1 Pos=(10.0,0.5,70.4) Interval=16ms
-[09:12:45] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(-0.03,0.00,-1.00)
-[09:12:45] [UpdateChaserLights] ライト収集完了: 1 個
-[09:12:45] [Chaser::UpdateLightMatrices] ID=3 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
-[09:12:45] [Chaser::UpdateLight] ID=3 Pos=(7.5,1.8,72.5) Dir=(-0.03,0.00,-1.00) IsLocal=No
-[09:12:45] [RenderShadowMaps] ========== 開始 ==========
-[09:12:45] [RenderShadowMaps] m_players数=3 ローカルID=1 ローカルRole=逃げる側
-[09:12:45] [RenderShadowMaps] m_playersの内容:
-[09:12:45]   Player[1]: Exists=Yes Role=逃げる側 Ptr=0C805DF0
-[09:12:45]   Player[2]: Exists=Yes Role=逃げる側 Ptr=0077D580
-[09:12:45]   Player[3]: Exists=Yes Role=鬼 Ptr=1BB05140
-[09:12:45] [RenderShadowMaps] m_pLocalPlayer: Ptr=0C805DF0 IsLocal=Yes
-[09:12:45] [RenderShadowMaps] ループ開始: Player[1]
-[09:12:45] [RenderShadowMaps] スキップ: Player[1] - 役割が鬼ではない（逃げる側）
-[09:12:45] [RenderShadowMaps] ループ開始: Player[2]
-[09:12:45] [RenderShadowMaps] スキップ: Player[2] - 役割が鬼ではない（逃げる側）
-[09:12:45] [RenderShadowMaps] ループ開始: Player[3]
-[09:12:45] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成開始 ==========
-[09:12:45] [RenderShadowMaps] ライト行列設定: View._41=5.50, _42=-1.80, _43=72.68
-[09:12:45] [RenderShadowMaps] マップの深度描画
-[09:12:45] [Map::DrawMapDepth] 壁の数=36 行列: _41=4.61, _42=-1.51, _43=80.01
-[09:12:45] [RenderShadowMaps] プレイヤーの影描画開始（鬼[3]以外）
-[09:12:45]   Player[1]: DrawDepth呼び出し開始
-[09:12:45]   Player[1]: DrawDepth呼び出し完了
-[09:12:45]   Player[2]: DrawDepth呼び出し開始
-[09:12:45]   Player[2]: DrawDepth呼び出し完了
-[09:12:45]   Player[3]: スキップ（鬼自身）
-[09:12:45]   LocalPlayer[1]: スキップ（m_playersに登録済み）
-[09:12:45] [RenderShadowMaps] プレイヤーの影描画完了: 2体描画
-[09:12:45] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成完了 ==========
-[09:12:45] [RenderShadowMaps] 完了: シャドウマップ生成数=1
-[09:12:45] [RenderShadowMaps] ========== 終了 ==========
-[09:12:45] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
-[09:12:45] [SceneGame::UpdateRemotePlayers] リモート鬼 ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(-0.03,0.00,-1.00)
-[09:12:47] [Discovery/Listener] 生存確認 ループ:400
-[09:12:47] [Discovery/Advertiser] 送信データ: port=12651 player=3/8 state=1 name='NEMU'
-[09:12:47] [Discovery/Advertiser] ブロードキャスト送信 #8: サイズ=22 bytes (port=12651)
+[12:04:26] ========================================
+[12:04:26] ClientManager 初期化開始
+[12:04:26] ========================================
+[12:04:26] [ClientManager] ENet初期化成功
+[12:04:26] [ClientManager] Discovery作成
+[12:04:26] [Discovery/Listener] スレッド開始
+[12:04:26] [Discovery/Listener] WSAStartup成功
+[12:04:26] [Discovery/Listener] ソケット作成成功
+[12:04:26] [ClientManager] Discoveryリスナー起動 (ポート:12346)
+[12:04:26] [Discovery/Listener] bind成功 ポート:12346
+[12:04:26] [Discovery/Listener] 受信ループ開始
+[12:04:31] [Discovery/Listener] 生存確認 ループ:50
+[12:04:34] ========================================
+[12:04:34] [SceneSelectHost] サーバー作成開始: K
+[12:04:34] [Client] 切断
+[12:04:34] [ServerManager] ホスト名設定: Player321
+[12:04:34] [SceneSelectHost] サーバー名設定: K
+[12:04:34] [SceneSelectHost] ホスト名設定: Player321
+[12:04:34] [Discovery/Advertiser] スレッド開始
+[12:04:34] [Discovery/Advertiser] WSAStartup成功
+[12:04:34] [ServerManager] サーバー起動: ポート=12876
+[12:04:34] [SceneSelectHost] サーバー起動成功: ポート=12876
+[12:04:34] [Discovery/Advertiser] ソケット作成成功
+[12:04:34] [Discovery/Advertiser] SO_BROADCAST設定成功
+[12:04:34] [Discovery/Advertiser] ブロードキャストループ開始
+[12:04:34] [Discovery/Advertiser] 送信データ: port=12876 player=1/8 state=0 name='K'
+[12:04:34] [Discovery/Advertiser] ブロードキャスト送信 #1: サイズ=19 bytes (port=12876)
+[12:04:34] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[12:04:34] [Discovery/Listener] マジック一致確認
+[12:04:34] [Discovery/Listener] プロトコルバージョン: 256
+[12:04:34] [Discovery/Listener] ポート（変換後）: 12876
+[12:04:34] [Discovery/Listener] プレイヤー数: 1
+[12:04:34] [Discovery/Listener] 最大プレイヤー数: 8
+[12:04:34] [Discovery/Listener] ステート: 0
+[12:04:34] [Discovery/Listener] 名前の長さ: 1
+[12:04:34] [Discovery/Listener] サーバー名: 'K'
+[12:04:34] [Discovery/Listener] ★サーバー検出★: K @ 172.20.145.8:12876 (1/8) state=0
+[12:04:34] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:04:34] [ClientManager] ConnectToServer: 127.0.0.1:12876
+[12:04:34] [ClientManager] クライアントホスト作成成功
+[12:04:34] [ClientManager] ホスト接続 - サーバー名は接続後に取得
+[12:04:34] [ClientManager] 接続要求送信 (ホスト判定: true)
+[12:04:34] [SceneSelectHost] ロビーに遷移
+[12:04:34] [SceneLobby] ホストとしてロビー開始: サーバー名='K'
+[12:04:34] [SceneLobby] Start完了
+[12:04:34] [ClientManager] サーバー接続成功（ENET_EVENT_TYPE_CONNECT受信）
+[12:04:34] [ClientManager] JOIN送信: Player321
+[12:04:34] [ClientManager] JOIN送信完了: Player321
+[12:04:34] [ServerManager] クライアント接続: ID=1 (現在1人)
+[12:04:34] [ServerManager] ProcessJoin: データ長=10
+[12:04:34] [ServerManager] 名前長さ: 9
+[12:04:34] [ServerManager] 受信した名前: 'Player321'
+[12:04:34] [ServerManager] ホストのJOIN受信: Player321 (ID=1)
+[12:04:34] [ServerManager] JoinAck送信: ClientID=1
+[12:04:34] [ServerManager] 新規参加者にホスト情報を送信: Player321 Pos=(0.0,0.0,0.0)
+[12:04:34] [ServerManager] 新規参加者情報をブロードキャスト: Player321 (ID=1)
+[12:04:34] [ServerManager] ロビー更新をブロードキャスト
+[12:04:34] [ServerManager] BroadcastLobbyUpdate: 1 人
+[12:04:34] [ServerManager] プレイヤー1: 'Player321' (長さ:9)
+[12:04:34] [ServerManager] 送信データサイズ: 12 bytes
+[12:04:34] [ClientManager] クライアントID割り当て: 1
+[12:04:34] [ClientManager] プレイヤー生成通知: ID=1, Name=Player321
+[12:04:34] [ClientManager] プレイヤー生成通知: ID=1, Name=Player321
+[12:04:34] [ClientManager] ProcessLobbyUpdate: データ長=12
+[12:04:34] [ClientManager] プレイヤー数: 1
+[12:04:34] [ClientManager] プレイヤー1 名前長さ: 9
+[12:04:34] [ClientManager] プレイヤー1: 'Player321'
+[12:04:34] [ClientManager] ロビー更新完了: 1 人
+[12:04:36] [Discovery/Listener] 生存確認 ループ:100
+[12:04:39] [Discovery/Advertiser] 送信データ: port=12876 player=1/8 state=0 name='K'
+[12:04:39] [Discovery/Advertiser] ブロードキャスト送信 #2: サイズ=19 bytes (port=12876)
+[12:04:39] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[12:04:39] [Discovery/Listener] マジック一致確認
+[12:04:39] [Discovery/Listener] プロトコルバージョン: 256
+[12:04:39] [Discovery/Listener] ポート（変換後）: 12876
+[12:04:39] [Discovery/Listener] プレイヤー数: 1
+[12:04:39] [Discovery/Listener] 最大プレイヤー数: 8
+[12:04:39] [Discovery/Listener] ステート: 0
+[12:04:39] [Discovery/Listener] 名前の長さ: 1
+[12:04:39] [Discovery/Listener] サーバー名: 'K'
+[12:04:39] [Discovery/Listener] ★サーバー検出★: K @ 172.20.145.8:12876 (1/8) state=0
+[12:04:39] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:04:41] [Discovery/Listener] 生存確認 ループ:150
+[12:04:41] [ServerManager] クライアント接続: ID=2 (現在2人)
+[12:04:41] [ServerManager] ProcessJoin: データ長=10
+[12:04:41] [ServerManager] 名前長さ: 9
+[12:04:41] [ServerManager] 受信した名前: 'Player834'
+[12:04:41] [ServerManager] クライアントのJOIN受信: Player834 (ID=2)
+[12:04:41] [ServerManager] JoinAck送信: ClientID=2
+[12:04:41] [ServerManager] 新規参加者にホスト情報を送信: Player321 Pos=(0.0,0.0,0.0)
+[12:04:41] [ServerManager] 新規参加者情報をブロードキャスト: Player834 (ID=2)
+[12:04:41] [ServerManager] ロビー更新をブロードキャスト
+[12:04:41] [ServerManager] BroadcastLobbyUpdate: 2 人
+[12:04:41] [ServerManager] プレイヤー1: 'Player321' (長さ:9)
+[12:04:41] [ServerManager] プレイヤー2: 'Player834' (長さ:9)
+[12:04:41] [ServerManager] 送信データサイズ: 22 bytes
+[12:04:41] [ClientManager] プレイヤー生成通知: ID=2, Name=Player834
+[12:04:41] [ClientManager] ProcessLobbyUpdate: データ長=22
+[12:04:41] [ClientManager] プレイヤー数: 2
+[12:04:41] [ClientManager] プレイヤー1 名前長さ: 9
+[12:04:41] [ClientManager] プレイヤー1: 'Player321'
+[12:04:41] [ClientManager] プレイヤー2 名前長さ: 9
+[12:04:41] [ClientManager] プレイヤー2: 'Player834'
+[12:04:41] [ClientManager] ロビー更新完了: 2 人
+[12:04:44] [ServerManager] クライアント接続: ID=3 (現在3人)
+[12:04:44] [ServerManager] ProcessJoin: データ長=10
+[12:04:44] [ServerManager] 名前長さ: 9
+[12:04:44] [ServerManager] 受信した名前: 'Player376'
+[12:04:44] [ServerManager] クライアントのJOIN受信: Player376 (ID=3)
+[12:04:44] [ServerManager] JoinAck送信: ClientID=3
+[12:04:44] [ServerManager] 新規参加者にホスト情報を送信: Player321 Pos=(0.0,0.0,0.0)
+[12:04:44] [ServerManager] 新規参加者に既存プレイヤー情報を送信: Player834 (ID=2) Pos=(0.0,0.0,0.0)
+[12:04:44] [ServerManager] 新規参加者情報をブロードキャスト: Player376 (ID=3)
+[12:04:44] [ServerManager] ロビー更新をブロードキャスト
+[12:04:44] [ServerManager] BroadcastLobbyUpdate: 3 人
+[12:04:44] [ServerManager] プレイヤー1: 'Player321' (長さ:9)
+[12:04:44] [ServerManager] プレイヤー2: 'Player834' (長さ:9)
+[12:04:44] [ServerManager] プレイヤー3: 'Player376' (長さ:9)
+[12:04:44] [ServerManager] 送信データサイズ: 32 bytes
+[12:04:44] [ClientManager] プレイヤー生成通知: ID=3, Name=Player376
+[12:04:44] [ClientManager] ProcessLobbyUpdate: データ長=32
+[12:04:44] [ClientManager] プレイヤー数: 3
+[12:04:44] [ClientManager] プレイヤー1 名前長さ: 9
+[12:04:44] [ClientManager] プレイヤー1: 'Player321'
+[12:04:44] [ClientManager] プレイヤー2 名前長さ: 9
+[12:04:44] [ClientManager] プレイヤー2: 'Player834'
+[12:04:44] [ClientManager] プレイヤー3 名前長さ: 9
+[12:04:44] [ClientManager] プレイヤー3: 'Player376'
+[12:04:44] [ClientManager] ロビー更新完了: 3 人
+[12:04:44] [Discovery/Advertiser] 送信データ: port=12876 player=3/8 state=0 name='K'
+[12:04:44] [Discovery/Advertiser] ブロードキャスト送信 #3: サイズ=19 bytes (port=12876)
+[12:04:44] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[12:04:44] [Discovery/Listener] マジック一致確認
+[12:04:44] [Discovery/Listener] プロトコルバージョン: 256
+[12:04:44] [Discovery/Listener] ポート（変換後）: 12876
+[12:04:44] [Discovery/Listener] プレイヤー数: 3
+[12:04:44] [Discovery/Listener] 最大プレイヤー数: 8
+[12:04:44] [Discovery/Listener] ステート: 0
+[12:04:44] [Discovery/Listener] 名前の長さ: 1
+[12:04:44] [Discovery/Listener] サーバー名: 'K'
+[12:04:44] [Discovery/Listener] ★サーバー検出★: K @ 172.20.145.8:12876 (3/8) state=0
+[12:04:44] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:04:46] [Discovery/Listener] 生存確認 ループ:200
+[12:04:49] [Discovery/Advertiser] 送信データ: port=12876 player=3/8 state=0 name='K'
+[12:04:49] [Discovery/Advertiser] ブロードキャスト送信 #4: サイズ=19 bytes (port=12876)
+[12:04:50] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[12:04:50] [Discovery/Listener] マジック一致確認
+[12:04:50] [Discovery/Listener] プロトコルバージョン: 256
+[12:04:50] [Discovery/Listener] ポート（変換後）: 12876
+[12:04:50] [Discovery/Listener] プレイヤー数: 3
+[12:04:50] [Discovery/Listener] 最大プレイヤー数: 8
+[12:04:50] [Discovery/Listener] ステート: 0
+[12:04:50] [Discovery/Listener] 名前の長さ: 1
+[12:04:50] [Discovery/Listener] サーバー名: 'K'
+[12:04:50] [Discovery/Listener] ★サーバー検出★: K @ 172.20.145.8:12876 (3/8) state=0
+[12:04:50] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:04:51] [Discovery/Listener] 生存確認 ループ:250
+[12:04:54] [Discovery/Advertiser] 送信データ: port=12876 player=3/8 state=0 name='K'
+[12:04:54] [Discovery/Advertiser] ブロードキャスト送信 #5: サイズ=19 bytes (port=12876)
+[12:04:55] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[12:04:55] [Discovery/Listener] マジック一致確認
+[12:04:55] [Discovery/Listener] プロトコルバージョン: 256
+[12:04:55] [Discovery/Listener] ポート（変換後）: 12876
+[12:04:55] [Discovery/Listener] プレイヤー数: 3
+[12:04:55] [Discovery/Listener] 最大プレイヤー数: 8
+[12:04:55] [Discovery/Listener] ステート: 0
+[12:04:55] [Discovery/Listener] 名前の長さ: 1
+[12:04:55] [Discovery/Listener] サーバー名: 'K'
+[12:04:55] [Discovery/Listener] ★サーバー検出★: K @ 172.20.145.8:12876 (3/8) state=0
+[12:04:55] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:04:56] [Discovery/Listener] 生存確認 ループ:300
+[12:04:59] [Discovery/Advertiser] 送信データ: port=12876 player=3/8 state=0 name='K'
+[12:04:59] [Discovery/Advertiser] ブロードキャスト送信 #6: サイズ=19 bytes (port=12876)
+[12:04:59] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[12:04:59] [Discovery/Listener] マジック一致確認
+[12:04:59] [Discovery/Listener] プロトコルバージョン: 256
+[12:04:59] [Discovery/Listener] ポート（変換後）: 12876
+[12:04:59] [Discovery/Listener] プレイヤー数: 3
+[12:04:59] [Discovery/Listener] 最大プレイヤー数: 8
+[12:04:59] [Discovery/Listener] ステート: 0
+[12:04:59] [Discovery/Listener] 名前の長さ: 1
+[12:04:59] [Discovery/Listener] サーバー名: 'K'
+[12:04:59] [Discovery/Listener] ★サーバー検出★: K @ 172.20.145.8:12876 (3/8) state=0
+[12:04:59] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:05:01] [Discovery/Listener] 生存確認 ループ:350
+[12:05:05] [Discovery/Advertiser] 送信データ: port=12876 player=3/8 state=0 name='K'
+[12:05:05] [Discovery/Advertiser] ブロードキャスト送信 #7: サイズ=19 bytes (port=12876)
+[12:05:05] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[12:05:05] [Discovery/Listener] マジック一致確認
+[12:05:05] [Discovery/Listener] プロトコルバージョン: 256
+[12:05:05] [Discovery/Listener] ポート（変換後）: 12876
+[12:05:05] [Discovery/Listener] プレイヤー数: 3
+[12:05:05] [Discovery/Listener] 最大プレイヤー数: 8
+[12:05:05] [Discovery/Listener] ステート: 0
+[12:05:05] [Discovery/Listener] 名前の長さ: 1
+[12:05:05] [Discovery/Listener] サーバー名: 'K'
+[12:05:05] [Discovery/Listener] ★サーバー検出★: K @ 172.20.145.8:12876 (3/8) state=0
+[12:05:05] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:05:06] [SceneLobby] ゲーム開始ボタン押下
+[12:05:06] [ServerManager] 役割割り当て開始
+[12:05:06] [ServerManager] ホストをリストに追加: ID=1
+[12:05:06] [ServerManager] クライアントをリストに追加: ID=2 Name=Player834
+[12:05:06] [ServerManager] クライアントをリストに追加: ID=3 Name=Player376
+[12:05:06] [ServerManager] 総プレイヤー数: 3
+[12:05:06] [ServerManager] 総人数=3 鬼=1 逃げる側=2
+[12:05:06] [ServerManager] シャッフル後のID順:
+[12:05:06]   位置0: ID=3
+[12:05:06]   位置1: ID=1
+[12:05:06]   位置2: ID=2
+[12:05:06] [ServerManager] クライアント Player376 (ID=3) の役割: 鬼
+[12:05:06] [ServerManager] ホスト(ID=1 Name=Player321)の役割: 逃げる側
+[12:05:06] [ServerManager] クライアント Player321 (ID=1) の役割: 逃げる側
+[12:05:06] [ServerManager] クライアント Player834 (ID=2) の役割: 逃げる側
+[12:05:06] [ServerManager] 役割割り当て完了
+[12:05:06] [ServerManager] 割り当て結果確認: 鬼=1 逃げる側=2
+[12:05:06] [ServerManager] 役割割り当てをブロードキャスト
+[12:05:06] [ServerManager] ホスト(ID=1)の役割送信: 逃げる側
+[12:05:06] [ServerManager] クライアント Player321 (ID=1)の役割送信: 逃げる側
+[12:05:06] [ServerManager] クライアント Player834 (ID=2)の役割送信: 逃げる側
+[12:05:06] [ServerManager] クライアント Player376 (ID=3)の役割送信: 鬼
+[12:05:06] [ServerManager] 役割割り当てブロードキャスト完了
+[12:05:06] [Discovery/Listener] 生存確認 ループ:400
+[12:05:06] [ServerManager] 役割割り当てをブロードキャスト
+[12:05:06] [ServerManager] ホスト(ID=1)の役割送信: 逃げる側
+[12:05:06] [ServerManager] クライアント Player321 (ID=1)の役割送信: 逃げる側
+[12:05:06] [ServerManager] クライアント Player834 (ID=2)の役割送信: 逃げる側
+[12:05:06] [ServerManager] クライアント Player376 (ID=3)の役割送信: 鬼
+[12:05:06] [ServerManager] 役割割り当てブロードキャスト完了
+[12:05:06] [ServerManager] 役割割り当てをブロードキャスト
+[12:05:06] [ServerManager] ホスト(ID=1)の役割送信: 逃げる側
+[12:05:06] [ServerManager] クライアント Player321 (ID=1)の役割送信: 逃げる側
+[12:05:06] [ServerManager] クライアント Player834 (ID=2)の役割送信: 逃げる側
+[12:05:06] [ServerManager] クライアント Player376 (ID=3)の役割送信: 鬼
+[12:05:06] [ServerManager] 役割割り当てブロードキャスト完了
+[12:05:06] [ServerManager] 役割割り当て送信完了（3回送信）
+[12:05:06] [ServerManager] ゲーム開始 - 役割割り当て済み
+[12:05:06] [ClientManager] 自分の役割が決定: 逃げる側 (ID=1)
+[12:05:06] [ClientManager] 自分の役割が決定: 逃げる側 (ID=1)
+[12:05:06] [ClientManager] 他プレイヤーの役割: ID=2 逃げる側
+[12:05:06] [ClientManager] 他プレイヤーの役割: ID=3 鬼
+[12:05:06] [ClientManager] 自分の役割が決定: 逃げる側 (ID=1)
+[12:05:06] [ClientManager] 自分の役割が決定: 逃げる側 (ID=1)
+[12:05:06] [ClientManager] 他プレイヤーの役割: ID=2 逃げる側
+[12:05:06] [ClientManager] 他プレイヤーの役割: ID=3 鬼
+[12:05:06] [ClientManager] 自分の役割が決定: 逃げる側 (ID=1)
+[12:05:06] [ClientManager] 自分の役割が決定: 逃げる側 (ID=1)
+[12:05:06] [ClientManager] 他プレイヤーの役割: ID=2 逃げる側
+[12:05:06] [ClientManager] 他プレイヤーの役割: ID=3 鬼
+[12:05:06] [ClientManager] ゲーム開始通知受信
+[12:05:06] [SceneLobby] ゲーム開始 - ゲームシーンへ遷移
+[12:05:06] [Map::DrawMap] ライト数: 0 シャドウマップ数: -1
+[12:05:06] [SceneGame::Initialize] ホストとして初期化: ClientID=1
+[12:05:06] [SceneGame] Initialize完了: IsHost=1, ClientID=1
+[12:05:06] [SceneGame] 初期化完了 - 役割割り当て待機中
+[12:05:06] [SceneGame] 役割受信: ID=1 Role=逃げる側
+[12:05:06] [SceneGame] ローカルプレイヤー即座に生成: Role=逃げる側
+[12:05:06] [SceneGame] Runnerを生成: ID=1, Name=Player321
+[12:05:08] [SceneGame] プレイヤーID設定: IsLocal=Yes, ClientID=1 (GetClientId()=1)
+[12:05:08] [SceneGame] プレイヤー生成完了: ID=1, Role=逃げる側, Pos=(7.5,0.5,72.5), IsLocal=Yes
+[12:05:08] [SceneGame] プレイヤーのGetClientId()=1
+[12:05:08] [SceneGame] 現在の役割マップ: 総数=1
+[12:05:08]   ID=1 -> 逃げる側
+[12:05:08] [SceneGame] ローカルプレイヤー生成完了: m_clientId=1, GetClientId()=1
+[12:05:08] [Runner::Update] ID=1 通常状態: Frozen=0 Amount=0.000 Speed=0.000
+[12:05:08] [SceneGame] 初期同期完了（役割受信）
+[12:05:08] [SceneGame] 役割受信: ID=1 Role=逃げる側
+[12:05:08] [SceneGame] 役割受信: ID=2 Role=逃げる側
+[12:05:08] [SceneGame] 役割受信: ID=3 Role=鬼
+[12:05:08] [SceneGame] 役割受信: ID=1 Role=逃げる側
+[12:05:08] [SceneGame] 役割受信: ID=1 Role=逃げる側
+[12:05:08] [SceneGame] 役割受信: ID=2 Role=逃げる側
+[12:05:08] [SceneGame] 役割受信: ID=3 Role=鬼
+[12:05:08] [SceneGame] 役割受信: ID=1 Role=逃げる側
+[12:05:08] [SceneGame] 役割受信: ID=1 Role=逃げる側
+[12:05:08] [SceneGame] 役割受信: ID=2 Role=逃げる側
+[12:05:08] [SceneGame] 役割受信: ID=3 Role=鬼
+[12:05:08] [UpdateChaserLights] ライト収集完了: 0 個
+[12:05:08] [SceneGame] リモートプレイヤー参加: ID=2, Name=Player834
+[12:05:08] [SceneGame] Runnerを生成: ID=2, Name=Player834
+[12:05:10] [Discovery/Advertiser] 送信データ: port=12876 player=3/8 state=1 name='K'
+[12:05:10] [Discovery/Advertiser] ブロードキャスト送信 #8: サイズ=19 bytes (port=12876)
+[12:05:10] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[12:05:10] [Discovery/Listener] マジック一致確認
+[12:05:10] [Discovery/Listener] プロトコルバージョン: 256
+[12:05:10] [Discovery/Listener] ポート（変換後）: 12876
+[12:05:10] [Discovery/Listener] プレイヤー数: 3
+[12:05:10] [Discovery/Listener] 最大プレイヤー数: 8
+[12:05:10] [Discovery/Listener] ステート: 1
+[12:05:10] [Discovery/Listener] 名前の長さ: 1
+[12:05:10] [Discovery/Listener] サーバー名: 'K'
+[12:05:10] [Discovery/Listener] ★サーバー検出★: K @ 172.20.145.8:12876 (3/8) state=1
+[12:05:10] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:05:10] [SceneGame] プレイヤーID設定: IsLocal=No, ClientID=2 (GetClientId()=2)
+[12:05:10] [SceneGame] プレイヤー生成完了: ID=2, Role=逃げる側, Pos=(7.5,0.5,72.5), IsLocal=No
+[12:05:10] [SceneGame] プレイヤーのGetClientId()=2
+[12:05:10] [SceneGame] 現在の役割マップ: 総数=3
+[12:05:10]   ID=1 -> 逃げる側
+[12:05:10]   ID=2 -> 逃げる側
+[12:05:10]   ID=3 -> 鬼
+[12:05:10] [SceneGame] リモートプレイヤー参加: ID=3, Name=Player376
+[12:05:10] [SceneGame] Chaserを生成: ID=3, Name=Player376
+[12:05:10] [Chaser] シャドウマップ作成成功: ID=0
+[12:05:10] [Chaser] IceBreath生成: ID=0 Range=8.00
+[12:05:10] [SceneGame] プレイヤーID設定: IsLocal=No, ClientID=3 (GetClientId()=3)
+[12:05:10] [SceneGame] プレイヤー生成完了: ID=3, Role=鬼, Pos=(7.5,0.5,72.5), IsLocal=No
+[12:05:10] [SceneGame] プレイヤーのGetClientId()=3
+[12:05:10] [SceneGame] 現在の役割マップ: 総数=3
+[12:05:10]   ID=1 -> 逃げる側
+[12:05:10]   ID=2 -> 逃げる側
+[12:05:10]   ID=3 -> 鬼
+[12:05:10] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:05:10] [Chaser::UpdateLightMatrices] ID=3 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
+[12:05:10] [Chaser::UpdateLight] ID=3 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=No
+[12:05:10] [RenderShadowMaps] ========== 開始 ==========
+[12:05:10] [RenderShadowMaps] m_players数=3 ローカルID=1 ローカルRole=逃げる側
+[12:05:10] [RenderShadowMaps] m_playersの内容:
+[12:05:10]   Player[1]: Exists=Yes Role=逃げる側 Ptr=0C8B3F50
+[12:05:10]   Player[2]: Exists=Yes Role=逃げる側 Ptr=1B4E0000
+[12:05:10]   Player[3]: Exists=Yes Role=鬼 Ptr=0C8B0A18
+[12:05:10] [RenderShadowMaps] m_pLocalPlayer: Ptr=0C8B3F50 IsLocal=Yes
+[12:05:10] [RenderShadowMaps] ループ開始: Player[1]
+[12:05:10] [RenderShadowMaps] スキップ: Player[1] - 役割が鬼ではない（逃げる側）
+[12:05:10] [RenderShadowMaps] ループ開始: Player[2]
+[12:05:10] [RenderShadowMaps] スキップ: Player[2] - 役割が鬼ではない（逃げる側）
+[12:05:10] [RenderShadowMaps] ループ開始: Player[3]
+[12:05:10] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成開始 ==========
+[12:05:10] [RenderShadowMaps] ライト行列設定: View._41=7.50, _42=-1.80, _43=72.50
+[12:05:10] [RenderShadowMaps] マップの深度描画
+[12:05:10] [Map::DrawMapDepth] 壁の数=36 行列: _41=6.29, _42=-1.51, _43=79.81
+[12:05:10] [RenderShadowMaps] プレイヤーの影描画開始（鬼[3]以外）
+[12:05:10]   Player[1]: DrawDepth呼び出し開始
+[12:05:10]   Player[1]: DrawDepth呼び出し完了
+[12:05:10]   Player[2]: DrawDepth呼び出し開始
+[12:05:10]   Player[2]: DrawDepth呼び出し完了
+[12:05:10]   Player[3]: スキップ（鬼自身）
+[12:05:10]   LocalPlayer[1]: スキップ（m_playersに登録済み）
+[12:05:10] [RenderShadowMaps] プレイヤーの影描画完了: 2体描画
+[12:05:10] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成完了 ==========
+[12:05:10] [RenderShadowMaps] 完了: シャドウマップ生成数=1
+[12:05:10] [RenderShadowMaps] ========== 終了 ==========
+[12:05:10] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[12:05:10]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[12:05:10] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[12:05:10] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[12:05:10] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[12:05:10] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:05:10] [SceneGame] フェードイン完了 - ゲーム開始
+[12:05:10] [SceneGame] 送信: ID=1 Pos=(7.5,0.5,72.5) Interval=16ms
+[12:05:10] [SceneGame::UpdateRemotePlayers] リモート鬼 ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:05:11] [Discovery/Listener] 生存確認 ループ:450
+[12:05:11] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:05:11] [UpdateChaserLights] ライト収集完了: 1 個
+[12:05:12] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:05:13] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[12:05:13]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[12:05:13] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[12:05:13] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[12:05:13] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[12:05:13] [SceneGame] 送信: ID=1 Pos=(9.4,0.5,72.5) Interval=16ms
+[12:05:13] [Runner::Update] ID=1 通常状態: Frozen=0 Amount=0.000 Speed=0.036
+[12:05:14] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:05:14] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:05:14] [UpdateChaserLights] ライト収集完了: 1 個
+[12:05:15] [Discovery/Advertiser] 送信データ: port=12876 player=3/8 state=1 name='K'
+[12:05:15] [Discovery/Advertiser] ブロードキャスト送信 #9: サイズ=19 bytes (port=12876)
+[12:05:15] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[12:05:15] [Discovery/Listener] マジック一致確認
+[12:05:15] [Discovery/Listener] プロトコルバージョン: 256
+[12:05:15] [Discovery/Listener] ポート（変換後）: 12876
+[12:05:15] [Discovery/Listener] プレイヤー数: 3
+[12:05:15] [Discovery/Listener] 最大プレイヤー数: 8
+[12:05:15] [Discovery/Listener] ステート: 1
+[12:05:15] [Discovery/Listener] 名前の長さ: 1
+[12:05:15] [Discovery/Listener] サーバー名: 'K'
+[12:05:15] [Discovery/Listener] ★サーバー検出★: K @ 172.20.145.8:12876 (3/8) state=1
+[12:05:15] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:05:15] [Chaser::UpdateLightMatrices] ID=3 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
+[12:05:15] [Chaser::UpdateLight] ID=3 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=No
+[12:05:15] [RenderShadowMaps] ========== 開始 ==========
+[12:05:15] [RenderShadowMaps] m_players数=3 ローカルID=1 ローカルRole=逃げる側
+[12:05:15] [RenderShadowMaps] m_playersの内容:
+[12:05:15]   Player[1]: Exists=Yes Role=逃げる側 Ptr=0C8B3F50
+[12:05:15]   Player[2]: Exists=Yes Role=逃げる側 Ptr=1B4E0000
+[12:05:15]   Player[3]: Exists=Yes Role=鬼 Ptr=0C8B0A18
+[12:05:15] [RenderShadowMaps] m_pLocalPlayer: Ptr=0C8B3F50 IsLocal=Yes
+[12:05:15] [RenderShadowMaps] ループ開始: Player[1]
+[12:05:15] [RenderShadowMaps] スキップ: Player[1] - 役割が鬼ではない（逃げる側）
+[12:05:15] [RenderShadowMaps] ループ開始: Player[2]
+[12:05:15] [RenderShadowMaps] スキップ: Player[2] - 役割が鬼ではない（逃げる側）
+[12:05:15] [RenderShadowMaps] ループ開始: Player[3]
+[12:05:15] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成開始 ==========
+[12:05:15] [RenderShadowMaps] ライト行列設定: View._41=7.50, _42=-1.80, _43=72.50
+[12:05:15] [RenderShadowMaps] マップの深度描画
+[12:05:15] [Map::DrawMapDepth] 壁の数=36 行列: _41=6.29, _42=-1.51, _43=79.81
+[12:05:15] [RenderShadowMaps] プレイヤーの影描画開始（鬼[3]以外）
+[12:05:15]   Player[1]: DrawDepth呼び出し開始
+[12:05:15]   Player[1]: DrawDepth呼び出し完了
+[12:05:15]   Player[2]: DrawDepth呼び出し開始
+[12:05:15]   Player[2]: DrawDepth呼び出し完了
+[12:05:15]   Player[3]: スキップ（鬼自身）
+[12:05:15]   LocalPlayer[1]: スキップ（m_playersに登録済み）
+[12:05:15] [RenderShadowMaps] プレイヤーの影描画完了: 2体描画
+[12:05:15] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成完了 ==========
+[12:05:15] [RenderShadowMaps] 完了: シャドウマップ生成数=1
+[12:05:15] [RenderShadowMaps] ========== 終了 ==========
+[12:05:15] [SceneGame::UpdateRemotePlayers] リモート鬼 ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:05:16] [Discovery/Listener] 生存確認 ループ:500
+[12:05:16] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[12:05:16]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[12:05:16] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[12:05:16] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[12:05:16] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[12:05:16] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:05:16] [SceneGame] 送信: ID=1 Pos=(9.4,0.5,72.5) Interval=16ms
+[12:05:17] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:05:17] [UpdateChaserLights] ライト収集完了: 1 個
+[12:05:18] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:05:18] [Runner::Update] ID=1 通常状態: Frozen=0 Amount=0.000 Speed=0.040
+[12:05:19] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[12:05:19]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[12:05:19] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[12:05:19] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[12:05:19] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[12:05:19] [SceneGame] 送信: ID=1 Pos=(9.4,0.5,72.5) Interval=16ms
+[12:05:20] [Discovery/Advertiser] 送信データ: port=12876 player=3/8 state=1 name='K'
+[12:05:20] [Discovery/Advertiser] ブロードキャスト送信 #10: サイズ=19 bytes (port=12876)
+[12:05:20] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[12:05:20] [Discovery/Listener] マジック一致確認
+[12:05:20] [Discovery/Listener] プロトコルバージョン: 256
+[12:05:20] [Discovery/Listener] ポート（変換後）: 12876
+[12:05:20] [Discovery/Listener] プレイヤー数: 3
+[12:05:20] [Discovery/Listener] 最大プレイヤー数: 8
+[12:05:20] [Discovery/Listener] ステート: 1
+[12:05:20] [Discovery/Listener] 名前の長さ: 1
+[12:05:20] [Discovery/Listener] サーバー名: 'K'
+[12:05:20] [Discovery/Listener] ★サーバー検出★: K @ 172.20.145.8:12876 (3/8) state=1
+[12:05:20] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:05:20] [Chaser::UpdateLightMatrices] ID=3 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
+[12:05:20] [Chaser::UpdateLight] ID=3 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=No
+[12:05:20] [RenderShadowMaps] ========== 開始 ==========
+[12:05:20] [RenderShadowMaps] m_players数=3 ローカルID=1 ローカルRole=逃げる側
+[12:05:20] [RenderShadowMaps] m_playersの内容:
+[12:05:20]   Player[1]: Exists=Yes Role=逃げる側 Ptr=0C8B3F50
+[12:05:20]   Player[2]: Exists=Yes Role=逃げる側 Ptr=1B4E0000
+[12:05:20]   Player[3]: Exists=Yes Role=鬼 Ptr=0C8B0A18
+[12:05:20] [RenderShadowMaps] m_pLocalPlayer: Ptr=0C8B3F50 IsLocal=Yes
+[12:05:20] [RenderShadowMaps] ループ開始: Player[1]
+[12:05:20] [RenderShadowMaps] スキップ: Player[1] - 役割が鬼ではない（逃げる側）
+[12:05:20] [RenderShadowMaps] ループ開始: Player[2]
+[12:05:20] [RenderShadowMaps] スキップ: Player[2] - 役割が鬼ではない（逃げる側）
+[12:05:20] [RenderShadowMaps] ループ開始: Player[3]
+[12:05:20] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成開始 ==========
+[12:05:20] [RenderShadowMaps] ライト行列設定: View._41=7.50, _42=-1.80, _43=72.50
+[12:05:20] [RenderShadowMaps] マップの深度描画
+[12:05:20] [Map::DrawMapDepth] 壁の数=36 行列: _41=6.29, _42=-1.51, _43=79.81
+[12:05:20] [RenderShadowMaps] プレイヤーの影描画開始（鬼[3]以外）
+[12:05:20]   Player[1]: DrawDepth呼び出し開始
+[12:05:20]   Player[1]: DrawDepth呼び出し完了
+[12:05:20]   Player[2]: DrawDepth呼び出し開始
+[12:05:20]   Player[2]: DrawDepth呼び出し完了
+[12:05:20]   Player[3]: スキップ（鬼自身）
+[12:05:20]   LocalPlayer[1]: スキップ（m_playersに登録済み）
+[12:05:20] [RenderShadowMaps] プレイヤーの影描画完了: 2体描画
+[12:05:20] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成完了 ==========
+[12:05:20] [RenderShadowMaps] 完了: シャドウマップ生成数=1
+[12:05:20] [RenderShadowMaps] ========== 終了 ==========
+[12:05:20] [SceneGame::UpdateRemotePlayers] リモート鬼 ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:05:20] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:05:20] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:05:20] [UpdateChaserLights] ライト収集完了: 1 個
+[12:05:21] [Discovery/Listener] 生存確認 ループ:550
+[12:05:22] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[12:05:22]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[12:05:22] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[12:05:22] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[12:05:22] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[12:05:22] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:05:22] [SceneGame] 送信: ID=1 Pos=(8.5,0.5,72.5) Interval=16ms
+[12:05:23] [Runner::Update] ID=1 通常状態: Frozen=0 Amount=0.000 Speed=0.032
+[12:05:23] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:05:23] [UpdateChaserLights] ライト収集完了: 1 個
+[12:05:24] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:05:25] [Discovery/Advertiser] 送信データ: port=12876 player=3/8 state=1 name='K'
+[12:05:25] [Discovery/Advertiser] ブロードキャスト送信 #11: サイズ=19 bytes (port=12876)
+[12:05:25] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[12:05:25] [Discovery/Listener] マジック一致確認
+[12:05:25] [Discovery/Listener] プロトコルバージョン: 256
+[12:05:25] [Discovery/Listener] ポート（変換後）: 12876
+[12:05:25] [Discovery/Listener] プレイヤー数: 3
+[12:05:25] [Discovery/Listener] 最大プレイヤー数: 8
+[12:05:25] [Discovery/Listener] ステート: 1
+[12:05:25] [Discovery/Listener] 名前の長さ: 1
+[12:05:25] [Discovery/Listener] サーバー名: 'K'
+[12:05:25] [Discovery/Listener] ★サーバー検出★: K @ 172.20.145.8:12876 (3/8) state=1
+[12:05:25] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:05:25] [Chaser::UpdateLightMatrices] ID=3 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
+[12:05:25] [Chaser::UpdateLight] ID=3 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=No
+[12:05:25] [RenderShadowMaps] ========== 開始 ==========
+[12:05:25] [RenderShadowMaps] m_players数=3 ローカルID=1 ローカルRole=逃げる側
+[12:05:25] [RenderShadowMaps] m_playersの内容:
+[12:05:25]   Player[1]: Exists=Yes Role=逃げる側 Ptr=0C8B3F50
+[12:05:25]   Player[2]: Exists=Yes Role=逃げる側 Ptr=1B4E0000
+[12:05:25]   Player[3]: Exists=Yes Role=鬼 Ptr=0C8B0A18
+[12:05:25] [RenderShadowMaps] m_pLocalPlayer: Ptr=0C8B3F50 IsLocal=Yes
+[12:05:25] [RenderShadowMaps] ループ開始: Player[1]
+[12:05:25] [RenderShadowMaps] スキップ: Player[1] - 役割が鬼ではない（逃げる側）
+[12:05:25] [RenderShadowMaps] ループ開始: Player[2]
+[12:05:25] [RenderShadowMaps] スキップ: Player[2] - 役割が鬼ではない（逃げる側）
+[12:05:25] [RenderShadowMaps] ループ開始: Player[3]
+[12:05:25] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成開始 ==========
+[12:05:25] [RenderShadowMaps] ライト行列設定: View._41=7.50, _42=-1.80, _43=72.50
+[12:05:25] [RenderShadowMaps] マップの深度描画
+[12:05:25] [Map::DrawMapDepth] 壁の数=36 行列: _41=6.29, _42=-1.51, _43=79.81
+[12:05:25] [RenderShadowMaps] プレイヤーの影描画開始（鬼[3]以外）
+[12:05:25]   Player[1]: DrawDepth呼び出し開始
+[12:05:25]   Player[1]: DrawDepth呼び出し完了
+[12:05:25]   Player[2]: DrawDepth呼び出し開始
+[12:05:25]   Player[2]: DrawDepth呼び出し完了
+[12:05:25]   Player[3]: スキップ（鬼自身）
+[12:05:25]   LocalPlayer[1]: スキップ（m_playersに登録済み）
+[12:05:25] [RenderShadowMaps] プレイヤーの影描画完了: 2体描画
+[12:05:25] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成完了 ==========
+[12:05:25] [RenderShadowMaps] 完了: シャドウマップ生成数=1
+[12:05:25] [RenderShadowMaps] ========== 終了 ==========
+[12:05:25] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[12:05:25]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[12:05:25] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[12:05:25] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[12:05:25] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[12:05:25] [SceneGame::UpdateRemotePlayers] リモート鬼 ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:05:25] [SceneGame] 送信: ID=1 Pos=(10.9,0.5,71.9) Interval=16ms
+[12:05:26] [Discovery/Listener] 生存確認 ループ:600
+[12:05:26] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:05:26] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:05:26] [UpdateChaserLights] ライト収集完了: 1 個
+[12:05:28] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[12:05:28] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[12:05:28]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[12:05:28] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[12:05:28] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[12:05:28] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:05:28] [Runner::Update] ID=1 通常状態: Frozen=0 Amount=0.000 Speed=0.040
+[12:05:28] [SceneGame] 送信: ID=1 Pos=(10.9,0.5,71.9) Interval=16ms
+[12:05:29] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:05:29] [UpdateChaserLights] ライト収集完了: 1 個
+[12:05:30] [Discovery/Advertiser] 送信データ: port=12876 player=3/8 state=1 name='K'
+[12:05:30] [Discovery/Advertiser] ブロードキャスト送信 #12: サイズ=19 bytes (port=12876)
+[12:05:30] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[12:05:30] [Discovery/Listener] マジック一致確認
+[12:05:30] [Discovery/Listener] プロトコルバージョン: 256
+[12:05:30] [Discovery/Listener] ポート（変換後）: 12876
+[12:05:30] [Discovery/Listener] プレイヤー数: 3
+[12:05:30] [Discovery/Listener] 最大プレイヤー数: 8
+[12:05:30] [Discovery/Listener] ステート: 1
+[12:05:30] [Discovery/Listener] 名前の長さ: 1
+[12:05:30] [Discovery/Listener] サーバー名: 'K'
+[12:05:30] [Discovery/Listener] ★サーバー検出★: K @ 172.20.145.8:12876 (3/8) state=1
+[12:05:30] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:05:30] [Chaser::UpdateLightMatrices] ID=3 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
+[12:05:30] [Chaser::UpdateLight] ID=3 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=No
+[12:05:30] [RenderShadowMaps] ========== 開始 ==========
+[12:05:30] [RenderShadowMaps] m_players数=3 ローカルID=1 ローカルRole=逃げる側
+[12:05:30] [RenderShadowMaps] m_playersの内容:
+[12:05:30]   Player[1]: Exists=Yes Role=逃げる側 Ptr=0C8B3F50
+[12:05:30]   Player[2]: Exists=Yes Role=逃げる側 Ptr=1B4E0000
+[12:05:30]   Player[3]: Exists=Yes Role=鬼 Ptr=0C8B0A18
+[12:05:30] [RenderShadowMaps] m_pLocalPlayer: Ptr=0C8B3F50 IsLocal=Yes
+[12:05:30] [RenderShadowMaps] ループ開始: Player[1]
+[12:05:30] [RenderShadowMaps] スキップ: Player[1] - 役割が鬼ではない（逃げる側）
+[12:05:30] [RenderShadowMaps] ループ開始: Player[2]
+[12:05:30] [RenderShadowMaps] スキップ: Player[2] - 役割が鬼ではない（逃げる側）
+[12:05:30] [RenderShadowMaps] ループ開始: Player[3]
+[12:05:30] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成開始 ==========
+[12:05:30] [RenderShadowMaps] ライト行列設定: View._41=7.50, _42=-1.80, _43=72.50
+[12:05:30] [RenderShadowMaps] マップの深度描画
+[12:05:30] [Map::DrawMapDepth] 壁の数=36 行列: _41=6.29, _42=-1.51, _43=79.81
+[12:05:30] [RenderShadowMaps] プレイヤーの影描画開始（鬼[3]以外）
+[12:05:30]   Player[1]: DrawDepth呼び出し開始
+[12:05:30]   Player[1]: DrawDepth呼び出し完了
+[12:05:30]   Player[2]: DrawDepth呼び出し開始
+[12:05:30]   Player[2]: DrawDepth呼び出し完了
+[12:05:30]   Player[3]: スキップ（鬼自身）
+[12:05:30]   LocalPlayer[1]: スキップ（m_playersに登録済み）
+[12:05:30] [RenderShadowMaps] プレイヤーの影描画完了: 2体描画
+[12:05:30] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成完了 ==========
+[12:05:30] [RenderShadowMaps] 完了: シャドウマップ生成数=1
+[12:05:30] [RenderShadowMaps] ========== 終了 ==========
+[12:05:30] [SceneGame::UpdateRemotePlayers] リモート鬼 ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:05:30] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:05:31] [Discovery/Listener] 生存確認 ループ:650
+[12:05:31] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[12:05:31] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[12:05:31]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[12:05:31] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[12:05:31] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[12:05:31] [SceneGame] 送信: ID=1 Pos=(10.9,0.5,71.9) Interval=16ms
+[12:05:32] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:05:32] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:05:32] [UpdateChaserLights] ライト収集完了: 1 個
+[12:05:33] [Runner::Update] ID=1 通常状態: Frozen=0 Amount=0.000 Speed=0.036
+[12:05:34] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[12:05:34] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[12:05:34]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[12:05:34] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[12:05:34] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[12:05:34] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:05:34] [SceneGame] 送信: ID=1 Pos=(10.9,0.5,71.9) Interval=16ms
+[12:05:35] [Discovery/Advertiser] 送信データ: port=12876 player=3/8 state=1 name='K'
+[12:05:35] [Discovery/Advertiser] ブロードキャスト送信 #13: サイズ=19 bytes (port=12876)
+[12:05:35] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[12:05:35] [Discovery/Listener] マジック一致確認
+[12:05:35] [Discovery/Listener] プロトコルバージョン: 256
+[12:05:35] [Discovery/Listener] ポート（変換後）: 12876
+[12:05:35] [Discovery/Listener] プレイヤー数: 3
+[12:05:35] [Discovery/Listener] 最大プレイヤー数: 8
+[12:05:35] [Discovery/Listener] ステート: 1
+[12:05:35] [Discovery/Listener] 名前の長さ: 1
+[12:05:35] [Discovery/Listener] サーバー名: 'K'
+[12:05:35] [Discovery/Listener] ★サーバー検出★: K @ 172.20.145.8:12876 (3/8) state=1
+[12:05:35] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:05:35] [Chaser::UpdateLightMatrices] ID=3 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
+[12:05:35] [Chaser::UpdateLight] ID=3 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=No
+[12:05:35] [RenderShadowMaps] ========== 開始 ==========
+[12:05:35] [RenderShadowMaps] m_players数=3 ローカルID=1 ローカルRole=逃げる側
+[12:05:35] [RenderShadowMaps] m_playersの内容:
+[12:05:35]   Player[1]: Exists=Yes Role=逃げる側 Ptr=0C8B3F50
+[12:05:35]   Player[2]: Exists=Yes Role=逃げる側 Ptr=1B4E0000
+[12:05:35]   Player[3]: Exists=Yes Role=鬼 Ptr=0C8B0A18
+[12:05:35] [RenderShadowMaps] m_pLocalPlayer: Ptr=0C8B3F50 IsLocal=Yes
+[12:05:35] [RenderShadowMaps] ループ開始: Player[1]
+[12:05:35] [RenderShadowMaps] スキップ: Player[1] - 役割が鬼ではない（逃げる側）
+[12:05:35] [RenderShadowMaps] ループ開始: Player[2]
+[12:05:35] [RenderShadowMaps] スキップ: Player[2] - 役割が鬼ではない（逃げる側）
+[12:05:35] [RenderShadowMaps] ループ開始: Player[3]
+[12:05:35] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成開始 ==========
+[12:05:35] [RenderShadowMaps] ライト行列設定: View._41=7.50, _42=-1.80, _43=72.50
+[12:05:35] [RenderShadowMaps] マップの深度描画
+[12:05:35] [Map::DrawMapDepth] 壁の数=36 行列: _41=6.29, _42=-1.51, _43=79.81
+[12:05:35] [RenderShadowMaps] プレイヤーの影描画開始（鬼[3]以外）
+[12:05:35]   Player[1]: DrawDepth呼び出し開始
+[12:05:35]   Player[1]: DrawDepth呼び出し完了
+[12:05:35]   Player[2]: DrawDepth呼び出し開始
+[12:05:35]   Player[2]: DrawDepth呼び出し完了
+[12:05:35]   Player[3]: スキップ（鬼自身）
+[12:05:35]   LocalPlayer[1]: スキップ（m_playersに登録済み）
+[12:05:35] [RenderShadowMaps] プレイヤーの影描画完了: 2体描画
+[12:05:35] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成完了 ==========
+[12:05:35] [RenderShadowMaps] 完了: シャドウマップ生成数=1
+[12:05:35] [RenderShadowMaps] ========== 終了 ==========
+[12:05:35] [SceneGame::UpdateRemotePlayers] リモート鬼 ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:05:35] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:05:35] [UpdateChaserLights] ライト収集完了: 1 個
+[12:05:36] [Discovery/Listener] 生存確認 ループ:700
+[12:05:36] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:05:37] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[12:05:37] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[12:05:37]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[12:05:37] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[12:05:37] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[12:05:37] [SceneGame] 送信: ID=1 Pos=(10.9,0.5,71.9) Interval=16ms
+[12:05:38] [Runner::Update] ID=1 通常状態: Frozen=0 Amount=0.000 Speed=0.036
+[12:05:38] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:05:38] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:05:38] [UpdateChaserLights] ライト収集完了: 1 個
+[12:05:40] [Discovery/Advertiser] 送信データ: port=12876 player=3/8 state=1 name='K'
+[12:05:40] [Discovery/Advertiser] ブロードキャスト送信 #14: サイズ=19 bytes (port=12876)
+[12:05:40] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[12:05:40] [Discovery/Listener] マジック一致確認
+[12:05:40] [Discovery/Listener] プロトコルバージョン: 256
+[12:05:40] [Discovery/Listener] ポート（変換後）: 12876
+[12:05:40] [Discovery/Listener] プレイヤー数: 3
+[12:05:40] [Discovery/Listener] 最大プレイヤー数: 8
+[12:05:40] [Discovery/Listener] ステート: 1
+[12:05:40] [Discovery/Listener] 名前の長さ: 1
+[12:05:40] [Discovery/Listener] サーバー名: 'K'
+[12:05:40] [Discovery/Listener] ★サーバー検出★: K @ 172.20.145.8:12876 (3/8) state=1
+[12:05:40] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:05:40] [Chaser::UpdateLightMatrices] ID=3 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
+[12:05:40] [Chaser::UpdateLight] ID=3 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=No
+[12:05:40] [RenderShadowMaps] ========== 開始 ==========
+[12:05:40] [RenderShadowMaps] m_players数=3 ローカルID=1 ローカルRole=逃げる側
+[12:05:40] [RenderShadowMaps] m_playersの内容:
+[12:05:40]   Player[1]: Exists=Yes Role=逃げる側 Ptr=0C8B3F50
+[12:05:40]   Player[2]: Exists=Yes Role=逃げる側 Ptr=1B4E0000
+[12:05:40]   Player[3]: Exists=Yes Role=鬼 Ptr=0C8B0A18
+[12:05:40] [RenderShadowMaps] m_pLocalPlayer: Ptr=0C8B3F50 IsLocal=Yes
+[12:05:40] [RenderShadowMaps] ループ開始: Player[1]
+[12:05:40] [RenderShadowMaps] スキップ: Player[1] - 役割が鬼ではない（逃げる側）
+[12:05:40] [RenderShadowMaps] ループ開始: Player[2]
+[12:05:40] [RenderShadowMaps] スキップ: Player[2] - 役割が鬼ではない（逃げる側）
+[12:05:40] [RenderShadowMaps] ループ開始: Player[3]
+[12:05:40] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成開始 ==========
+[12:05:40] [RenderShadowMaps] ライト行列設定: View._41=7.50, _42=-1.80, _43=72.50
+[12:05:40] [RenderShadowMaps] マップの深度描画
+[12:05:40] [Map::DrawMapDepth] 壁の数=36 行列: _41=6.29, _42=-1.51, _43=79.81
+[12:05:40] [RenderShadowMaps] プレイヤーの影描画開始（鬼[3]以外）
+[12:05:40]   Player[1]: DrawDepth呼び出し開始
+[12:05:40]   Player[1]: DrawDepth呼び出し完了
+[12:05:40]   Player[2]: DrawDepth呼び出し開始
+[12:05:40]   Player[2]: DrawDepth呼び出し完了
+[12:05:40]   Player[3]: スキップ（鬼自身）
+[12:05:40]   LocalPlayer[1]: スキップ（m_playersに登録済み）
+[12:05:40] [RenderShadowMaps] プレイヤーの影描画完了: 2体描画
+[12:05:40] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成完了 ==========
+[12:05:40] [RenderShadowMaps] 完了: シャドウマップ生成数=1
+[12:05:40] [RenderShadowMaps] ========== 終了 ==========
+[12:05:40] [SceneGame::UpdateRemotePlayers] リモート鬼 ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:05:40] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[12:05:40] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[12:05:40]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[12:05:40] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[12:05:40] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[12:05:40] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:05:40] [SceneGame] 送信: ID=1 Pos=(10.9,0.5,71.9) Interval=16ms
+[12:05:41] [Discovery/Listener] 生存確認 ループ:750
+[12:05:41] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:05:41] [UpdateChaserLights] ライト収集完了: 1 個
+[12:05:42] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:05:43] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[12:05:43] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[12:05:43]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[12:05:43] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[12:05:43] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[12:05:43] [Runner::Update] ID=1 通常状態: Frozen=0 Amount=0.000 Speed=0.036
+[12:05:43] [SceneGame] 送信: ID=1 Pos=(10.9,0.5,71.9) Interval=16ms
+[12:05:44] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:05:44] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:05:44] [UpdateChaserLights] ライト収集完了: 1 個
+[12:05:45] [Discovery/Advertiser] 送信データ: port=12876 player=3/8 state=1 name='K'
+[12:05:45] [Discovery/Advertiser] ブロードキャスト送信 #15: サイズ=19 bytes (port=12876)
+[12:05:45] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[12:05:45] [Discovery/Listener] マジック一致確認
+[12:05:45] [Discovery/Listener] プロトコルバージョン: 256
+[12:05:45] [Discovery/Listener] ポート（変換後）: 12876
+[12:05:45] [Discovery/Listener] プレイヤー数: 3
+[12:05:45] [Discovery/Listener] 最大プレイヤー数: 8
+[12:05:45] [Discovery/Listener] ステート: 1
+[12:05:45] [Discovery/Listener] 名前の長さ: 1
+[12:05:45] [Discovery/Listener] サーバー名: 'K'
+[12:05:45] [Discovery/Listener] ★サーバー検出★: K @ 172.20.145.8:12876 (3/8) state=1
+[12:05:45] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:05:45] [Chaser::UpdateLightMatrices] ID=3 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
+[12:05:45] [Chaser::UpdateLight] ID=3 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=No
+[12:05:45] [RenderShadowMaps] ========== 開始 ==========
+[12:05:45] [RenderShadowMaps] m_players数=3 ローカルID=1 ローカルRole=逃げる側
+[12:05:45] [RenderShadowMaps] m_playersの内容:
+[12:05:45]   Player[1]: Exists=Yes Role=逃げる側 Ptr=0C8B3F50
+[12:05:45]   Player[2]: Exists=Yes Role=逃げる側 Ptr=1B4E0000
+[12:05:45]   Player[3]: Exists=Yes Role=鬼 Ptr=0C8B0A18
+[12:05:45] [RenderShadowMaps] m_pLocalPlayer: Ptr=0C8B3F50 IsLocal=Yes
+[12:05:45] [RenderShadowMaps] ループ開始: Player[1]
+[12:05:45] [RenderShadowMaps] スキップ: Player[1] - 役割が鬼ではない（逃げる側）
+[12:05:45] [RenderShadowMaps] ループ開始: Player[2]
+[12:05:45] [RenderShadowMaps] スキップ: Player[2] - 役割が鬼ではない（逃げる側）
+[12:05:45] [RenderShadowMaps] ループ開始: Player[3]
+[12:05:45] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成開始 ==========
+[12:05:45] [RenderShadowMaps] ライト行列設定: View._41=7.50, _42=-1.80, _43=72.50
+[12:05:45] [RenderShadowMaps] マップの深度描画
+[12:05:45] [Map::DrawMapDepth] 壁の数=36 行列: _41=6.29, _42=-1.51, _43=79.81
+[12:05:45] [RenderShadowMaps] プレイヤーの影描画開始（鬼[3]以外）
+[12:05:45]   Player[1]: DrawDepth呼び出し開始
+[12:05:45]   Player[1]: DrawDepth呼び出し完了
+[12:05:45]   Player[2]: DrawDepth呼び出し開始
+[12:05:45]   Player[2]: DrawDepth呼び出し完了
+[12:05:45]   Player[3]: スキップ（鬼自身）
+[12:05:45]   LocalPlayer[1]: スキップ（m_playersに登録済み）
+[12:05:45] [RenderShadowMaps] プレイヤーの影描画完了: 2体描画
+[12:05:45] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成完了 ==========
+[12:05:45] [RenderShadowMaps] 完了: シャドウマップ生成数=1
+[12:05:45] [RenderShadowMaps] ========== 終了 ==========
+[12:05:45] [SceneGame::UpdateRemotePlayers] リモート鬼 ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:05:46] [Discovery/Listener] 生存確認 ループ:800
+[12:05:46] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[12:05:46] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[12:05:46]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[12:05:46] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[12:05:46] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[12:05:46] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:05:46] [SceneGame] 送信: ID=1 Pos=(10.9,0.5,71.9) Interval=16ms
+[12:05:47] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:05:47] [UpdateChaserLights] ライト収集完了: 1 個
+[12:05:48] [Runner::Update] ID=1 通常状態: Frozen=0 Amount=0.000 Speed=0.032
+[12:05:48] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:05:49] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[12:05:49] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[12:05:49]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[12:05:49] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[12:05:49] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[12:05:49] [SceneGame] 送信: ID=1 Pos=(10.9,0.5,71.9) Interval=16ms
+[12:05:50] [Discovery/Advertiser] 送信データ: port=12876 player=3/8 state=1 name='K'
+[12:05:50] [Discovery/Advertiser] ブロードキャスト送信 #16: サイズ=19 bytes (port=12876)
+[12:05:50] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[12:05:50] [Discovery/Listener] マジック一致確認
+[12:05:50] [Discovery/Listener] プロトコルバージョン: 256
+[12:05:50] [Discovery/Listener] ポート（変換後）: 12876
+[12:05:50] [Discovery/Listener] プレイヤー数: 3
+[12:05:50] [Discovery/Listener] 最大プレイヤー数: 8
+[12:05:50] [Discovery/Listener] ステート: 1
+[12:05:50] [Discovery/Listener] 名前の長さ: 1
+[12:05:50] [Discovery/Listener] サーバー名: 'K'
+[12:05:50] [Discovery/Listener] ★サーバー検出★: K @ 172.20.145.8:12876 (3/8) state=1
+[12:05:50] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:05:50] [Chaser::UpdateLightMatrices] ID=3 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
+[12:05:50] [Chaser::UpdateLight] ID=3 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=No
+[12:05:50] [RenderShadowMaps] ========== 開始 ==========
+[12:05:50] [RenderShadowMaps] m_players数=3 ローカルID=1 ローカルRole=逃げる側
+[12:05:50] [RenderShadowMaps] m_playersの内容:
+[12:05:50]   Player[1]: Exists=Yes Role=逃げる側 Ptr=0C8B3F50
+[12:05:50]   Player[2]: Exists=Yes Role=逃げる側 Ptr=1B4E0000
+[12:05:50]   Player[3]: Exists=Yes Role=鬼 Ptr=0C8B0A18
+[12:05:50] [RenderShadowMaps] m_pLocalPlayer: Ptr=0C8B3F50 IsLocal=Yes
+[12:05:50] [RenderShadowMaps] ループ開始: Player[1]
+[12:05:50] [RenderShadowMaps] スキップ: Player[1] - 役割が鬼ではない（逃げる側）
+[12:05:50] [RenderShadowMaps] ループ開始: Player[2]
+[12:05:50] [RenderShadowMaps] スキップ: Player[2] - 役割が鬼ではない（逃げる側）
+[12:05:50] [RenderShadowMaps] ループ開始: Player[3]
+[12:05:50] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成開始 ==========
+[12:05:50] [RenderShadowMaps] ライト行列設定: View._41=7.50, _42=-1.80, _43=72.50
+[12:05:50] [RenderShadowMaps] マップの深度描画
+[12:05:50] [Map::DrawMapDepth] 壁の数=36 行列: _41=6.29, _42=-1.51, _43=79.81
+[12:05:50] [RenderShadowMaps] プレイヤーの影描画開始（鬼[3]以外）
+[12:05:50]   Player[1]: DrawDepth呼び出し開始
+[12:05:50]   Player[1]: DrawDepth呼び出し完了
+[12:05:50]   Player[2]: DrawDepth呼び出し開始
+[12:05:50]   Player[2]: DrawDepth呼び出し完了
+[12:05:50]   Player[3]: スキップ（鬼自身）
+[12:05:50]   LocalPlayer[1]: スキップ（m_playersに登録済み）
+[12:05:50] [RenderShadowMaps] プレイヤーの影描画完了: 2体描画
+[12:05:50] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成完了 ==========
+[12:05:50] [RenderShadowMaps] 完了: シャドウマップ生成数=1
+[12:05:50] [RenderShadowMaps] ========== 終了 ==========
+[12:05:50] [SceneGame::UpdateRemotePlayers] リモート鬼 ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:05:50] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:05:50] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:05:50] [UpdateChaserLights] ライト収集完了: 1 個
+[12:05:51] [Discovery/Listener] 生存確認 ループ:850
+[12:05:52] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[12:05:52] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[12:05:52]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[12:05:52] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[12:05:52] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[12:05:52] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:05:52] [SceneGame] 送信: ID=1 Pos=(10.9,0.5,71.9) Interval=16ms
+[12:05:53] [Runner::Update] ID=1 通常状態: Frozen=0 Amount=0.000 Speed=0.036
+[12:05:53] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:05:53] [UpdateChaserLights] ライト収集完了: 1 個
+[12:05:54] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:05:55] [Discovery/Advertiser] 送信データ: port=12876 player=3/8 state=1 name='K'
+[12:05:55] [Discovery/Advertiser] ブロードキャスト送信 #17: サイズ=19 bytes (port=12876)
+[12:05:55] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[12:05:55] [Discovery/Listener] マジック一致確認
+[12:05:55] [Discovery/Listener] プロトコルバージョン: 256
+[12:05:55] [Discovery/Listener] ポート（変換後）: 12876
+[12:05:55] [Discovery/Listener] プレイヤー数: 3
+[12:05:55] [Discovery/Listener] 最大プレイヤー数: 8
+[12:05:55] [Discovery/Listener] ステート: 1
+[12:05:55] [Discovery/Listener] 名前の長さ: 1
+[12:05:55] [Discovery/Listener] サーバー名: 'K'
+[12:05:55] [Discovery/Listener] ★サーバー検出★: K @ 172.20.145.8:12876 (3/8) state=1
+[12:05:55] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:05:55] [Chaser::UpdateLightMatrices] ID=3 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
+[12:05:55] [Chaser::UpdateLight] ID=3 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=No
+[12:05:55] [RenderShadowMaps] ========== 開始 ==========
+[12:05:55] [RenderShadowMaps] m_players数=3 ローカルID=1 ローカルRole=逃げる側
+[12:05:55] [RenderShadowMaps] m_playersの内容:
+[12:05:55]   Player[1]: Exists=Yes Role=逃げる側 Ptr=0C8B3F50
+[12:05:55]   Player[2]: Exists=Yes Role=逃げる側 Ptr=1B4E0000
+[12:05:55]   Player[3]: Exists=Yes Role=鬼 Ptr=0C8B0A18
+[12:05:55] [RenderShadowMaps] m_pLocalPlayer: Ptr=0C8B3F50 IsLocal=Yes
+[12:05:55] [RenderShadowMaps] ループ開始: Player[1]
+[12:05:55] [RenderShadowMaps] スキップ: Player[1] - 役割が鬼ではない（逃げる側）
+[12:05:55] [RenderShadowMaps] ループ開始: Player[2]
+[12:05:55] [RenderShadowMaps] スキップ: Player[2] - 役割が鬼ではない（逃げる側）
+[12:05:55] [RenderShadowMaps] ループ開始: Player[3]
+[12:05:55] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成開始 ==========
+[12:05:55] [RenderShadowMaps] ライト行列設定: View._41=7.50, _42=-1.80, _43=72.50
+[12:05:55] [RenderShadowMaps] マップの深度描画
+[12:05:55] [Map::DrawMapDepth] 壁の数=36 行列: _41=6.29, _42=-1.51, _43=79.81
+[12:05:55] [RenderShadowMaps] プレイヤーの影描画開始（鬼[3]以外）
+[12:05:55]   Player[1]: DrawDepth呼び出し開始
+[12:05:55]   Player[1]: DrawDepth呼び出し完了
+[12:05:55]   Player[2]: DrawDepth呼び出し開始
+[12:05:55]   Player[2]: DrawDepth呼び出し完了
+[12:05:55]   Player[3]: スキップ（鬼自身）
+[12:05:55]   LocalPlayer[1]: スキップ（m_playersに登録済み）
+[12:05:55] [RenderShadowMaps] プレイヤーの影描画完了: 2体描画
+[12:05:55] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成完了 ==========
+[12:05:55] [RenderShadowMaps] 完了: シャドウマップ生成数=1
+[12:05:55] [RenderShadowMaps] ========== 終了 ==========
+[12:05:55] [SceneGame::UpdateRemotePlayers] リモート鬼 ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:05:55] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[12:05:55] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[12:05:55]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[12:05:55] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[12:05:55] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[12:05:55] [SceneGame] 送信: ID=1 Pos=(10.9,0.5,71.9) Interval=16ms
+[12:05:56] [Discovery/Listener] 生存確認 ループ:900
+[12:05:56] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:05:56] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:05:56] [UpdateChaserLights] ライト収集完了: 1 個
+[12:05:58] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[12:05:58] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[12:05:58]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[12:05:58] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[12:05:58] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[12:05:58] [Runner::Update] ID=1 通常状態: Frozen=0 Amount=0.000 Speed=0.036
+[12:05:58] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:05:58] [SceneGame] 送信: ID=1 Pos=(10.9,0.5,71.9) Interval=16ms
+[12:05:59] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:05:59] [UpdateChaserLights] ライト収集完了: 1 個
+[12:06:00] [Discovery/Advertiser] 送信データ: port=12876 player=3/8 state=1 name='K'
+[12:06:00] [Discovery/Advertiser] ブロードキャスト送信 #18: サイズ=19 bytes (port=12876)
+[12:06:00] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[12:06:00] [Discovery/Listener] マジック一致確認
+[12:06:00] [Discovery/Listener] プロトコルバージョン: 256
+[12:06:00] [Discovery/Listener] ポート（変換後）: 12876
+[12:06:00] [Discovery/Listener] プレイヤー数: 3
+[12:06:00] [Discovery/Listener] 最大プレイヤー数: 8
+[12:06:00] [Discovery/Listener] ステート: 1
+[12:06:00] [Discovery/Listener] 名前の長さ: 1
+[12:06:00] [Discovery/Listener] サーバー名: 'K'
+[12:06:00] [Discovery/Listener] ★サーバー検出★: K @ 172.20.145.8:12876 (3/8) state=1
+[12:06:00] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:06:00] [Chaser::UpdateLightMatrices] ID=3 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
+[12:06:00] [Chaser::UpdateLight] ID=3 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=No
+[12:06:00] [SceneGame::UpdateRemotePlayers] リモート鬼 ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:06:00] [RenderShadowMaps] ========== 開始 ==========
+[12:06:00] [RenderShadowMaps] m_players数=3 ローカルID=1 ローカルRole=逃げる側
+[12:06:00] [RenderShadowMaps] m_playersの内容:
+[12:06:00]   Player[1]: Exists=Yes Role=逃げる側 Ptr=0C8B3F50
+[12:06:00]   Player[2]: Exists=Yes Role=逃げる側 Ptr=1B4E0000
+[12:06:00]   Player[3]: Exists=Yes Role=鬼 Ptr=0C8B0A18
+[12:06:00] [RenderShadowMaps] m_pLocalPlayer: Ptr=0C8B3F50 IsLocal=Yes
+[12:06:00] [RenderShadowMaps] ループ開始: Player[1]
+[12:06:00] [RenderShadowMaps] スキップ: Player[1] - 役割が鬼ではない（逃げる側）
+[12:06:00] [RenderShadowMaps] ループ開始: Player[2]
+[12:06:00] [RenderShadowMaps] スキップ: Player[2] - 役割が鬼ではない（逃げる側）
+[12:06:00] [RenderShadowMaps] ループ開始: Player[3]
+[12:06:00] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成開始 ==========
+[12:06:00] [RenderShadowMaps] ライト行列設定: View._41=7.50, _42=-1.80, _43=72.50
+[12:06:00] [RenderShadowMaps] マップの深度描画
+[12:06:00] [Map::DrawMapDepth] 壁の数=36 行列: _41=6.29, _42=-1.51, _43=79.81
+[12:06:00] [RenderShadowMaps] プレイヤーの影描画開始（鬼[3]以外）
+[12:06:00]   Player[1]: DrawDepth呼び出し開始
+[12:06:00]   Player[1]: DrawDepth呼び出し完了
+[12:06:00]   Player[2]: DrawDepth呼び出し開始
+[12:06:00]   Player[2]: DrawDepth呼び出し完了
+[12:06:00]   Player[3]: スキップ（鬼自身）
+[12:06:00]   LocalPlayer[1]: スキップ（m_playersに登録済み）
+[12:06:00] [RenderShadowMaps] プレイヤーの影描画完了: 2体描画
+[12:06:00] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成完了 ==========
+[12:06:00] [RenderShadowMaps] 完了: シャドウマップ生成数=1
+[12:06:00] [RenderShadowMaps] ========== 終了 ==========
+[12:06:00] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:06:01] [Discovery/Listener] 生存確認 ループ:950
+[12:06:01] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[12:06:01] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[12:06:01]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[12:06:01] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[12:06:01] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[12:06:02] [SceneGame] 送信: ID=1 Pos=(10.9,0.5,71.9) Interval=16ms
+[12:06:02] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:06:02] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:06:02] [UpdateChaserLights] ライト収集完了: 1 個
+[12:06:03] [Runner::Update] ID=1 通常状態: Frozen=0 Amount=0.000 Speed=0.040
+[12:06:04] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[12:06:04] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[12:06:04]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[12:06:04] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[12:06:04] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[12:06:04] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:06:05] [SceneGame] 送信: ID=1 Pos=(10.9,0.5,71.9) Interval=16ms
+[12:06:05] [Discovery/Advertiser] 送信データ: port=12876 player=3/8 state=1 name='K'
+[12:06:05] [Discovery/Advertiser] ブロードキャスト送信 #19: サイズ=19 bytes (port=12876)
+[12:06:05] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[12:06:05] [Discovery/Listener] マジック一致確認
+[12:06:05] [Discovery/Listener] プロトコルバージョン: 256
+[12:06:05] [Discovery/Listener] ポート（変換後）: 12876
+[12:06:05] [Discovery/Listener] プレイヤー数: 3
+[12:06:05] [Discovery/Listener] 最大プレイヤー数: 8
+[12:06:05] [Discovery/Listener] ステート: 1
+[12:06:05] [Discovery/Listener] 名前の長さ: 1
+[12:06:05] [Discovery/Listener] サーバー名: 'K'
+[12:06:05] [Discovery/Listener] ★サーバー検出★: K @ 172.20.145.8:12876 (3/8) state=1
+[12:06:05] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:06:05] [Chaser::UpdateLightMatrices] ID=3 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
+[12:06:05] [Chaser::UpdateLight] ID=3 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=No
+[12:06:05] [SceneGame::UpdateRemotePlayers] リモート鬼 ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:06:05] [RenderShadowMaps] ========== 開始 ==========
+[12:06:05] [RenderShadowMaps] m_players数=3 ローカルID=1 ローカルRole=逃げる側
+[12:06:05] [RenderShadowMaps] m_playersの内容:
+[12:06:05]   Player[1]: Exists=Yes Role=逃げる側 Ptr=0C8B3F50
+[12:06:05]   Player[2]: Exists=Yes Role=逃げる側 Ptr=1B4E0000
+[12:06:05]   Player[3]: Exists=Yes Role=鬼 Ptr=0C8B0A18
+[12:06:05] [RenderShadowMaps] m_pLocalPlayer: Ptr=0C8B3F50 IsLocal=Yes
+[12:06:05] [RenderShadowMaps] ループ開始: Player[1]
+[12:06:05] [RenderShadowMaps] スキップ: Player[1] - 役割が鬼ではない（逃げる側）
+[12:06:05] [RenderShadowMaps] ループ開始: Player[2]
+[12:06:05] [RenderShadowMaps] スキップ: Player[2] - 役割が鬼ではない（逃げる側）
+[12:06:05] [RenderShadowMaps] ループ開始: Player[3]
+[12:06:05] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成開始 ==========
+[12:06:05] [RenderShadowMaps] ライト行列設定: View._41=7.50, _42=-1.80, _43=72.50
+[12:06:05] [RenderShadowMaps] マップの深度描画
+[12:06:05] [Map::DrawMapDepth] 壁の数=36 行列: _41=6.29, _42=-1.51, _43=79.81
+[12:06:05] [RenderShadowMaps] プレイヤーの影描画開始（鬼[3]以外）
+[12:06:05]   Player[1]: DrawDepth呼び出し開始
+[12:06:05]   Player[1]: DrawDepth呼び出し完了
+[12:06:05]   Player[2]: DrawDepth呼び出し開始
+[12:06:05]   Player[2]: DrawDepth呼び出し完了
+[12:06:05]   Player[3]: スキップ（鬼自身）
+[12:06:05]   LocalPlayer[1]: スキップ（m_playersに登録済み）
+[12:06:05] [RenderShadowMaps] プレイヤーの影描画完了: 2体描画
+[12:06:05] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成完了 ==========
+[12:06:05] [RenderShadowMaps] 完了: シャドウマップ生成数=1
+[12:06:05] [RenderShadowMaps] ========== 終了 ==========
+[12:06:05] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:06:05] [UpdateChaserLights] ライト収集完了: 1 個
+[12:06:06] [Discovery/Listener] 生存確認 ループ:1000
+[12:06:06] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:06:07] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[12:06:07] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[12:06:07]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[12:06:07] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[12:06:07] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[12:06:08] [SceneGame] 送信: ID=1 Pos=(10.9,0.5,71.9) Interval=16ms
+[12:06:08] [Runner::Update] ID=1 通常状態: Frozen=0 Amount=0.000 Speed=0.036
+[12:06:08] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:06:08] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:06:08] [UpdateChaserLights] ライト収集完了: 1 個
+[12:06:10] [Discovery/Advertiser] 送信データ: port=12876 player=3/8 state=1 name='K'
+[12:06:10] [Discovery/Advertiser] ブロードキャスト送信 #20: サイズ=19 bytes (port=12876)
+[12:06:10] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[12:06:10] [Discovery/Listener] マジック一致確認
+[12:06:10] [Discovery/Listener] プロトコルバージョン: 256
+[12:06:10] [Discovery/Listener] ポート（変換後）: 12876
+[12:06:10] [Discovery/Listener] プレイヤー数: 3
+[12:06:10] [Discovery/Listener] 最大プレイヤー数: 8
+[12:06:10] [Discovery/Listener] ステート: 1
+[12:06:10] [Discovery/Listener] 名前の長さ: 1
+[12:06:10] [Discovery/Listener] サーバー名: 'K'
+[12:06:10] [Discovery/Listener] ★サーバー検出★: K @ 172.20.145.8:12876 (3/8) state=1
+[12:06:10] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:06:10] [Chaser::UpdateLightMatrices] ID=3 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
+[12:06:10] [Chaser::UpdateLight] ID=3 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=No
+[12:06:10] [SceneGame::UpdateRemotePlayers] リモート鬼 ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:06:10] [RenderShadowMaps] ========== 開始 ==========
+[12:06:10] [RenderShadowMaps] m_players数=3 ローカルID=1 ローカルRole=逃げる側
+[12:06:10] [RenderShadowMaps] m_playersの内容:
+[12:06:10]   Player[1]: Exists=Yes Role=逃げる側 Ptr=0C8B3F50
+[12:06:10]   Player[2]: Exists=Yes Role=逃げる側 Ptr=1B4E0000
+[12:06:10]   Player[3]: Exists=Yes Role=鬼 Ptr=0C8B0A18
+[12:06:10] [RenderShadowMaps] m_pLocalPlayer: Ptr=0C8B3F50 IsLocal=Yes
+[12:06:10] [RenderShadowMaps] ループ開始: Player[1]
+[12:06:10] [RenderShadowMaps] スキップ: Player[1] - 役割が鬼ではない（逃げる側）
+[12:06:10] [RenderShadowMaps] ループ開始: Player[2]
+[12:06:10] [RenderShadowMaps] スキップ: Player[2] - 役割が鬼ではない（逃げる側）
+[12:06:10] [RenderShadowMaps] ループ開始: Player[3]
+[12:06:10] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成開始 ==========
+[12:06:10] [RenderShadowMaps] ライト行列設定: View._41=7.50, _42=-1.80, _43=72.50
+[12:06:10] [RenderShadowMaps] マップの深度描画
+[12:06:10] [Map::DrawMapDepth] 壁の数=36 行列: _41=6.29, _42=-1.51, _43=79.81
+[12:06:10] [RenderShadowMaps] プレイヤーの影描画開始（鬼[3]以外）
+[12:06:10]   Player[1]: DrawDepth呼び出し開始
+[12:06:10]   Player[1]: DrawDepth呼び出し完了
+[12:06:10]   Player[2]: DrawDepth呼び出し開始
+[12:06:10]   Player[2]: DrawDepth呼び出し完了
+[12:06:10]   Player[3]: スキップ（鬼自身）
+[12:06:10]   LocalPlayer[1]: スキップ（m_playersに登録済み）
+[12:06:10] [RenderShadowMaps] プレイヤーの影描画完了: 2体描画
+[12:06:10] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成完了 ==========
+[12:06:10] [RenderShadowMaps] 完了: シャドウマップ生成数=1
+[12:06:10] [RenderShadowMaps] ========== 終了 ==========
+[12:06:10] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[12:06:10] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[12:06:10]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[12:06:10] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[12:06:10] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[12:06:10] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:06:11] [SceneGame] 送信: ID=1 Pos=(10.9,0.5,71.9) Interval=16ms
+[12:06:11] [Discovery/Listener] 生存確認 ループ:1050
+[12:06:11] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:06:11] [UpdateChaserLights] ライト収集完了: 1 個
+[12:06:12] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:06:13] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[12:06:13] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[12:06:13]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[12:06:13] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[12:06:13] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[12:06:13] [Runner::Update] ID=1 通常状態: Frozen=0 Amount=0.000 Speed=0.036
+[12:06:14] [SceneGame] 送信: ID=1 Pos=(10.9,0.5,71.9) Interval=16ms
+[12:06:14] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:06:14] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:06:14] [UpdateChaserLights] ライト収集完了: 1 個
+[12:06:15] [Discovery/Advertiser] 送信データ: port=12876 player=3/8 state=1 name='K'
+[12:06:15] [Discovery/Advertiser] ブロードキャスト送信 #21: サイズ=19 bytes (port=12876)
+[12:06:15] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[12:06:15] [Discovery/Listener] マジック一致確認
+[12:06:15] [Discovery/Listener] プロトコルバージョン: 256
+[12:06:15] [Discovery/Listener] ポート（変換後）: 12876
+[12:06:15] [Discovery/Listener] プレイヤー数: 3
+[12:06:15] [Discovery/Listener] 最大プレイヤー数: 8
+[12:06:15] [Discovery/Listener] ステート: 1
+[12:06:15] [Discovery/Listener] 名前の長さ: 1
+[12:06:15] [Discovery/Listener] サーバー名: 'K'
+[12:06:15] [Discovery/Listener] ★サーバー検出★: K @ 172.20.145.8:12876 (3/8) state=1
+[12:06:15] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:06:15] [Chaser::UpdateLightMatrices] ID=3 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
+[12:06:15] [Chaser::UpdateLight] ID=3 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=No
+[12:06:15] [SceneGame::UpdateRemotePlayers] リモート鬼 ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:06:15] [RenderShadowMaps] ========== 開始 ==========
+[12:06:15] [RenderShadowMaps] m_players数=3 ローカルID=1 ローカルRole=逃げる側
+[12:06:15] [RenderShadowMaps] m_playersの内容:
+[12:06:15]   Player[1]: Exists=Yes Role=逃げる側 Ptr=0C8B3F50
+[12:06:15]   Player[2]: Exists=Yes Role=逃げる側 Ptr=1B4E0000
+[12:06:15]   Player[3]: Exists=Yes Role=鬼 Ptr=0C8B0A18
+[12:06:15] [RenderShadowMaps] m_pLocalPlayer: Ptr=0C8B3F50 IsLocal=Yes
+[12:06:15] [RenderShadowMaps] ループ開始: Player[1]
+[12:06:15] [RenderShadowMaps] スキップ: Player[1] - 役割が鬼ではない（逃げる側）
+[12:06:15] [RenderShadowMaps] ループ開始: Player[2]
+[12:06:15] [RenderShadowMaps] スキップ: Player[2] - 役割が鬼ではない（逃げる側）
+[12:06:15] [RenderShadowMaps] ループ開始: Player[3]
+[12:06:15] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成開始 ==========
+[12:06:15] [RenderShadowMaps] ライト行列設定: View._41=7.50, _42=-1.80, _43=72.50
+[12:06:15] [RenderShadowMaps] マップの深度描画
+[12:06:15] [Map::DrawMapDepth] 壁の数=36 行列: _41=6.29, _42=-1.51, _43=79.81
+[12:06:15] [RenderShadowMaps] プレイヤーの影描画開始（鬼[3]以外）
+[12:06:15]   Player[1]: DrawDepth呼び出し開始
+[12:06:15]   Player[1]: DrawDepth呼び出し完了
+[12:06:15]   Player[2]: DrawDepth呼び出し開始
+[12:06:15]   Player[2]: DrawDepth呼び出し完了
+[12:06:15]   Player[3]: スキップ（鬼自身）
+[12:06:15]   LocalPlayer[1]: スキップ（m_playersに登録済み）
+[12:06:15] [RenderShadowMaps] プレイヤーの影描画完了: 2体描画
+[12:06:15] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成完了 ==========
+[12:06:15] [RenderShadowMaps] 完了: シャドウマップ生成数=1
+[12:06:15] [RenderShadowMaps] ========== 終了 ==========
+[12:06:16] [Discovery/Listener] 生存確認 ループ:1100
+[12:06:16] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[12:06:16] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[12:06:16]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[12:06:16] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[12:06:16] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[12:06:16] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:06:17] [SceneGame] 送信: ID=1 Pos=(10.9,0.5,71.9) Interval=16ms
+[12:06:17] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:06:17] [UpdateChaserLights] ライト収集完了: 1 個
+[12:06:18] [Runner::Update] ID=1 通常状態: Frozen=0 Amount=0.000 Speed=0.032
+[12:06:18] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:06:19] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[12:06:19] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[12:06:19]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[12:06:19] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[12:06:19] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[12:06:20] [SceneGame] 送信: ID=1 Pos=(10.9,0.5,71.9) Interval=16ms
+[12:06:20] [Discovery/Advertiser] 送信データ: port=12876 player=3/8 state=1 name='K'
+[12:06:20] [Discovery/Advertiser] ブロードキャスト送信 #22: サイズ=19 bytes (port=12876)
+[12:06:20] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[12:06:20] [Discovery/Listener] マジック一致確認
+[12:06:20] [Discovery/Listener] プロトコルバージョン: 256
+[12:06:20] [Discovery/Listener] ポート（変換後）: 12876
+[12:06:20] [Discovery/Listener] プレイヤー数: 3
+[12:06:20] [Discovery/Listener] 最大プレイヤー数: 8
+[12:06:20] [Discovery/Listener] ステート: 1
+[12:06:20] [Discovery/Listener] 名前の長さ: 1
+[12:06:20] [Discovery/Listener] サーバー名: 'K'
+[12:06:20] [Discovery/Listener] ★サーバー検出★: K @ 172.20.145.8:12876 (3/8) state=1
+[12:06:20] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:06:20] [Chaser::UpdateLightMatrices] ID=3 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
+[12:06:20] [Chaser::UpdateLight] ID=3 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=No
+[12:06:20] [SceneGame::UpdateRemotePlayers] リモート鬼 ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:06:20] [RenderShadowMaps] ========== 開始 ==========
+[12:06:20] [RenderShadowMaps] m_players数=3 ローカルID=1 ローカルRole=逃げる側
+[12:06:20] [RenderShadowMaps] m_playersの内容:
+[12:06:20]   Player[1]: Exists=Yes Role=逃げる側 Ptr=0C8B3F50
+[12:06:20]   Player[2]: Exists=Yes Role=逃げる側 Ptr=1B4E0000
+[12:06:20]   Player[3]: Exists=Yes Role=鬼 Ptr=0C8B0A18
+[12:06:20] [RenderShadowMaps] m_pLocalPlayer: Ptr=0C8B3F50 IsLocal=Yes
+[12:06:20] [RenderShadowMaps] ループ開始: Player[1]
+[12:06:20] [RenderShadowMaps] スキップ: Player[1] - 役割が鬼ではない（逃げる側）
+[12:06:20] [RenderShadowMaps] ループ開始: Player[2]
+[12:06:20] [RenderShadowMaps] スキップ: Player[2] - 役割が鬼ではない（逃げる側）
+[12:06:20] [RenderShadowMaps] ループ開始: Player[3]
+[12:06:20] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成開始 ==========
+[12:06:20] [RenderShadowMaps] ライト行列設定: View._41=7.50, _42=-1.80, _43=72.50
+[12:06:20] [RenderShadowMaps] マップの深度描画
+[12:06:20] [Map::DrawMapDepth] 壁の数=36 行列: _41=6.29, _42=-1.51, _43=79.81
+[12:06:20] [RenderShadowMaps] プレイヤーの影描画開始（鬼[3]以外）
+[12:06:20]   Player[1]: DrawDepth呼び出し開始
+[12:06:20]   Player[1]: DrawDepth呼び出し完了
+[12:06:20]   Player[2]: DrawDepth呼び出し開始
+[12:06:20]   Player[2]: DrawDepth呼び出し完了
+[12:06:20]   Player[3]: スキップ（鬼自身）
+[12:06:20]   LocalPlayer[1]: スキップ（m_playersに登録済み）
+[12:06:20] [RenderShadowMaps] プレイヤーの影描画完了: 2体描画
+[12:06:20] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成完了 ==========
+[12:06:20] [RenderShadowMaps] 完了: シャドウマップ生成数=1
+[12:06:20] [RenderShadowMaps] ========== 終了 ==========
+[12:06:20] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:06:20] [UpdateChaserLights] ライト収集完了: 1 個
+[12:06:20] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:06:21] [Discovery/Listener] 生存確認 ループ:1150
+[12:06:22] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[12:06:22] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[12:06:22]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[12:06:22] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[12:06:22] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[12:06:22] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:06:23] [SceneGame] 送信: ID=1 Pos=(10.9,0.5,71.9) Interval=16ms
+[12:06:23] [Runner::Update] ID=1 通常状態: Frozen=0 Amount=0.000 Speed=0.040
+[12:06:23] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:06:23] [UpdateChaserLights] ライト収集完了: 1 個
+[12:06:24] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:06:25] [Discovery/Advertiser] 送信データ: port=12876 player=3/8 state=1 name='K'
+[12:06:25] [Discovery/Advertiser] ブロードキャスト送信 #23: サイズ=19 bytes (port=12876)
+[12:06:25] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[12:06:25] [Discovery/Listener] マジック一致確認
+[12:06:25] [Discovery/Listener] プロトコルバージョン: 256
+[12:06:25] [Discovery/Listener] ポート（変換後）: 12876
+[12:06:25] [Discovery/Listener] プレイヤー数: 3
+[12:06:25] [Discovery/Listener] 最大プレイヤー数: 8
+[12:06:25] [Discovery/Listener] ステート: 1
+[12:06:25] [Discovery/Listener] 名前の長さ: 1
+[12:06:25] [Discovery/Listener] サーバー名: 'K'
+[12:06:25] [Discovery/Listener] ★サーバー検出★: K @ 172.20.145.8:12876 (3/8) state=1
+[12:06:25] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:06:25] [Chaser::UpdateLightMatrices] ID=3 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
+[12:06:25] [Chaser::UpdateLight] ID=3 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=No
+[12:06:25] [SceneGame::UpdateRemotePlayers] リモート鬼 ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:06:25] [RenderShadowMaps] ========== 開始 ==========
+[12:06:25] [RenderShadowMaps] m_players数=3 ローカルID=1 ローカルRole=逃げる側
+[12:06:25] [RenderShadowMaps] m_playersの内容:
+[12:06:25]   Player[1]: Exists=Yes Role=逃げる側 Ptr=0C8B3F50
+[12:06:25]   Player[2]: Exists=Yes Role=逃げる側 Ptr=1B4E0000
+[12:06:25]   Player[3]: Exists=Yes Role=鬼 Ptr=0C8B0A18
+[12:06:25] [RenderShadowMaps] m_pLocalPlayer: Ptr=0C8B3F50 IsLocal=Yes
+[12:06:25] [RenderShadowMaps] ループ開始: Player[1]
+[12:06:25] [RenderShadowMaps] スキップ: Player[1] - 役割が鬼ではない（逃げる側）
+[12:06:25] [RenderShadowMaps] ループ開始: Player[2]
+[12:06:25] [RenderShadowMaps] スキップ: Player[2] - 役割が鬼ではない（逃げる側）
+[12:06:25] [RenderShadowMaps] ループ開始: Player[3]
+[12:06:25] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成開始 ==========
+[12:06:25] [RenderShadowMaps] ライト行列設定: View._41=7.50, _42=-1.80, _43=72.50
+[12:06:25] [RenderShadowMaps] マップの深度描画
+[12:06:25] [Map::DrawMapDepth] 壁の数=36 行列: _41=6.29, _42=-1.51, _43=79.81
+[12:06:25] [RenderShadowMaps] プレイヤーの影描画開始（鬼[3]以外）
+[12:06:25]   Player[1]: DrawDepth呼び出し開始
+[12:06:25]   Player[1]: DrawDepth呼び出し完了
+[12:06:25]   Player[2]: DrawDepth呼び出し開始
+[12:06:25]   Player[2]: DrawDepth呼び出し完了
+[12:06:25]   Player[3]: スキップ（鬼自身）
+[12:06:25]   LocalPlayer[1]: スキップ（m_playersに登録済み）
+[12:06:25] [RenderShadowMaps] プレイヤーの影描画完了: 2体描画
+[12:06:25] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成完了 ==========
+[12:06:25] [RenderShadowMaps] 完了: シャドウマップ生成数=1
+[12:06:25] [RenderShadowMaps] ========== 終了 ==========
+[12:06:25] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[12:06:25] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[12:06:25]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[12:06:25] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[12:06:25] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[12:06:26] [SceneGame] 送信: ID=1 Pos=(10.9,0.5,71.9) Interval=16ms
+[12:06:26] [Discovery/Listener] 生存確認 ループ:1200
+[12:06:26] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:06:26] [UpdateChaserLights] ライト収集完了: 1 個
+[12:06:27] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:06:28] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[12:06:28] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[12:06:28]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[12:06:28] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[12:06:28] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[12:06:28] [Runner::Update] ID=1 通常状態: Frozen=0 Amount=0.000 Speed=0.036
+[12:06:29] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:06:29] [SceneGame] 送信: ID=1 Pos=(10.9,0.5,71.9) Interval=16ms
+[12:06:29] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:06:29] [UpdateChaserLights] ライト収集完了: 1 個
+[12:06:30] [Discovery/Advertiser] 送信データ: port=12876 player=3/8 state=1 name='K'
+[12:06:30] [Discovery/Advertiser] ブロードキャスト送信 #24: サイズ=19 bytes (port=12876)
+[12:06:30] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[12:06:30] [Discovery/Listener] マジック一致確認
+[12:06:30] [Discovery/Listener] プロトコルバージョン: 256
+[12:06:30] [Discovery/Listener] ポート（変換後）: 12876
+[12:06:30] [Discovery/Listener] プレイヤー数: 3
+[12:06:30] [Discovery/Listener] 最大プレイヤー数: 8
+[12:06:30] [Discovery/Listener] ステート: 1
+[12:06:30] [Discovery/Listener] 名前の長さ: 1
+[12:06:30] [Discovery/Listener] サーバー名: 'K'
+[12:06:30] [Discovery/Listener] ★サーバー検出★: K @ 172.20.145.8:12876 (3/8) state=1
+[12:06:30] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:06:30] [Chaser::UpdateLightMatrices] ID=3 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
+[12:06:30] [Chaser::UpdateLight] ID=3 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=No
+[12:06:30] [SceneGame::UpdateRemotePlayers] リモート鬼 ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:06:30] [RenderShadowMaps] ========== 開始 ==========
+[12:06:30] [RenderShadowMaps] m_players数=3 ローカルID=1 ローカルRole=逃げる側
+[12:06:30] [RenderShadowMaps] m_playersの内容:
+[12:06:30]   Player[1]: Exists=Yes Role=逃げる側 Ptr=0C8B3F50
+[12:06:30]   Player[2]: Exists=Yes Role=逃げる側 Ptr=1B4E0000
+[12:06:30]   Player[3]: Exists=Yes Role=鬼 Ptr=0C8B0A18
+[12:06:30] [RenderShadowMaps] m_pLocalPlayer: Ptr=0C8B3F50 IsLocal=Yes
+[12:06:30] [RenderShadowMaps] ループ開始: Player[1]
+[12:06:30] [RenderShadowMaps] スキップ: Player[1] - 役割が鬼ではない（逃げる側）
+[12:06:30] [RenderShadowMaps] ループ開始: Player[2]
+[12:06:30] [RenderShadowMaps] スキップ: Player[2] - 役割が鬼ではない（逃げる側）
+[12:06:30] [RenderShadowMaps] ループ開始: Player[3]
+[12:06:30] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成開始 ==========
+[12:06:30] [RenderShadowMaps] ライト行列設定: View._41=7.50, _42=-1.80, _43=72.50
+[12:06:30] [RenderShadowMaps] マップの深度描画
+[12:06:30] [Map::DrawMapDepth] 壁の数=36 行列: _41=6.29, _42=-1.51, _43=79.81
+[12:06:30] [RenderShadowMaps] プレイヤーの影描画開始（鬼[3]以外）
+[12:06:30]   Player[1]: DrawDepth呼び出し開始
+[12:06:30]   Player[1]: DrawDepth呼び出し完了
+[12:06:30]   Player[2]: DrawDepth呼び出し開始
+[12:06:30]   Player[2]: DrawDepth呼び出し完了
+[12:06:30]   Player[3]: スキップ（鬼自身）
+[12:06:30]   LocalPlayer[1]: スキップ（m_playersに登録済み）
+[12:06:30] [RenderShadowMaps] プレイヤーの影描画完了: 2体描画
+[12:06:30] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成完了 ==========
+[12:06:30] [RenderShadowMaps] 完了: シャドウマップ生成数=1
+[12:06:30] [RenderShadowMaps] ========== 終了 ==========
+[12:06:31] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:06:31] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[12:06:31] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[12:06:31]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[12:06:31] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[12:06:31] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[12:06:31] [Discovery/Listener] 生存確認 ループ:1250
+[12:06:32] [SceneGame] 送信: ID=1 Pos=(10.9,0.5,71.9) Interval=16ms
+[12:06:32] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:06:32] [UpdateChaserLights] ライト収集完了: 1 個
+[12:06:33] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:06:33] [Runner::Update] ID=1 通常状態: Frozen=0 Amount=0.000 Speed=0.036
+[12:06:34] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[12:06:34] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[12:06:34]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[12:06:34] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[12:06:34] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[12:06:35] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:06:35] [SceneGame] 送信: ID=1 Pos=(10.9,0.5,71.9) Interval=16ms
+[12:06:35] [Discovery/Advertiser] 送信データ: port=12876 player=3/8 state=1 name='K'
+[12:06:35] [Discovery/Advertiser] ブロードキャスト送信 #25: サイズ=19 bytes (port=12876)
+[12:06:35] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[12:06:35] [Discovery/Listener] マジック一致確認
+[12:06:35] [Discovery/Listener] プロトコルバージョン: 256
+[12:06:35] [Discovery/Listener] ポート（変換後）: 12876
+[12:06:35] [Discovery/Listener] プレイヤー数: 3
+[12:06:35] [Discovery/Listener] 最大プレイヤー数: 8
+[12:06:35] [Discovery/Listener] ステート: 1
+[12:06:35] [Discovery/Listener] 名前の長さ: 1
+[12:06:35] [Discovery/Listener] サーバー名: 'K'
+[12:06:35] [Discovery/Listener] ★サーバー検出★: K @ 172.20.145.8:12876 (3/8) state=1
+[12:06:35] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:06:35] [Chaser::UpdateLightMatrices] ID=3 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
+[12:06:35] [Chaser::UpdateLight] ID=3 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=No
+[12:06:35] [SceneGame::UpdateRemotePlayers] リモート鬼 ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:06:35] [RenderShadowMaps] ========== 開始 ==========
+[12:06:35] [RenderShadowMaps] m_players数=3 ローカルID=1 ローカルRole=逃げる側
+[12:06:35] [RenderShadowMaps] m_playersの内容:
+[12:06:35]   Player[1]: Exists=Yes Role=逃げる側 Ptr=0C8B3F50
+[12:06:35]   Player[2]: Exists=Yes Role=逃げる側 Ptr=1B4E0000
+[12:06:35]   Player[3]: Exists=Yes Role=鬼 Ptr=0C8B0A18
+[12:06:35] [RenderShadowMaps] m_pLocalPlayer: Ptr=0C8B3F50 IsLocal=Yes
+[12:06:35] [RenderShadowMaps] ループ開始: Player[1]
+[12:06:35] [RenderShadowMaps] スキップ: Player[1] - 役割が鬼ではない（逃げる側）
+[12:06:35] [RenderShadowMaps] ループ開始: Player[2]
+[12:06:35] [RenderShadowMaps] スキップ: Player[2] - 役割が鬼ではない（逃げる側）
+[12:06:35] [RenderShadowMaps] ループ開始: Player[3]
+[12:06:35] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成開始 ==========
+[12:06:35] [RenderShadowMaps] ライト行列設定: View._41=7.50, _42=-1.80, _43=72.50
+[12:06:35] [RenderShadowMaps] マップの深度描画
+[12:06:35] [Map::DrawMapDepth] 壁の数=36 行列: _41=6.29, _42=-1.51, _43=79.81
+[12:06:35] [RenderShadowMaps] プレイヤーの影描画開始（鬼[3]以外）
+[12:06:35]   Player[1]: DrawDepth呼び出し開始
+[12:06:35]   Player[1]: DrawDepth呼び出し完了
+[12:06:35]   Player[2]: DrawDepth呼び出し開始
+[12:06:35]   Player[2]: DrawDepth呼び出し完了
+[12:06:35]   Player[3]: スキップ（鬼自身）
+[12:06:35]   LocalPlayer[1]: スキップ（m_playersに登録済み）
+[12:06:35] [RenderShadowMaps] プレイヤーの影描画完了: 2体描画
+[12:06:35] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成完了 ==========
+[12:06:35] [RenderShadowMaps] 完了: シャドウマップ生成数=1
+[12:06:35] [RenderShadowMaps] ========== 終了 ==========
+[12:06:35] [CharacterBase::Input] ID=1 左クリック検出！ KeyFlag=0x41
+[12:06:35] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:06:35] [UpdateChaserLights] ライト収集完了: 1 個
+[12:06:36] [Discovery/Listener] 生存確認 ループ:1300
+[12:06:37] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:06:37] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[12:06:37] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[12:06:37]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[12:06:37] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[12:06:37] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[12:06:38] [SceneGame] 送信: ID=1 Pos=(7.5,0.5,70.8) Interval=16ms
+[12:06:38] [Runner::Update] ID=1 通常状態: Frozen=0 Amount=0.000 Speed=0.036
+[12:06:38] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:06:38] [UpdateChaserLights] ライト収集完了: 1 個
+[12:06:39] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:06:40] [Discovery/Advertiser] 送信データ: port=12876 player=3/8 state=1 name='K'
+[12:06:40] [Discovery/Advertiser] ブロードキャスト送信 #26: サイズ=19 bytes (port=12876)
+[12:06:40] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[12:06:40] [Discovery/Listener] マジック一致確認
+[12:06:40] [Discovery/Listener] プロトコルバージョン: 256
+[12:06:40] [Discovery/Listener] ポート（変換後）: 12876
+[12:06:40] [Discovery/Listener] プレイヤー数: 3
+[12:06:40] [Discovery/Listener] 最大プレイヤー数: 8
+[12:06:40] [Discovery/Listener] ステート: 1
+[12:06:40] [Discovery/Listener] 名前の長さ: 1
+[12:06:40] [Discovery/Listener] サーバー名: 'K'
+[12:06:40] [Discovery/Listener] ★サーバー検出★: K @ 172.20.145.8:12876 (3/8) state=1
+[12:06:40] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:06:40] [Chaser::UpdateLightMatrices] ID=3 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
+[12:06:40] [Chaser::UpdateLight] ID=3 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=No
+[12:06:40] [SceneGame::UpdateRemotePlayers] リモート鬼 ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:06:40] [RenderShadowMaps] ========== 開始 ==========
+[12:06:40] [RenderShadowMaps] m_players数=3 ローカルID=1 ローカルRole=逃げる側
+[12:06:40] [RenderShadowMaps] m_playersの内容:
+[12:06:40]   Player[1]: Exists=Yes Role=逃げる側 Ptr=0C8B3F50
+[12:06:40]   Player[2]: Exists=Yes Role=逃げる側 Ptr=1B4E0000
+[12:06:40]   Player[3]: Exists=Yes Role=鬼 Ptr=0C8B0A18
+[12:06:40] [RenderShadowMaps] m_pLocalPlayer: Ptr=0C8B3F50 IsLocal=Yes
+[12:06:40] [RenderShadowMaps] ループ開始: Player[1]
+[12:06:40] [RenderShadowMaps] スキップ: Player[1] - 役割が鬼ではない（逃げる側）
+[12:06:40] [RenderShadowMaps] ループ開始: Player[2]
+[12:06:40] [RenderShadowMaps] スキップ: Player[2] - 役割が鬼ではない（逃げる側）
+[12:06:40] [RenderShadowMaps] ループ開始: Player[3]
+[12:06:40] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成開始 ==========
+[12:06:40] [RenderShadowMaps] ライト行列設定: View._41=7.50, _42=-1.80, _43=72.50
+[12:06:40] [RenderShadowMaps] マップの深度描画
+[12:06:40] [Map::DrawMapDepth] 壁の数=36 行列: _41=6.29, _42=-1.51, _43=79.81
+[12:06:40] [RenderShadowMaps] プレイヤーの影描画開始（鬼[3]以外）
+[12:06:40]   Player[1]: DrawDepth呼び出し開始
+[12:06:40]   Player[1]: DrawDepth呼び出し完了
+[12:06:40]   Player[2]: DrawDepth呼び出し開始
+[12:06:40]   Player[2]: DrawDepth呼び出し完了
+[12:06:40]   Player[3]: スキップ（鬼自身）
+[12:06:40]   LocalPlayer[1]: スキップ（m_playersに登録済み）
+[12:06:40] [RenderShadowMaps] プレイヤーの影描画完了: 2体描画
+[12:06:40] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成完了 ==========
+[12:06:40] [RenderShadowMaps] 完了: シャドウマップ生成数=1
+[12:06:40] [RenderShadowMaps] ========== 終了 ==========
+[12:06:40] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[12:06:40] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[12:06:40]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[12:06:40] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[12:06:40] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[12:06:41] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:06:41] [SceneGame] 送信: ID=1 Pos=(8.9,0.5,71.3) Interval=16ms
+[12:06:41] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:06:41] [UpdateChaserLights] ライト収集完了: 1 個
+[12:06:42] [Discovery/Listener] 生存確認 ループ:1350
+[12:06:43] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:06:43] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[12:06:43] [Runner::Update] ID=1 通常状態: Frozen=0 Amount=0.000 Speed=0.036
+[12:06:43] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[12:06:43]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[12:06:43] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[12:06:43] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[12:06:44] [SceneGame] 送信: ID=1 Pos=(11.5,0.5,72.1) Interval=16ms
+[12:06:45] [UpdateChaserLights] リモート鬼追加: ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:06:45] [UpdateChaserLights] ライト収集完了: 1 個
+[12:06:45] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:06:45] [Discovery/Advertiser] 送信データ: port=12876 player=3/8 state=1 name='K'
+[12:06:45] [Discovery/Advertiser] ブロードキャスト送信 #27: サイズ=19 bytes (port=12876)
+[12:06:45] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[12:06:45] [Discovery/Listener] マジック一致確認
+[12:06:45] [Discovery/Listener] プロトコルバージョン: 256
+[12:06:45] [Discovery/Listener] ポート（変換後）: 12876
+[12:06:45] [Discovery/Listener] プレイヤー数: 3
+[12:06:45] [Discovery/Listener] 最大プレイヤー数: 8
+[12:06:45] [Discovery/Listener] ステート: 1
+[12:06:45] [Discovery/Listener] 名前の長さ: 1
+[12:06:45] [Discovery/Listener] サーバー名: 'K'
+[12:06:45] [Discovery/Listener] ★サーバー検出★: K @ 172.20.145.8:12876 (3/8) state=1
+[12:06:45] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[12:06:45] [CharacterBase::Input] ID=1 左クリック検出！ KeyFlag=0x40
+[12:06:45] [Chaser::UpdateLightMatrices] ID=3 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
+[12:06:45] [Chaser::UpdateLight] ID=3 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=No
+[12:06:45] [SceneGame::UpdateRemotePlayers] リモート鬼 ID=3 LightIndex=0 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00)
+[12:06:45] [RenderShadowMaps] ========== 開始 ==========
+[12:06:45] [RenderShadowMaps] m_players数=3 ローカルID=1 ローカルRole=逃げる側
+[12:06:45] [RenderShadowMaps] m_playersの内容:
+[12:06:45]   Player[1]: Exists=Yes Role=逃げる側 Ptr=0C8B3F50
+[12:06:45]   Player[2]: Exists=Yes Role=逃げる側 Ptr=1B4E0000
+[12:06:45]   Player[3]: Exists=Yes Role=鬼 Ptr=0C8B0A18
+[12:06:45] [RenderShadowMaps] m_pLocalPlayer: Ptr=0C8B3F50 IsLocal=Yes
+[12:06:45] [RenderShadowMaps] ループ開始: Player[1]
+[12:06:45] [RenderShadowMaps] スキップ: Player[1] - 役割が鬼ではない（逃げる側）
+[12:06:45] [RenderShadowMaps] ループ開始: Player[2]
+[12:06:45] [RenderShadowMaps] スキップ: Player[2] - 役割が鬼ではない（逃げる側）
+[12:06:45] [RenderShadowMaps] ループ開始: Player[3]
+[12:06:45] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成開始 ==========
+[12:06:45] [RenderShadowMaps] ライト行列設定: View._41=7.50, _42=-1.80, _43=72.50
+[12:06:45] [RenderShadowMaps] マップの深度描画
+[12:06:45] [Map::DrawMapDepth] 壁の数=36 行列: _41=6.29, _42=-1.51, _43=79.81
+[12:06:45] [RenderShadowMaps] プレイヤーの影描画開始（鬼[3]以外）
+[12:06:45]   Player[1]: DrawDepth呼び出し開始
+[12:06:45]   Player[1]: DrawDepth呼び出し完了
+[12:06:45]   Player[2]: DrawDepth呼び出し開始
+[12:06:45]   Player[2]: DrawDepth呼び出し完了
+[12:06:45]   Player[3]: スキップ（鬼自身）
+[12:06:45]   LocalPlayer[1]: スキップ（m_playersに登録済み）
+[12:06:45] [RenderShadowMaps] プレイヤーの影描画完了: 2体描画
+[12:06:45] [RenderShadowMaps] ========== Chaser[3]のシャドウマップ生成完了 ==========
+[12:06:45] [RenderShadowMaps] 完了: シャドウマップ生成数=1
+[12:06:45] [RenderShadowMaps] ========== 終了 ==========
+[12:06:46] [CharacterBase::Input] ID=1 左クリック検出！ KeyFlag=0x42
+[12:06:46] [CharacterBase::Input] ID=1 左クリック検出！ KeyFlag=0x48
+[12:06:46] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[12:06:46] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[12:06:46]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[12:06:46] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[12:06:46] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[12:06:47] [Discovery/Listener] 生存確認 ループ:1400
+[12:06:47] [SceneGame::UpdateNetwork] ReceiveWorldState()呼び出し中 IsHost=1
+[12:06:47] [SceneGame] 送信: ID=1 Pos=(8.4,0.5,71.4) Interval=16ms
