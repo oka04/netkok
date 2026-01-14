@@ -760,20 +760,20 @@ void SceneGame::ProcessPlayerMelting()
 	// ★★★ 完全解凍時は即座にブロードキャスト（複数回送信）★★★
 	if (completelyMelted && m_pServer)
 	{
-		// 3回連続でブロードキャストして確実に届ける
-		for (int i = 0; i < 3; i++)
+		// 5回連続でブロードキャストして確実に届ける
+		for (int i = 0; i < 5; i++)
 		{
 			m_pServer->BroadcastWorldState();
 		}
 		m_lastWorldBroadcast = timeGetTime();
-		NET_LOG_F("[ProcessPlayerMelting] ★★★完全解凍により即座に3回ブロードキャスト★★★");
+		NET_LOG_F("[ProcessPlayerMelting] ★★★完全解凍により即座に5回ブロードキャスト★★★");
 	}
-	// ★★★ 解凍進行中も定期的にブロードキャスト（50ms間隔に短縮）★★★
+	// ★★★ 解凍進行中も高頻度でブロードキャスト（16ms間隔 = 約60Hz）★★★
 	else if (stateChanged && m_pServer)
 	{
 		static DWORD lastMeltingBroadcast = 0;
 		DWORD now = timeGetTime();
-		if (now - lastMeltingBroadcast > 50)
+		if (now - lastMeltingBroadcast > 16)
 		{
 			m_pServer->BroadcastWorldState();
 			m_lastWorldBroadcast = now;

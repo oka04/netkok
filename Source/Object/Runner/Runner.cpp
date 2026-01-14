@@ -493,39 +493,32 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 	CharacterBase::UpdateFromNetwork(state, light, deltaTime);
 
 	bool wasFrozen = m_bFrozen;
-	bool wasFullyMelted = m_bFullyMelted;
 	bool newFrozen = (state.frozen != 0);
+	float oldAmount = m_frozenAmount;
 	float netAmount = state.frozenAmount;
 
 	static std::map<uint32_t, DWORD> lastLogTime;
 	DWORD now = timeGetTime();
 
-	// ★★★ 重要: 完全解凍後に古い凍結状態を受信しても無視 ★★★
-	if (!wasFrozen && wasFullyMelted && m_frozenAmount >= 1.0f)
+	// ★★★ 重要: サーバーの状態を信頼する ★★★
+	// ★★★ 凍結解除が最優先 ★★★
+	if (wasFrozen && !newFrozen)
 	{
-		// 完全解凍済みの場合
-		if (newFrozen && netAmount < 0.5f)
-		{
-			// 古い凍結状態を無視
-			static std::map<uint32_t, DWORD> lastIgnoreLog;
-			if (now - lastIgnoreLog[m_clientId] > 1000)
-			{
-				NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 完全解凍済み - 古い凍結状態を無視 (server: frozen=%d amount=%.3f)",
-					m_clientId, newFrozen, netAmount);
-				lastIgnoreLog[m_clientId] = now;
-			}
-			return; // 状態を更新しない
-		}
-		else if (newFrozen && netAmount > 0.5f)
-		{
-			// 新規凍結として扱う（amountが0に近い値から再開）
-			NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 完全解凍後の新規凍結を検出", m_clientId);
-			// この場合は続行して処理
-		}
-	}
+		// 凍結解除
+		m_bFrozen = false;
+		m_frozenAmount = 1.0f;
+		m_bFullyMelted = true;
+		m_targetMeltPlayer = 0;
 
+		if (m_pIceBlock)
+		{
+			m_pIceBlock->SetMeltAmount(1.0f);
+		}
+
+		NET_LOG_F("[Runner::UpdateFromNetwork] ★★★ID=%u 凍結解除！★★★", m_clientId);
+	}
 	// ★★★ 新規凍結 ★★★
-	if (!wasFrozen && newFrozen)
+	else if (!wasFrozen && newFrozen)
 	{
 		m_bFrozen = true;
 		m_frozenAmount = netAmount;
@@ -539,13 +532,11 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 
 		NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 新規凍結 amount=%.3f", m_clientId, netAmount);
 	}
-	// ★★★ 凍結継続中 ★★★
+	// ★★★ 凍結継続中 - サーバーの値を常に適用 ★★★
 	else if (wasFrozen && newFrozen)
 	{
-		float oldAmount = m_frozenAmount;
-
-		// ★★★ サーバーの値が大きい場合のみ更新（解凍進行）★★★
-		if (netAmount > m_frozenAmount + 0.001f)
+		// ★★★ サーバーの値を常に適用（解凍進行を確実に反映）★★★
+		if (netAmount != m_frozenAmount)
 		{
 			m_frozenAmount = netAmount;
 
@@ -554,10 +545,9 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 				m_pIceBlock->SetMeltAmount(m_frozenAmount);
 			}
 
-			// ★★★ デバッグ: 解凍の進行を確認 ★★★
+			// ログ出力
 			static std::map<uint32_t, DWORD> lastLog;
-			DWORD now = timeGetTime();
-			if (now - lastLog[m_clientId] > 200)
+			if (now - lastLog[m_clientId] > 100)
 			{
 				NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 解凍更新: %.3f -> %.3f",
 					m_clientId, oldAmount, netAmount);
@@ -572,38 +562,9 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 				m_frozenAmount = 1.0f;
 				m_targetMeltPlayer = 0;
 
-				NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 完全解凍", m_clientId);
+				NET_LOG_F("[Runner::UpdateFromNetwork] ★★★ID=%u 完全解凍！★★★", m_clientId);
 			}
 		}
-		else if (netAmount < m_frozenAmount - 0.01f)
-		{
-			// ★★★ 解凍後退を防止（サーバーの値が小さい場合は無視）★★★
-			static std::map<uint32_t, DWORD> lastWarnLog;
-			DWORD now = timeGetTime();
-			if (now - lastWarnLog[m_clientId] > 500)
-			{
-				NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 解凍後退を防止: サーバー=%.3f ローカル=%.3f",
-					m_clientId, netAmount, m_frozenAmount);
-				lastWarnLog[m_clientId] = now;
-			}
-			// ローカルの値を維持
-		}
-	}
-	// ★★★ 凍結解除（外部要因）★★★
-	else if (wasFrozen && !newFrozen)
-	{
-		m_bFrozen = false;
-		m_frozenAmount = 1.0f;  // 常に1.0に設定
-		m_bFullyMelted = true;
-		m_targetMeltPlayer = 0;
-
-		if (m_pIceBlock)
-		{
-			m_pIceBlock->SetMeltAmount(m_frozenAmount);
-		}
-
-		NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 凍結解除 amount=1.0（固定）",
-			m_clientId);
 	}
 	// ★★★ 解凍完了後の状態維持 ★★★
 	else if (!wasFrozen && !newFrozen)
@@ -632,6 +593,7 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 		m_targetMeltPlayer = state.meltTargetId;
 	}
 }
+
 
 void Runner::Draw(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight)
 {
