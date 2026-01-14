@@ -810,7 +810,7 @@ void SceneGame::ReceiveWorldState()
 					continue;
 				}
 
-				// クライアントの場合、サーバーの状態を反映
+				// ★★★ クライアントの場合、サーバーの状態を強制的に反映 ★★★
 				if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
 				{
 					Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
@@ -821,38 +821,57 @@ void SceneGame::ReceiveWorldState()
 						float localAmount = localRunner->GetFrozenAmount();
 						float serverAmount = ps.frozenAmount;
 
+						// ★★★ 重要: サーバーの状態を信頼して、完全に上書き ★★★
+
 						// 新規凍結
 						if (!wasFrozen && newFrozen)
 						{
 							localRunner->SetFrozen(true);
 							localRunner->SetFrozenAmount(serverAmount);
-							NET_LOG_F("[SceneGame::ReceiveWorldState] ★★★ローカルプレイヤー[%u]が凍結された！★★★",
-								m_localClientId);
+							NET_LOG_F("[SceneGame::ReceiveWorldState] ★★★ローカルプレイヤー[%u]が凍結された！frozen=%d amount=%.3f★★★",
+								m_localClientId, newFrozen, serverAmount);
 						}
-						// 凍結継続中
+						// 凍結継続中（解凍進行）
 						else if (wasFrozen && newFrozen)
 						{
-							// サーバーの値が大きい場合のみ更新（解凍進行）
-							if (serverAmount > localAmount + 0.001f)
+							// ★★★ サーバーの値を常に反映（後退防止は削除）★★★
+							if (abs(serverAmount - localAmount) > 0.001f)
 							{
 								localRunner->SetFrozenAmount(serverAmount);
 
 								static DWORD lastUpdateLog = 0;
 								if (now - lastUpdateLog > 200)
 								{
-									NET_LOG_F("[SceneGame::ReceiveWorldState] ローカルプレイヤー[%u]解凍進行: %.3f -> %.3f",
+									NET_LOG_F("[SceneGame::ReceiveWorldState] ★★★ローカルプレイヤー[%u]解凍進行: %.3f -> %.3f★★★",
 										m_localClientId, localAmount, serverAmount);
 									lastUpdateLog = now;
 								}
 							}
 						}
-						// 凍結解除
+						// ★★★ 凍結解除（完全解凍）★★★
 						else if (wasFrozen && !newFrozen)
 						{
 							localRunner->SetFrozen(false);
 							localRunner->SetFrozenAmount(1.0f);
-							NET_LOG_F("[SceneGame::ReceiveWorldState] ローカルプレイヤー[%u]の凍結解除",
+							NET_LOG_F("[SceneGame::ReceiveWorldState] ★★★★★★ローカルプレイヤー[%u]の凍結解除！frozen=false amount=1.0★★★★★★",
 								m_localClientId);
+						}
+						// ★★★ 解凍完了後の維持 ★★★
+						else if (!wasFrozen && !newFrozen)
+						{
+							// サーバーが解凍完了を確認している場合
+							if (serverAmount >= 0.99f)
+							{
+								localRunner->SetFrozenAmount(1.0f);
+
+								static DWORD lastMaintainLog = 0;
+								if (now - lastMaintainLog > 2000)
+								{
+									NET_LOG_F("[SceneGame::ReceiveWorldState] ローカルプレイヤー[%u]解凍完了維持: server=%.3f local=1.0",
+										m_localClientId, serverAmount);
+									lastMaintainLog = now;
+								}
+							}
 						}
 					}
 				}
