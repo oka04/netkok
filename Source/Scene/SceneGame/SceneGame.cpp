@@ -407,7 +407,7 @@ void SceneGame::UpdateLocalPlayer()
 			}
 
 			// 解凍ターゲットを更新
-			localRunner->UpdateMeltTarget(playerList, m_bIsHost);
+			localRunner->UpdateMeltTarget(playerList);
 		}
 	}
 
@@ -581,7 +581,7 @@ void SceneGame::ProcessPlayerMelting()
 
 	std::map<uint32_t, std::vector<uint32_t>> targetToHelpers;
 
-	// ★★★ ローカルプレイヤーの解凍ターゲットを収集 ★★★
+	// ローカル
 	if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
 	{
 		Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
@@ -595,7 +595,7 @@ void SceneGame::ProcessPlayerMelting()
 		}
 	}
 
-	// ★★★ リモートプレイヤーの解凍ターゲットを収集 ★★★
+	// リモート
 	for (auto& kv : m_players)
 	{
 		if (kv.first == m_localClientId) continue;
@@ -611,31 +611,9 @@ void SceneGame::ProcessPlayerMelting()
 		}
 	}
 
-	// ★★★ デバッグログ: 現在の状況 ★★★
-	static DWORD lastSummaryLog = 0;
-	DWORD now = timeGetTime();
-	if (now - lastSummaryLog > 1000 && targetToHelpers.size() > 0)
-	{
-		NET_LOG_F("[ProcessPlayerMelting] 状況: 助けられている人=%d",
-			(int)targetToHelpers.size());
-		for (auto& pair : targetToHelpers)
-		{
-			std::string helperIds = "";
-			for (size_t i = 0; i < pair.second.size(); i++)
-			{
-				if (i > 0) helperIds += ",";
-				helperIds += std::to_string(pair.second[i]);
-			}
-			NET_LOG_F("  ターゲット[%u] <- 助ける人: %d人 [%s]",
-				pair.first, (int)pair.second.size(), helperIds.c_str());
-		}
-		lastSummaryLog = now;
-	}
-
 	bool stateChanged = false;
-	bool completelyMelted = false;
 
-	// ★★★ 各ターゲットの解凍処理 ★★★
+	// ★★★ 解凍処理（Runnerを正として更新）★★★
 	for (auto& pair : targetToHelpers)
 	{
 		uint32_t targetId = pair.first;
@@ -643,7 +621,6 @@ void SceneGame::ProcessPlayerMelting()
 
 		Runner* target = nullptr;
 
-		// ★★★ ターゲットを取得（ローカルまたはリモート）★★★
 		if (targetId == m_localClientId && m_pLocalPlayer)
 		{
 			target = dynamic_cast<Runner*>(m_pLocalPlayer);
@@ -657,25 +634,9 @@ void SceneGame::ProcessPlayerMelting()
 			}
 		}
 
-		if (!target)
-		{
-			NET_LOG_F("[ProcessPlayerMelting] 警告: ターゲット[%u]が見つからない", targetId);
+		if (!target || !target->IsFrozen())
 			continue;
-		}
 
-		// ★★★ 既に解凍完了している場合はスキップ ★★★
-		if (!target->IsFrozen() && target->GetFrozenAmount() >= 1.0f)
-		{
-			continue;
-		}
-
-		// ★★★ まだ凍結中の場合のみ処理 ★★★
-		if (!target->IsFrozen())
-		{
-			continue;
-		}
-
-		// ★★★ 合計解凍速度を計算 ★★★
 		float totalMeltSpeed = 0.0f;
 		for (uint32_t helperId : helpers)
 		{
@@ -700,87 +661,29 @@ void SceneGame::ProcessPlayerMelting()
 			}
 		}
 
-		// ★★★ 解凍量を計算 ★★★
 		float oldAmount = target->GetFrozenAmount();
 		float newAmount = oldAmount + totalMeltSpeed * m_deltaTime;
 
-		// ★★★ 重要: 新しい値が古い値より大きい場合のみ更新 ★★★
-		if (newAmount > oldAmount)
+		if (newAmount >= 1.0f)
 		{
-			// ★★★ 完全解凍チェック ★★★
-			if (newAmount >= 1.0f)
-			{
-				// ★★★ 重要: まずfrozenAmountを1.0に設定してから、frozenをfalseにする ★★★
-				target->SetFrozenAmount(1.0f);
-				target->SetFrozen(false);
-				stateChanged = true;
-				completelyMelted = true;
-
-				std::string helperList = "";
-				for (size_t i = 0; i < helpers.size(); i++)
-				{
-					if (i > 0) helperList += ",";
-					helperList += std::to_string(helpers[i]);
-				}
-
-				NET_LOG_F("[ProcessPlayerMelting] ★★★プレイヤー[%u]が完全解凍！★★★ 助けた人: [%s] frozen=false amount=1.0確定",
-					targetId, helperList.c_str());
-
-				// ★★★ 完全解凍後の状態を即座に確認 ★★★
-				bool verifyFrozen = target->IsFrozen();
-				float verifyAmount = target->GetFrozenAmount();
-				NET_LOG_F("[ProcessPlayerMelting] 完全解凍後の状態確認: ID=%u frozen=%d amount=%.3f",
-					targetId, verifyFrozen, verifyAmount);
-			}
-			// ★★★ 解凍進行中 ★★★
-			else
-			{
-				target->SetFrozenAmount(newAmount);
-				stateChanged = true;
-
-				static std::map<uint32_t, DWORD> lastMeltLog;
-				if (now - lastMeltLog[targetId] > 200)
-				{
-					NET_LOG_F("[ProcessPlayerMelting] ★解凍進行★ [%u]: %.3f -> %.3f (助ける人=%d人 速度=%.3f deltaTime=%.4f)",
-						targetId, oldAmount, newAmount, (int)helpers.size(), totalMeltSpeed, m_deltaTime);
-					lastMeltLog[targetId] = now;
-				}
-
-				// ★★★ デバッグ: 設定後の値を確認 ★★★
-				float verifyAmount = target->GetFrozenAmount();
-				if (abs(verifyAmount - newAmount) > 0.001f)
-				{
-					NET_LOG_F("[ProcessPlayerMelting] 警告: ターゲット[%u]の凍結量が正しく設定されていない！ 期待=%.3f 実際=%.3f",
-						targetId, newAmount, verifyAmount);
-				}
-			}
+			target->SetFrozenAmount(1.0f);
+			target->SetFrozen(false);
+			stateChanged = true;
+		}
+		else if (newAmount > oldAmount)
+		{
+			target->SetFrozenAmount(newAmount);
+			stateChanged = true;
 		}
 	}
 
-	// ★★★ 完全解凍時は即座にブロードキャスト（複数回送信）★★★
-	if (completelyMelted && m_pServer)
+	// ★★★ 変更があったら既存の仕組みで同期 ★★★
+	if (stateChanged && m_pServer)
 	{
-		// 3回連続でブロードキャストして確実に届ける
-		for (int i = 0; i < 3; i++)
-		{
-			m_pServer->BroadcastWorldState();
-		}
-		m_lastWorldBroadcast = timeGetTime();
-		NET_LOG_F("[ProcessPlayerMelting] ★★★完全解凍により即座に3回ブロードキャスト★★★");
-	}
-	// ★★★ 解凍進行中も定期的にブロードキャスト（50ms間隔に短縮）★★★
-	else if (stateChanged && m_pServer)
-	{
-		static DWORD lastMeltingBroadcast = 0;
-		DWORD now = timeGetTime();
-		if (now - lastMeltingBroadcast > 50)
-		{
-			m_pServer->BroadcastWorldState();
-			m_lastWorldBroadcast = now;
-			lastMeltingBroadcast = now;
-		}
+		m_pServer->BroadcastWorldState();
 	}
 }
+
 
 void SceneGame::ReceiveWorldState()
 {

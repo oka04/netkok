@@ -420,7 +420,7 @@ void Runner::UpdateFrozenState(float deltaTime)
 	}
 }
 
-void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBase*>>& players, bool isHost)
+void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBase*>>& players)
 {
 	if (!m_bIsLocal)
 	{
@@ -428,7 +428,7 @@ void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBas
 		return;
 	}
 
-	// 凍っている本人は誰も助けられない
+	// 凍っている本人は助けられない
 	if (m_bFrozen)
 	{
 		m_targetMeltPlayer = 0;
@@ -437,51 +437,33 @@ void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBas
 
 	bool isHelpingButtonPressed = (m_keyFlag & ATTACK_KEY) != 0;
 
-	uint32_t oldTarget = m_targetMeltPlayer;
 	m_targetMeltPlayer = 0;
 
-	if (isHelpingButtonPressed)
+	if (!isHelpingButtonPressed)
+		return;
+
+	D3DXVECTOR3 myPos = GetCenterPosition();
+	float minDist = f_meltRange;
+
+	for (const auto& kv : players)
 	{
-		D3DXVECTOR3 myPos = GetCenterPosition();
-		float minDist = f_meltRange;
+		if (kv.first == m_clientId) continue;
 
-		for (const auto& kv : players)
+		Runner* other = dynamic_cast<Runner*>(kv.second);
+		if (!other || !other->IsFrozen()) continue;
+
+		D3DXVECTOR3 otherPos = other->GetCenterPosition();
+		D3DXVECTOR3 diff = otherPos - myPos;
+		float dist = D3DXVec3Length(&diff);
+
+		if (dist < minDist)
 		{
-			if (kv.first == m_clientId) continue;
-
-			Runner* other = dynamic_cast<Runner*>(kv.second);
-			if (!other || !other->IsFrozen()) continue;
-
-			D3DXVECTOR3 otherPos = other->GetCenterPosition();
-			D3DXVECTOR3 diff = otherPos - myPos;
-			float dist = D3DXVec3Length(&diff);
-
-			if (dist < minDist)
-			{
-				minDist = dist;
-				m_targetMeltPlayer = kv.first;
-			}
-		}
-	}
-
-	// ★★★ ここが追加：ホストが解凍進捗を進める ★★★
-	if (isHost && m_targetMeltPlayer != 0)
-	{
-		for (const auto& kv : players)
-		{
-			if (kv.first != m_targetMeltPlayer) continue;
-
-			Runner* frozenRunner = dynamic_cast<Runner*>(kv.second);
-			if (!frozenRunner) continue;
-
-			float amount = frozenRunner->GetFrozenAmount();
-			amount += f_meltSpeed * m_deltaTime;
-			if (amount > 1.0f) amount = 1.0f;
-
-			frozenRunner->SetFrozenAmount(amount);
+			minDist = dist;
+			m_targetMeltPlayer = kv.first;
 		}
 	}
 }
+
 
 NetPlayerState Runner::GetNetState() const
 {

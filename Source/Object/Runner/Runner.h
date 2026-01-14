@@ -53,7 +53,7 @@ public:
 	float GetMeltSpeed() const { return f_meltSpeed; }
 
 	bool IsFullyMelted() const { return m_bFullyMelted; }
-	void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBase*>>& players, bool isHost);
+	void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBase*>>& playerss);
 
 private:
 	void LoadParameter() override;
