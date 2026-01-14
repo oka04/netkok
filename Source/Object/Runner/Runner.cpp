@@ -422,46 +422,39 @@ void Runner::UpdateFrozenState(float deltaTime)
 
 void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBase*>>& players)
 {
-	if (!m_bIsLocal)
+	if (!m_bIsLocal || m_bFrozen)
 	{
 		m_targetMeltPlayer = 0;
 		return;
 	}
 
-	// 凍っている本人は助けられない
-	if (m_bFrozen)
+	bool isHelping = (m_keyFlag & ATTACK_KEY) != 0;
+
+	uint32_t newTarget = 0;
+	if (isHelping)
 	{
-		m_targetMeltPlayer = 0;
-		return;
-	}
+		D3DXVECTOR3 myPos = GetCenterPosition();
+		float minDist = f_meltRange;
 
-	bool isHelpingButtonPressed = (m_keyFlag & ATTACK_KEY) != 0;
-
-	m_targetMeltPlayer = 0;
-
-	if (!isHelpingButtonPressed)
-		return;
-
-	D3DXVECTOR3 myPos = GetCenterPosition();
-	float minDist = f_meltRange;
-
-	for (const auto& kv : players)
-	{
-		if (kv.first == m_clientId) continue;
-
-		Runner* other = dynamic_cast<Runner*>(kv.second);
-		if (!other || !other->IsFrozen()) continue;
-
-		D3DXVECTOR3 otherPos = other->GetCenterPosition();
-		D3DXVECTOR3 diff = otherPos - myPos;
-		float dist = D3DXVec3Length(&diff);
-
-		if (dist < minDist)
+		for (const auto& kv : players)
 		{
-			minDist = dist;
-			m_targetMeltPlayer = kv.first;
+			if (kv.first == m_clientId) continue;
+
+			Runner* other = dynamic_cast<Runner*>(kv.second);
+			if (!other || !other->IsFrozen()) continue;
+
+			D3DXVECTOR3 diff = other->GetCenterPosition() - myPos;
+			float dist = D3DXVec3Length(&diff);
+
+			if (dist < minDist)
+			{
+				minDist = dist;
+				newTarget = kv.first;
+			}
 		}
 	}
+
+	m_targetMeltPlayer = newTarget;
 }
 
 

@@ -577,28 +577,14 @@ void SceneGame::CheckBreathHitPlayers()
 
 void SceneGame::ProcessPlayerMelting()
 {
-	if (!m_bIsHost) return;
+	if (!m_bIsHost || !m_pServer) return;
 
+	// ターゲットID → 助けているプレイヤーID一覧
 	std::map<uint32_t, std::vector<uint32_t>> targetToHelpers;
 
-	// ローカル
-	if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
-	{
-		Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
-		if (localRunner && !localRunner->IsFrozen())
-		{
-			uint32_t targetId = localRunner->GetMeltTargetId();
-			if (targetId != 0)
-			{
-				targetToHelpers[targetId].push_back(m_localClientId);
-			}
-		}
-	}
-
-	// リモート
+	// 全Runnerから meltTargetId を収集
 	for (auto& kv : m_players)
 	{
-		if (kv.first == m_localClientId) continue;
 		if (m_playerRoles[kv.first] != ROLE_RUNNER) continue;
 
 		Runner* runner = dynamic_cast<Runner*>(kv.second);
@@ -613,72 +599,51 @@ void SceneGame::ProcessPlayerMelting()
 
 	bool stateChanged = false;
 
-	// ★★★ 解凍処理（Runnerを正として更新）★★★
 	for (auto& pair : targetToHelpers)
 	{
 		uint32_t targetId = pair.first;
-		const std::vector<uint32_t>& helpers = pair.second;
+		const auto& helpers = pair.second;
 
-		Runner* target = nullptr;
+		auto it = m_players.find(targetId);
+		if (it == m_players.end()) continue;
 
-		if (targetId == m_localClientId && m_pLocalPlayer)
-		{
-			target = dynamic_cast<Runner*>(m_pLocalPlayer);
-		}
-		else
-		{
-			auto it = m_players.find(targetId);
-			if (it != m_players.end())
-			{
-				target = dynamic_cast<Runner*>(it->second);
-			}
-		}
+		Runner* target = dynamic_cast<Runner*>(it->second);
+		if (!target || !target->IsFrozen()) continue;
 
-		if (!target || !target->IsFrozen())
-			continue;
-
-		float totalMeltSpeed = 0.0f;
+		float totalSpeed = 0.0f;
 		for (uint32_t helperId : helpers)
 		{
-			Runner* helper = nullptr;
+			auto hit = m_players.find(helperId);
+			if (hit == m_players.end()) continue;
 
-			if (helperId == m_localClientId && m_pLocalPlayer)
-			{
-				helper = dynamic_cast<Runner*>(m_pLocalPlayer);
-			}
-			else
-			{
-				auto it = m_players.find(helperId);
-				if (it != m_players.end())
-				{
-					helper = dynamic_cast<Runner*>(it->second);
-				}
-			}
-
+			Runner* helper = dynamic_cast<Runner*>(hit->second);
 			if (helper)
 			{
-				totalMeltSpeed += helper->GetMeltSpeed();
+				totalSpeed += helper->GetMeltSpeed();
 			}
 		}
 
 		float oldAmount = target->GetFrozenAmount();
-		float newAmount = oldAmount + totalMeltSpeed * m_deltaTime;
+		float newAmount = oldAmount + totalSpeed * m_deltaTime;
 
-		if (newAmount >= 1.0f)
+		if (newAmount > oldAmount)
 		{
-			target->SetFrozenAmount(1.0f);
-			target->SetFrozen(false);
-			stateChanged = true;
-		}
-		else if (newAmount > oldAmount)
-		{
-			target->SetFrozenAmount(newAmount);
+			if (newAmount >= 1.0f)
+			{
+				target->SetFrozenAmount(1.0f);
+				target->SetFrozen(false);
+			}
+			else
+			{
+				target->SetFrozenAmount(newAmount);
+			}
+
 			stateChanged = true;
 		}
 	}
 
-	// ★★★ 変更があったら既存の仕組みで同期 ★★★
-	if (stateChanged && m_pServer)
+	// ★ 解凍が1人でも進んだら必ずブロードキャスト
+	if (stateChanged)
 	{
 		m_pServer->BroadcastWorldState();
 	}
