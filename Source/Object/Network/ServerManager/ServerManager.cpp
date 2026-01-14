@@ -458,6 +458,15 @@ void ServerManager::ProcessPlayerState(ENetPeer* peer, const uint8_t* data, size
 		it->second->lastState = state;
 		it->second->lastState.clientId = it->second->id;
 		it->second->stateReceived = true;
+
+		// ★★★ デバッグ: meltTargetIdの受信確認 ★★★
+		static std::map<uint32_t, uint32_t> lastTargets;
+		if (state.meltTargetId != lastTargets[it->second->id])
+		{
+			NET_LOG_F("[ServerManager::ProcessPlayerState] クライアント[%u] meltTarget更新: %u -> %u",
+				it->second->id, lastTargets[it->second->id], state.meltTargetId);
+			lastTargets[it->second->id] = state.meltTargetId;
+		}
 	}
 }
 
@@ -467,6 +476,110 @@ void ServerManager::SetHostState(const NetPlayerState& state)
 	m_hostState = state;
 	m_hostState.clientId = 1;
 	m_hostStateSet = true;
+
+	// ★★★ デバッグ: ホストのmeltTargetId確認 ★★★
+	static uint32_t lastHostTarget = 0;
+	if (state.meltTargetId != lastHostTarget)
+	{
+		NET_LOG_F("[ServerManager::SetHostState] ホスト meltTarget更新: %u -> %u",
+			lastHostTarget, state.meltTargetId);
+		lastHostTarget = state.meltTargetId;
+	}
+}
+
+void ServerManager::ProcessMeltingOnServer()
+{
+	std::lock_guard<std::mutex> lk(m_stateMutex);
+
+	// ★★★ 解凍対象とヘルパーのマップを作成 ★★★
+	std::map<uint32_t, std::vector<uint32_t>> targetToHelpers;
+
+	// ホストの情報を収集
+	if (m_hostStateSet && m_hostState.meltTargetId != 0)
+	{
+		targetToHelpers[m_hostState.meltTargetId].push_back(1); // ホストのID=1
+		NET_LOG_F("[ServerManager::ProcessMelting] ホスト[1] -> ターゲット[%u]", m_hostState.meltTargetId);
+	}
+
+	// 各クライアントの情報を収集
+	for (auto& kv : m_clients)
+	{
+		if (kv.second->stateReceived && kv.second->lastState.meltTargetId != 0)
+		{
+			uint32_t helperId = kv.second->id;
+			uint32_t targetId = kv.second->lastState.meltTargetId;
+			targetToHelpers[targetId].push_back(helperId);
+			NET_LOG_F("[ServerManager::ProcessMelting] クライアント[%u] -> ターゲット[%u]", helperId, targetId);
+		}
+	}
+
+	// ★★★ 各ターゲットの解凍処理 ★★★
+	bool stateChanged = false;
+	const float deltaTime = 0.016f; // 約60FPS想定
+	const float meltSpeed = 0.2f;   // Runner.cppのf_meltSpeedと同じ値
+
+	for (auto& pair : targetToHelpers)
+	{
+		uint32_t targetId = pair.first;
+		const auto& helpers = pair.second;
+
+		NetPlayerState* targetState = nullptr;
+
+		// ターゲットの状態を取得
+		if (targetId == 1 && m_hostStateSet)
+		{
+			targetState = &m_hostState;
+		}
+		else
+		{
+			for (auto& kv : m_clients)
+			{
+				if (kv.second->id == targetId && kv.second->stateReceived)
+				{
+					targetState = &kv.second->lastState;
+					break;
+				}
+			}
+		}
+
+		// ターゲットが存在しない、または凍結していない場合はスキップ
+		if (!targetState || targetState->frozen == 0)
+		{
+			NET_LOG_F("[ServerManager::ProcessMelting] ターゲット[%u] は凍結していない", targetId);
+			continue;
+		}
+
+		// ★★★ 解凍速度を計算（ヘルパーの数 × meltSpeed） ★★★
+		float totalSpeed = (float)helpers.size() * meltSpeed;
+		float oldAmount = targetState->frozenAmount;
+		float newAmount = oldAmount + totalSpeed * deltaTime;
+
+		NET_LOG_F("[ServerManager::ProcessMelting] ターゲット[%u] 解凍: %.3f -> %.3f (ヘルパー%d人)",
+			targetId, oldAmount, newAmount, (int)helpers.size());
+
+		if (newAmount > oldAmount)
+		{
+			if (newAmount >= 1.0f)
+			{
+				// 完全解凍
+				targetState->frozenAmount = 1.0f;
+				targetState->frozen = 0;
+				NET_LOG_F("[ServerManager::ProcessMelting] ターゲット[%u] 完全解凍！", targetId);
+			}
+			else
+			{
+				// 解凍進行
+				targetState->frozenAmount = newAmount;
+			}
+
+			stateChanged = true;
+		}
+	}
+
+	if (stateChanged)
+	{
+		NET_LOG("[ServerManager::ProcessMelting] 解凍処理により状態が変化");
+	}
 }
 
 std::vector<NetPlayerState> ServerManager::GetAllPlayerStates() const
@@ -494,10 +607,13 @@ void ServerManager::BroadcastWorldState()
 {
 	if (!m_pServerHost) return;
 
+	// ★★★ 修正: 解凍処理をサーバー側で実行 ★★★
+	ProcessMeltingOnServer();
+
 	NetWorldState world;
 	auto states = GetAllPlayerStates();
 
-	world.playerCount = (uint8_t)min(8, (int)states.size());
+	world.playerCount = (uint8_t)min(16, (int)states.size());
 	for (int i = 0; i < world.playerCount; ++i)
 	{
 		world.players[i] = states[i];

@@ -154,7 +154,8 @@ void SceneGame::Update()
 		UpdateChaserLights();
 		CheckBreathHitPlayers();
 
-		ProcessPlayerMelting();
+		// ★★★ 修正: ProcessPlayerMelting()の呼び出しを削除 ★★★
+		// 解凍処理はサーバー側で一元管理するため、ここでは呼び出さない
 
 		if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
 		{
@@ -212,6 +213,63 @@ void SceneGame::Update()
 		m_gameState = CHANGE_SCENE;
 		m_nowSceneData.Set(Common::SCENE_PAUSE, true, this);
 		return;
+	}
+}
+
+void SceneGame::SyncToServer()
+{
+	if (!m_pLocalPlayer || !m_pClient) return;
+
+	uint32_t localId = m_pLocalPlayer->GetClientId();
+	if (localId == 0)
+	{
+		NET_LOG_F("[SceneGame::SyncToServer] エラー: ローカルプレイヤーのClientIDが0です！ m_localClientId=%u",
+			m_localClientId);
+		return;
+	}
+
+	NetPlayerState state = m_pLocalPlayer->GetNetState();
+
+	if (state.clientId != localId)
+	{
+		NET_LOG_F("[SceneGame::SyncToServer] 警告: GetNetState()のIDが一致しません！ GetClientId()=%u, state.clientId=%u",
+			localId, state.clientId);
+	}
+
+	static uint32_t lastMeltTarget = 0;
+	static DWORD lastLogTime = 0;
+	DWORD now = timeGetTime();
+
+	if (state.meltTargetId != 0 || lastMeltTarget != 0)
+	{
+		if (state.meltTargetId != lastMeltTarget || now - lastLogTime > 1000)
+		{
+			NET_LOG_F("[SceneGame::SyncToServer] ID=%u meltTarget=%u を送信",
+				state.clientId, state.meltTargetId);
+			lastMeltTarget = state.meltTargetId;
+			lastLogTime = now;
+		}
+	}
+
+	static DWORD lastPositionLog = 0;
+	if (now - lastPositionLog > 3000)
+	{
+		NET_LOG_F("[SceneGame] 送信: ID=%u Pos=(%.1f,%.1f,%.1f) Interval=%dms",
+			state.clientId, state.posX, state.posY, state.posZ, f_networkSendInterval);
+		lastPositionLog = now;
+	}
+
+	// ★★★ 修正: ホスト・クライアント共通の送信処理 ★★★
+	if (m_bIsHost && m_pServer)
+	{
+		// ホストの場合：サーバーに直接状態を設定
+		m_pServer->SetHostState(state);
+		NET_LOG_F("[SceneGame::SyncToServer] ホスト状態設定: meltTarget=%u", state.meltTargetId);
+	}
+	else
+	{
+		// クライアントの場合：サーバーに送信
+		m_pClient->SendPlayerState(state);
 	}
 }
 
@@ -751,63 +809,6 @@ void SceneGame::ReceiveWorldState()
 		if (it == m_players.end() || !it->second) continue;
 
 		it->second->UpdateFromNetwork(ps, m_light, m_deltaTime);
-	}
-}
-
-void SceneGame::SyncToServer()
-{
-	if (!m_pLocalPlayer || !m_pClient) return;
-
-	// ★★★ デバッグ: Sync前のID確認 ★★★
-	uint32_t localId = m_pLocalPlayer->GetClientId();
-	if (localId == 0)
-	{
-		NET_LOG_F("[SceneGame::SyncToServer] エラー: ローカルプレイヤーのClientIDが0です！ m_localClientId=%u",
-			m_localClientId);
-		// IDが0の場合は送信しない
-		return;
-	}
-
-	NetPlayerState state = m_pLocalPlayer->GetNetState();
-
-	// ★★★ デバッグ: GetNetState()の結果確認 ★★★
-	if (state.clientId != localId)
-	{
-		NET_LOG_F("[SceneGame::SyncToServer] 警告: GetNetState()のIDが一致しません！ GetClientId()=%u, state.clientId=%u",
-			localId, state.clientId);
-	}
-
-	// ★★★ デバッグ: 解凍ターゲットの送信を確認 ★★★
-	static uint32_t lastMeltTarget = 0;
-	static DWORD lastLogTime = 0;
-	DWORD now = timeGetTime();
-
-	if (state.meltTargetId != 0 || lastMeltTarget != 0)
-	{
-		if (state.meltTargetId != lastMeltTarget || now - lastLogTime > 1000)
-		{
-			NET_LOG_F("[SceneGame::SyncToServer] ID=%u meltTarget=%u を送信",
-				state.clientId, state.meltTargetId);
-			lastMeltTarget = state.meltTargetId;
-			lastLogTime = now;
-		}
-	}
-
-	static DWORD lastPositionLog = 0;
-	if (now - lastPositionLog > 3000)
-	{
-		NET_LOG_F("[SceneGame] 送信: ID=%u Pos=(%.1f,%.1f,%.1f) Interval=%dms",
-			state.clientId, state.posX, state.posY, state.posZ, f_networkSendInterval);
-		lastPositionLog = now;
-	}
-
-	if (m_bIsHost && m_pServer)
-	{
-		m_pServer->SetHostState(state);
-	}
-	else
-	{
-		m_pClient->SendPlayerState(state);
 	}
 }
 

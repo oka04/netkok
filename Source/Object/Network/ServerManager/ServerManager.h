@@ -59,6 +59,7 @@ public:
 	PlayerRole GetHostRole() const { return m_hostRole; }
 
 private:
+	void ProcessMeltingOnServer();
 	void OnClientConnect(ENetPeer* peer);
 	void OnClientReceive(const ENetEvent& event);
 	void OnClientDisconnect(ENetPeer* peer);
