@@ -765,16 +765,15 @@ void SceneGame::ReceiveWorldState()
 		{
 			const NetPlayerState& ps = world.players[i];
 
-			// ★★★ ローカルプレイヤーの更新（クライアントの場合のみ）★★★
+			// ★★★ ローカルプレイヤー（ホストの場合はスキップ）★★★
 			if (ps.clientId == m_localClientId)
 			{
-				// ホストは自分の状態をサーバーから受信しない
 				if (m_bIsHost)
 				{
 					continue;
 				}
 
-				// ★★★ クライアントの場合、サーバーの状態を強制的に反映 ★★★
+				// ★★★ クライアントの場合、凍結状態のみサーバーから反映 ★★★
 				if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
 				{
 					Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
@@ -782,56 +781,41 @@ void SceneGame::ReceiveWorldState()
 					{
 						bool wasFrozen = localRunner->IsFrozen();
 						bool newFrozen = (ps.frozen != 0);
-						float localAmount = localRunner->GetFrozenAmount();
-						float serverAmount = ps.frozenAmount;
 
-						// ★★★ 最優先: サーバーが解凍完了を通知している場合 ★★★
-						if (wasFrozen && !newFrozen)
-						{
-							localRunner->SetFrozen(false);
-							localRunner->SetFrozenAmount(1.0f);
-
-							NET_LOG_F("[SceneGame::ReceiveWorldState] ★★★★★ローカルプレイヤー[%u]が完全解凍！動けるようになりました！★★★★★",
-								m_localClientId);
-
-							// 動作確認
-							NET_LOG_F("[SceneGame::ReceiveWorldState] 状態確認: IsFrozen()=%d GetFrozenAmount()=%.3f",
-								localRunner->IsFrozen(), localRunner->GetFrozenAmount());
-						}
 						// 新規凍結
-						else if (!wasFrozen && newFrozen)
+						if (!wasFrozen && newFrozen)
 						{
 							localRunner->SetFrozen(true);
-							localRunner->SetFrozenAmount(serverAmount);
+							localRunner->SetFrozenAmount(ps.frozenAmount);
 							NET_LOG_F("[SceneGame::ReceiveWorldState] ★★★ローカルプレイヤー[%u]が凍結された！★★★",
 								m_localClientId);
 						}
-						// 凍結継続中 - 解凍進行
+						// 凍結継続中（解凍進行）
 						else if (wasFrozen && newFrozen)
 						{
-							// サーバーの値が大きい場合のみ更新（解凍進行）
-							if (serverAmount > localAmount + 0.001f)
+							float localAmount = localRunner->GetFrozenAmount();
+							float serverAmount = ps.frozenAmount;
+
+							if (serverAmount > localAmount + 0.01f)
 							{
 								localRunner->SetFrozenAmount(serverAmount);
 
 								static DWORD lastUpdateLog = 0;
-								if (now - lastUpdateLog > 200)
+								if (now - lastUpdateLog > 500)
 								{
 									NET_LOG_F("[SceneGame::ReceiveWorldState] ローカルプレイヤー[%u]解凍進行: %.3f -> %.3f",
 										m_localClientId, localAmount, serverAmount);
 									lastUpdateLog = now;
 								}
-
-								// ★★★ 0.99以上で完全解凍とみなす ★★★
-								if (serverAmount >= 0.99f)
-								{
-									localRunner->SetFrozen(false);
-									localRunner->SetFrozenAmount(1.0f);
-
-									NET_LOG_F("[SceneGame::ReceiveWorldState] ★★★★★ローカルプレイヤー[%u]が完全解凍！（amount>=0.99）★★★★★",
-										m_localClientId);
-								}
 							}
+						}
+						// 凍結解除
+						else if (wasFrozen && !newFrozen)
+						{
+							localRunner->SetFrozen(false);
+							localRunner->SetFrozenAmount(1.0f);
+							NET_LOG_F("[SceneGame::ReceiveWorldState] ★★★ローカルプレイヤー[%u]の凍結解除！★★★",
+								m_localClientId);
 						}
 					}
 				}
@@ -842,38 +826,6 @@ void SceneGame::ReceiveWorldState()
 			auto it = m_players.find(ps.clientId);
 			if (it != m_players.end() && it->second)
 			{
-				// Runnerの場合、凍結状態のログを出力
-				if (m_playerRoles[ps.clientId] == ROLE_RUNNER)
-				{
-					Runner* runner = dynamic_cast<Runner*>(it->second);
-					if (runner)
-					{
-						bool wasFrozen = runner->IsFrozen();
-						bool newFrozen = (ps.frozen != 0);
-						float oldAmount = runner->GetFrozenAmount();
-						float newAmount = ps.frozenAmount;
-
-						// 解凍進行のログ
-						if (wasFrozen && newFrozen && newAmount > oldAmount + 0.01f)
-						{
-							static std::map<uint32_t, DWORD> lastProgressLog;
-							if (now - lastProgressLog[ps.clientId] > 300)
-							{
-								NET_LOG_F("[SceneGame::ReceiveWorldState] リモートプレイヤー[%u]解凍進行: %.3f -> %.3f",
-									ps.clientId, oldAmount, newAmount);
-								lastProgressLog[ps.clientId] = now;
-							}
-						}
-
-						// 完全解凍のログ
-						if (wasFrozen && !newFrozen)
-						{
-							NET_LOG_F("[SceneGame::ReceiveWorldState] ★★★リモートプレイヤー[%u]が完全解凍！★★★",
-								ps.clientId);
-						}
-					}
-				}
-
 				it->second->UpdateFromNetwork(ps, m_light, m_deltaTime);
 
 				if (ps.frozen != 0 && now - lastLogTime > 3000)
