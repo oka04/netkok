@@ -582,7 +582,25 @@ void SceneGame::ProcessPlayerMelting()
 	// ターゲットID → 助けているプレイヤーID一覧
 	std::map<uint32_t, std::vector<uint32_t>> targetToHelpers;
 
-	// 全Runnerから meltTargetId を収集
+	// ============================
+	// ① ローカルプレイヤー（ホスト自身）を含めて収集
+	// ============================
+	if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
+	{
+		Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
+		if (localRunner && !localRunner->IsFrozen())
+		{
+			uint32_t targetId = localRunner->GetMeltTargetId();
+			if (targetId != 0)
+			{
+				targetToHelpers[targetId].push_back(m_localClientId);
+			}
+		}
+	}
+
+	// ============================
+	// ② リモートRunnerを収集
+	// ============================
 	for (auto& kv : m_players)
 	{
 		if (m_playerRoles[kv.first] != ROLE_RUNNER) continue;
@@ -599,24 +617,52 @@ void SceneGame::ProcessPlayerMelting()
 
 	bool stateChanged = false;
 
+	// ============================
+	// ③ 解凍処理本体
+	// ============================
 	for (auto& pair : targetToHelpers)
 	{
 		uint32_t targetId = pair.first;
 		const auto& helpers = pair.second;
 
-		auto it = m_players.find(targetId);
-		if (it == m_players.end()) continue;
+		Runner* target = nullptr;
 
-		Runner* target = dynamic_cast<Runner*>(it->second);
+		// --- ターゲット取得（ローカル or リモート）---
+		if (targetId == m_localClientId)
+		{
+			target = dynamic_cast<Runner*>(m_pLocalPlayer);
+		}
+		else
+		{
+			auto it = m_players.find(targetId);
+			if (it != m_players.end())
+			{
+				target = dynamic_cast<Runner*>(it->second);
+			}
+		}
+
 		if (!target || !target->IsFrozen()) continue;
 
 		float totalSpeed = 0.0f;
+
+		// --- 解凍速度合算 ---
 		for (uint32_t helperId : helpers)
 		{
-			auto hit = m_players.find(helperId);
-			if (hit == m_players.end()) continue;
+			Runner* helper = nullptr;
 
-			Runner* helper = dynamic_cast<Runner*>(hit->second);
+			if (helperId == m_localClientId)
+			{
+				helper = dynamic_cast<Runner*>(m_pLocalPlayer);
+			}
+			else
+			{
+				auto it = m_players.find(helperId);
+				if (it != m_players.end())
+				{
+					helper = dynamic_cast<Runner*>(it->second);
+				}
+			}
+
 			if (helper)
 			{
 				totalSpeed += helper->GetMeltSpeed();
@@ -626,29 +672,29 @@ void SceneGame::ProcessPlayerMelting()
 		float oldAmount = target->GetFrozenAmount();
 		float newAmount = oldAmount + totalSpeed * m_deltaTime;
 
-		if (newAmount > oldAmount)
-		{
-			if (newAmount >= 1.0f)
-			{
-				target->SetFrozenAmount(1.0f);
-				target->SetFrozen(false);
-			}
-			else
-			{
-				target->SetFrozenAmount(newAmount);
-			}
+		if (newAmount <= oldAmount) continue;
 
-			stateChanged = true;
+		if (newAmount >= 1.0f)
+		{
+			target->SetFrozenAmount(1.0f);
+			target->SetFrozen(false);
 		}
+		else
+		{
+			target->SetFrozenAmount(newAmount);
+		}
+
+		stateChanged = true;
 	}
 
-	// ★ 解凍が1人でも進んだら必ずブロードキャスト
+	// ============================
+	// ④ 状態が変わったら必ず同期
+	// ============================
 	if (stateChanged)
 	{
 		m_pServer->BroadcastWorldState();
 	}
 }
-
 
 void SceneGame::ReceiveWorldState()
 {
