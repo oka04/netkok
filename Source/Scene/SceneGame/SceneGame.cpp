@@ -407,7 +407,7 @@ void SceneGame::UpdateLocalPlayer()
 			}
 
 			// 解凍ターゲットを更新
-			localRunner->UpdateMeltTarget(playerList);
+			localRunner->UpdateMeltTarget(playerList, m_bIsHost);
 		}
 	}
 

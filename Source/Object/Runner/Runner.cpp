@@ -420,21 +420,26 @@ void Runner::UpdateFrozenState(float deltaTime)
 	}
 }
 
-void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBase*>>& players)
+void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBase*>>& players, bool isHost)
 {
-	if (!m_bIsLocal || m_bFrozen)
+	if (!m_bIsLocal)
 	{
 		m_targetMeltPlayer = 0;
 		return;
 	}
 
-	// ★★★ 左クリック（攻撃キー）が押されているかチェック ★★★
+	// 凍っている本人は誰も助けられない
+	if (m_bFrozen)
+	{
+		m_targetMeltPlayer = 0;
+		return;
+	}
+
 	bool isHelpingButtonPressed = (m_keyFlag & ATTACK_KEY) != 0;
 
 	uint32_t oldTarget = m_targetMeltPlayer;
 	m_targetMeltPlayer = 0;
 
-	// ★★★ 左クリックが押されている場合のみ、ターゲットを検索 ★★★
 	if (isHelpingButtonPressed)
 	{
 		D3DXVECTOR3 myPos = GetCenterPosition();
@@ -457,25 +462,24 @@ void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBas
 				m_targetMeltPlayer = kv.first;
 			}
 		}
-
-		// ★★★ ターゲットが見つかった場合のログ ★★★
-		static DWORD lastLog = 0;
-		DWORD now = timeGetTime();
-		if (m_targetMeltPlayer != oldTarget || (m_targetMeltPlayer != 0 && now - lastLog > 1000))
-		{
-			if (m_targetMeltPlayer != 0)
-			{
-				NET_LOG_F("[Runner::UpdateMeltTarget] ID=%u が ID=%u を助けている（距離=%.2f 左クリック中）",
-					m_clientId, m_targetMeltPlayer, minDist);
-			}
-			lastLog = now;
-		}
 	}
 
-	// ★★★ 左クリックを離した場合のログ ★★★
-	if (!isHelpingButtonPressed && oldTarget != 0)
+	// ★★★ ここが追加：ホストが解凍進捗を進める ★★★
+	if (isHost && m_targetMeltPlayer != 0)
 	{
-		NET_LOG_F("[Runner::UpdateMeltTarget] ID=%u が助けるのをやめた（左クリック離した）", m_clientId);
+		for (const auto& kv : players)
+		{
+			if (kv.first != m_targetMeltPlayer) continue;
+
+			Runner* frozenRunner = dynamic_cast<Runner*>(kv.second);
+			if (!frozenRunner) continue;
+
+			float amount = frozenRunner->GetFrozenAmount();
+			amount += f_meltSpeed * m_deltaTime;
+			if (amount > 1.0f) amount = 1.0f;
+
+			frozenRunner->SetFrozenAmount(amount);
+		}
 	}
 }
 
