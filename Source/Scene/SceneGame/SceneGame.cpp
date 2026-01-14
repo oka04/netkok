@@ -396,7 +396,7 @@ void SceneGame::UpdateLocalPlayer()
 		{
 			// プレイヤーリストを作成
 			std::vector<std::pair<uint32_t, CharacterBase*>> playerList;
-			
+
 			// リモートプレイヤーを追加
 			for (auto& kv : m_players)
 			{
@@ -821,8 +821,17 @@ void SceneGame::ReceiveWorldState()
 						float localAmount = localRunner->GetFrozenAmount();
 						float serverAmount = ps.frozenAmount;
 
+						// ★★★ 完全解凍の優先処理 ★★★
+						if (wasFrozen && !newFrozen)
+						{
+							// 凍結解除
+							localRunner->SetFrozen(false);
+							localRunner->SetFrozenAmount(1.0f);
+							NET_LOG_F("[SceneGame::ReceiveWorldState] ★★★ローカルプレイヤー[%u]の凍結解除！★★★ frozen=%d amount=%.3f",
+								m_localClientId, ps.frozen, ps.frozenAmount);
+						}
 						// 新規凍結
-						if (!wasFrozen && newFrozen)
+						else if (!wasFrozen && newFrozen)
 						{
 							localRunner->SetFrozen(true);
 							localRunner->SetFrozenAmount(serverAmount);
@@ -844,16 +853,18 @@ void SceneGame::ReceiveWorldState()
 										m_localClientId, localAmount, serverAmount);
 									lastUpdateLog = now;
 								}
+
+								// ★★★ 完全解凍判定を追加 ★★★
+								if (serverAmount >= 1.0f)
+								{
+									localRunner->SetFrozen(false);
+									localRunner->SetFrozenAmount(1.0f);
+									NET_LOG_F("[SceneGame::ReceiveWorldState] ★★★ローカルプレイヤー[%u]が完全解凍！★★★",
+										m_localClientId);
+								}
 							}
 						}
-						// 凍結解除
-						else if (wasFrozen && !newFrozen)
-						{
-							localRunner->SetFrozen(false);
-							localRunner->SetFrozenAmount(1.0f);
-							NET_LOG_F("[SceneGame::ReceiveWorldState] ローカルプレイヤー[%u]の凍結解除",
-								m_localClientId);
-						}
+
 					}
 				}
 				continue;
