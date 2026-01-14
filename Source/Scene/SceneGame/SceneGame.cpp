@@ -894,7 +894,7 @@ void SceneGame::ReceiveWorldState()
 						float newAmount = ps.frozenAmount;
 
 						// 解凍進行のログ
-						if (wasFrozen && newFrozen && newAmount > oldAmount + 0.01f)
+						if (wasFrozen && newFrozen && abs(newAmount - oldAmount) > 0.01f)
 						{
 							static std::map<uint32_t, DWORD> lastProgressLog;
 							if (now - lastProgressLog[ps.clientId] > 300)
