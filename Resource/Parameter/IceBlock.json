@@ -1,8 +1,8 @@
 {
-  "iceColorR": 0.8,
-  "iceColorG": 0.95,
+  "iceColorR": 0.4,
+  "iceColorG": 0.8,
   "iceColorB": 1.0,
-  "iceAlpha": 0.75,
+  "iceAlpha": 0.9,
   "ambientMultiplier": 1.3,
   "diffuseMultiplier": 1.0,
   "specularPower": 32.0,

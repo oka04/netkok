@@ -1495,13 +1495,18 @@ void SceneGame::Draw()
 				if (!runner || !runner->IsFrozen()) continue;
 
 				D3DXVECTOR3 targetPos = runner->GetPosition();
-				D3DXVECTOR3 diff = targetPos - cameraPos;
-				float distance = D3DXVec3Length(&diff);
+
+				// ★★★ 2Dで壁判定を行う ★★★
+				D3DXVECTOR2 cameraPos2D(cameraPos.x, cameraPos.z);
+				D3DXVECTOR2 targetPos2D(targetPos.x, targetPos.z);
+				D3DXVECTOR3 cameraPos3D_ForRay(cameraPos.x, cameraPos.y, cameraPos.z);
+				D3DXVECTOR3 targetPos3D_ForRay(targetPos.x, cameraPos.y, targetPos.z);
 
 				D3DXVECTOR3 intersection;
-				bool isBlocked = m_map.RayToWallIntersection(cameraPos, targetPos, &intersection);
+				bool isBlocked = m_map.RayToWallIntersection(cameraPos3D_ForRay, targetPos3D_ForRay, &intersection);
 
-				if (!isBlocked)	continue;
+				D3DXVECTOR3 diff = targetPos - cameraPos;
+				float distance = D3DXVec3Length(&diff);
 
 				float alpha = f_wallAlphaNear;
 				if (distance > 3.0f) alpha = f_wallAlphaMid;
@@ -1509,7 +1514,15 @@ void SceneGame::Draw()
 				IceBlock* iceBlock = runner->GetIceBlock();
 				if (iceBlock)
 				{
-					iceBlock->DrawThroughWalls(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light, alpha);
+					if (isBlocked)
+					{
+						// ★★★ 壁越しの場合は元の大きさで描画 ★★★
+						iceBlock->DrawThroughWallsFullSize(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light, alpha);
+					}
+					else
+					{
+						// ★★★ 壁がない場合は通常描画（既にDrawEffectsで描画済み）★★★
+					}
 				}
 
 				if (distance <= f_chaserGaugeDistance)
@@ -1520,48 +1533,59 @@ void SceneGame::Draw()
 		}
 	}
 
-	if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
+	// ★★★ 解凍ゲージの描画（凍っているプレイヤー自身にも表示）★★★
+	if (m_pLocalPlayer)
 	{
 		D3DXVECTOR3 localPos = m_pLocalPlayer->GetPosition();
 
-		for (auto& kv : m_players)
+		if (m_localRole == ROLE_RUNNER)
 		{
-			if (kv.first == m_localClientId) continue;
-			if (!kv.second) continue;
-			if (m_playerRoles[kv.first] != ROLE_RUNNER) continue;
+			Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
 
-			Runner* runner = dynamic_cast<Runner*>(kv.second);
-			if (!runner) continue;
-			if (!runner->IsFrozen()) continue;
-
-			D3DXVECTOR3 targetPos = runner->GetPosition();
-			D3DXVECTOR3 diff = targetPos - localPos;
-			float distance = D3DXVec3Length(&diff);
-
-			runner->DrawMeltGauge(m_pEngine, &m_camera, &m_projection, distance);
-		}
-	}
-	else if (m_pLocalPlayer && m_localRole == ROLE_CHASER)
-	{
-		D3DXVECTOR3 localPos = m_pLocalPlayer->GetPosition();
-
-		for (auto& kv : m_players)
-		{
-			if (kv.first == m_localClientId) continue;
-			if (!kv.second) continue;
-			if (m_playerRoles[kv.first] != ROLE_RUNNER) continue;
-
-			Runner* runner = dynamic_cast<Runner*>(kv.second);
-			if (!runner) continue;
-			if (!runner->IsFrozen()) continue;
-
-			D3DXVECTOR3 targetPos = runner->GetPosition();
-			D3DXVECTOR3 diff = targetPos - localPos;
-			float distance = D3DXVec3Length(&diff);
-
-			if (distance <= f_chaserGaugeDistance)
+			// ★★★ 自分自身が凍っている場合もゲージを表示 ★★★
+			if (localRunner && localRunner->IsFrozen())
 			{
+				localRunner->DrawMeltGauge(m_pEngine, &m_camera, &m_projection, 0.0f);
+			}
+
+			// 他のRunnerのゲージを表示
+			for (auto& kv : m_players)
+			{
+				if (kv.first == m_localClientId) continue;
+				if (!kv.second) continue;
+				if (m_playerRoles[kv.first] != ROLE_RUNNER) continue;
+
+				Runner* runner = dynamic_cast<Runner*>(kv.second);
+				if (!runner) continue;
+				if (!runner->IsFrozen()) continue;
+
+				D3DXVECTOR3 targetPos = runner->GetPosition();
+				D3DXVECTOR3 diff = targetPos - localPos;
+				float distance = D3DXVec3Length(&diff);
+
 				runner->DrawMeltGauge(m_pEngine, &m_camera, &m_projection, distance);
+			}
+		}
+		else if (m_localRole == ROLE_CHASER)
+		{
+			for (auto& kv : m_players)
+			{
+				if (kv.first == m_localClientId) continue;
+				if (!kv.second) continue;
+				if (m_playerRoles[kv.first] != ROLE_RUNNER) continue;
+
+				Runner* runner = dynamic_cast<Runner*>(kv.second);
+				if (!runner) continue;
+				if (!runner->IsFrozen()) continue;
+
+				D3DXVECTOR3 targetPos = runner->GetPosition();
+				D3DXVECTOR3 diff = targetPos - localPos;
+				float distance = D3DXVec3Length(&diff);
+
+				if (distance <= f_chaserGaugeDistance)
+				{
+					runner->DrawMeltGauge(m_pEngine, &m_camera, &m_projection, distance);
+				}
 			}
 		}
 	}
@@ -1672,7 +1696,6 @@ void SceneGame::Draw()
 	m_fade.Draw(m_pEngine);
 	m_pEngine->SpriteEnd();
 }
-
 void SceneGame::PostEffect()
 {
 }
