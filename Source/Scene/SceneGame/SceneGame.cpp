@@ -75,6 +75,9 @@ void SceneGame::Initialize()
 	d_viewPointCount = 0;
 	d_fpsCount = 60;
 	m_pEngine->AddModel(MODEL_CHARACTER);
+	m_pEngine->AddTexture(TEXTURE_VICTORY);
+	m_pEngine->AddTexture(TEXTURE_DEFEAT);
+	m_pEngine->AddTexture(TEXTURE_FADE);
 	m_pEngine->AddFont(FONT_GOTHIC60);
 
 	m_gameTime = 0.0f;
@@ -1869,6 +1872,9 @@ void SceneGame::Draw()
 	// ★★★ リザルト画面表示 ★★★
 	if (m_gameState == RESULT_DISPLAY)
 	{ 
+		SetRect(&sour, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+		m_pEngine->Blt(&sour, TEXTURE_FADE, &sour, 150, 0.0f);
+
 		SetRect(&sour, 0, 0, (int)f_resultSize.x, (int)f_resultSize.y);
 
 		D3DXVECTOR2 center = { (float)WINDOW_WIDTH / 2.0f,(float)(WINDOW_HEIGHT / 2.0f) };
@@ -1909,6 +1915,9 @@ void SceneGame::Exit()
 	m_fade.Release(m_pEngine);
 	m_pEngine->ReleaseFont(FONT_GOTHIC40); 
 	m_pEngine->ReleaseFont(FONT_GOTHIC60);
+	m_pEngine->ReleaseTexture(TEXTURE_VICTORY);
+	m_pEngine->ReleaseTexture(TEXTURE_DEFEAT);
+	m_pEngine->ReleaseTexture(TEXTURE_FADE);
 	m_pEngine->ReleaseModel(MODEL_CHARACTER);
 }
 
