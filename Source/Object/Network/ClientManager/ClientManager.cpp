@@ -138,13 +138,15 @@ void ClientManager::Reset()
 	m_lastHeartbeatTime = 0;
 
 	m_assignedClientId = 0;
-	m_myRole = ROLE_NONE; 
+	m_myRole = ROLE_NONE;
 	m_roleMap.clear();
 	{
 		std::lock_guard<std::mutex> lk(m_worldMutex);
 		m_worldStateReceived = false;
 		while (!m_spawnQueue.empty()) m_spawnQueue.pop();
 		while (!m_despawnQueue.empty()) m_despawnQueue.pop();
+		while (!m_roleQueue.empty()) m_roleQueue.pop();
+		while (!m_resultQueue.empty()) m_resultQueue.pop();  // ★ 追加
 	}
 	m_assignedClientId = 0;
 
@@ -456,8 +458,12 @@ void ClientManager::OnReceive(const ENetEvent& event)
 		ProcessJoinAck(data + 1, len - 1);
 		break;
 
-	case MSG_ROLE_ASSIGNMENT:  // ★ 追加
+	case MSG_ROLE_ASSIGNMENT:
 		ProcessRoleAssignment(data + 1, len - 1);
+		break;
+
+	case MSG_GAME_RESULT:  // ★ 追加
+		ProcessGameResult(data + 1, len - 1);
 		break;
 	}
 
@@ -469,6 +475,29 @@ void ClientManager::OnDisconnect()
 	NET_LOG("[ClientManager] サーバーから切断されました");
 	m_pServerPeer = nullptr;
 	m_bConnected = false;
+}
+
+void ClientManager::ProcessGameResult(const uint8_t* data, size_t len)
+{
+	NetGameResult result;
+	if (!NetworkSerializer::DeserializeGameResult(data, len, result))
+		return;
+
+	std::lock_guard<std::mutex> lk(m_worldMutex);
+	m_resultQueue.push(result);
+
+	NET_LOG_F("[ClientManager] ゲーム結果受信: winner=%d (%s)",
+		(int)result.winnerTeam,
+		(result.winnerTeam == 0) ? "逃げる側" : "鬼側");
+}
+
+bool ClientManager::PopGameResult(NetGameResult& out)
+{
+	std::lock_guard<std::mutex> lk(m_worldMutex);
+	if (m_resultQueue.empty()) return false;
+	out = m_resultQueue.front();
+	m_resultQueue.pop();
+	return true;
 }
 
 void ClientManager::ProcessServerInfo(const uint8_t* data, size_t len)

@@ -1,5 +1,4 @@
-﻿// ServerManager.h - 役割割り当て機能追加
-#pragma once
+﻿#pragma once
 #include <enet/enet.h>
 #include <memory>
 #include <string>
@@ -19,7 +18,7 @@ struct ClientInfo
 	std::string name;
 	NetPlayerState lastState;
 	bool stateReceived;
-	PlayerRole role;  // ★ 役割を追加
+	PlayerRole role;
 };
 
 class ServerManager
@@ -52,11 +51,18 @@ public:
 
 	void SetHostState(const NetPlayerState& state);
 
-	// ★ 役割関連メソッド
-	void AssignRoles();  // 役割を割り当て
-	void BroadcastRoleAssignments();  // 役割をブロードキャスト
+	void AssignRoles();
+	void BroadcastRoleAssignments();
 	void SetHostRole(PlayerRole role) { m_hostRole = role; }
 	PlayerRole GetHostRole() const { return m_hostRole; }
+
+	// ★★★ ゲーム状態管理 ★★★
+	void SetGameState(uint8_t state);  // 0 = 待機中, 1 = ゲーム中
+	uint8_t GetGameState() const { return m_gameState; }
+	void BroadcastGameResult(int winnerTeam);
+
+	// ★ ENetHostのゲッター（BroadcastGameResult用）
+	ENetHost* GetServerHost() { return m_pServerHost; }
 
 private:
 	void ProcessMeltingOnServer();
@@ -82,8 +88,10 @@ private:
 
 	NetPlayerState m_hostState;
 	bool m_hostStateSet;
-	PlayerRole m_hostRole;  // ★ ホストの役割
+	PlayerRole m_hostRole;
 	mutable std::mutex m_stateMutex;
+
+	uint8_t m_gameState;  // ★ 追加：0 = 待機中, 1 = ゲーム中
 
 	static ServerManager* s_instance;
 };

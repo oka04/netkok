@@ -75,6 +75,14 @@ void SceneGame::Initialize()
 	d_viewPointCount = 0;
 	d_fpsCount = 60;
 	m_pEngine->AddModel(MODEL_CHARACTER);
+	m_pEngine->AddFont(FONT_GOTHIC60);
+
+	m_gameTime = 0.0f;
+	f_gameDuration = 300.0f;  // 5分 = 300秒
+	m_bGameEnded = false;
+	m_winnerTeam = -1;
+	m_resultDisplayStart = 0;
+	f_resultDisplayDuration = 5000;  // リザルト表示5秒
 
 	m_gameData.m_alertCount = 0;
 	m_gameData.m_gameTime = 0;
@@ -154,17 +162,35 @@ void SceneGame::Update()
 		UpdateChaserLights();
 		CheckBreathHitPlayers();
 
-		// ★★★ 修正: ProcessPlayerMelting()の呼び出しを削除 ★★★
-		// 解凍処理はサーバー側で一元管理するため、ここでは呼び出さない
-
-		if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
+		// ★★★ ゲームタイマー更新 ★★★
+		if (!m_bGameEnded)
 		{
-			if (m_map.CheckGoal(m_pLocalPlayer->GetPosition()) && !(d_debugFlag & DEBUG_MODE))
+			UpdateGameTimer();
+
+			// ホストのみが勝敗判定を行う
+			if (m_bIsHost)
 			{
-				m_gameState = FADE_OUT;
-				m_fade.SetFadeOut();
-				m_gameData.m_nextSceneNumber = SCENE_CLEAR;
+				CheckGameEnd();
 			}
+		}
+		break;
+
+	case RESULT_DISPLAY:
+		// ★★★ リザルト表示中 ★★★
+		if (timeGetTime() - m_resultDisplayStart > f_resultDisplayDuration)
+		{
+			// リザルト表示終了 → ロビーに戻る
+			NET_LOG("[SceneGame] リザルト表示終了 - ロビーに遷移");
+
+			// ★★★ サーバーの状態を「待機中」に戻す ★★★
+			if (m_bIsHost && m_pServer)
+			{
+				// Discoveryの状態を0（待機中）に設定
+				// これはServerManager内で管理されているDiscoveryインスタンスに対して行う
+				// （ServerManager.cppに後述のメソッドを追加する必要あり）
+			}
+
+			m_nowSceneData.Set(Common::SCENE_LOBBY, false, nullptr);
 		}
 		break;
 
@@ -216,6 +242,45 @@ void SceneGame::Update()
 	}
 }
 
+void SceneGame::UpdateGameTimer()
+{
+	m_gameTime += m_deltaTime;
+
+	static DWORD lastLog = 0;
+	DWORD now = timeGetTime();
+	if (now - lastLog > 10000)  // 10秒ごとにログ
+	{
+		float remaining = f_gameDuration - m_gameTime;
+		NET_LOG_F("[SceneGame] 残り時間: %.1f秒", remaining);
+		lastLog = now;
+	}
+}
+void SceneGame::CheckGameEnd()
+{
+	if (m_bGameEnded) return;
+
+	// ★★★ 条件1: 制限時間終了 → 逃げる側の勝利 ★★★
+	if (m_gameTime >= f_gameDuration)
+	{
+		NET_LOG("[SceneGame] 制限時間終了 - 逃げる側の勝利");
+		m_bGameEnded = true;
+		m_winnerTeam = 0;  // 0 = 逃げる側
+		BroadcastGameResult(m_winnerTeam);
+		ProcessGameResult(m_winnerTeam);
+		return;
+	}
+
+	// ★★★ 条件2: 全Runner凍結 → 鬼側の勝利 ★★★
+	if (AreAllRunnersFrozen())
+	{
+		NET_LOG("[SceneGame] 全員凍結 - 鬼側の勝利");
+		m_bGameEnded = true;
+		m_winnerTeam = 1;  // 1 = 鬼側
+		BroadcastGameResult(m_winnerTeam);
+		ProcessGameResult(m_winnerTeam);
+		return;
+	}
+}
 void SceneGame::SyncToServer()
 {
 	if (!m_pLocalPlayer || !m_pClient) return;
@@ -272,12 +337,102 @@ void SceneGame::SyncToServer()
 		m_pClient->SendPlayerState(state);
 	}
 }
+bool SceneGame::AreAllRunnersFrozen()
+{
+	int totalRunners = 0;
+	int frozenRunners = 0;
+
+	// ローカルプレイヤー
+	if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
+	{
+		totalRunners++;
+		Runner* runner = dynamic_cast<Runner*>(m_pLocalPlayer);
+		if (runner && runner->IsFrozen())
+		{
+			frozenRunners++;
+		}
+	}
+
+	// リモートプレイヤー
+	for (auto& kv : m_players)
+	{
+		if (m_playerRoles[kv.first] == ROLE_RUNNER && kv.second)
+		{
+			totalRunners++;
+			Runner* runner = dynamic_cast<Runner*>(kv.second);
+			if (runner && runner->IsFrozen())
+			{
+				frozenRunners++;
+			}
+		}
+	}
+
+	// Runnerが0人の場合はfalse（ゲーム成立しない）
+	if (totalRunners == 0) return false;
+
+	bool allFrozen = (frozenRunners == totalRunners);
+
+	static DWORD lastLog = 0;
+	DWORD now = timeGetTime();
+	if (now - lastLog > 3000)
+	{
+		NET_LOG_F("[SceneGame] Runner状態: 凍結=%d / 全体=%d", frozenRunners, totalRunners);
+		lastLog = now;
+	}
+
+	return allFrozen;
+}
+
+void SceneGame::BroadcastGameResult(int winnerTeam)
+{
+	if (!m_bIsHost || !m_pServer) return;
+
+	std::vector<uint8_t> payload;
+	payload.push_back((uint8_t)MSG_GAME_RESULT);  // 新しいメッセージタイプ
+	payload.push_back((uint8_t)winnerTeam);
+
+	ENetPacket* packet = enet_packet_create(payload.data(), payload.size(),
+		ENET_PACKET_FLAG_RELIABLE);
+
+	// ServerManagerのm_pServerHostを使ってブロードキャスト
+	enet_host_broadcast(m_pServer->GetServerHost(), 0, packet);
+	enet_host_flush(m_pServer->GetServerHost());
+
+	NET_LOG_F("[SceneGame] ゲーム結果をブロードキャスト: winner=%d", winnerTeam);
+}
+
+void SceneGame::ProcessGameResult(int winnerTeam)
+{
+	m_winnerTeam = winnerTeam;
+	m_gameState = RESULT_DISPLAY;
+	m_resultDisplayStart = timeGetTime();
+
+	NET_LOG_F("[SceneGame] リザルト画面表示開始: 勝者=%s",
+		(winnerTeam == 0) ? "逃げる側" : "鬼側");
+
+	// ★★★ サーバーの状態を待機中に戻す（ホストのみ）★★★
+	if (m_bIsHost && m_pServer)
+	{
+		// ServerManagerに新しいメソッドを追加する必要あり
+		// m_pServer->SetGameState(0);  // 0 = 待機中
+	}
+}
 
 void SceneGame::UpdateNetwork()
 {
 	if (m_pClient) m_pClient->Update();
 	if (m_bIsHost && m_pServer) m_pServer->Update();
 
+	// ★★★ ゲーム結果の受信処理 ★★★
+	NetGameResult result;
+	if (m_pClient && m_pClient->PopGameResult(result))
+	{
+		NET_LOG_F("[SceneGame] ゲーム結果受信: winner=%d", (int)result.winnerTeam);
+		ProcessGameResult(result.winnerTeam);
+		return;  // すぐにリザルト表示に移行
+	}
+
+	// 接続チェック（クライアントのみ）
 	if (!m_bIsHost && m_pClient)
 	{
 		static bool wasConnected = true;
@@ -295,6 +450,7 @@ void SceneGame::UpdateNetwork()
 
 	DWORD now = timeGetTime();
 
+	// 役割割り当て受信
 	NetRoleAssignment roleAssign;
 	bool roleReceived = false;
 
@@ -318,7 +474,6 @@ void SceneGame::UpdateNetwork()
 
 			SpawnPlayerWithRole(m_localClientId, myName, startPos, m_localRole);
 
-			// ★★★ デバッグ: 生成後のID確認 ★★★
 			if (m_pLocalPlayer)
 			{
 				NET_LOG_F("[SceneGame] ローカルプレイヤー生成完了: m_clientId=%u, GetClientId()=%u",
@@ -342,6 +497,7 @@ void SceneGame::UpdateNetwork()
 		UpdateChaserLights();
 	}
 
+	// 初期同期処理
 	if (!m_bInitialSyncDone)
 	{
 		if (m_bIsHost)
@@ -358,6 +514,7 @@ void SceneGame::UpdateNetwork()
 
 	if (m_bInitialSyncDone)
 	{
+		// プレイヤー生成通知
 		NetPlayerSpawn spawn;
 		while (m_pClient->PopPlayerSpawn(spawn))
 		{
@@ -389,6 +546,7 @@ void SceneGame::UpdateNetwork()
 			}
 		}
 
+		// プレイヤー削除通知
 		uint32_t despawnId;
 		while (m_pClient->PopPlayerDespawn(despawnId))
 		{
@@ -408,7 +566,7 @@ void SceneGame::UpdateNetwork()
 		}
 	}
 
-	// ★★★ 修正: ローカルプレイヤーが存在し、IDが正しく設定されている場合のみSyncを送信 ★★★
+	// ローカルプレイヤーの状態送信
 	if (m_bInitialSyncDone && m_pLocalPlayer && m_pLocalPlayer->GetClientId() != 0)
 	{
 		if (now - m_lastNetworkSend >= f_networkSendInterval)
@@ -419,7 +577,6 @@ void SceneGame::UpdateNetwork()
 	}
 	else if (m_pLocalPlayer && m_pLocalPlayer->GetClientId() == 0)
 	{
-		// ★★★ デバッグ: IDが0の場合は警告を出す ★★★
 		static DWORD lastWarning = 0;
 		if (now - lastWarning > 1000)
 		{
@@ -428,17 +585,20 @@ void SceneGame::UpdateNetwork()
 		}
 	}
 
+	// ホストのワールド状態ブロードキャスト
 	if (m_bIsHost && m_pServer && now - m_lastWorldBroadcast >= f_worldBroadcastInterval)
 	{
 		m_pServer->BroadcastWorldState();
 		m_lastWorldBroadcast = now;
 	}
 
+	// ワールド状態受信
 	if (m_bInitialSyncDone)
 	{
 		ReceiveWorldState();
 	}
 }
+
 
 void SceneGame::UpdateLocalPlayer()
 {
@@ -1692,6 +1852,30 @@ void SceneGame::Draw()
 		}
 	}
 #endif
+	if (m_gameState == IN_GAME && !m_bGameEnded)
+	{
+		float remaining = f_gameDuration - m_gameTime;
+		int minutes = (int)(remaining / 60.0f);
+		int seconds = (int)remaining % 60;
+
+		D3DCOLOR timeColor = Color::WHITE;
+		if (remaining < 60.0f) timeColor = Color::YELLOW;
+		if (remaining < 30.0f) timeColor = Color::RED;
+
+		m_pEngine->DrawPrintfCenter(WINDOW_WIDTH / 2, 50, FONT_GOTHIC60, timeColor,
+			"残り時間: %02d:%02d", minutes, seconds);
+	}
+
+	// ★★★ リザルト画面表示 ★★★
+	if (m_gameState == RESULT_DISPLAY)
+	{ 
+		SetRect(&sour, 0, 0, (int)f_resultSize.x, (int)f_resultSize.y);
+
+		D3DXVECTOR2 center = { (float)WINDOW_WIDTH / 2.0f,(float)(WINDOW_HEIGHT / 2.0f) };
+		SetRect(&dest, (int)(center.x - f_resultSize.x / 2), (int)(center.y - f_resultSize.y / 2) , (int)(center.x + f_resultSize.x / 2), (int)(center.y + f_resultSize.y / 2));
+		
+		m_pEngine->Blt(&dest, TEXTURE_VICTORY, &sour, 255, 0.0f);
+	}
 
 	m_fade.Draw(m_pEngine);
 	m_pEngine->SpriteEnd();
@@ -1723,7 +1907,8 @@ void SceneGame::Exit()
 
 	m_map.Release(m_pEngine);
 	m_fade.Release(m_pEngine);
-	m_pEngine->ReleaseFont(FONT_GOTHIC40);
+	m_pEngine->ReleaseFont(FONT_GOTHIC40); 
+	m_pEngine->ReleaseFont(FONT_GOTHIC60);
 	m_pEngine->ReleaseModel(MODEL_CHARACTER);
 }
 
@@ -1748,6 +1933,15 @@ void SceneGame::LoadGameParameter()
 	f_wallDistanceFar = config.value("wallDistanceFar", 30.0f);
 	f_networkSendInterval = config.value("networkSendInterval", 16);
 	f_worldBroadcastInterval = config.value("worldBroadcastInterval", 8);
+
+	// ★★★ ゲーム時間設定（デフォルト5分）★★★
+	f_gameDuration = config.value("gameDuration", 300.0f);
+	f_resultDisplayDuration = config.value("resultDisplayDuration", 5000);
+
+	for (int i = 0; i < 2; i++)
+	{
+		f_resultSize[i] = config["resultSize"][i];
+	}
 }
 
 void SceneGame::UpdateDebugFlag()

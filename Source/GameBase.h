@@ -76,6 +76,8 @@ namespace KeyString
 	constexpr char* TEXTURE_EFFECT = "Resource\\Texture\\Effect.png";
 	constexpr char* TEXTURE_FADE = "Resource\\Texture\\Fade.png";
 	constexpr char* TEXTURE_STAMINA_GAUGE = "Resource\\Texture\\StaminaGauge.png";
+	constexpr char* TEXTURE_VICTORY = "Resource\\Texture\\Victory.png";
+	constexpr char* TEXTURE_DEFEAT = "Resource\\Texture\\Defeat.png";
 	
 	constexpr char* JSON_CHASER_PARAMETER = "Resource\\Parameter\\Chaser.json";
 	constexpr char* JSON_RUNNER_PARAMETER = "Resource\\Parameter\\Runner.json";

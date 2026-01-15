@@ -44,9 +44,17 @@ private:
 	void RenderShadowMaps();
 
 	void CheckBreathHitPlayers();
-	void LoadGameParameter();  
+	void LoadGameParameter();
 
 	void ProcessPlayerMelting();
+
+	// ★★★ 勝敗判定関連 ★★★
+	void UpdateGameTimer();
+	void CheckGameEnd();
+	bool AreAllRunnersFrozen();
+	void BroadcastGameResult(int winnerTeam);  // 0=逃げる側, 1=鬼側
+	void ProcessGameResult(int winnerTeam);
+
 	enum DEBUG_FLAG
 	{
 		DRAW_PLAYER_STATE = 1 << 0,
@@ -70,6 +78,8 @@ private:
 	{
 		FADE_IN,
 		IN_GAME,
+		GAME_END,          // ★ 追加：ゲーム終了状態
+		RESULT_DISPLAY,    // ★ 追加：リザルト表示中
 		CHANGE_SCENE,
 		FADE_OUT,
 	};
@@ -106,7 +116,7 @@ private:
 	ClientManager* m_pClient;
 	ServerManager* m_pServer;
 	std::vector<SpotLight*> m_chaserLights;
-
+	D3DXVECTOR2 f_resultSize;
 	std::vector<LPDIRECT3DTEXTURE9> m_shadowMaps;
 	std::vector<LPDIRECT3DSURFACE9> m_shadowSurfaces;
 	std::vector<LPDIRECT3DSURFACE9> m_shadowDepthSurfaces;
@@ -128,4 +138,11 @@ private:
 
 	bool m_bEnablePrediction;
 	bool m_bEnableJitterReduction;
+
+	float m_gameTime;          
+	float f_gameDuration;      
+	bool m_bGameEnded;         
+	int m_winnerTeam;          
+	DWORD m_resultDisplayStart;
+	DWORD f_resultDisplayDuration;
 };

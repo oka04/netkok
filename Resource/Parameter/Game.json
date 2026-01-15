@@ -8,5 +8,8 @@
   "wallDistanceFar": 30.0,
   "networkSendInterval": 16,
   "worldBroadcastInterval": 8,
-  "gaugeThicknessMultiplier": 1.2
+  "gaugeThicknessMultiplier": 1.2,
+  "gameDuration": 300.0,
+  "resultSize": [500.0, 250.0],
+  "resultDisplayDuration": 5000
 }

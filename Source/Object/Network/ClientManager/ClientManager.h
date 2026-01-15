@@ -1,5 +1,4 @@
-﻿// ClientManager.h - 役割受信機能追加
-#pragma once
+﻿#pragma once
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include "..\\GameBase.h"
@@ -58,10 +57,12 @@ public:
 	uint32_t GetAssignedClientId() const { return m_assignedClientId; }
 	void SetAssignedClientId(uint32_t id) { m_assignedClientId = id; }
 
-	// ★ 役割関連メソッド
-	bool PopRoleAssignment(NetRoleAssignment& out);  // 役割割り当てを取得
-	PlayerRole GetMyRole() const { return m_myRole; }  // 自分の役割を取得
-	const std::map<uint32_t, PlayerRole>& GetAllRoles() const { return m_roleMap; }  // 全員の役割
+	bool PopRoleAssignment(NetRoleAssignment& out);
+	PlayerRole GetMyRole() const { return m_myRole; }
+	const std::map<uint32_t, PlayerRole>& GetAllRoles() const { return m_roleMap; }
+
+	// ★★★ ゲーム結果受信 ★★★
+	bool PopGameResult(NetGameResult& out);
 
 private:
 	ENetHost* m_pClientHost;
@@ -80,7 +81,8 @@ private:
 	void ProcessPlayerSpawn(const uint8_t* data, size_t len);
 	void ProcessPlayerDespawn(const uint8_t* data, size_t len);
 	void ProcessJoinAck(const uint8_t* data, size_t len);
-	void ProcessRoleAssignment(const uint8_t* data, size_t len);  // ★ 役割処理
+	void ProcessRoleAssignment(const uint8_t* data, size_t len);
+	void ProcessGameResult(const uint8_t* data, size_t len);  // ★ 追加
 
 	std::vector<std::string> m_lobbyPlayerNames;
 	bool m_bGameStarted;
@@ -98,12 +100,12 @@ private:
 	bool m_worldStateReceived;
 	std::queue<NetPlayerSpawn> m_spawnQueue;
 	std::queue<uint32_t> m_despawnQueue;
-	std::queue<NetRoleAssignment> m_roleQueue;  // ★ 役割キュー
+	std::queue<NetRoleAssignment> m_roleQueue;
+	std::queue<NetGameResult> m_resultQueue;  // ★ 追加
 	uint32_t m_assignedClientId;
 
-	// ★ 役割情報
-	PlayerRole m_myRole;  // 自分の役割
-	std::map<uint32_t, PlayerRole> m_roleMap;  // 全プレイヤーの役割マップ
+	PlayerRole m_myRole;
+	std::map<uint32_t, PlayerRole> m_roleMap;
 
 	static ClientManager* s_instance;
 };

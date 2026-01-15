@@ -14,7 +14,6 @@ class Map;
 class CharacterBase
 {
 public:
-	// ★ これらをpublicに移動
 	virtual void Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight& light, float deltaTime) = 0;
 	void Draw(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight);
 
@@ -25,7 +24,7 @@ public:
 	const D3DXVECTOR3& GetPosition()const;
 	const D3DXVECTOR3& GetDirection()const;
 	const D3DXVECTOR3& GetDepth()const;
-	const D3DXVECTOR2& GetPosition2D()const;
+	const D3DXVECTOR2 GetPosition2D()const;
 
 	virtual D3DXVECTOR3 GetCenterPosition() const
 	{
@@ -39,12 +38,10 @@ public:
 	const float& GetArrowAngle()const;
 
 	virtual void DrawEffects(Engine* pEngine, Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight) = 0;
-	// ★★★ ネットワーク関連メソッド ★★★
 	virtual NetPlayerState GetNetState() const;
 	virtual void UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& light, float deltaTime);
 	void PredictMovement(float deltaTime);
 
-	// ★★★ ネットワーク情報の設定・取得 ★★★
 	void SetClientId(uint32_t id) { m_clientId = id; }
 	uint32_t GetClientId() const { return m_clientId; }
 
@@ -57,7 +54,6 @@ public:
 	void SetPosition(const D3DXVECTOR3& pos) { m_position = pos; }
 	const D3DXVECTOR3& GetEyePosition() const { return m_eyePosition; }
 
-	// ★★★ 誰を助けようとしているか取得（解凍ターゲット）★★★
 	virtual uint32_t GetMeltTargetId() const { return 0; }
 	unsigned char GetKeyFlag() const { return m_keyFlag; }
 

@@ -1,5 +1,4 @@
-﻿// NetworkSync.h - ライト情報を追加
-#pragma once
+﻿#pragma once
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <vector>
@@ -10,8 +9,8 @@
 enum PlayerRole : uint8_t
 {
 	ROLE_NONE = 0,
-	ROLE_RUNNER = 1,  // 逃げる側
-	ROLE_CHASER = 2   // 鬼
+	ROLE_RUNNER = 1,
+	ROLE_CHASER = 2
 };
 
 // ★★★ ネットワークメッセージタイプ ★★★
@@ -37,8 +36,8 @@ enum NetworkMessageType : uint8_t
 	MSG_PLAYER_SPAWN = 12,
 	MSG_PLAYER_DESPAWN = 13,
 	MSG_ROLE_ASSIGNMENT = 14,
+	MSG_GAME_RESULT = 15,  // ★ 追加：ゲーム結果
 };
-
 // ★★★ プレイヤー状態（120バイト）★★★
 #pragma pack(push, 1)
 struct NetPlayerState
@@ -50,20 +49,19 @@ struct NetPlayerState
 	uint8_t keyFlag;
 	uint8_t flags;
 
-	// ライト情報（Chaser用）
 	float lightPosX, lightPosY, lightPosZ;
 	float lightDirX, lightDirY, lightDirZ;
 	float lightRange;
 
-	// ブレス情報
 	uint8_t breathActive;
 	float breathPosX, breathPosY, breathPosZ;
 	float breathDirX, breathDirY, breathDirZ;
 
-	uint8_t frozen;         
-	float frozenAmount;     
+	uint8_t frozen;
+	float frozenAmount;
 
 	uint32_t meltTargetId;
+
 	void SetFirstPerson(bool fp)
 	{
 		if (fp) flags |= 0x01;
@@ -108,7 +106,15 @@ struct NetClientIdAssignment
 	uint32_t assignedClientId;
 };
 #pragma pack(pop)
-	
+
+// ★★★ ゲーム結果構造体 ★★★
+#pragma pack(push, 1)
+struct NetGameResult
+{
+	uint8_t winnerTeam;  // 0 = 逃げる側, 1 = 鬼側
+};
+#pragma pack(pop)
+
 class NetworkSerializer
 {
 public:
@@ -161,6 +167,15 @@ public:
 		return buf;
 	}
 
+	// ★★★ ゲーム結果シリアライズ ★★★
+	static std::vector<uint8_t> SerializeGameResult(const NetGameResult& result)
+	{
+		std::vector<uint8_t> buf;
+		buf.push_back(MSG_GAME_RESULT);
+		buf.push_back(result.winnerTeam);
+		return buf;
+	}
+
 	static bool DeserializePlayerState(const uint8_t* data, size_t len, NetPlayerState& out)
 	{
 		if (len < sizeof(NetPlayerState)) return false;
@@ -186,6 +201,14 @@ public:
 	{
 		if (len < sizeof(NetRoleAssignment)) return false;
 		std::memcpy(&out, data, sizeof(NetRoleAssignment));
+		return true;
+	}
+
+	// ★★★ ゲーム結果デシリアライズ ★★★
+	static bool DeserializeGameResult(const uint8_t* data, size_t len, NetGameResult& out)
+	{
+		if (len < 1) return false;
+		out.winnerTeam = data[0];
 		return true;
 	}
 };

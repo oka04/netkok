@@ -87,6 +87,7 @@ void ServerManager::Reset()
 	m_hostName = "";
 	m_lastAdvertiseTime = 0;
 	m_hostStateSet = false;
+	m_gameState = 0;  // ★ 待機中に戻す
 
 	NET_LOG("[ServerManager] Reset完了");
 }
@@ -125,6 +126,38 @@ void ServerManager::StopServer()
 		m_advertiser->StopAdvertise();
 		m_advertiser.reset();
 	}
+}
+
+void ServerManager::SetGameState(uint8_t state)
+{
+	m_gameState = state;
+
+	// Discoveryの状態も更新
+	if (m_advertiser)
+	{
+		m_advertiser->SetAdvertiseState(state);
+		NET_LOG_F("[ServerManager] ゲーム状態を変更: %d (%s)",
+			(int)state, (state == 0) ? "待機中" : "ゲーム中");
+	}
+}
+
+void ServerManager::BroadcastGameResult(int winnerTeam)
+{
+	if (!m_pServerHost) return;
+
+	NetGameResult result;
+	result.winnerTeam = (uint8_t)winnerTeam;
+
+	auto data = NetworkSerializer::SerializeGameResult(result);
+	ENetPacket* packet = enet_packet_create(data.data(), data.size(),
+		ENET_PACKET_FLAG_RELIABLE);
+	enet_host_broadcast(m_pServerHost, 0, packet);
+	enet_host_flush(m_pServerHost);
+
+	NET_LOG_F("[ServerManager] ゲーム結果をブロードキャスト: winner=%d", winnerTeam);
+
+	// ★★★ ゲーム状態を「待機中」に戻す ★★★
+	SetGameState(0);
 }
 
 int ServerManager::GetClientCount() const
@@ -182,7 +215,6 @@ void ServerManager::BroadcastLobbyUpdate()
 		m_advertiser->SetAdvertiseState(0);
 	}
 }
-
 
 void ServerManager::SetServerName(std::string& name)
 {
@@ -849,26 +881,23 @@ void ServerManager::StartGame()
 		return;
 	}
 
-	// ★ 役割を割り当て
 	AssignRoles();
 
-	// ★★★ 修正: 役割を最優先で送信（複数回送信で確実性向上） ★★★
-	for (int retry = 0; retry < 3; retry++)  // 3回送信
+	for (int retry = 0; retry < 3; retry++)
 	{
 		BroadcastRoleAssignments();
-
 		if (retry < 2)
 		{
-			Sleep(50);  // 50msの間隔を空けて再送
+			Sleep(50);
 		}
 	}
 
 	NET_LOG("[ServerManager] 役割割り当て送信完了（3回送信）");
 
-	// ★★★ 100ms待機してから状態を更新 ★★★
 	Sleep(100);
 
-	if (m_advertiser) m_advertiser->SetAdvertiseState(1);
+	// ★★★ ゲーム状態を「ゲーム中」に設定 ★★★
+	SetGameState(1);
 
 	// ゲーム開始通知
 	std::vector<uint8_t> payload;

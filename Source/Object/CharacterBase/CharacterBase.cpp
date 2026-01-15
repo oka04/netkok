@@ -294,7 +294,7 @@ const D3DXVECTOR3 & CharacterBase::GetDepth() const
 	return m_depth;
 }
 
-const D3DXVECTOR2 & CharacterBase::GetPosition2D() const
+const D3DXVECTOR2 CharacterBase::GetPosition2D() const
 {
 	return D3DXVECTOR2(m_position.x, m_position.z);
 }
