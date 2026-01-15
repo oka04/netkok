@@ -326,7 +326,7 @@ void Runner::SetFrozen(bool frozen)
 	{
 		// ★★★ 新規凍結 ★★★
 		m_frozenAmount = 0.0f;
-		m_bFullyMelted = false;
+		m_bFullyMelted = false;  // ★★★ 重要: 完全解凍フラグをリセット ★★★
 		m_targetMeltPlayer = 0;
 
 		if (m_pIceBlock)
@@ -366,6 +366,7 @@ void Runner::SetFrozen(bool frozen)
 	}
 }
 
+
 void Runner::SetFrozenAmount(float amount)
 {
 	float oldAmount = m_frozenAmount;
@@ -404,6 +405,7 @@ void Runner::SetFrozenAmount(float amount)
 		lastLog[m_clientId] = now;
 	}
 }
+
 
 void Runner::UpdateFrozenState(float deltaTime)
 {
@@ -479,23 +481,43 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 	static std::map<uint32_t, DWORD> lastLogTime;
 	DWORD now = timeGetTime();
 
-	// ★★★ 重要: 完全解凍後に古い凍結状態を受信しても無視 ★★★
-	if (!wasFrozen && wasFullyMelted && m_frozenAmount >= 1.0f)
+	// ★★★ 修正: 完全解凍後の新規凍結を正しく検出 ★★★
+	if (!wasFrozen && wasFullyMelted)
 	{
-		if (newFrozen && netAmount < 0.5f)
+		// 完全解凍済みの状態
+		if (newFrozen && netAmount < 0.1f)
 		{
-			static std::map<uint32_t, DWORD> lastIgnoreLog;
-			if (now - lastIgnoreLog[m_clientId] > 1000)
-			{
-				NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 完全解凍済み - 古い凍結状態を無視 (server: frozen=%d amount=%.3f)",
-					m_clientId, newFrozen, netAmount);
-				lastIgnoreLog[m_clientId] = now;
-			}
-			return;
+			// ★★★ 重要: frozenAmount が 0 に近い = 新規凍結として扱う ★★★
+			NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 完全解凍後の新規凍結を検出！ amount=%.3f",
+				m_clientId, netAmount);
+
+			// 新規凍結として処理を続行（以下の処理に進む）
+			// m_bFullyMelted は新規凍結処理でリセットされる
 		}
 		else if (newFrozen && netAmount > 0.5f)
 		{
-			NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 完全解凍後の新規凍結を検出", m_clientId);
+			// ★★★ 解凍中の古いデータ = 無視 ★★★
+			static std::map<uint32_t, DWORD> lastIgnoreLog;
+			if (now - lastIgnoreLog[m_clientId] > 1000)
+			{
+				NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 完全解凍済み - 古い凍結状態を無視 (amount=%.3f)",
+					m_clientId, netAmount);
+				lastIgnoreLog[m_clientId] = now;
+			}
+			return; // 古いデータは無視
+		}
+		else if (!newFrozen)
+		{
+			// 解凍状態の継続 = 正常
+			if (m_frozenAmount < 1.0f)
+			{
+				m_frozenAmount = 1.0f;
+				if (m_pIceBlock)
+				{
+					m_pIceBlock->SetMeltAmount(1.0f);
+				}
+			}
+			return; // 状態に変化なし
 		}
 	}
 
@@ -504,7 +526,7 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 	{
 		m_bFrozen = true;
 		m_frozenAmount = netAmount;
-		m_bFullyMelted = false;
+		m_bFullyMelted = false;  // ★★★ 完全解凍フラグをリセット ★★★
 		m_targetMeltPlayer = 0;
 
 		if (m_pIceBlock)
@@ -512,14 +534,15 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 			m_pIceBlock->SetMeltAmount(m_frozenAmount);
 		}
 
-		NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 新規凍結 amount=%.3f", m_clientId, netAmount);
+		NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 新規凍結 amount=%.3f (m_bFullyMelted=false)",
+			m_clientId, netAmount);
 	}
 	// ★★★ 凍結継続中 ★★★
 	else if (wasFrozen && newFrozen)
 	{
 		float oldAmount = m_frozenAmount;
 
-		// ★★★ 修正: サーバーの値を常に反映（解凍進行・後退両方） ★★★
+		// ★★★ サーバーの値を常に反映 ★★★
 		if (abs(netAmount - m_frozenAmount) > 0.001f)
 		{
 			m_frozenAmount = netAmount;
@@ -545,7 +568,7 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 				m_frozenAmount = 1.0f;
 				m_targetMeltPlayer = 0;
 
-				NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 完全解凍", m_clientId);
+				NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 完全解凍 (m_bFullyMelted=true)", m_clientId);
 			}
 		}
 	}
@@ -565,18 +588,6 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 		NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 凍結解除 amount=1.0（固定）",
 			m_clientId);
 	}
-	// ★★★ 解凍完了後の状態維持 ★★★
-	else if (!wasFrozen && !newFrozen)
-	{
-		if (m_frozenAmount < 1.0f)
-		{
-			m_frozenAmount = 1.0f;
-			if (m_pIceBlock)
-			{
-				m_pIceBlock->SetMeltAmount(1.0f);
-			}
-		}
-	}
 
 	// ★★★ meltTargetIdの更新 ★★★
 	if (state.meltTargetId != m_targetMeltPlayer)
@@ -591,7 +602,6 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 		m_targetMeltPlayer = state.meltTargetId;
 	}
 }
-
 void Runner::Draw(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight)
 {
 	if (m_bIsLocal && m_bFirstPerson)
