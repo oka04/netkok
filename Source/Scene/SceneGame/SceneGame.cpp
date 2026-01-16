@@ -188,7 +188,6 @@ void SceneGame::Update()
 			return;
 		}
 		break;
-
 	case RESULT_DISPLAY:
 		// ★★★ リザルト表示中はゲーム結果の受信のみ処理 ★★★
 		if (m_pClient) m_pClient->Update();
@@ -242,16 +241,17 @@ void SceneGame::Update()
 			m_bGameEnded = false;
 			m_gameTime = 0.0f;
 			m_winnerTeam = -1;
-			m_resultImageAlpha = 0.0f;
+			m_resultImageAlpha = 0.0f;  // ★★★ 次回用にリセット ★★★
 			m_localRole = ROLE_NONE;
 			m_bInitialSyncDone = false;
 			NET_LOG("[SceneGame] ゲーム関連フラグをリセット");
 
 			// ★★★ サーバーの状態を「待機中」に戻す（ホストのみ）★★★
+			// （既にBroadcastGameResultで実行済みだが、念のため再実行）
 			if (m_bIsHost && m_pServer)
 			{
-				m_pServer->SetGameState(0);  // 0 = 待機中
-				NET_LOG("[SceneGame] サーバーゲーム状態を待機中に変更");
+				m_pServer->SetGameState(0);
+				NET_LOG("[SceneGame] サーバーゲーム状態を待機中に再確認");
 			}
 
 			// ★★★ フェードアウト開始 ★★★
@@ -1911,7 +1911,7 @@ void SceneGame::Draw()
 			"残り時間: %02d:%02d", minutes, seconds);
 	}
 
-
+	// ★★★ 修正: リザルト画像を先に描画 ★★★
 	if (m_gameState == RESULT_DISPLAY)
 	{
 		// 背景を暗くする
@@ -1919,7 +1919,7 @@ void SceneGame::Draw()
 		SetRect(&sour, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 		m_pEngine->Blt(&sour, TEXTURE_FADE, &sour, 150, 0.0f);
 
-		//　ローカルプレイヤーの勝敗判定
+		// ローカルプレイヤーの勝敗判定
 		bool isLocalWinner = false;
 		if (m_localRole == ROLE_RUNNER)
 		{
@@ -1951,7 +1951,9 @@ void SceneGame::Draw()
 		}
 	}
 
+	// ★★★ 修正: フェードは最後に描画（他の画像の上に重ねる）★★★
 	m_fade.Draw(m_pEngine);
+
 	m_pEngine->SpriteEnd();
 }
 void SceneGame::PostEffect()
