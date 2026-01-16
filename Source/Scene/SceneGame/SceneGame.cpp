@@ -81,14 +81,10 @@ void SceneGame::Initialize()
 	m_pEngine->AddFont(FONT_GOTHIC60);
 
 	m_gameTime = 0.0f;
-	f_gameDuration = 300.0f;  // 5分 = 300秒
 	m_bGameEnded = false;
 	m_winnerTeam = -1;
 	m_resultDisplayStart = 0;
-	f_resultDisplayDuration = 5000;  // リザルト表示5秒
 	m_resultImageAlpha = 0.0f;       // ★ リザルト画像は透明から開始
-	f_resultFadeSpeed = 200.0f;      // ★ フェード速度（1秒で200上昇）
-
 	m_gameData.m_alertCount = 0;
 	m_gameData.m_gameTime = 0;
 
@@ -2076,6 +2072,7 @@ void SceneGame::LoadGameParameter()
 	// ★★★ ゲーム時間設定（デフォルト5分）★★★
 	f_gameDuration = config.value("gameDuration", 300.0f);
 	f_resultDisplayDuration = config.value("resultDisplayDuration", 5000);
+	f_resultFadeSpeed = config.value("resultFadeSpeed", 200.0f);
 
 	for (int i = 0; i < 2; i++)
 	{
