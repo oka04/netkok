@@ -1,9 +1,9 @@
-﻿// SceneLobby.h - フェード対応版
+﻿// SceneLobby.h - フェード削除版
 #pragma once
 
 #include "..\\..\\Object\\Network\\ClientManager\\ClientManager.h"
 #include "..\\..\\Object\\Network\\ServerManager\\ServerManager.h"
-#include "..\\..\\Object\\Fade\\Fade.h"  // ★★★ Fade追加 ★★★
+#include "..\\..\\Object\\Fade\\Fade.h"
 #include "..\\..\\GameBase.h"
 #include "..\\Scene\\Scene.h"
 #include <vector>
@@ -31,10 +31,9 @@ public:
 	static REQUEST_MODE GetRequestMode();
 
 private:
-	// ★★★ ロビー状態を追加 ★★★
+	// ★★★ ロビー状態（フェードなし）★★★
 	enum LOBBY_STATE
 	{
-		FADE_IN,
 		IN_LOBBY,
 	};
 
@@ -67,8 +66,6 @@ private:
 	DWORD m_lastConnectionCheck;
 	bool m_bWasConnected;
 
-	// ★★★ フェード関連メンバー追加 ★★★
-	Fade m_fade;
 	LOBBY_STATE m_gameState;
 
 	bool PointInRect(IntVector2 pos, IntVector2 size);

@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿// SceneGame.h
+#pragma once
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include "..\\..\\GameBase.h"
@@ -78,8 +79,8 @@ private:
 	{
 		FADE_IN,
 		IN_GAME,
-		GAME_END,          // ★ 追加：ゲーム終了状態
-		RESULT_DISPLAY,    // ★ 追加：リザルト表示中
+		GAME_END,
+		RESULT_DISPLAY,
 		CHANGE_SCENE,
 		FADE_OUT,
 	};
@@ -139,10 +140,12 @@ private:
 	bool m_bEnablePrediction;
 	bool m_bEnableJitterReduction;
 
-	float m_gameTime;          
-	float f_gameDuration;      
-	bool m_bGameEnded;         
-	int m_winnerTeam;          
+	float m_gameTime;
+	float f_gameDuration;
+	bool m_bGameEnded;
+	int m_winnerTeam;
 	DWORD m_resultDisplayStart;
 	DWORD f_resultDisplayDuration;
+	float m_resultImageAlpha;  // ★ リザルト画像のアルファ値
+	float f_resultFadeSpeed;   // ★ リザルト画像のフェード速度
 };

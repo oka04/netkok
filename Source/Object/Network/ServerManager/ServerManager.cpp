@@ -158,6 +158,17 @@ void ServerManager::BroadcastGameResult(int winnerTeam)
 
 	// ★★★ ゲーム状態を「待機中」に戻す ★★★
 	SetGameState(0);
+
+	// ★★★ 役割情報をクリア（次回ゲーム時に再割り当て）★★★
+	m_hostRole = ROLE_NONE;
+	for (auto& kv : m_clients)
+	{
+		if (kv.second)
+		{
+			kv.second->role = ROLE_NONE;
+		}
+	}
+	NET_LOG("[ServerManager] 全プレイヤーの役割をクリア");
 }
 
 int ServerManager::GetClientCount() const

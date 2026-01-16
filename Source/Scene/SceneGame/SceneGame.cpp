@@ -86,6 +86,8 @@ void SceneGame::Initialize()
 	m_winnerTeam = -1;
 	m_resultDisplayStart = 0;
 	f_resultDisplayDuration = 5000;  // リザルト表示5秒
+	m_resultImageAlpha = 0.0f;       // ★ リザルト画像は透明から開始
+	f_resultFadeSpeed = 200.0f;      // ★ フェード速度（1秒で200上昇）
 
 	m_gameData.m_alertCount = 0;
 	m_gameData.m_gameTime = 0;
@@ -192,6 +194,13 @@ void SceneGame::Update()
 		if (m_pClient) m_pClient->Update();
 		if (m_bIsHost && m_pServer) m_pServer->Update();
 
+		// ★★★ リザルト画像のフェードイン処理 ★★★
+		if (m_resultImageAlpha < 255.0f)
+		{
+			m_resultImageAlpha += f_resultFadeSpeed * m_deltaTime;
+			if (m_resultImageAlpha > 255.0f) m_resultImageAlpha = 255.0f;
+		}
+
 		// ★★★ ゲーム結果の受信処理（クライアントの場合） ★★★
 		NetGameResult result;
 		if (m_pClient && m_pClient->PopGameResult(result))
@@ -208,10 +217,34 @@ void SceneGame::Update()
 		{
 			NET_LOG("[SceneGame] リザルト表示終了 - ロビーに遷移準備開始");
 
+			// ★★★ プレイヤー情報を完全にクリア ★★★
+			for (auto& kv : m_players)
+			{
+				if (kv.second)
+				{
+					if (m_playerRoles[kv.first] == ROLE_RUNNER)
+					{
+						((Runner*)kv.second)->Release(m_pEngine);
+					}
+					else if (m_playerRoles[kv.first] == ROLE_CHASER)
+					{
+						((Chaser*)kv.second)->Release(m_pEngine);
+					}
+					delete kv.second;
+				}
+			}
+			m_players.clear();
+			m_playerRoles.clear();
+			m_pLocalPlayer = nullptr;
+			NET_LOG("[SceneGame] 全プレイヤー情報をクリア");
+
 			// ★★★ ゲーム終了フラグのリセット ★★★
 			m_bGameEnded = false;
 			m_gameTime = 0.0f;
 			m_winnerTeam = -1;
+			m_resultImageAlpha = 0.0f;
+			m_localRole = ROLE_NONE;
+			m_bInitialSyncDone = false;
 			NET_LOG("[SceneGame] ゲーム関連フラグをリセット");
 
 			// ★★★ サーバーの状態を「待機中」に戻す（ホストのみ）★★★
@@ -425,11 +458,11 @@ void SceneGame::ProcessGameResult(int winnerTeam)
 	m_winnerTeam = winnerTeam;
 	m_gameState = RESULT_DISPLAY;
 	m_resultDisplayStart = timeGetTime();
+	m_resultImageAlpha = 0.0f;  // ★ フェードイン用にアルファ値を0から開始
 
 	NET_LOG_F("[SceneGame] リザルト画面表示開始: 勝者=%s",
 		(winnerTeam == 0) ? "逃げる側" : "鬼側");
 }
-
 void SceneGame::UpdateNetwork()
 {
 	if (m_pClient) m_pClient->Update();
@@ -1878,9 +1911,11 @@ void SceneGame::Draw()
 			"残り時間: %02d:%02d", minutes, seconds);
 	}
 
+
 	if (m_gameState == RESULT_DISPLAY)
 	{
 		// 背景を暗くする
+		RECT sour, dest;
 		SetRect(&sour, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 		m_pEngine->Blt(&sour, TEXTURE_FADE, &sour, 150, 0.0f);
 
@@ -1905,14 +1940,14 @@ void SceneGame::Draw()
 			(int)(center.x + f_resultSize.x / 2),
 			(int)(center.y + f_resultSize.y / 2));
 
-		// ★★★ 勝敗に応じた画像を表示 ★★★
+		// ★★★ リザルト画像をフェードインで表示 ★★★
 		if (isLocalWinner)
 		{
-			m_pEngine->Blt(&dest, TEXTURE_VICTORY, &sour, 255, 0.0f);
+			m_pEngine->Blt(&dest, TEXTURE_VICTORY, &sour, (int)m_resultImageAlpha, 0.0f);
 		}
 		else
 		{
-			m_pEngine->Blt(&dest, TEXTURE_DEFEAT, &sour, 255, 0.0f);
+			m_pEngine->Blt(&dest, TEXTURE_DEFEAT, &sour, (int)m_resultImageAlpha, 0.0f);
 		}
 	}
 

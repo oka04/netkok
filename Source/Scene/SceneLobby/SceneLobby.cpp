@@ -56,10 +56,7 @@ void SceneLobby::Start()
 			m_client->IsGameStarted() ? "true" : "false");
 	}
 
-	// ★★★ フェード状態の初期化 ★★★
-	m_fade.Initialize(m_pEngine);
-	m_fade.SetFadeIn();
-	m_gameState = FADE_IN;
+	m_gameState = IN_LOBBY;
 	m_lastTime = timeGetTime();
 
 	m_serverName = "接続中...";
@@ -110,20 +107,6 @@ void SceneLobby::Update()
 	DWORD now = timeGetTime();
 	float deltaTime = (now - m_lastTime) / 1000.0f;
 	m_lastTime = now;
-
-	// ★★★ フェード処理 ★★★
-	if (m_gameState == FADE_IN)
-	{
-		if (m_server) m_server->Update();
-		if (m_client) m_client->Update();
-
-		if (m_fade.Update(deltaTime))
-		{
-			m_gameState = IN_LOBBY;
-			NET_LOG("[SceneLobby] フェードイン完了 - ロビー通常状態へ");
-		}
-		return;
-	}
 
 	if (m_server) m_server->Update();
 	if (m_client) m_client->Update();
@@ -189,8 +172,8 @@ void SceneLobby::Update()
 		}
 	}
 
-	// ★★★ ゲーム開始チェック（通常のロビー状態でのみチェック）★★★
-	if (m_gameState == IN_LOBBY && m_client && m_client->IsGameStarted())
+	// ★★★ ゲーム開始チェック ★★★
+	if (m_client && m_client->IsGameStarted())
 	{
 		NET_LOG("[SceneLobby] ゲーム開始通知受信 - ゲームシーンへ遷移");
 		m_nowSceneData.Set(Common::SCENE_GAME, false, nullptr);
@@ -272,9 +255,6 @@ void SceneLobby::Draw()
 	else if (m_client)
 		m_pEngine->Blt(&dst, TEXTURE_BUTTON, &src, f_clientStartButtonAlpha, 0);
 
-	// ★★★ フェード描画 ★★★
-	m_fade.Draw(m_pEngine);
-
 	m_pEngine->SpriteEnd();
 }
 
@@ -295,7 +275,6 @@ void SceneLobby::Exit()
 
 	m_pEngine->ReleaseTexture(TEXTURE_BUTTON);
 	m_pEngine->ReleaseTexture(TEXTURE_FADE);
-	m_fade.Release(m_pEngine);
 	m_pEngine->ReleaseFont(FONT_GOTHIC60);
 
 	NET_LOG("[SceneLobby] Exit完了");

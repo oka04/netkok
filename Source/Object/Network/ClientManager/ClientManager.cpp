@@ -164,6 +164,9 @@ void ClientManager::ResetForLobbyReturn()
 	m_myRole = ROLE_NONE;
 	m_roleMap.clear();
 
+	// ★★★ 割り当てられたIDはそのまま維持（接続は維持する）★★★
+	// m_assignedClientId はクリアしない
+
 	// キュー系のクリア
 	{
 		std::lock_guard<std::mutex> lk(m_worldMutex);
@@ -174,8 +177,8 @@ void ClientManager::ResetForLobbyReturn()
 		while (!m_resultQueue.empty()) m_resultQueue.pop();
 	}
 
-	NET_LOG_F("[ClientManager] ResetForLobbyReturn完了: m_bGameStarted=%s",
-		m_bGameStarted ? "true" : "false");
+	NET_LOG_F("[ClientManager] ResetForLobbyReturn完了: m_bGameStarted=%s ClientID=%u",
+		m_bGameStarted ? "true" : "false", m_assignedClientId);
 }
 void ClientManager::SendMessage(const char* msg)
 {
