@@ -245,16 +245,19 @@ void SceneLobby::Draw()
 		}
 	}
 
-	// ゲーム開始ボタン
-	SetRect(&dst, f_startButtonPosition.x, f_startButtonPosition.y,
-		f_startButtonPosition.x + f_buttonSize.x, f_startButtonPosition.y + f_buttonSize.y);
-	m_pEngine->Blt(&dst, TEXTURE_BUTTON, &src);
+	if (m_server) {
+		// ゲーム開始ボタン
+		SetRect(&dst, f_startButtonPosition.x, f_startButtonPosition.y,
+			f_startButtonPosition.x + f_buttonSize.x, f_startButtonPosition.y + f_buttonSize.y);
+		m_pEngine->Blt(&dst, TEXTURE_BUTTON, &src);
 
-	if (m_server)
-		m_pEngine->DrawPrintf(f_startButtonPosition.x, f_startButtonPosition.y + f_textOffsetY,
-			FONT_GOTHIC60, Color::BLACK, f_startButtonText);
-	else if (m_client)
-		m_pEngine->Blt(&dst, TEXTURE_BUTTON, &src, f_clientStartButtonAlpha, 0);
+		if (m_server)
+			m_pEngine->DrawPrintf(f_startButtonPosition.x, f_startButtonPosition.y + f_textOffsetY,
+				FONT_GOTHIC60, Color::BLACK, f_startButtonText);
+		else if (m_client)
+			m_pEngine->Blt(&dst, TEXTURE_BUTTON, &src, f_clientStartButtonAlpha, 0);
+	}
+	
 
 	m_pEngine->SpriteEnd();
 }
