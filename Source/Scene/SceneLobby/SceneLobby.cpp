@@ -48,7 +48,7 @@ void SceneLobby::Start()
 
 	m_client = ClientManager::GetInstance();
 	m_server = ServerManager::GetInstance();
-
+	
 	// ★★★ 最重要: ゲーム終了後のロビー復帰時、ゲーム開始フラグをリセット ★★★
 	if (m_client)
 	{
@@ -245,7 +245,7 @@ void SceneLobby::Draw()
 		}
 	}
 
-	if (m_server) {
+	if (m_client->IsHost()) {
 		// ゲーム開始ボタン
 		SetRect(&dst, f_startButtonPosition.x, f_startButtonPosition.y,
 			f_startButtonPosition.x + f_buttonSize.x, f_startButtonPosition.y + f_buttonSize.y);
@@ -256,9 +256,9 @@ void SceneLobby::Draw()
 				FONT_GOTHIC60, Color::BLACK, f_startButtonText);
 		else if (m_client)
 			m_pEngine->Blt(&dst, TEXTURE_BUTTON, &src, f_clientStartButtonAlpha, 0);
+
 	}
 	
-
 	m_pEngine->SpriteEnd();
 }
 
