@@ -41,6 +41,7 @@ void SceneLobby::Start()
 	NET_LOG("[SceneLobby] Start開始");
 	NET_LOG("========================================");
 
+	while (ShowCursor(TRUE) < 0);
 	m_pEngine->AddTexture(TEXTURE_BUTTON);
 	m_pEngine->AddFont(FONT_GOTHIC60);
 	m_pEngine->AddTexture(TEXTURE_FADE);
