@@ -900,8 +900,10 @@ void ServerManager::StartGame()
 		return;
 	}
 
+	// ★★★ 役割割り当て ★★★
 	AssignRoles();
 
+	// ★★★ 役割情報を送信（3回） ★★★
 	for (int retry = 0; retry < 3; retry++)
 	{
 		BroadcastRoleAssignments();
@@ -917,6 +919,73 @@ void ServerManager::StartGame()
 
 	// ★★★ ゲーム状態を「ゲーム中」に設定 ★★★
 	SetGameState(1);
+
+	// ★★★ 追加: 全プレイヤーの生成通知をブロードキャスト ★★★
+	NET_LOG("[ServerManager] 全プレイヤーの生成通知をブロードキャスト開始");
+
+	// ホストの生成通知
+	if (!m_hostName.empty())
+	{
+		NetPlayerSpawn hostSpawn;
+		hostSpawn.clientId = 1;
+
+		// ホストの現在位置を取得
+		if (m_hostStateSet)
+		{
+			hostSpawn.startX = m_hostState.posX;
+			hostSpawn.startY = m_hostState.posY;
+			hostSpawn.startZ = m_hostState.posZ;
+		}
+		else
+		{
+			hostSpawn.startX = 0.0f;
+			hostSpawn.startY = 0.0f;
+			hostSpawn.startZ = 0.0f;
+		}
+
+		strncpy_s(hostSpawn.name, m_hostName.c_str(), sizeof(hostSpawn.name) - 1);
+		hostSpawn.name[sizeof(hostSpawn.name) - 1] = '\0';
+
+		BroadcastPlayerSpawn(hostSpawn);
+		NET_LOG_F("[ServerManager] ホスト生成通知: ID=%u Name=%s",
+			hostSpawn.clientId, hostSpawn.name);
+	}
+
+	// 各クライアントの生成通知
+	for (auto& kv : m_clients)
+	{
+		if (kv.second && !kv.second->name.empty())
+		{
+			NetPlayerSpawn spawn;
+			spawn.clientId = kv.second->id;
+
+			// 既存クライアントの現在位置を取得
+			if (kv.second->stateReceived)
+			{
+				spawn.startX = kv.second->lastState.posX;
+				spawn.startY = kv.second->lastState.posY;
+				spawn.startZ = kv.second->lastState.posZ;
+			}
+			else
+			{
+				spawn.startX = 0.0f;
+				spawn.startY = 0.0f;
+				spawn.startZ = 0.0f;
+			}
+
+			strncpy_s(spawn.name, kv.second->name.c_str(), sizeof(spawn.name) - 1);
+			spawn.name[sizeof(spawn.name) - 1] = '\0';
+
+			BroadcastPlayerSpawn(spawn);
+			NET_LOG_F("[ServerManager] クライアント生成通知: ID=%u Name=%s",
+				spawn.clientId, spawn.name);
+		}
+	}
+
+	enet_host_flush(m_pServerHost);
+	NET_LOG("[ServerManager] 全プレイヤー生成通知完了");
+
+	Sleep(100);
 
 	// ゲーム開始通知
 	std::vector<uint8_t> payload;

@@ -294,6 +294,15 @@ void SceneGame::Update()
 		break;
 
 	case FADE_OUT:
+		if (m_pClient) m_pClient->Update();
+		if (m_bIsHost && m_pServer) m_pServer->Update();
+
+		if (m_resultImageAlpha < 255.0f)
+		{
+			m_resultImageAlpha += f_resultFadeSpeed * m_deltaTime;
+			if (m_resultImageAlpha > 255.0f) m_resultImageAlpha = 255.0f;
+		}
+
 		if (m_fade.Update(m_deltaTime))
 		{
 			NET_LOG("[SceneGame] フェードアウト完了 - シーン遷移");
@@ -563,33 +572,66 @@ void SceneGame::UpdateNetwork()
 		NetPlayerSpawn spawn;
 		while (m_pClient->PopPlayerSpawn(spawn))
 		{
-			if (spawn.clientId != m_localClientId)
-			{
-				NET_LOG_F("[SceneGame] リモートプレイヤー参加: ID=%u, Name=%s",
-					spawn.clientId, spawn.name);
+			NET_LOG_F("[SceneGame::UpdateNetwork] プレイヤー生成通知受信: ID=%u, Name=%s",
+				spawn.clientId, spawn.name);
 
-				if (m_players.find(spawn.clientId) != m_players.end())
+			// ★★★ 修正: ローカルプレイヤーも含めて処理 ★★★
+			if (m_players.find(spawn.clientId) != m_players.end())
+			{
+				NET_LOG_F("[SceneGame] プレイヤー ID=%u は既に存在 - スキップ", spawn.clientId);
+				continue;
+			}
+
+			// ★★★ 修正: ローカルプレイヤーの場合も既に生成済みならスキップ ★★★
+			if (spawn.clientId == m_localClientId)
+			{
+				if (m_pLocalPlayer)
 				{
+					NET_LOG_F("[SceneGame] ローカルプレイヤー ID=%u は既に生成済み - スキップ",
+						spawn.clientId);
 					continue;
 				}
+				// まだ生成していない場合は処理を続行
+			}
 
-				PlayerRole role = ROLE_RUNNER;
-				auto roleIt = m_playerRoles.find(spawn.clientId);
-				if (roleIt != m_playerRoles.end())
-				{
-					role = roleIt->second;
-				}
+			// 役割を取得
+			PlayerRole role = ROLE_RUNNER;
+			auto roleIt = m_playerRoles.find(spawn.clientId);
+			if (roleIt != m_playerRoles.end())
+			{
+				role = roleIt->second;
+			}
+			else
+			{
+				NET_LOG_F("[SceneGame] 警告: プレイヤー ID=%u の役割が未設定 - デフォルトでRunner",
+					spawn.clientId);
+			}
 
-				SpawnPlayerWithRole(spawn.clientId, spawn.name,
-					D3DXVECTOR3(spawn.startX, spawn.startY, spawn.startZ),
-					role);
+			// プレイヤー生成
+			if (spawn.clientId == m_localClientId)
+			{
+				// ローカルプレイヤー（通常は役割受信時に生成済み）
+				NET_LOG_F("[SceneGame] ローカルプレイヤー遅延生成: ID=%u Role=%s",
+					spawn.clientId, (role == ROLE_CHASER) ? "鬼" : "逃げる側");
+			}
+			else
+			{
+				// リモートプレイヤー
+				NET_LOG_F("[SceneGame] リモートプレイヤー生成: ID=%u, Name=%s Role=%s",
+					spawn.clientId, spawn.name,
+					(role == ROLE_CHASER) ? "鬼" : "逃げる側");
+			}
 
-				if (role == ROLE_CHASER)
-				{
-					UpdateChaserLights();
-				}
+			SpawnPlayerWithRole(spawn.clientId, spawn.name,
+				D3DXVECTOR3(spawn.startX, spawn.startY, spawn.startZ),
+				role);
+
+			if (role == ROLE_CHASER)
+			{
+				UpdateChaserLights();
 			}
 		}
+
 
 		// プレイヤー削除通知
 		uint32_t despawnId;
@@ -1911,8 +1953,8 @@ void SceneGame::Draw()
 			"残り時間: %02d:%02d", minutes, seconds);
 	}
 
-	// ★★★ 修正: リザルト画像を先に描画 ★★★
-	if (m_gameState == RESULT_DISPLAY)
+	// ★★★ 修正: リザルト画像をフェード前に描画（RESULT_DISPLAY と FADE_OUT 両方で表示）★★★
+	if (m_gameState == RESULT_DISPLAY || m_gameState == FADE_OUT)
 	{
 		// 背景を暗くする
 		RECT sour, dest;
@@ -1940,18 +1982,20 @@ void SceneGame::Draw()
 			(int)(center.x + f_resultSize.x / 2),
 			(int)(center.y + f_resultSize.y / 2));
 
-		// ★★★ リザルト画像をフェードインで表示 ★★★
+		// ★★★ リザルト画像を表示（アルファ値は255固定で常に表示） ★★★
+		int displayAlpha = (int)min(255.0f, m_resultImageAlpha);
+
 		if (isLocalWinner)
 		{
-			m_pEngine->Blt(&dest, TEXTURE_VICTORY, &sour, (int)m_resultImageAlpha, 0.0f);
+			m_pEngine->Blt(&dest, TEXTURE_VICTORY, &sour, displayAlpha, 0.0f);
 		}
 		else
 		{
-			m_pEngine->Blt(&dest, TEXTURE_DEFEAT, &sour, (int)m_resultImageAlpha, 0.0f);
+			m_pEngine->Blt(&dest, TEXTURE_DEFEAT, &sour, displayAlpha, 0.0f);
 		}
 	}
 
-	// ★★★ 修正: フェードは最後に描画（他の画像の上に重ねる）★★★
+	// ★★★ フェードは最後に描画（リザルト画像の上に重ねる）★★★
 	m_fade.Draw(m_pEngine);
 
 	m_pEngine->SpriteEnd();

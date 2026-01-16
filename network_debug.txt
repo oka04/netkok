@@ -2,561 +2,939 @@
 Network Debug Log
 ===========================================
 
-[16:13:22] ========================================
-[16:13:22] ClientManager 初期化開始
-[16:13:22] ========================================
-[16:13:22] [ClientManager] ENet初期化成功
-[16:13:22] [ClientManager] Discovery作成
-[16:13:23] [Discovery/Listener] スレッド開始
-[16:13:23] [Discovery/Listener] WSAStartup成功
-[16:13:23] [ClientManager] Discoveryリスナー起動 (ポート:12346)
-[16:13:23] [Discovery/Listener] ソケット作成成功
-[16:13:23] [Discovery/Listener] bind成功 ポート:12346
-[16:13:23] [Discovery/Listener] 受信ループ開始
-[16:13:24] ========================================
-[16:13:24] [SceneSelectHost] サーバー作成開始: FGFD
-[16:13:24] [Client] 切断
-[16:13:24] [ServerManager] ホスト名設定: Player108
-[16:13:24] [SceneSelectHost] サーバー名設定: FGFD
-[16:13:24] [SceneSelectHost] ホスト名設定: Player108
-[16:13:24] [Discovery/Advertiser] スレッド開始
-[16:13:24] [ServerManager] サーバー起動: ポート=12499
-[16:13:24] [Discovery/Advertiser] WSAStartup成功
-[16:13:24] [SceneSelectHost] サーバー起動成功: ポート=12499
-[16:13:24] [Discovery/Advertiser] ソケット作成成功
-[16:13:24] [Discovery/Advertiser] SO_BROADCAST設定成功
-[16:13:24] [Discovery/Advertiser] ブロードキャストループ開始
-[16:13:24] [Discovery/Advertiser] 送信データ: port=12499 player=1/8 state=0 name='FGFD'
-[16:13:24] [Discovery/Advertiser] ブロードキャスト送信 #1: サイズ=22 bytes (port=12499)
-[16:13:24] [Discovery/Listener] パケット受信! サイズ:22 bytes
-[16:13:24] [Discovery/Listener] マジック一致確認
-[16:13:24] [Discovery/Listener] プロトコルバージョン: 256
-[16:13:24] [Discovery/Listener] ポート（変換後）: 12499
-[16:13:24] [Discovery/Listener] プレイヤー数: 1
-[16:13:24] [Discovery/Listener] 最大プレイヤー数: 8
-[16:13:24] [Discovery/Listener] ステート: 0
-[16:13:24] [Discovery/Listener] 名前の長さ: 4
-[16:13:24] [Discovery/Listener] サーバー名: 'FGFD'
-[16:13:24] [Discovery/Listener] ★サーバー検出★: FGFD @ 172.20.145.8:12499 (1/8) state=0
-[16:13:24] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:13:24] [ClientManager] ConnectToServer: 127.0.0.1:12499
-[16:13:24] [ClientManager] クライアントホスト作成成功
-[16:13:24] [ClientManager] ホスト接続 - サーバー名は接続後に取得
-[16:13:24] [ClientManager] 接続要求送信 (ホスト判定: true)
-[16:13:24] [SceneSelectHost] ロビーに遷移
-[16:13:24] ========================================
-[16:13:24] [SceneLobby] Start開始
-[16:13:24] ========================================
-[16:13:24] [ClientManager] ResetForLobbyReturn開始
-[16:13:24] [ClientManager] ResetForLobbyReturn完了: m_bGameStarted=false ClientID=1
-[16:13:24] [SceneLobby] ResetForLobbyReturn実行完了: IsGameStarted=false
-[16:13:24] [SceneLobby] ホストとしてロビー開始: サーバー名='FGFD'
-[16:13:24] [ServerManager] ゲーム状態を変更: 0 (待機中)
-[16:13:24] [SceneLobby] サーバー状態を待機中(0)に設定
-[16:13:24] [ServerManager] BroadcastLobbyUpdate: 1 人
-[16:13:24] [ServerManager] プレイヤー1: 'Player108' (長さ:9)
-[16:13:24] [ServerManager] 送信データサイズ: 12 bytes
-[16:13:24] [SceneLobby] 初回ロビー更新をブロードキャスト
-[16:13:24] [SceneLobby] Start完了: GameStarted=false
-[16:13:24] [SceneLobby::Update] GameStarted=false GameState=0
-[16:13:24] [ClientManager] サーバー接続成功（ENET_EVENT_TYPE_CONNECT受信）
-[16:13:24] [ClientManager] JOIN送信: Player108
-[16:13:24] [ClientManager] JOIN送信完了: Player108
-[16:13:24] [ServerManager] クライアント接続: ID=1 (現在1人)
-[16:13:24] [ServerManager] ProcessJoin: データ長=10
-[16:13:24] [ServerManager] 名前長さ: 9
-[16:13:24] [ServerManager] 受信した名前: 'Player108'
-[16:13:24] [ServerManager] ホストのJOIN受信: Player108 (ID=1)
-[16:13:24] [ServerManager] JoinAck送信: ClientID=1
-[16:13:24] [ServerManager] 新規参加者にホスト情報を送信: Player108 Pos=(0.0,0.0,0.0)
-[16:13:24] [ServerManager] 新規参加者情報をブロードキャスト: Player108 (ID=1)
-[16:13:24] [ServerManager] ロビー更新をブロードキャスト
-[16:13:24] [ServerManager] BroadcastLobbyUpdate: 1 人
-[16:13:24] [ServerManager] プレイヤー1: 'Player108' (長さ:9)
-[16:13:24] [ServerManager] 送信データサイズ: 12 bytes
-[16:13:24] [ClientManager] クライアントID割り当て: 1
-[16:13:24] [ClientManager] プレイヤー生成通知: ID=1, Name=Player108
-[16:13:24] [ClientManager] プレイヤー生成通知: ID=1, Name=Player108
-[16:13:24] [ClientManager] ProcessLobbyUpdate: データ長=12
-[16:13:24] [ClientManager] プレイヤー数: 1
-[16:13:24] [ClientManager] プレイヤー1 名前長さ: 9
-[16:13:24] [ClientManager] プレイヤー1: 'Player108'
-[16:13:24] [ClientManager] ロビー更新完了: 1 人
-[16:13:26] [ServerManager] クライアント接続: ID=2 (現在2人)
-[16:13:26] [ServerManager] ProcessJoin: データ長=10
-[16:13:26] [ServerManager] 名前長さ: 9
-[16:13:26] [ServerManager] 受信した名前: 'Player523'
-[16:13:26] [ServerManager] クライアントのJOIN受信: Player523 (ID=2)
-[16:13:26] [ServerManager] JoinAck送信: ClientID=2
-[16:13:26] [ServerManager] 新規参加者にホスト情報を送信: Player108 Pos=(0.0,0.0,0.0)
-[16:13:26] [ServerManager] 新規参加者情報をブロードキャスト: Player523 (ID=2)
-[16:13:26] [ServerManager] ロビー更新をブロードキャスト
-[16:13:26] [ServerManager] BroadcastLobbyUpdate: 2 人
-[16:13:26] [ServerManager] プレイヤー1: 'Player108' (長さ:9)
-[16:13:26] [ServerManager] プレイヤー2: 'Player523' (長さ:9)
-[16:13:26] [ServerManager] 送信データサイズ: 22 bytes
-[16:13:26] [ClientManager] プレイヤー生成通知: ID=2, Name=Player523
-[16:13:26] [ClientManager] ProcessLobbyUpdate: データ長=22
-[16:13:26] [ClientManager] プレイヤー数: 2
-[16:13:26] [ClientManager] プレイヤー1 名前長さ: 9
-[16:13:26] [ClientManager] プレイヤー1: 'Player108'
-[16:13:26] [ClientManager] プレイヤー2 名前長さ: 9
-[16:13:26] [ClientManager] プレイヤー2: 'Player523'
-[16:13:26] [ClientManager] ロビー更新完了: 2 人
-[16:13:26] [SceneLobby::Update] GameStarted=false GameState=0
-[16:13:27] [Discovery/Listener] 生存確認 ループ:50
-[16:13:28] [SceneLobby] ゲーム開始ボタン押下
-[16:13:28] [ServerManager] 役割割り当て開始
-[16:13:28] [ServerManager] ホストをリストに追加: ID=1
-[16:13:28] [ServerManager] クライアントをリストに追加: ID=2 Name=Player523
-[16:13:28] [ServerManager] 総プレイヤー数: 2
-[16:13:28] [ServerManager] 総人数=2 鬼=1 逃げる側=1
-[16:13:28] [ServerManager] シャッフル後のID順:
-[16:13:28]   位置0: ID=1
-[16:13:28]   位置1: ID=2
-[16:13:28] [ServerManager] ホスト(ID=1 Name=Player108)の役割: 鬼
-[16:13:28] [ServerManager] クライアント Player108 (ID=1) の役割: 鬼
-[16:13:28] [ServerManager] クライアント Player523 (ID=2) の役割: 逃げる側
-[16:13:28] [ServerManager] 役割割り当て完了
-[16:13:28] [ServerManager] 割り当て結果確認: 鬼=1 逃げる側=1
-[16:13:28] [ServerManager] 役割割り当てをブロードキャスト
-[16:13:28] [ServerManager] ホスト(ID=1)の役割送信: 鬼
-[16:13:28] [ServerManager] クライアント Player108 (ID=1)の役割送信: 鬼
-[16:13:28] [ServerManager] クライアント Player523 (ID=2)の役割送信: 逃げる側
-[16:13:28] [ServerManager] 役割割り当てブロードキャスト完了
-[16:13:28] [ServerManager] 役割割り当てをブロードキャスト
-[16:13:28] [ServerManager] ホスト(ID=1)の役割送信: 鬼
-[16:13:28] [ServerManager] クライアント Player108 (ID=1)の役割送信: 鬼
-[16:13:28] [ServerManager] クライアント Player523 (ID=2)の役割送信: 逃げる側
-[16:13:28] [ServerManager] 役割割り当てブロードキャスト完了
-[16:13:28] [ServerManager] 役割割り当てをブロードキャスト
-[16:13:28] [ServerManager] ホスト(ID=1)の役割送信: 鬼
-[16:13:28] [ServerManager] クライアント Player108 (ID=1)の役割送信: 鬼
-[16:13:28] [ServerManager] クライアント Player523 (ID=2)の役割送信: 逃げる側
-[16:13:28] [ServerManager] 役割割り当てブロードキャスト完了
-[16:13:28] [ServerManager] 役割割り当て送信完了（3回送信）
-[16:13:28] [ServerManager] ゲーム状態を変更: 1 (ゲーム中)
-[16:13:28] [ServerManager] ゲーム開始 - 役割割り当て済み
-[16:13:28] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
-[16:13:28] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
-[16:13:28] [ClientManager] 他プレイヤーの役割: ID=2 逃げる側
-[16:13:28] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
-[16:13:28] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
-[16:13:28] [ClientManager] 他プレイヤーの役割: ID=2 逃げる側
-[16:13:28] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
-[16:13:28] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
-[16:13:28] [ClientManager] 他プレイヤーの役割: ID=2 逃げる側
-[16:13:28] [ClientManager] ゲーム開始通知受信
-[16:13:28] [SceneLobby] ゲーム開始通知受信 - ゲームシーンへ遷移
-[16:13:28] [SceneLobby] Exit開始
-[16:13:28] [SceneLobby] Exit完了
-[16:13:28] [Map::DrawMap] ライト数: 0 シャドウマップ数: -1
-[16:13:28] [SceneGame::Initialize] ホストとして初期化: ClientID=1
-[16:13:28] [SceneGame] Initialize完了: IsHost=1, ClientID=1
-[16:13:28] [SceneGame] 初期化完了 - 役割割り当て待機中
-[16:13:28] [SceneGame] 役割受信: ID=1 Role=鬼
-[16:13:28] [SceneGame] ローカルプレイヤー即座に生成: Role=鬼
-[16:13:28] [SceneGame] Chaserを生成: ID=1, Name=Player108
-[16:13:28] [Chaser] シャドウマップ作成成功: ID=0
-[16:13:28] [Chaser] IceBreath生成: ID=0 Range=8.00
-[16:13:28] [SceneGame] プレイヤーID設定: IsLocal=Yes, ClientID=1 (GetClientId()=1)
-[16:13:28] [SceneGame] プレイヤー生成完了: ID=1, Role=鬼, Pos=(7.5,0.5,72.5), IsLocal=Yes
-[16:13:28] [SceneGame] プレイヤーのGetClientId()=1
-[16:13:28] [SceneGame] 現在の役割マップ: 総数=1
-[16:13:28]   ID=1 -> 鬼
-[16:13:28] [SceneGame] ローカルプレイヤー生成完了: m_clientId=1, GetClientId()=1
-[16:13:28] [Chaser::UpdateLightMatrices] ID=1 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
-[16:13:28] [Chaser::UpdateLight] ID=1 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
-[16:13:28] [SceneGame] 初期同期完了（役割受信）
-[16:13:28] [SceneGame] 役割受信: ID=1 Role=鬼
-[16:13:28] [SceneGame] 役割受信: ID=2 Role=逃げる側
-[16:13:28] [SceneGame] 役割受信: ID=1 Role=鬼
-[16:13:28] [SceneGame] 役割受信: ID=1 Role=鬼
-[16:13:28] [SceneGame] 役割受信: ID=2 Role=逃げる側
-[16:13:28] [SceneGame] 役割受信: ID=1 Role=鬼
-[16:13:28] [SceneGame] 役割受信: ID=1 Role=鬼
-[16:13:28] [SceneGame] 役割受信: ID=2 Role=逃げる側
-[16:13:28] [UpdateChaserLights] ローカル鬼追加: ID=1 LightIndex=0 Pos=(7.5,1.8,72.5)
-[16:13:28] [UpdateChaserLights] ライト収集完了: 1 個
-[16:13:28] [SceneGame] リモートプレイヤー参加: ID=2, Name=Player523
-[16:13:28] [SceneGame] Runnerを生成: ID=2, Name=Player523
-[16:13:29] [Discovery/Advertiser] 送信データ: port=12499 player=2/8 state=1 name='FGFD'
-[16:13:29] [Discovery/Advertiser] ブロードキャスト送信 #2: サイズ=22 bytes (port=12499)
-[16:13:29] [Discovery/Listener] パケット受信! サイズ:22 bytes
-[16:13:29] [Discovery/Listener] マジック一致確認
-[16:13:29] [Discovery/Listener] プロトコルバージョン: 256
-[16:13:29] [Discovery/Listener] ポート（変換後）: 12499
-[16:13:29] [Discovery/Listener] プレイヤー数: 2
-[16:13:29] [Discovery/Listener] 最大プレイヤー数: 8
-[16:13:29] [Discovery/Listener] ステート: 1
-[16:13:29] [Discovery/Listener] 名前の長さ: 4
-[16:13:29] [Discovery/Listener] サーバー名: 'FGFD'
-[16:13:29] [Discovery/Listener] ★サーバー検出★: FGFD @ 172.20.145.8:12499 (2/8) state=1
-[16:13:29] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:13:30] [SceneGame] プレイヤーID設定: IsLocal=No, ClientID=2 (GetClientId()=2)
-[16:13:30] [SceneGame] プレイヤー生成完了: ID=2, Role=逃げる側, Pos=(7.5,0.5,72.5), IsLocal=No
-[16:13:30] [SceneGame] プレイヤーのGetClientId()=2
-[16:13:30] [SceneGame] 現在の役割マップ: 総数=2
-[16:13:30]   ID=1 -> 鬼
-[16:13:30]   ID=2 -> 逃げる側
-[16:13:30] [RenderShadowMaps] ========== 開始 ==========
-[16:13:30] [RenderShadowMaps] m_players数=2 ローカルID=1 ローカルRole=鬼
-[16:13:30] [RenderShadowMaps] m_playersの内容:
-[16:13:30]   Player[1]: Exists=Yes Role=鬼 Ptr=1B0D5C98
-[16:13:30]   Player[2]: Exists=Yes Role=逃げる側 Ptr=1B07C688
-[16:13:30] [RenderShadowMaps] m_pLocalPlayer: Ptr=1B0D5C98 IsLocal=Yes
-[16:13:30] [RenderShadowMaps] ループ開始: Player[1]
-[16:13:30] [RenderShadowMaps] ========== Chaser[1]のシャドウマップ生成開始 ==========
-[16:13:30] [RenderShadowMaps] ライト行列設定: View._41=7.50, _42=-1.80, _43=72.50
-[16:13:30] [RenderShadowMaps] マップの深度描画
-[16:13:30] [Map::DrawMapDepth] 壁の数=36 行列: _41=6.29, _42=-1.51, _43=79.81
-[16:13:30] [RenderShadowMaps] プレイヤーの影描画開始（鬼[1]以外）
-[16:13:30]   Player[1]: スキップ（鬼自身）
-[16:13:30]   Player[2]: DrawDepth呼び出し開始
-[16:13:30]   Player[2]: DrawDepth呼び出し完了
-[16:13:30] [RenderShadowMaps] プレイヤーの影描画完了: 1体描画
-[16:13:30] [RenderShadowMaps] ========== Chaser[1]のシャドウマップ生成完了 ==========
-[16:13:30] [RenderShadowMaps] ループ開始: Player[2]
-[16:13:30] [RenderShadowMaps] スキップ: Player[2] - 役割が鬼ではない（逃げる側）
-[16:13:30] [RenderShadowMaps] 完了: シャドウマップ生成数=1
-[16:13:30] [RenderShadowMaps] ========== 終了 ==========
-[16:13:30] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
-[16:13:30]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
-[16:13:30] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
-[16:13:30] [SceneGame] 送信: ID=1 Pos=(7.5,0.5,72.5) Interval=16ms
-[16:13:30] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:30] [SceneGame] フェードイン完了 - ゲーム開始
-[16:13:30] [CharacterBase] UpdateFromNetwork: ID=2 Dist=0.00 Speed=0.00
-[16:13:30] [SceneGame] 残り時間: 300.0秒
-[16:13:30] [SceneGame] Runner状態: 凍結=0 / 全体=1
-[16:13:30] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:30] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:30] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:30] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:30] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:30] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:30] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:30] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:30] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:30] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:30] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:30] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:30] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:30] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:30] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:30] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:30] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:30] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:30] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:30] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:30] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:30] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:30] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:30] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:30] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:30] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:30] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:30] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
-[16:13:31] [Map::DrawMap] Light[0] Pos=(10.6,1.8,71.1)
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [UpdateChaserLights] ローカル鬼追加: ID=1 LightIndex=0 Pos=(10.7,1.8,71.1)
-[16:13:31] [UpdateChaserLights] ライト収集完了: 1 個
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [CharacterBase::Input] ID=1 左クリック検出！ KeyFlag=0x40
-[16:13:31] [IceBreath::Activate] Pos=(11.2,1.8,71.1) Dir=(-0.98,-0.17,0.04) MaxDist=8.00
-[16:13:31] [Chaser] ブレス発動: ID=1 Pos=(11.2,1.8,71.1) Dir=(-0.98,-0.17,0.04)
-[16:13:31] [Chaser::CheckBreathHitPlayers] 鬼[1] ブレス判定開始: 対象プレイヤー=1人
-[16:13:31]   ライト Pos=(11.2,1.8,71.1) Dir=(-1.00,0.00,0.04) Range=8.00
-[16:13:31] [Runner::SetFrozen] ID=2 新規凍結
-[16:13:31] [Chaser] ★★★ブレスヒット★★★ 鬼[1] -> Runner[2]を凍結! Dist=4.00 Dot=0.947
-[16:13:31] [Chaser::CheckBreathHitPlayers] 鬼[1] 結果: チェック=1 凍結=1
-[16:13:31] [SceneGame::CheckBreathHitPlayers] プレイヤー[2]の凍結状態が変化
-[16:13:31] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:31] [SceneGame] 全員凍結 - 鬼側の勝利
-[16:13:31] [ServerManager] ゲーム結果をブロードキャスト: winner=1
-[16:13:31] [ServerManager] ゲーム状態を変更: 0 (待機中)
-[16:13:31] [ServerManager] 全プレイヤーの役割をクリア
-[16:13:31] [SceneGame] リザルト画面表示開始: 勝者=鬼側
-[16:13:31] [Runner::DrawEffects] ID=2 氷ブロック描画: Frozen=1 amount=0.00 Pos=(7.5,1.4,72.5)
-[16:13:31] [ClientManager] ゲーム結果受信: winner=1 (鬼側)
-[16:13:31] [SceneGame] ゲーム結果受信: winner=1
-[16:13:32] [Discovery/Listener] 生存確認 ループ:100
-[16:13:33] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
-[16:13:33]   Light[0] Pos=(11.2,1.8,71.1) Dir=(-1.00,0.00,0.04) ShadowMap=有効
-[16:13:33] [SceneGame::Draw] リモートプレイヤー[2] 凍結中: amount=0.00
-[16:13:33] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=1人
-[16:13:33] [Chaser::UpdateLightMatrices] ID=1 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
-[16:13:33] [Chaser::UpdateLight] ID=1 Pos=(11.2,1.8,71.1) Dir=(-1.00,0.00,0.04) IsLocal=Yes
-[16:13:33] [Runner::DrawEffects] ID=2 氷ブロック描画: Frozen=1 amount=0.00 Pos=(7.5,1.4,72.5)
-[16:13:34] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
-[16:13:34] [Map::DrawMap] Light[0] Pos=(11.2,1.8,71.1)
-[16:13:34] [UpdateChaserLights] ローカル鬼追加: ID=1 LightIndex=0 Pos=(11.2,1.8,71.1)
-[16:13:34] [UpdateChaserLights] ライト収集完了: 1 個
-[16:13:34] [Discovery/Advertiser] 送信データ: port=12499 player=2/8 state=0 name='FGFD'
-[16:13:34] [Discovery/Advertiser] ブロードキャスト送信 #3: サイズ=22 bytes (port=12499)
-[16:13:34] [Discovery/Listener] パケット受信! サイズ:22 bytes
-[16:13:34] [Discovery/Listener] マジック一致確認
-[16:13:34] [Discovery/Listener] プロトコルバージョン: 256
-[16:13:34] [Discovery/Listener] ポート（変換後）: 12499
-[16:13:34] [Discovery/Listener] プレイヤー数: 2
-[16:13:34] [Discovery/Listener] 最大プレイヤー数: 8
-[16:13:34] [Discovery/Listener] ステート: 0
-[16:13:34] [Discovery/Listener] 名前の長さ: 4
-[16:13:34] [Discovery/Listener] サーバー名: 'FGFD'
-[16:13:34] [Discovery/Listener] ★サーバー検出★: FGFD @ 172.20.145.8:12499 (2/8) state=0
-[16:13:34] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:13:35] [RenderShadowMaps] ========== 開始 ==========
-[16:13:35] [RenderShadowMaps] m_players数=2 ローカルID=1 ローカルRole=鬼
-[16:13:35] [RenderShadowMaps] m_playersの内容:
-[16:13:35]   Player[1]: Exists=Yes Role=鬼 Ptr=1B0D5C98
-[16:13:35]   Player[2]: Exists=Yes Role=逃げる側 Ptr=1B07C688
-[16:13:35] [RenderShadowMaps] m_pLocalPlayer: Ptr=1B0D5C98 IsLocal=Yes
-[16:13:35] [RenderShadowMaps] ループ開始: Player[1]
-[16:13:35] [RenderShadowMaps] ========== Chaser[1]のシャドウマップ生成開始 ==========
-[16:13:35] [RenderShadowMaps] ライト行列設定: View._41=-71.54, _42=-1.80, _43=8.06
-[16:13:35] [RenderShadowMaps] マップの深度描画
-[16:13:35] [Map::DrawMapDepth] 壁の数=36 行列: _41=-60.03, _42=-1.51, _43=7.88
-[16:13:35] [RenderShadowMaps] プレイヤーの影描画開始（鬼[1]以外）
-[16:13:35]   Player[1]: スキップ（鬼自身）
-[16:13:35]   Player[2]: DrawDepth呼び出し開始
-[16:13:35]   Player[2]: DrawDepth呼び出し完了
-[16:13:35] [RenderShadowMaps] プレイヤーの影描画完了: 1体描画
-[16:13:35] [RenderShadowMaps] ========== Chaser[1]のシャドウマップ生成完了 ==========
-[16:13:35] [RenderShadowMaps] ループ開始: Player[2]
-[16:13:35] [RenderShadowMaps] スキップ: Player[2] - 役割が鬼ではない（逃げる側）
-[16:13:35] [RenderShadowMaps] 完了: シャドウマップ生成数=1
-[16:13:35] [RenderShadowMaps] ========== 終了 ==========
-[16:13:35] [Runner::DrawEffects] ID=2 氷ブロック描画: Frozen=1 amount=0.00 Pos=(7.5,1.4,72.5)
-[16:13:36] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
-[16:13:36]   Light[0] Pos=(11.2,1.8,71.1) Dir=(-1.00,0.00,0.04) ShadowMap=有効
-[16:13:36] [SceneGame::Draw] リモートプレイヤー[2] 凍結中: amount=0.00
-[16:13:36] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=1人
-[16:13:36] [SceneGame] リザルト表示終了 - ロビーに遷移準備開始
-[16:13:36] [SceneGame] 全プレイヤー情報をクリア
-[16:13:36] [SceneGame] ゲーム関連フラグをリセット
-[16:13:36] [ServerManager] ゲーム状態を変更: 0 (待機中)
-[16:13:36] [SceneGame] サーバーゲーム状態を待機中に変更
-[16:13:36] [SceneGame] ロビーへのフェードアウト開始
-[16:13:37] [Map::DrawMap] ライト数: -1 シャドウマップ数: -1
-[16:13:37] [UpdateChaserLights] ライト収集完了: 0 個
-[16:13:38] [Discovery/Listener] 生存確認 ループ:150
-[16:13:38] [SceneGame] フェードアウト完了 - シーン遷移
-[16:13:38] [SceneGame] Exit開始
-[16:13:38] [SceneGame] Exit完了
-[16:13:38] ========================================
-[16:13:38] [SceneLobby] Start開始
-[16:13:38] ========================================
-[16:13:38] [ClientManager] ResetForLobbyReturn開始
-[16:13:38] [ClientManager] ResetForLobbyReturn完了: m_bGameStarted=false ClientID=1
-[16:13:38] [SceneLobby] ResetForLobbyReturn実行完了: IsGameStarted=false
-[16:13:38] [SceneLobby] ホストとしてロビー開始: サーバー名='FGFD'
-[16:13:38] [ServerManager] ゲーム状態を変更: 0 (待機中)
-[16:13:38] [SceneLobby] サーバー状態を待機中(0)に設定
-[16:13:38] [ServerManager] BroadcastLobbyUpdate: 2 人
-[16:13:38] [ServerManager] プレイヤー1: 'Player108' (長さ:9)
-[16:13:38] [ServerManager] プレイヤー2: 'Player523' (長さ:9)
-[16:13:38] [ServerManager] 送信データサイズ: 22 bytes
-[16:13:38] [SceneLobby] 初回ロビー更新をブロードキャスト
-[16:13:38] [SceneLobby] Start完了: GameStarted=false
-[16:13:38] [ClientManager] ProcessLobbyUpdate: データ長=22
-[16:13:38] [ClientManager] プレイヤー数: 2
-[16:13:38] [ClientManager] プレイヤー1 名前長さ: 9
-[16:13:38] [ClientManager] プレイヤー1: 'Player108'
-[16:13:38] [ClientManager] プレイヤー2 名前長さ: 9
-[16:13:38] [ClientManager] プレイヤー2: 'Player523'
-[16:13:38] [ClientManager] ロビー更新完了: 2 人
-[16:13:38] [SceneLobby::Update] GameStarted=false GameState=0
-[16:13:39] [Discovery/Advertiser] 送信データ: port=12499 player=2/8 state=0 name='FGFD'
-[16:13:39] [Discovery/Advertiser] ブロードキャスト送信 #4: サイズ=22 bytes (port=12499)
-[16:13:39] [Discovery/Listener] パケット受信! サイズ:22 bytes
-[16:13:39] [Discovery/Listener] マジック一致確認
-[16:13:39] [Discovery/Listener] プロトコルバージョン: 256
-[16:13:39] [Discovery/Listener] ポート（変換後）: 12499
-[16:13:39] [Discovery/Listener] プレイヤー数: 2
-[16:13:39] [Discovery/Listener] 最大プレイヤー数: 8
-[16:13:39] [Discovery/Listener] ステート: 0
-[16:13:39] [Discovery/Listener] 名前の長さ: 4
-[16:13:39] [Discovery/Listener] サーバー名: 'FGFD'
-[16:13:39] [Discovery/Listener] ★サーバー検出★: FGFD @ 172.20.145.8:12499 (2/8) state=0
-[16:13:39] [Discovery/Listener] サーバーリストに追加 (合計:1)
-[16:13:39] [SceneLobby] ゲーム開始ボタン押下
-[16:13:39] [ServerManager] 役割割り当て開始
-[16:13:39] [ServerManager] ホストをリストに追加: ID=1
-[16:13:39] [ServerManager] クライアントをリストに追加: ID=2 Name=Player523
-[16:13:39] [ServerManager] 総プレイヤー数: 2
-[16:13:39] [ServerManager] 総人数=2 鬼=1 逃げる側=1
-[16:13:39] [ServerManager] シャッフル後のID順:
-[16:13:39]   位置0: ID=2
-[16:13:39]   位置1: ID=1
-[16:13:39] [ServerManager] クライアント Player523 (ID=2) の役割: 鬼
-[16:13:39] [ServerManager] ホスト(ID=1 Name=Player108)の役割: 逃げる側
-[16:13:39] [ServerManager] クライアント Player108 (ID=1) の役割: 逃げる側
-[16:13:39] [ServerManager] 役割割り当て完了
-[16:13:39] [ServerManager] 割り当て結果確認: 鬼=1 逃げる側=1
-[16:13:39] [ServerManager] 役割割り当てをブロードキャスト
-[16:13:39] [ServerManager] ホスト(ID=1)の役割送信: 逃げる側
-[16:13:39] [ServerManager] クライアント Player108 (ID=1)の役割送信: 逃げる側
-[16:13:39] [ServerManager] クライアント Player523 (ID=2)の役割送信: 鬼
-[16:13:39] [ServerManager] 役割割り当てブロードキャスト完了
-[16:13:40] [ServerManager] 役割割り当てをブロードキャスト
-[16:13:40] [ServerManager] ホスト(ID=1)の役割送信: 逃げる側
-[16:13:40] [ServerManager] クライアント Player108 (ID=1)の役割送信: 逃げる側
-[16:13:40] [ServerManager] クライアント Player523 (ID=2)の役割送信: 鬼
-[16:13:40] [ServerManager] 役割割り当てブロードキャスト完了
-[16:13:40] [ServerManager] 役割割り当てをブロードキャスト
-[16:13:40] [ServerManager] ホスト(ID=1)の役割送信: 逃げる側
-[16:13:40] [ServerManager] クライアント Player108 (ID=1)の役割送信: 逃げる側
-[16:13:40] [ServerManager] クライアント Player523 (ID=2)の役割送信: 鬼
-[16:13:40] [ServerManager] 役割割り当てブロードキャスト完了
-[16:13:40] [ServerManager] 役割割り当て送信完了（3回送信）
-[16:13:40] [ServerManager] ゲーム状態を変更: 1 (ゲーム中)
-[16:13:40] [ServerManager] ゲーム開始 - 役割割り当て済み
-[16:13:40] [ClientManager] 自分の役割が決定: 逃げる側 (ID=1)
-[16:13:40] [ClientManager] 自分の役割が決定: 逃げる側 (ID=1)
-[16:13:40] [ClientManager] 他プレイヤーの役割: ID=2 鬼
-[16:13:40] [ClientManager] 自分の役割が決定: 逃げる側 (ID=1)
-[16:13:40] [ClientManager] 自分の役割が決定: 逃げる側 (ID=1)
-[16:13:40] [ClientManager] 他プレイヤーの役割: ID=2 鬼
-[16:13:40] [ClientManager] 自分の役割が決定: 逃げる側 (ID=1)
-[16:13:40] [ClientManager] 自分の役割が決定: 逃げる側 (ID=1)
-[16:13:40] [ClientManager] 他プレイヤーの役割: ID=2 鬼
-[16:13:40] [ClientManager] ゲーム開始通知受信
-[16:13:40] [SceneLobby] ゲーム開始通知受信 - ゲームシーンへ遷移
-[16:13:40] [SceneLobby] Exit開始
-[16:13:40] [SceneLobby] Exit完了
-[16:13:40] [SceneGame::Initialize] ホストとして初期化: ClientID=1
-[16:13:40] [SceneGame] Initialize完了: IsHost=1, ClientID=1
-[16:13:40] [SceneGame] 初期化完了 - 役割割り当て待機中
-[16:13:40] [SceneGame] 役割受信: ID=1 Role=逃げる側
-[16:13:40] [SceneGame] ローカルプレイヤー即座に生成: Role=逃げる側
-[16:13:40] [SceneGame] Runnerを生成: ID=1, Name=Player108
-[16:13:42] [SceneGame] プレイヤーID設定: IsLocal=Yes, ClientID=1 (GetClientId()=1)
-[16:13:42] [SceneGame] プレイヤー生成完了: ID=1, Role=逃げる側, Pos=(7.5,0.5,72.5), IsLocal=Yes
-[16:13:42] [SceneGame] プレイヤーのGetClientId()=1
-[16:13:42] [SceneGame] 現在の役割マップ: 総数=1
-[16:13:42]   ID=1 -> 逃げる側
-[16:13:42] [SceneGame] ローカルプレイヤー生成完了: m_clientId=1, GetClientId()=1
-[16:13:42] [SceneGame] 初期同期完了（役割受信）
-[16:13:42] [SceneGame] 役割受信: ID=1 Role=逃げる側
-[16:13:42] [SceneGame] 役割受信: ID=2 Role=鬼
-[16:13:42] [SceneGame] 役割受信: ID=1 Role=逃げる側
-[16:13:42] [SceneGame] 役割受信: ID=1 Role=逃げる側
-[16:13:42] [SceneGame] 役割受信: ID=2 Role=鬼
-[16:13:42] [SceneGame] 役割受信: ID=1 Role=逃げる側
-[16:13:42] [SceneGame] 役割受信: ID=1 Role=逃げる側
-[16:13:42] [SceneGame] 役割受信: ID=2 Role=鬼
-[16:13:42] [UpdateChaserLights] ライト収集完了: 0 個
-[16:13:42] [RenderShadowMaps] ========== 開始 ==========
-[16:13:42] [RenderShadowMaps] m_players数=1 ローカルID=1 ローカルRole=逃げる側
-[16:13:42] [RenderShadowMaps] m_playersの内容:
-[16:13:42]   Player[1]: Exists=Yes Role=逃げる側 Ptr=0A62F158
-[16:13:42] [RenderShadowMaps] m_pLocalPlayer: Ptr=0A62F158 IsLocal=Yes
-[16:13:42] [RenderShadowMaps] ループ開始: Player[1]
-[16:13:42] [RenderShadowMaps] スキップ: Player[1] - 役割が鬼ではない（逃げる側）
-[16:13:42] [RenderShadowMaps] 完了: シャドウマップ生成数=0
-[16:13:42] [RenderShadowMaps] ========== 終了 ==========
-[16:13:42] [SceneGame::Draw] 鬼のライト数: 0 シャドウマップ数: 0
-[16:13:42] [Map::DrawMap] ライト数: -1 シャドウマップ数: -1
-[16:13:42] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
-[16:13:42] [SceneGame] 送信: ID=1 Pos=(7.5,0.5,72.5) Interval=16ms
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame] フェードイン完了 - ゲーム開始
-[16:13:42] [SceneGame] 残り時間: 300.0秒
-[16:13:42] [SceneGame] Runner状態: 凍結=0 / 全体=2
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:42] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:43] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:43] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:43] [Discovery/Listener] 生存確認 ループ:200
-[16:13:43] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:43] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:43] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:43] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:43] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:43] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:43] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:43] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:43] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:43] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:43] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:43] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:43] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:43] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:43] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:43] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:43] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
-[16:13:44] [SceneGame] Exit開始
-[16:13:44] [SceneGame] Exit完了
+[16:38:46] ========================================
+[16:38:46] ClientManager 初期化開始
+[16:38:46] ========================================
+[16:38:46] [ClientManager] ENet初期化成功
+[16:38:46] [ClientManager] Discovery作成
+[16:38:46] [Discovery/Listener] スレッド開始
+[16:38:46] [ClientManager] Discoveryリスナー起動 (ポート:12346)
+[16:38:46] [Discovery/Listener] WSAStartup成功
+[16:38:46] [Discovery/Listener] ソケット作成成功
+[16:38:46] [Discovery/Listener] bind成功 ポート:12346
+[16:38:46] [Discovery/Listener] 受信ループ開始
+[16:38:47] ========================================
+[16:38:47] [SceneSelectHost] サーバー作成開始: F
+[16:38:47] [Client] 切断
+[16:38:47] [ServerManager] ホスト名設定: Player085
+[16:38:47] [SceneSelectHost] サーバー名設定: F
+[16:38:47] [SceneSelectHost] ホスト名設定: Player085
+[16:38:47] [Discovery/Advertiser] スレッド開始
+[16:38:47] [ServerManager] サーバー起動: ポート=12070
+[16:38:47] [SceneSelectHost] サーバー起動成功: ポート=12070
+[16:38:47] [Discovery/Advertiser] WSAStartup成功
+[16:38:47] [Discovery/Advertiser] ソケット作成成功
+[16:38:47] [Discovery/Advertiser] SO_BROADCAST設定成功
+[16:38:47] [Discovery/Advertiser] ブロードキャストループ開始
+[16:38:47] [Discovery/Advertiser] 送信データ: port=12070 player=1/8 state=0 name='F'
+[16:38:47] [Discovery/Advertiser] ブロードキャスト送信 #1: サイズ=19 bytes (port=12070)
+[16:38:47] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[16:38:47] [Discovery/Listener] マジック一致確認
+[16:38:47] [Discovery/Listener] プロトコルバージョン: 256
+[16:38:47] [Discovery/Listener] ポート（変換後）: 12070
+[16:38:47] [Discovery/Listener] プレイヤー数: 1
+[16:38:47] [Discovery/Listener] 最大プレイヤー数: 8
+[16:38:47] [Discovery/Listener] ステート: 0
+[16:38:47] [Discovery/Listener] 名前の長さ: 1
+[16:38:47] [Discovery/Listener] サーバー名: 'F'
+[16:38:47] [Discovery/Listener] ★サーバー検出★: F @ 172.20.145.8:12070 (1/8) state=0
+[16:38:47] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[16:38:47] [ClientManager] ConnectToServer: 127.0.0.1:12070
+[16:38:47] [ClientManager] クライアントホスト作成成功
+[16:38:47] [ClientManager] ホスト接続 - サーバー名は接続後に取得
+[16:38:47] [ClientManager] 接続要求送信 (ホスト判定: true)
+[16:38:47] [SceneSelectHost] ロビーに遷移
+[16:38:47] ========================================
+[16:38:47] [SceneLobby] Start開始
+[16:38:47] ========================================
+[16:38:48] [ClientManager] ResetForLobbyReturn開始
+[16:38:48] [ClientManager] ResetForLobbyReturn完了: m_bGameStarted=false ClientID=1
+[16:38:48] [SceneLobby] ResetForLobbyReturn実行完了: IsGameStarted=false
+[16:38:48] [SceneLobby] ホストとしてロビー開始: サーバー名='F'
+[16:38:48] [ServerManager] ゲーム状態を変更: 0 (待機中)
+[16:38:48] [SceneLobby] サーバー状態を待機中(0)に設定
+[16:38:48] [ServerManager] BroadcastLobbyUpdate: 1 人
+[16:38:48] [ServerManager] プレイヤー1: 'Player085' (長さ:9)
+[16:38:48] [ServerManager] 送信データサイズ: 12 bytes
+[16:38:48] [SceneLobby] 初回ロビー更新をブロードキャスト
+[16:38:48] [SceneLobby] Start完了: GameStarted=false
+[16:38:48] [SceneLobby::Update] GameStarted=false GameState=0
+[16:38:48] [ClientManager] サーバー接続成功（ENET_EVENT_TYPE_CONNECT受信）
+[16:38:48] [ClientManager] JOIN送信: Player085
+[16:38:48] [ClientManager] JOIN送信完了: Player085
+[16:38:48] [ServerManager] クライアント接続: ID=1 (現在1人)
+[16:38:48] [ServerManager] ProcessJoin: データ長=10
+[16:38:48] [ServerManager] 名前長さ: 9
+[16:38:48] [ServerManager] 受信した名前: 'Player085'
+[16:38:48] [ServerManager] ホストのJOIN受信: Player085 (ID=1)
+[16:38:48] [ServerManager] JoinAck送信: ClientID=1
+[16:38:48] [ServerManager] 新規参加者にホスト情報を送信: Player085 Pos=(0.0,0.0,0.0)
+[16:38:48] [ServerManager] 新規参加者情報をブロードキャスト: Player085 (ID=1)
+[16:38:48] [ServerManager] ロビー更新をブロードキャスト
+[16:38:48] [ServerManager] BroadcastLobbyUpdate: 1 人
+[16:38:48] [ServerManager] プレイヤー1: 'Player085' (長さ:9)
+[16:38:48] [ServerManager] 送信データサイズ: 12 bytes
+[16:38:48] [ClientManager] クライアントID割り当て: 1
+[16:38:48] [ClientManager] プレイヤー生成通知: ID=1, Name=Player085
+[16:38:48] [ClientManager] プレイヤー生成通知: ID=1, Name=Player085
+[16:38:48] [ClientManager] ProcessLobbyUpdate: データ長=12
+[16:38:48] [ClientManager] プレイヤー数: 1
+[16:38:48] [ClientManager] プレイヤー1 名前長さ: 9
+[16:38:48] [ClientManager] プレイヤー1: 'Player085'
+[16:38:48] [ClientManager] ロビー更新完了: 1 人
+[16:38:50] [SceneLobby::Update] GameStarted=false GameState=0
+[16:38:51] [Discovery/Listener] 生存確認 ループ:50
+[16:38:52] [SceneLobby::Update] GameStarted=false GameState=0
+[16:38:52] [Discovery/Advertiser] 送信データ: port=12070 player=1/8 state=0 name='F'
+[16:38:52] [Discovery/Advertiser] ブロードキャスト送信 #2: サイズ=19 bytes (port=12070)
+[16:38:52] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[16:38:52] [Discovery/Listener] マジック一致確認
+[16:38:52] [Discovery/Listener] プロトコルバージョン: 256
+[16:38:52] [Discovery/Listener] ポート（変換後）: 12070
+[16:38:52] [Discovery/Listener] プレイヤー数: 1
+[16:38:52] [Discovery/Listener] 最大プレイヤー数: 8
+[16:38:52] [Discovery/Listener] ステート: 0
+[16:38:52] [Discovery/Listener] 名前の長さ: 1
+[16:38:52] [Discovery/Listener] サーバー名: 'F'
+[16:38:52] [Discovery/Listener] ★サーバー検出★: F @ 172.20.145.8:12070 (1/8) state=0
+[16:38:52] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[16:38:54] [SceneLobby::Update] GameStarted=false GameState=0
+[16:38:54] [ServerManager] クライアント接続: ID=2 (現在2人)
+[16:38:54] [ServerManager] ProcessJoin: データ長=10
+[16:38:54] [ServerManager] 名前長さ: 9
+[16:38:54] [ServerManager] 受信した名前: 'Player513'
+[16:38:54] [ServerManager] クライアントのJOIN受信: Player513 (ID=2)
+[16:38:54] [ServerManager] JoinAck送信: ClientID=2
+[16:38:54] [ServerManager] 新規参加者にホスト情報を送信: Player085 Pos=(0.0,0.0,0.0)
+[16:38:54] [ServerManager] 新規参加者情報をブロードキャスト: Player513 (ID=2)
+[16:38:54] [ServerManager] ロビー更新をブロードキャスト
+[16:38:54] [ServerManager] BroadcastLobbyUpdate: 2 人
+[16:38:54] [ServerManager] プレイヤー1: 'Player085' (長さ:9)
+[16:38:54] [ServerManager] プレイヤー2: 'Player513' (長さ:9)
+[16:38:54] [ServerManager] 送信データサイズ: 22 bytes
+[16:38:54] [ClientManager] プレイヤー生成通知: ID=2, Name=Player513
+[16:38:54] [ClientManager] ProcessLobbyUpdate: データ長=22
+[16:38:54] [ClientManager] プレイヤー数: 2
+[16:38:54] [ClientManager] プレイヤー1 名前長さ: 9
+[16:38:54] [ClientManager] プレイヤー1: 'Player085'
+[16:38:54] [ClientManager] プレイヤー2 名前長さ: 9
+[16:38:54] [ClientManager] プレイヤー2: 'Player513'
+[16:38:54] [ClientManager] ロビー更新完了: 2 人
+[16:38:55] [SceneLobby] ゲーム開始ボタン押下
+[16:38:55] [ServerManager] 役割割り当て開始
+[16:38:55] [ServerManager] ホストをリストに追加: ID=1
+[16:38:55] [ServerManager] クライアントをリストに追加: ID=2 Name=Player513
+[16:38:55] [ServerManager] 総プレイヤー数: 2
+[16:38:55] [ServerManager] 総人数=2 鬼=1 逃げる側=1
+[16:38:55] [ServerManager] シャッフル後のID順:
+[16:38:55]   位置0: ID=1
+[16:38:55]   位置1: ID=2
+[16:38:55] [ServerManager] ホスト(ID=1 Name=Player085)の役割: 鬼
+[16:38:55] [ServerManager] クライアント Player085 (ID=1) の役割: 鬼
+[16:38:55] [ServerManager] クライアント Player513 (ID=2) の役割: 逃げる側
+[16:38:55] [ServerManager] 役割割り当て完了
+[16:38:55] [ServerManager] 割り当て結果確認: 鬼=1 逃げる側=1
+[16:38:55] [ServerManager] 役割割り当てをブロードキャスト
+[16:38:55] [ServerManager] ホスト(ID=1)の役割送信: 鬼
+[16:38:55] [ServerManager] クライアント Player085 (ID=1)の役割送信: 鬼
+[16:38:55] [ServerManager] クライアント Player513 (ID=2)の役割送信: 逃げる側
+[16:38:55] [ServerManager] 役割割り当てブロードキャスト完了
+[16:38:55] [ServerManager] 役割割り当てをブロードキャスト
+[16:38:55] [ServerManager] ホスト(ID=1)の役割送信: 鬼
+[16:38:55] [ServerManager] クライアント Player085 (ID=1)の役割送信: 鬼
+[16:38:55] [ServerManager] クライアント Player513 (ID=2)の役割送信: 逃げる側
+[16:38:55] [ServerManager] 役割割り当てブロードキャスト完了
+[16:38:55] [ServerManager] 役割割り当てをブロードキャスト
+[16:38:55] [ServerManager] ホスト(ID=1)の役割送信: 鬼
+[16:38:55] [ServerManager] クライアント Player085 (ID=1)の役割送信: 鬼
+[16:38:55] [ServerManager] クライアント Player513 (ID=2)の役割送信: 逃げる側
+[16:38:55] [ServerManager] 役割割り当てブロードキャスト完了
+[16:38:55] [ServerManager] 役割割り当て送信完了（3回送信）
+[16:38:55] [ServerManager] ゲーム状態を変更: 1 (ゲーム中)
+[16:38:55] [ServerManager] ゲーム開始 - 役割割り当て済み
+[16:38:55] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
+[16:38:55] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
+[16:38:55] [ClientManager] 他プレイヤーの役割: ID=2 逃げる側
+[16:38:55] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
+[16:38:55] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
+[16:38:55] [ClientManager] 他プレイヤーの役割: ID=2 逃げる側
+[16:38:55] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
+[16:38:55] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
+[16:38:55] [ClientManager] 他プレイヤーの役割: ID=2 逃げる側
+[16:38:55] [ClientManager] ゲーム開始通知受信
+[16:38:55] [SceneLobby] ゲーム開始通知受信 - ゲームシーンへ遷移
+[16:38:55] [SceneLobby] Exit開始
+[16:38:55] [SceneLobby] Exit完了
+[16:38:55] [Map::DrawMap] ライト数: 0 シャドウマップ数: -1
+[16:38:55] [SceneGame::Initialize] ホストとして初期化: ClientID=1
+[16:38:55] [SceneGame] Initialize完了: IsHost=1, ClientID=1
+[16:38:55] [SceneGame] 初期化完了 - 役割割り当て待機中
+[16:38:55] [SceneGame] 役割受信: ID=1 Role=鬼
+[16:38:55] [SceneGame] ローカルプレイヤー即座に生成: Role=鬼
+[16:38:55] [SceneGame] Chaserを生成: ID=1, Name=Player085
+[16:38:55] [Chaser] シャドウマップ作成成功: ID=0
+[16:38:55] [Chaser] IceBreath生成: ID=0 Range=8.00
+[16:38:55] [SceneGame] プレイヤーID設定: IsLocal=Yes, ClientID=1 (GetClientId()=1)
+[16:38:55] [SceneGame] プレイヤー生成完了: ID=1, Role=鬼, Pos=(7.5,0.5,72.5), IsLocal=Yes
+[16:38:55] [SceneGame] プレイヤーのGetClientId()=1
+[16:38:55] [SceneGame] 現在の役割マップ: 総数=1
+[16:38:55]   ID=1 -> 鬼
+[16:38:55] [SceneGame] ローカルプレイヤー生成完了: m_clientId=1, GetClientId()=1
+[16:38:55] [Chaser::UpdateLightMatrices] ID=1 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
+[16:38:55] [Chaser::UpdateLight] ID=1 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[16:38:55] [SceneGame] 初期同期完了（役割受信）
+[16:38:55] [SceneGame] 役割受信: ID=1 Role=鬼
+[16:38:55] [SceneGame] 役割受信: ID=2 Role=逃げる側
+[16:38:55] [SceneGame] 役割受信: ID=1 Role=鬼
+[16:38:55] [SceneGame] 役割受信: ID=1 Role=鬼
+[16:38:55] [SceneGame] 役割受信: ID=2 Role=逃げる側
+[16:38:55] [SceneGame] 役割受信: ID=1 Role=鬼
+[16:38:55] [SceneGame] 役割受信: ID=1 Role=鬼
+[16:38:55] [SceneGame] 役割受信: ID=2 Role=逃げる側
+[16:38:55] [UpdateChaserLights] ローカル鬼追加: ID=1 LightIndex=0 Pos=(7.5,1.8,72.5)
+[16:38:55] [UpdateChaserLights] ライト収集完了: 1 個
+[16:38:55] [SceneGame] リモートプレイヤー参加: ID=2, Name=Player513
+[16:38:55] [SceneGame] Runnerを生成: ID=2, Name=Player513
+[16:38:56] [Discovery/Listener] 生存確認 ループ:100
+[16:38:57] [SceneGame] プレイヤーID設定: IsLocal=No, ClientID=2 (GetClientId()=2)
+[16:38:57] [SceneGame] プレイヤー生成完了: ID=2, Role=逃げる側, Pos=(7.5,0.5,72.5), IsLocal=No
+[16:38:57] [SceneGame] プレイヤーのGetClientId()=2
+[16:38:57] [SceneGame] 現在の役割マップ: 総数=2
+[16:38:57]   ID=1 -> 鬼
+[16:38:57]   ID=2 -> 逃げる側
+[16:38:57] [RenderShadowMaps] ========== 開始 ==========
+[16:38:57] [RenderShadowMaps] m_players数=2 ローカルID=1 ローカルRole=鬼
+[16:38:57] [RenderShadowMaps] m_playersの内容:
+[16:38:57]   Player[1]: Exists=Yes Role=鬼 Ptr=1BD86E80
+[16:38:57]   Player[2]: Exists=Yes Role=逃げる側 Ptr=0CFF2AA0
+[16:38:57] [RenderShadowMaps] m_pLocalPlayer: Ptr=1BD86E80 IsLocal=Yes
+[16:38:57] [RenderShadowMaps] ループ開始: Player[1]
+[16:38:57] [RenderShadowMaps] ========== Chaser[1]のシャドウマップ生成開始 ==========
+[16:38:57] [RenderShadowMaps] ライト行列設定: View._41=7.50, _42=-1.80, _43=72.50
+[16:38:57] [RenderShadowMaps] マップの深度描画
+[16:38:57] [Map::DrawMapDepth] 壁の数=36 行列: _41=6.29, _42=-1.51, _43=79.81
+[16:38:57] [RenderShadowMaps] プレイヤーの影描画開始（鬼[1]以外）
+[16:38:57]   Player[1]: スキップ（鬼自身）
+[16:38:57]   Player[2]: DrawDepth呼び出し開始
+[16:38:57]   Player[2]: DrawDepth呼び出し完了
+[16:38:57] [RenderShadowMaps] プレイヤーの影描画完了: 1体描画
+[16:38:57] [RenderShadowMaps] ========== Chaser[1]のシャドウマップ生成完了 ==========
+[16:38:57] [RenderShadowMaps] ループ開始: Player[2]
+[16:38:57] [RenderShadowMaps] スキップ: Player[2] - 役割が鬼ではない（逃げる側）
+[16:38:57] [RenderShadowMaps] 完了: シャドウマップ生成数=1
+[16:38:57] [RenderShadowMaps] ========== 終了 ==========
+[16:38:57] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[16:38:57]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[16:38:57] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[16:38:57] [SceneGame] 送信: ID=1 Pos=(7.5,0.5,72.5) Interval=16ms
+[16:38:57] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:57] [SceneGame] フェードイン完了 - ゲーム開始
+[16:38:57] [SceneGame] 残り時間: 300.0秒
+[16:38:57] [SceneGame] Runner状態: 凍結=0 / 全体=1
+[16:38:57] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:57] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:57] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:57] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:57] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:57] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:57] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:57] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:57] [CharacterBase] UpdateFromNetwork: ID=2 Dist=0.00 Speed=0.00
+[16:38:57] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:57] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:57] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:57] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:57] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:57] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:57] [Discovery/Advertiser] 送信データ: port=12070 player=2/8 state=1 name='F'
+[16:38:57] [Discovery/Advertiser] ブロードキャスト送信 #3: サイズ=19 bytes (port=12070)
+[16:38:57] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:57] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:57] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[16:38:57] [Discovery/Listener] マジック一致確認
+[16:38:57] [Discovery/Listener] プロトコルバージョン: 256
+[16:38:57] [Discovery/Listener] ポート（変換後）: 12070
+[16:38:57] [Discovery/Listener] プレイヤー数: 2
+[16:38:57] [Discovery/Listener] 最大プレイヤー数: 8
+[16:38:57] [Discovery/Listener] ステート: 1
+[16:38:57] [Discovery/Listener] 名前の長さ: 1
+[16:38:57] [Discovery/Listener] サーバー名: 'F'
+[16:38:57] [Discovery/Listener] ★サーバー検出★: F @ 172.20.145.8:12070 (2/8) state=1
+[16:38:57] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[16:38:57] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:57] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:57] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[16:38:58] [Map::DrawMap] Light[0] Pos=(7.5,1.8,72.5)
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [UpdateChaserLights] ローカル鬼追加: ID=1 LightIndex=0 Pos=(7.5,1.8,72.5)
+[16:38:58] [UpdateChaserLights] ライト収集完了: 1 個
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:58] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [CharacterBase] UpdateFromNetwork: ID=2 Dist=0.00 Speed=0.00
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:38:59] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[16:39:00]   Light[0] Pos=(11.0,1.8,72.0) Dir=(-0.96,0.00,-0.29) ShadowMap=有効
+[16:39:00] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[16:39:00] [SceneGame] 送信: ID=1 Pos=(11.0,0.5,72.0) Interval=16ms
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame] Runner状態: 凍結=0 / 全体=1
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [Chaser::UpdateLightMatrices] ID=1 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
+[16:39:00] [Chaser::UpdateLight] ID=1 Pos=(10.7,1.8,71.9) Dir=(-0.96,0.00,-0.26) IsLocal=Yes
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [CharacterBase::Input] ID=1 左クリック検出！ KeyFlag=0x40
+[16:39:00] [IceBreath::Activate] Pos=(10.2,1.8,73.0) Dir=(-0.95,-0.17,-0.26) MaxDist=8.00
+[16:39:00] [Chaser] ブレス発動: ID=1 Pos=(10.2,1.8,73.0) Dir=(-0.95,-0.17,-0.26)
+[16:39:00] [Chaser::CheckBreathHitPlayers] 鬼[1] ブレス判定開始: 対象プレイヤー=1人
+[16:39:00]   ライト Pos=(10.2,1.8,73.0) Dir=(-0.96,0.00,-0.26) Range=8.00
+[16:39:00] [Runner::SetFrozen] ID=2 新規凍結
+[16:39:00] [Chaser] ★★★ブレスヒット★★★ 鬼[1] -> Runner[2]を凍結! Dist=2.76 Dot=0.986
+[16:39:00] [Chaser::CheckBreathHitPlayers] 鬼[1] 結果: チェック=1 凍結=1
+[16:39:00] [SceneGame::CheckBreathHitPlayers] プレイヤー[2]の凍結状態が変化
+[16:39:00] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:00] [SceneGame] 全員凍結 - 鬼側の勝利
+[16:39:00] [ServerManager] ゲーム結果をブロードキャスト: winner=1
+[16:39:00] [ServerManager] ゲーム状態を変更: 0 (待機中)
+[16:39:00] [ServerManager] サーバー状態を待機中(0)に変更
+[16:39:00] [ServerManager] 全プレイヤーの役割をクリア
+[16:39:00] [ServerManager] Discovery状態を待機中に変更
+[16:39:00] [SceneGame] リザルト画面表示開始: 勝者=鬼側
+[16:39:00] [Runner::DrawEffects] ID=2 氷ブロック描画: Frozen=1 amount=0.00 Pos=(7.5,1.4,72.5)
+[16:39:00] [ClientManager] ゲーム結果受信: winner=1 (鬼側)
+[16:39:00] [SceneGame] ゲーム結果受信: winner=1
+[16:39:01] [Discovery/Listener] 生存確認 ループ:150
+[16:39:01] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[16:39:01] [Map::DrawMap] Light[0] Pos=(10.2,1.8,73.0)
+[16:39:01] [UpdateChaserLights] ローカル鬼追加: ID=1 LightIndex=0 Pos=(10.2,1.8,73.0)
+[16:39:01] [UpdateChaserLights] ライト収集完了: 1 個
+[16:39:02] [RenderShadowMaps] ========== 開始 ==========
+[16:39:02] [RenderShadowMaps] m_players数=2 ローカルID=1 ローカルRole=鬼
+[16:39:02] [RenderShadowMaps] m_playersの内容:
+[16:39:02]   Player[1]: Exists=Yes Role=鬼 Ptr=1BD86E80
+[16:39:02]   Player[2]: Exists=Yes Role=逃げる側 Ptr=0CFF2AA0
+[16:39:02] [RenderShadowMaps] m_pLocalPlayer: Ptr=1BD86E80 IsLocal=Yes
+[16:39:02] [RenderShadowMaps] ループ開始: Player[1]
+[16:39:02] [RenderShadowMaps] ========== Chaser[1]のシャドウマップ生成開始 ==========
+[16:39:02] [RenderShadowMaps] ライト行列設定: View._41=-67.71, _42=-1.80, _43=29.08
+[16:39:02] [RenderShadowMaps] マップの深度描画
+[16:39:02] [Map::DrawMapDepth] 壁の数=36 行列: _41=-56.82, _42=-1.51, _43=31.34
+[16:39:02] [RenderShadowMaps] プレイヤーの影描画開始（鬼[1]以外）
+[16:39:02]   Player[1]: スキップ（鬼自身）
+[16:39:02]   Player[2]: DrawDepth呼び出し開始
+[16:39:02]   Player[2]: DrawDepth呼び出し完了
+[16:39:02] [RenderShadowMaps] プレイヤーの影描画完了: 1体描画
+[16:39:02] [RenderShadowMaps] ========== Chaser[1]のシャドウマップ生成完了 ==========
+[16:39:02] [RenderShadowMaps] ループ開始: Player[2]
+[16:39:02] [RenderShadowMaps] スキップ: Player[2] - 役割が鬼ではない（逃げる側）
+[16:39:02] [RenderShadowMaps] 完了: シャドウマップ生成数=1
+[16:39:02] [RenderShadowMaps] ========== 終了 ==========
+[16:39:02] [Discovery/Advertiser] 送信データ: port=12070 player=2/8 state=0 name='F'
+[16:39:02] [Discovery/Advertiser] ブロードキャスト送信 #4: サイズ=19 bytes (port=12070)
+[16:39:02] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[16:39:02] [Discovery/Listener] マジック一致確認
+[16:39:02] [Discovery/Listener] プロトコルバージョン: 256
+[16:39:02] [Discovery/Listener] ポート（変換後）: 12070
+[16:39:02] [Discovery/Listener] プレイヤー数: 2
+[16:39:02] [Discovery/Listener] 最大プレイヤー数: 8
+[16:39:02] [Discovery/Listener] ステート: 0
+[16:39:02] [Discovery/Listener] 名前の長さ: 1
+[16:39:02] [Discovery/Listener] サーバー名: 'F'
+[16:39:02] [Discovery/Listener] ★サーバー検出★: F @ 172.20.145.8:12070 (2/8) state=0
+[16:39:02] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[16:39:02] [Runner::DrawEffects] ID=2 氷ブロック描画: Frozen=1 amount=0.00 Pos=(7.5,1.4,72.5)
+[16:39:03] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[16:39:03]   Light[0] Pos=(10.2,1.8,73.0) Dir=(-0.96,0.00,-0.26) ShadowMap=有効
+[16:39:03] [SceneGame::Draw] リモートプレイヤー[2] 凍結中: amount=0.00
+[16:39:03] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=1人
+[16:39:04] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[16:39:04] [Map::DrawMap] Light[0] Pos=(10.2,1.8,73.0)
+[16:39:04] [UpdateChaserLights] ローカル鬼追加: ID=1 LightIndex=0 Pos=(10.2,1.8,73.0)
+[16:39:04] [UpdateChaserLights] ライト収集完了: 1 個
+[16:39:04] [Runner::DrawEffects] ID=2 氷ブロック描画: Frozen=1 amount=0.00 Pos=(7.5,1.4,72.5)
+[16:39:05] [Chaser::UpdateLightMatrices] ID=1 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
+[16:39:05] [Chaser::UpdateLight] ID=1 Pos=(10.2,1.8,73.0) Dir=(-0.96,0.00,-0.26) IsLocal=Yes
+[16:39:05] [SceneGame] リザルト表示終了 - ロビーに遷移準備開始
+[16:39:05] [SceneGame] 全プレイヤー情報をクリア
+[16:39:05] [SceneGame] ゲーム関連フラグをリセット
+[16:39:05] [ServerManager] ゲーム状態を変更: 0 (待機中)
+[16:39:05] [SceneGame] サーバーゲーム状態を待機中に再確認
+[16:39:05] [SceneGame] ロビーへのフェードアウト開始
+[16:39:06] [Discovery/Listener] 生存確認 ループ:200
+[16:39:06] [SceneGame::Draw] 鬼のライト数: 0 シャドウマップ数: 0
+[16:39:06] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[16:39:07] [RenderShadowMaps] ========== 開始 ==========
+[16:39:07] [RenderShadowMaps] m_players数=0 ローカルID=1 ローカルRole=逃げる側
+[16:39:07] [RenderShadowMaps] m_playersの内容:
+[16:39:07] [RenderShadowMaps] m_pLocalPlayer: Ptr=00000000 IsLocal=N/A
+[16:39:07] [RenderShadowMaps] 完了: シャドウマップ生成数=0
+[16:39:07] [RenderShadowMaps] ========== 終了 ==========
+[16:39:07] [SceneGame] フェードアウト完了 - シーン遷移
+[16:39:07] [SceneGame] Exit開始
+[16:39:07] [SceneGame] Exit完了
+[16:39:07] ========================================
+[16:39:07] [SceneLobby] Start開始
+[16:39:07] ========================================
+[16:39:07] [ClientManager] ResetForLobbyReturn開始
+[16:39:07] [ClientManager] ResetForLobbyReturn完了: m_bGameStarted=false ClientID=1
+[16:39:07] [SceneLobby] ResetForLobbyReturn実行完了: IsGameStarted=false
+[16:39:07] [SceneLobby] ホストとしてロビー開始: サーバー名='F'
+[16:39:07] [ServerManager] ゲーム状態を変更: 0 (待機中)
+[16:39:07] [SceneLobby] サーバー状態を待機中(0)に設定
+[16:39:07] [ServerManager] BroadcastLobbyUpdate: 2 人
+[16:39:07] [ServerManager] プレイヤー1: 'Player085' (長さ:9)
+[16:39:07] [ServerManager] プレイヤー2: 'Player513' (長さ:9)
+[16:39:07] [ServerManager] 送信データサイズ: 22 bytes
+[16:39:07] [SceneLobby] 初回ロビー更新をブロードキャスト
+[16:39:07] [SceneLobby] Start完了: GameStarted=false
+[16:39:07] [ClientManager] ProcessLobbyUpdate: データ長=22
+[16:39:07] [ClientManager] プレイヤー数: 2
+[16:39:07] [ClientManager] プレイヤー1 名前長さ: 9
+[16:39:07] [ClientManager] プレイヤー1: 'Player085'
+[16:39:07] [ClientManager] プレイヤー2 名前長さ: 9
+[16:39:07] [ClientManager] プレイヤー2: 'Player513'
+[16:39:07] [ClientManager] ロビー更新完了: 2 人
+[16:39:07] [SceneLobby::Update] GameStarted=false GameState=0
+[16:39:07] [Discovery/Advertiser] 送信データ: port=12070 player=2/8 state=0 name='F'
+[16:39:07] [Discovery/Advertiser] ブロードキャスト送信 #5: サイズ=19 bytes (port=12070)
+[16:39:08] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[16:39:08] [Discovery/Listener] マジック一致確認
+[16:39:08] [Discovery/Listener] プロトコルバージョン: 256
+[16:39:08] [Discovery/Listener] ポート（変換後）: 12070
+[16:39:08] [Discovery/Listener] プレイヤー数: 2
+[16:39:08] [Discovery/Listener] 最大プレイヤー数: 8
+[16:39:08] [Discovery/Listener] ステート: 0
+[16:39:08] [Discovery/Listener] 名前の長さ: 1
+[16:39:08] [Discovery/Listener] サーバー名: 'F'
+[16:39:08] [Discovery/Listener] ★サーバー検出★: F @ 172.20.145.8:12070 (2/8) state=0
+[16:39:08] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[16:39:09] [SceneLobby] ゲーム開始ボタン押下
+[16:39:09] [ServerManager] 役割割り当て開始
+[16:39:09] [ServerManager] ホストをリストに追加: ID=1
+[16:39:09] [ServerManager] クライアントをリストに追加: ID=2 Name=Player513
+[16:39:09] [ServerManager] 総プレイヤー数: 2
+[16:39:09] [ServerManager] 総人数=2 鬼=1 逃げる側=1
+[16:39:09] [ServerManager] シャッフル後のID順:
+[16:39:09]   位置0: ID=1
+[16:39:09]   位置1: ID=2
+[16:39:09] [ServerManager] ホスト(ID=1 Name=Player085)の役割: 鬼
+[16:39:09] [ServerManager] クライアント Player085 (ID=1) の役割: 鬼
+[16:39:09] [ServerManager] クライアント Player513 (ID=2) の役割: 逃げる側
+[16:39:09] [ServerManager] 役割割り当て完了
+[16:39:09] [ServerManager] 割り当て結果確認: 鬼=1 逃げる側=1
+[16:39:09] [ServerManager] 役割割り当てをブロードキャスト
+[16:39:09] [ServerManager] ホスト(ID=1)の役割送信: 鬼
+[16:39:09] [ServerManager] クライアント Player085 (ID=1)の役割送信: 鬼
+[16:39:09] [ServerManager] クライアント Player513 (ID=2)の役割送信: 逃げる側
+[16:39:09] [ServerManager] 役割割り当てブロードキャスト完了
+[16:39:09] [ServerManager] 役割割り当てをブロードキャスト
+[16:39:09] [ServerManager] ホスト(ID=1)の役割送信: 鬼
+[16:39:09] [ServerManager] クライアント Player085 (ID=1)の役割送信: 鬼
+[16:39:09] [ServerManager] クライアント Player513 (ID=2)の役割送信: 逃げる側
+[16:39:09] [ServerManager] 役割割り当てブロードキャスト完了
+[16:39:09] [ServerManager] 役割割り当てをブロードキャスト
+[16:39:09] [ServerManager] ホスト(ID=1)の役割送信: 鬼
+[16:39:09] [ServerManager] クライアント Player085 (ID=1)の役割送信: 鬼
+[16:39:09] [ServerManager] クライアント Player513 (ID=2)の役割送信: 逃げる側
+[16:39:09] [ServerManager] 役割割り当てブロードキャスト完了
+[16:39:09] [ServerManager] 役割割り当て送信完了（3回送信）
+[16:39:09] [ServerManager] ゲーム状態を変更: 1 (ゲーム中)
+[16:39:09] [ServerManager] ゲーム開始 - 役割割り当て済み
+[16:39:09] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
+[16:39:09] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
+[16:39:09] [ClientManager] 他プレイヤーの役割: ID=2 逃げる側
+[16:39:09] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
+[16:39:09] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
+[16:39:09] [ClientManager] 他プレイヤーの役割: ID=2 逃げる側
+[16:39:09] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
+[16:39:09] [ClientManager] 自分の役割が決定: 鬼 (ID=1)
+[16:39:09] [ClientManager] 他プレイヤーの役割: ID=2 逃げる側
+[16:39:09] [ClientManager] ゲーム開始通知受信
+[16:39:09] [SceneLobby] ゲーム開始通知受信 - ゲームシーンへ遷移
+[16:39:09] [SceneLobby] Exit開始
+[16:39:09] [SceneLobby] Exit完了
+[16:39:09] [Map::DrawMap] ライト数: 0 シャドウマップ数: -1
+[16:39:09] [SceneGame::Initialize] ホストとして初期化: ClientID=1
+[16:39:09] [SceneGame] Initialize完了: IsHost=1, ClientID=1
+[16:39:09] [SceneGame] 初期化完了 - 役割割り当て待機中
+[16:39:09] [SceneGame] 役割受信: ID=1 Role=鬼
+[16:39:09] [SceneGame] ローカルプレイヤー即座に生成: Role=鬼
+[16:39:09] [SceneGame] Chaserを生成: ID=1, Name=Player085
+[16:39:09] [Chaser] シャドウマップ作成成功: ID=0
+[16:39:09] [Chaser] IceBreath生成: ID=0 Range=8.00
+[16:39:09] [SceneGame] プレイヤーID設定: IsLocal=Yes, ClientID=1 (GetClientId()=1)
+[16:39:09] [SceneGame] プレイヤー生成完了: ID=1, Role=鬼, Pos=(7.5,0.5,72.5), IsLocal=Yes
+[16:39:09] [SceneGame] プレイヤーのGetClientId()=1
+[16:39:09] [SceneGame] 現在の役割マップ: 総数=1
+[16:39:09]   ID=1 -> 鬼
+[16:39:09] [SceneGame] ローカルプレイヤー生成完了: m_clientId=1, GetClientId()=1
+[16:39:09] [SceneGame] 初期同期完了（役割受信）
+[16:39:09] [SceneGame] 役割受信: ID=1 Role=鬼
+[16:39:09] [SceneGame] 役割受信: ID=2 Role=逃げる側
+[16:39:09] [SceneGame] 役割受信: ID=1 Role=鬼
+[16:39:09] [SceneGame] 役割受信: ID=1 Role=鬼
+[16:39:09] [SceneGame] 役割受信: ID=2 Role=逃げる側
+[16:39:09] [SceneGame] 役割受信: ID=1 Role=鬼
+[16:39:09] [SceneGame] 役割受信: ID=1 Role=鬼
+[16:39:09] [SceneGame] 役割受信: ID=2 Role=逃げる側
+[16:39:09] [UpdateChaserLights] ローカル鬼追加: ID=1 LightIndex=0 Pos=(7.5,1.8,72.5)
+[16:39:09] [UpdateChaserLights] ライト収集完了: 1 個
+[16:39:09] [Map::DrawMapDepth] 壁の数=36 行列: _41=6.29, _42=-1.51, _43=79.81
+[16:39:09] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[16:39:09]   Light[0] Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) ShadowMap=有効
+[16:39:09] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[16:39:09] [SceneGame] 送信: ID=1 Pos=(7.5,0.5,72.5) Interval=16ms
+[16:39:09] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:09] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:09] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:09] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:09] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:09] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:09] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:09] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:09] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:09] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:09] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:09] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:09] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:09] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:09] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:09] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:09] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:09] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [Chaser::UpdateLightMatrices] ID=1 FOV=50.00度 ExpandedFOV=100.00度 Range=8.00
+[16:39:10] [Chaser::UpdateLight] ID=1 Pos=(7.5,1.8,72.5) Dir=(0.00,0.00,-1.00) IsLocal=Yes
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:10] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame] フェードイン完了 - ゲーム開始
+[16:39:11] [SceneGame] 残り時間: 300.0秒
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [Discovery/Listener] 生存確認 ループ:250
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:11] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [Map::DrawMap] ライト数: 1 シャドウマップ数: 1
+[16:39:12] [Map::DrawMap] Light[0] Pos=(8.9,1.8,72.4)
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [RenderShadowMaps] ========== 開始 ==========
+[16:39:12] [RenderShadowMaps] m_players数=1 ローカルID=1 ローカルRole=鬼
+[16:39:12] [RenderShadowMaps] m_playersの内容:
+[16:39:12]   Player[1]: Exists=Yes Role=鬼 Ptr=1BD86E80
+[16:39:12] [RenderShadowMaps] m_pLocalPlayer: Ptr=1BD86E80 IsLocal=Yes
+[16:39:12] [RenderShadowMaps] ループ開始: Player[1]
+[16:39:12] [RenderShadowMaps] ========== Chaser[1]のシャドウマップ生成開始 ==========
+[16:39:12] [RenderShadowMaps] ライト行列設定: View._41=-11.14, _42=-1.80, _43=72.12
+[16:39:12] [RenderShadowMaps] マップの深度描画
+[16:39:12] [RenderShadowMaps] プレイヤーの影描画開始（鬼[1]以外）
+[16:39:12]   Player[1]: スキップ（鬼自身）
+[16:39:12] [RenderShadowMaps] プレイヤーの影描画完了: 0体描画
+[16:39:12] [RenderShadowMaps] ========== Chaser[1]のシャドウマップ生成完了 ==========
+[16:39:12] [RenderShadowMaps] 完了: シャドウマップ生成数=1
+[16:39:12] [RenderShadowMaps] ========== 終了 ==========
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [UpdateChaserLights] ローカル鬼追加: ID=1 LightIndex=0 Pos=(9.0,1.8,72.4)
+[16:39:12] [UpdateChaserLights] ライト収集完了: 1 個
+[16:39:12] [SceneGame::Draw] 鬼のライト数: 1 シャドウマップ数: 1
+[16:39:12]   Light[0] Pos=(9.0,1.8,72.4) Dir=(-0.33,0.00,-0.94) ShadowMap=有効
+[16:39:12] [SceneGame::Draw] エフェクト描画: 凍結プレイヤー=0人
+[16:39:12] [SceneGame] 送信: ID=1 Pos=(9.1,0.5,72.4) Interval=16ms
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:12] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [Discovery/Advertiser] 送信データ: port=12070 player=2/8 state=1 name='F'
+[16:39:13] [Discovery/Advertiser] ブロードキャスト送信 #6: サイズ=19 bytes (port=12070)
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [Discovery/Listener] パケット受信! サイズ:19 bytes
+[16:39:13] [Discovery/Listener] マジック一致確認
+[16:39:13] [Discovery/Listener] プロトコルバージョン: 256
+[16:39:13] [Discovery/Listener] ポート（変換後）: 12070
+[16:39:13] [Discovery/Listener] プレイヤー数: 2
+[16:39:13] [Discovery/Listener] 最大プレイヤー数: 8
+[16:39:13] [Discovery/Listener] ステート: 1
+[16:39:13] [Discovery/Listener] 名前の長さ: 1
+[16:39:13] [Discovery/Listener] サーバー名: 'F'
+[16:39:13] [Discovery/Listener] ★サーバー検出★: F @ 172.20.145.8:12070 (2/8) state=1
+[16:39:13] [Discovery/Listener] サーバーリストに追加 (合計:1)
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [CharacterBase::Input] ID=1 左クリック検出！ KeyFlag=0x48
+[16:39:13] [IceBreath::Activate] Pos=(11.2,1.8,71.2) Dir=(-0.98,-0.17,-0.09) MaxDist=8.00
+[16:39:13] [Chaser] ブレス発動: ID=1 Pos=(11.2,1.8,71.2) Dir=(-0.98,-0.17,-0.09)
+[16:39:13] [Chaser::CheckBreathHitPlayers] 鬼[1] ブレス判定開始: 対象プレイヤー=0人
+[16:39:13]   ライト Pos=(11.2,1.8,71.2) Dir=(-1.00,0.00,-0.09) Range=8.00
+[16:39:13] [Chaser::CheckBreathHitPlayers] 鬼[1] 結果: チェック=0 凍結=0
+[16:39:13] [IceBreath::Update] パーティクル生成: 総数=20
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:13] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:14] [SceneGame::SyncToServer] ホスト状態設定: meltTarget=0
+[16:39:14] [SceneGame] Exit開始
+[16:39:14] [SceneGame] Exit完了
+[16:53:47] [Map::DrawMap] ライト数: 0 シャドウマップ数: -1
