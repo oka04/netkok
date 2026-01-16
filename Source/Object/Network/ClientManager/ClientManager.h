@@ -49,6 +49,7 @@ public:
 
 	void RefreshAvailableServers();
 	void Reset();
+	void ResetForLobbyReturn();  // ★★★ 新規追加: ロビー復帰用リセット ★★★
 
 	void SendPlayerState(const NetPlayerState& state);
 	bool GetWorldState(NetWorldState& out);
@@ -82,7 +83,7 @@ private:
 	void ProcessPlayerDespawn(const uint8_t* data, size_t len);
 	void ProcessJoinAck(const uint8_t* data, size_t len);
 	void ProcessRoleAssignment(const uint8_t* data, size_t len);
-	void ProcessGameResult(const uint8_t* data, size_t len);  // ★ 追加
+	void ProcessGameResult(const uint8_t* data, size_t len);
 
 	std::vector<std::string> m_lobbyPlayerNames;
 	bool m_bGameStarted;
@@ -101,7 +102,7 @@ private:
 	std::queue<NetPlayerSpawn> m_spawnQueue;
 	std::queue<uint32_t> m_despawnQueue;
 	std::queue<NetRoleAssignment> m_roleQueue;
-	std::queue<NetGameResult> m_resultQueue;  // ★ 追加
+	std::queue<NetGameResult> m_resultQueue;
 	uint32_t m_assignedClientId;
 
 	PlayerRole m_myRole;

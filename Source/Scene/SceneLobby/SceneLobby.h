@@ -1,7 +1,9 @@
-﻿#pragma once
+﻿// SceneLobby.h - フェード対応版
+#pragma once
 
 #include "..\\..\\Object\\Network\\ClientManager\\ClientManager.h"
 #include "..\\..\\Object\\Network\\ServerManager\\ServerManager.h"
+#include "..\\..\\Object\\Fade\\Fade.h"  // ★★★ Fade追加 ★★★
 #include "..\\..\\GameBase.h"
 #include "..\\Scene\\Scene.h"
 #include <vector>
@@ -29,6 +31,13 @@ public:
 	static REQUEST_MODE GetRequestMode();
 
 private:
+	// ★★★ ロビー状態を追加 ★★★
+	enum LOBBY_STATE
+	{
+		FADE_IN,
+		IN_LOBBY,
+	};
+
 	ClientManager* m_client;
 	ServerManager* m_server;
 	DWORD m_lastTime;
@@ -45,7 +54,7 @@ private:
 	std::string f_serverNameLabelText;
 	std::string f_memberLabelText;
 	int f_memberOffsetY;
-	
+
 	std::string m_serverName;
 	int f_textOffsetY;
 	int f_clientStartButtonAlpha;
@@ -57,6 +66,11 @@ private:
 	DWORD f_connectionCheckInterval;
 	DWORD m_lastConnectionCheck;
 	bool m_bWasConnected;
+
+	// ★★★ フェード関連メンバー追加 ★★★
+	Fade m_fade;
+	LOBBY_STATE m_gameState;
+
 	bool PointInRect(IntVector2 pos, IntVector2 size);
 	static REQUEST_MODE s_requestMode;
 };

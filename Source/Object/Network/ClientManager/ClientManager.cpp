@@ -127,6 +127,7 @@ void ClientManager::Reset()
 		m_lobbyPlayerNames.clear();
 	}
 
+	// ★★★ 重要: ゲーム開始フラグをリセット ★★★
 	m_bGameStarted = false;
 	m_bHost = false;
 	m_bConnected = false;
@@ -146,13 +147,36 @@ void ClientManager::Reset()
 		while (!m_spawnQueue.empty()) m_spawnQueue.pop();
 		while (!m_despawnQueue.empty()) m_despawnQueue.pop();
 		while (!m_roleQueue.empty()) m_roleQueue.pop();
-		while (!m_resultQueue.empty()) m_resultQueue.pop();  // ★ 追加
+		while (!m_resultQueue.empty()) m_resultQueue.pop();
 	}
 	m_assignedClientId = 0;
 
 	NET_LOG("[ClientManager] Reset完了");
 }
+void ClientManager::ResetForLobbyReturn()
+{
+	NET_LOG("[ClientManager] ResetForLobbyReturn開始");
 
+	// ★★★ ゲーム開始フラグをクリア（最重要）★★★
+	m_bGameStarted = false;
+
+	// 役割情報のクリア
+	m_myRole = ROLE_NONE;
+	m_roleMap.clear();
+
+	// キュー系のクリア
+	{
+		std::lock_guard<std::mutex> lk(m_worldMutex);
+		m_worldStateReceived = false;
+		while (!m_spawnQueue.empty()) m_spawnQueue.pop();
+		while (!m_despawnQueue.empty()) m_despawnQueue.pop();
+		while (!m_roleQueue.empty()) m_roleQueue.pop();
+		while (!m_resultQueue.empty()) m_resultQueue.pop();
+	}
+
+	NET_LOG_F("[ClientManager] ResetForLobbyReturn完了: m_bGameStarted=%s",
+		m_bGameStarted ? "true" : "false");
+}
 void ClientManager::SendMessage(const char* msg)
 {
 	if (!m_pServerPeer || !m_bConnected) return;
@@ -523,7 +547,12 @@ void ClientManager::ProcessServerInfo(const uint8_t* data, size_t len)
 	std::string serverName(reinterpret_cast<const char*>(data + idx), nameLen);
 	m_serverName = serverName;
 
-	NET_LOG_F("[ClientManager] ★サーバー情報受信★: サーバー名='%s'", m_serverName.c_str());
+	// ★★★ サーバー情報受信時にゲーム開始フラグをリセット ★★★
+	// （サーバーに接続したばかりなので、まだゲームは始まっていない）
+	m_bGameStarted = false;
+
+	NET_LOG_F("[ClientManager] ★サーバー情報受信★: サーバー名='%s' GameStarted=%s",
+		m_serverName.c_str(), m_bGameStarted ? "true" : "false");
 }
 
 void ClientManager::ProcessLobbyUpdate(const uint8_t* data, size_t len)

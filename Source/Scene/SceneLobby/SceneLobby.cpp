@@ -5,6 +5,7 @@ using namespace KeyString;
 using namespace InputKey;
 using namespace WindowSetting;
 using namespace Common;
+
 REQUEST_MODE SceneLobby::s_requestMode = REQUEST_MODE::NONE;
 
 SceneLobby::SceneLobby(Engine* pEngine)
@@ -36,17 +37,36 @@ SceneLobby::~SceneLobby()
 
 void SceneLobby::Start()
 {
+	NET_LOG("========================================");
+	NET_LOG("[SceneLobby] Start開始");
+	NET_LOG("========================================");
+
 	m_pEngine->AddTexture(TEXTURE_BUTTON);
 	m_pEngine->AddFont(FONT_GOTHIC60);
+	m_pEngine->AddTexture(TEXTURE_FADE);
 
 	m_client = ClientManager::GetInstance();
 	m_server = ServerManager::GetInstance();
+
+	// ★★★ 最重要: ゲーム終了後のロビー復帰時、ゲーム開始フラグをリセット ★★★
+	if (m_client)
+	{
+		m_client->ResetForLobbyReturn();
+		NET_LOG_F("[SceneLobby] ResetForLobbyReturn実行完了: IsGameStarted=%s",
+			m_client->IsGameStarted() ? "true" : "false");
+	}
+
+	// ★★★ フェード状態の初期化 ★★★
+	m_fade.Initialize(m_pEngine);
+	m_fade.SetFadeIn();
+	m_gameState = FADE_IN;
+	m_lastTime = timeGetTime();
 
 	m_serverName = "接続中...";
 	m_lastConnectionCheck = timeGetTime();
 	m_bWasConnected = false;
 
-	// ★★★ 修正: ホスト判定を正しく行う ★★★
+	// ★★★ ホスト判定を正しく行う ★★★
 	bool isHost = m_client->IsHost();
 
 	if (isHost && m_server)
@@ -54,10 +74,18 @@ void SceneLobby::Start()
 		// ホストの場合：ServerManagerから取得
 		m_serverName = m_server->GetServerName();
 		NET_LOG_F("[SceneLobby] ホストとしてロビー開始: サーバー名='%s'", m_serverName.c_str());
+
+		// ★★★ サーバー状態を待機中に設定 ★★★
+		m_server->SetGameState(0);
+		NET_LOG("[SceneLobby] サーバー状態を待機中(0)に設定");
+
+		// ★★★ ロビー更新をブロードキャスト ★★★
+		m_server->BroadcastLobbyUpdate();
+		NET_LOG("[SceneLobby] 初回ロビー更新をブロードキャスト");
 	}
 	else if (m_client)
 	{
-		// ★★★ クライアントの場合：ClientManagerから取得（上書きしない） ★★★
+		// クライアントの場合：ClientManagerから取得
 		m_serverName = m_client->GetServerName();
 
 		if (m_serverName.empty() || m_serverName == "Unknown Server")
@@ -73,16 +101,44 @@ void SceneLobby::Start()
 
 	m_pressedMouseLast = false;
 
-	NET_LOG("[SceneLobby] Start完了");
+	NET_LOG_F("[SceneLobby] Start完了: GameStarted=%s",
+		m_client ? (m_client->IsGameStarted() ? "true" : "false") : "N/A");
 }
 
 void SceneLobby::Update()
 {
+	DWORD now = timeGetTime();
+	float deltaTime = (now - m_lastTime) / 1000.0f;
+	m_lastTime = now;
+
+	// ★★★ フェード処理 ★★★
+	if (m_gameState == FADE_IN)
+	{
+		if (m_server) m_server->Update();
+		if (m_client) m_client->Update();
+
+		if (m_fade.Update(deltaTime))
+		{
+			m_gameState = IN_LOBBY;
+			NET_LOG("[SceneLobby] フェードイン完了 - ロビー通常状態へ");
+		}
+		return;
+	}
+
 	if (m_server) m_server->Update();
 	if (m_client) m_client->Update();
 
-	DWORD now = timeGetTime();
+	// ★★★ デバッグ: ゲーム開始フラグの状態を定期的にログ出力 ★★★
+	static DWORD lastDebugLog = 0;
+	if (now - lastDebugLog > 2000 && m_client)
+	{
+		NET_LOG_F("[SceneLobby::Update] GameStarted=%s GameState=%d",
+			m_client->IsGameStarted() ? "true" : "false",
+			(int)m_gameState);
+		lastDebugLog = now;
+	}
 
+	// ★★★ 接続チェック ★★★
 	if (now - m_lastConnectionCheck > f_connectionCheckInterval)
 	{
 		m_lastConnectionCheck = now;
@@ -107,11 +163,13 @@ void SceneLobby::Update()
 		}
 	}
 
+	// ★★★ マウス入力処理 ★★★
 	POINT mp = m_pEngine->GetMousePosition();
 	bool mouseDown = (m_pEngine->GetMouseButtonSync(DIK_LBUTTON) != 0);
 	bool clicked = mouseDown && !m_pressedMouseLast;
 	m_pressedMouseLast = mouseDown;
 
+	// 戻るボタン
 	if (clicked && PointInRect(f_backButtonPosition, f_buttonSize))
 	{
 		NET_LOG("[SceneLobby] 戻るボタン押下");
@@ -121,6 +179,7 @@ void SceneLobby::Update()
 		return;
 	}
 
+	// ゲーム開始ボタン（ホストのみ）
 	if (m_server)
 	{
 		if (clicked && PointInRect(f_startButtonPosition, f_buttonSize))
@@ -130,10 +189,10 @@ void SceneLobby::Update()
 		}
 	}
 
-	if (m_client && m_client->IsGameStarted())
+	// ★★★ ゲーム開始チェック（通常のロビー状態でのみチェック）★★★
+	if (m_gameState == IN_LOBBY && m_client && m_client->IsGameStarted())
 	{
-		NET_LOG("[SceneLobby] ゲーム開始 - ゲームシーンへ遷移");
-
+		NET_LOG("[SceneLobby] ゲーム開始通知受信 - ゲームシーンへ遷移");
 		m_nowSceneData.Set(Common::SCENE_GAME, false, nullptr);
 	}
 }
@@ -145,6 +204,7 @@ void SceneLobby::Draw()
 	RECT src, dst;
 	SetRect(&src, 0, 0, f_buttonSize.x, f_buttonSize.y);
 
+	// 戻るボタン
 	SetRect(&dst, f_backButtonPosition.x, f_backButtonPosition.y,
 		f_backButtonPosition.x + f_buttonSize.x, f_backButtonPosition.y + f_buttonSize.y);
 	m_pEngine->Blt(&dst, TEXTURE_BUTTON, &src);
@@ -176,6 +236,7 @@ void SceneLobby::Draw()
 	m_pEngine->DrawPrintfCenter(f_serverNamePosition.x, f_serverNamePosition.y,
 		FONT_GOTHIC60, Color::WHITE, displayServerName.c_str());
 
+	// メンバー一覧
 	std::vector<std::string> members;
 	if (m_client)
 		members = m_client->GetLobbyPlayerNames();
@@ -200,6 +261,7 @@ void SceneLobby::Draw()
 		}
 	}
 
+	// ゲーム開始ボタン
 	SetRect(&dst, f_startButtonPosition.x, f_startButtonPosition.y,
 		f_startButtonPosition.x + f_buttonSize.x, f_startButtonPosition.y + f_buttonSize.y);
 	m_pEngine->Blt(&dst, TEXTURE_BUTTON, &src);
@@ -209,6 +271,9 @@ void SceneLobby::Draw()
 			FONT_GOTHIC60, Color::BLACK, f_startButtonText);
 	else if (m_client)
 		m_pEngine->Blt(&dst, TEXTURE_BUTTON, &src, f_clientStartButtonAlpha, 0);
+
+	// ★★★ フェード描画 ★★★
+	m_fade.Draw(m_pEngine);
 
 	m_pEngine->SpriteEnd();
 }
@@ -226,8 +291,14 @@ void SceneLobby::PostEffect()
 
 void SceneLobby::Exit()
 {
+	NET_LOG("[SceneLobby] Exit開始");
+
 	m_pEngine->ReleaseTexture(TEXTURE_BUTTON);
+	m_pEngine->ReleaseTexture(TEXTURE_FADE);
+	m_fade.Release(m_pEngine);
 	m_pEngine->ReleaseFont(FONT_GOTHIC60);
+
+	NET_LOG("[SceneLobby] Exit完了");
 }
 
 void SceneLobby::SetRequestedMode(REQUEST_MODE mode)

@@ -206,13 +206,19 @@ void SceneGame::Update()
 		// ★★★ リザルト表示時間終了チェック ★★★
 		if (timeGetTime() - m_resultDisplayStart > f_resultDisplayDuration)
 		{
-			NET_LOG("[SceneGame] リザルト表示終了 - ロビーに遷移");
+			NET_LOG("[SceneGame] リザルト表示終了 - ロビーに遷移準備開始");
+
+			// ★★★ ゲーム終了フラグのリセット ★★★
+			m_bGameEnded = false;
+			m_gameTime = 0.0f;
+			m_winnerTeam = -1;
+			NET_LOG("[SceneGame] ゲーム関連フラグをリセット");
 
 			// ★★★ サーバーの状態を「待機中」に戻す（ホストのみ）★★★
 			if (m_bIsHost && m_pServer)
 			{
 				m_pServer->SetGameState(0);  // 0 = 待機中
-				NET_LOG("[SceneGame] ゲーム状態を待機中に変更");
+				NET_LOG("[SceneGame] サーバーゲーム状態を待機中に変更");
 			}
 
 			// ★★★ フェードアウト開始 ★★★
@@ -1919,6 +1925,9 @@ void SceneGame::PostEffect()
 
 void SceneGame::Exit()
 {
+	NET_LOG("[SceneGame] Exit開始");
+
+	// プレイヤーの削除
 	for (auto& kv : m_players)
 	{
 		if (kv.second)
@@ -1938,14 +1947,17 @@ void SceneGame::Exit()
 	m_playerRoles.clear();
 	m_pLocalPlayer = nullptr;
 
+	// リソースの解放
 	m_map.Release(m_pEngine);
 	m_fade.Release(m_pEngine);
-	m_pEngine->ReleaseFont(FONT_GOTHIC40); 
+	m_pEngine->ReleaseFont(FONT_GOTHIC40);
 	m_pEngine->ReleaseFont(FONT_GOTHIC60);
 	m_pEngine->ReleaseTexture(TEXTURE_VICTORY);
 	m_pEngine->ReleaseTexture(TEXTURE_DEFEAT);
 	m_pEngine->ReleaseTexture(TEXTURE_FADE);
 	m_pEngine->ReleaseModel(MODEL_CHARACTER);
+
+	NET_LOG("[SceneGame] Exit完了");
 }
 
 void SceneGame::LoadGameParameter()
