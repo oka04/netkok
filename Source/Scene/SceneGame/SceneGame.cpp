@@ -214,45 +214,10 @@ void SceneGame::Update()
 		// ★★★ リザルト表示時間終了チェック ★★★
 		if (timeGetTime() - m_resultDisplayStart > f_resultDisplayDuration)
 		{
-			NET_LOG("[SceneGame] リザルト表示終了 - ロビーに遷移準備開始");
+			NET_LOG("[SceneGame] リザルト表示終了 - フェードアウト開始");
 
-			// ★★★ プレイヤー情報を完全にクリア ★★★
-			for (auto& kv : m_players)
-			{
-				if (kv.second)
-				{
-					if (m_playerRoles[kv.first] == ROLE_RUNNER)
-					{
-						((Runner*)kv.second)->Release(m_pEngine);
-					}
-					else if (m_playerRoles[kv.first] == ROLE_CHASER)
-					{
-						((Chaser*)kv.second)->Release(m_pEngine);
-					}
-					delete kv.second;
-				}
-			}
-			m_players.clear();
-			m_playerRoles.clear();
-			m_pLocalPlayer = nullptr;
-			NET_LOG("[SceneGame] 全プレイヤー情報をクリア");
-
-			// ★★★ ゲーム終了フラグのリセット ★★★
-			m_bGameEnded = false;
-			m_gameTime = 0.0f;
-			m_winnerTeam = -1;
-			m_resultImageAlpha = 0.0f;  // ★★★ 次回用にリセット ★★★
-			m_localRole = ROLE_NONE;
-			m_bInitialSyncDone = false;
-			NET_LOG("[SceneGame] ゲーム関連フラグをリセット");
-
-			// ★★★ サーバーの状態を「待機中」に戻す（ホストのみ）★★★
-			// （既にBroadcastGameResultで実行済みだが、念のため再実行）
-			if (m_bIsHost && m_pServer)
-			{
-				m_pServer->SetGameState(0);
-				NET_LOG("[SceneGame] サーバーゲーム状態を待機中に再確認");
-			}
+			// ★★★ 修正: プレイヤー情報のクリアはフェードアウト完了後に延期 ★★★
+			// （m_winnerTeam や m_localRole はここではリセットしない）
 
 			// ★★★ フェードアウト開始 ★★★
 			m_fade.SetFadeOut();
@@ -294,9 +259,11 @@ void SceneGame::Update()
 		break;
 
 	case FADE_OUT:
+		// ★★★ フェード中もネットワーク更新を継続 ★★★
 		if (m_pClient) m_pClient->Update();
 		if (m_bIsHost && m_pServer) m_pServer->Update();
 
+		// ★★★ リザルト画像のアルファ値を維持（フェード中も表示し続ける）★★★
 		if (m_resultImageAlpha < 255.0f)
 		{
 			m_resultImageAlpha += f_resultFadeSpeed * m_deltaTime;
@@ -305,7 +272,46 @@ void SceneGame::Update()
 
 		if (m_fade.Update(m_deltaTime))
 		{
-			NET_LOG("[SceneGame] フェードアウト完了 - シーン遷移");
+			NET_LOG("[SceneGame] フェードアウト完了 - クリーンアップ開始");
+
+			// ★★★ 修正: フェードアウト完了後にプレイヤー情報をクリア ★★★
+			for (auto& kv : m_players)
+			{
+				if (kv.second)
+				{
+					if (m_playerRoles[kv.first] == ROLE_RUNNER)
+					{
+						((Runner*)kv.second)->Release(m_pEngine);
+					}
+					else if (m_playerRoles[kv.first] == ROLE_CHASER)
+					{
+						((Chaser*)kv.second)->Release(m_pEngine);
+					}
+					delete kv.second;
+				}
+			}
+			m_players.clear();
+			m_playerRoles.clear();
+			m_pLocalPlayer = nullptr;
+			NET_LOG("[SceneGame] 全プレイヤー情報をクリア");
+
+			// ★★★ ゲーム終了フラグのリセット ★★★
+			m_bGameEnded = false;
+			m_gameTime = 0.0f;
+			m_winnerTeam = -1;
+			m_resultImageAlpha = 0.0f;
+			m_localRole = ROLE_NONE;
+			m_bInitialSyncDone = false;
+			NET_LOG("[SceneGame] ゲーム関連フラグをリセット");
+
+			// ★★★ サーバーの状態を「待機中」に戻す（ホストのみ）★★★
+			if (m_bIsHost && m_pServer)
+			{
+				m_pServer->SetGameState(0);
+				NET_LOG("[SceneGame] サーバーゲーム状態を待機中に設定");
+			}
+
+			NET_LOG("[SceneGame] シーン遷移");
 			m_nowSceneData.Set(m_gameData.m_nextSceneNumber, false, nullptr);
 		}
 		return;
@@ -1953,15 +1959,16 @@ void SceneGame::Draw()
 			"残り時間: %02d:%02d", minutes, seconds);
 	}
 
-	// ★★★ 修正: リザルト画像をフェード前に描画（RESULT_DISPLAY と FADE_OUT 両方で表示）★★★
-	if (m_gameState == RESULT_DISPLAY || m_gameState == FADE_OUT)
+	// ★★★ 修正: リザルト画像表示（RESULT_DISPLAY と FADE_OUT 両方で表示）★★★
+	if ((m_gameState == RESULT_DISPLAY || m_gameState == FADE_OUT) && m_winnerTeam != -1)
 	{
-		// 背景を暗くする
 		RECT sour, dest;
+
+		// ★★★ 背景暗転用の画像（リザルト画面の後ろ）★★★
 		SetRect(&sour, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 		m_pEngine->Blt(&sour, TEXTURE_FADE, &sour, 150, 0.0f);
 
-		// ローカルプレイヤーの勝敗判定
+		// ★★★ ローカルプレイヤーの勝敗判定 ★★★
 		bool isLocalWinner = false;
 		if (m_localRole == ROLE_RUNNER)
 		{
@@ -1972,9 +1979,9 @@ void SceneGame::Draw()
 			isLocalWinner = (m_winnerTeam == 1);
 		}
 
+		// ★★★ リザルト画像の描画 ★★★
 		SetRect(&sour, 0, 0, (int)f_resultSize.x, (int)f_resultSize.y);
 
-		// 中央配置計算
 		D3DXVECTOR2 center = { (float)WINDOW_WIDTH / 2.0f, (float)(WINDOW_HEIGHT / 2.0f) };
 		SetRect(&dest,
 			(int)(center.x - f_resultSize.x / 2),
@@ -1982,7 +1989,6 @@ void SceneGame::Draw()
 			(int)(center.x + f_resultSize.x / 2),
 			(int)(center.y + f_resultSize.y / 2));
 
-		// ★★★ リザルト画像を表示（アルファ値は255固定で常に表示） ★★★
 		int displayAlpha = (int)min(255.0f, m_resultImageAlpha);
 
 		if (isLocalWinner)
@@ -1996,7 +2002,11 @@ void SceneGame::Draw()
 	}
 
 	// ★★★ フェードは最後に描画（リザルト画像の上に重ねる）★★★
-	m_fade.Draw(m_pEngine);
+	// FADE_OUT状態の時のみフェード画像を描画
+	if (m_gameState == FADE_OUT || m_gameState == FADE_IN)
+	{
+		m_fade.Draw(m_pEngine);
+	}
 
 	m_pEngine->SpriteEnd();
 }
