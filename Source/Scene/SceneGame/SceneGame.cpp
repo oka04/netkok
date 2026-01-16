@@ -176,13 +176,36 @@ void SceneGame::Update()
 				CheckGameEnd();
 			}
 		}
+
+		// ★★★ ポーズ処理（ゲーム中のみ）★★★
+		if (m_pEngine->GetKeyStateSync(DIK_ESCAPE) || m_pEngine->GetKeyStateSync(DIK_P))
+		{
+			m_pEngine->ScreenShot(TEXTURE_PAUSE);
+			m_gameState = CHANGE_SCENE;
+			m_nowSceneData.Set(Common::SCENE_PAUSE, true, this);
+			return;
+		}
 		break;
 
 	case RESULT_DISPLAY:
-		// ★★★ リザルト表示中 ★★★
+		// ★★★ リザルト表示中はゲーム結果の受信のみ処理 ★★★
+		if (m_pClient) m_pClient->Update();
+		if (m_bIsHost && m_pServer) m_pServer->Update();
+
+		// ★★★ ゲーム結果の受信処理（クライアントの場合） ★★★
+		NetGameResult result;
+		if (m_pClient && m_pClient->PopGameResult(result))
+		{
+			NET_LOG_F("[SceneGame] ゲーム結果受信: winner=%d", (int)result.winnerTeam);
+			if (!m_bGameEnded)
+			{
+				ProcessGameResult(result.winnerTeam);
+			}
+		}
+
+		// ★★★ リザルト表示時間終了チェック ★★★
 		if (timeGetTime() - m_resultDisplayStart > f_resultDisplayDuration)
 		{
-			// リザルト表示終了 → ロビーに戻る
 			NET_LOG("[SceneGame] リザルト表示終了 - ロビーに遷移");
 
 			// ★★★ サーバーの状態を「待機中」に戻す（ホストのみ）★★★
@@ -234,20 +257,12 @@ void SceneGame::Update()
 	case FADE_OUT:
 		if (m_fade.Update(m_deltaTime))
 		{
+			NET_LOG("[SceneGame] フェードアウト完了 - シーン遷移");
 			m_nowSceneData.Set(m_gameData.m_nextSceneNumber, false, nullptr);
 		}
 		return;
 	}
-
-	if (m_pEngine->GetKeyStateSync(DIK_ESCAPE) || m_pEngine->GetKeyStateSync(DIK_P))
-	{
-		m_pEngine->ScreenShot(TEXTURE_PAUSE);
-		m_gameState = CHANGE_SCENE;
-		m_nowSceneData.Set(Common::SCENE_PAUSE, true, this);
-		return;
-	}
 }
-
 void SceneGame::UpdateGameTimer()
 {
 	m_gameTime += m_deltaTime;
@@ -261,6 +276,7 @@ void SceneGame::UpdateGameTimer()
 		lastLog = now;
 	}
 }
+
 void SceneGame::CheckGameEnd()
 {
 	if (m_bGameEnded) return;
@@ -287,6 +303,7 @@ void SceneGame::CheckGameEnd()
 		return;
 	}
 }
+
 void SceneGame::SyncToServer()
 {
 	if (!m_pLocalPlayer || !m_pClient) return;
@@ -343,6 +360,7 @@ void SceneGame::SyncToServer()
 		m_pClient->SendPlayerState(state);
 	}
 }
+
 bool SceneGame::AreAllRunnersFrozen()
 {
 	int totalRunners = 0;
@@ -393,18 +411,7 @@ void SceneGame::BroadcastGameResult(int winnerTeam)
 {
 	if (!m_bIsHost || !m_pServer) return;
 
-	std::vector<uint8_t> payload;
-	payload.push_back((uint8_t)MSG_GAME_RESULT);  // 新しいメッセージタイプ
-	payload.push_back((uint8_t)winnerTeam);
-
-	ENetPacket* packet = enet_packet_create(payload.data(), payload.size(),
-		ENET_PACKET_FLAG_RELIABLE);
-
-	// ServerManagerのm_pServerHostを使ってブロードキャスト
-	enet_host_broadcast(m_pServer->GetServerHost(), 0, packet);
-	enet_host_flush(m_pServer->GetServerHost());
-
-	NET_LOG_F("[SceneGame] ゲーム結果をブロードキャスト: winner=%d", winnerTeam);
+	m_pServer->BroadcastGameResult(winnerTeam);
 }
 
 void SceneGame::ProcessGameResult(int winnerTeam)
@@ -415,13 +422,6 @@ void SceneGame::ProcessGameResult(int winnerTeam)
 
 	NET_LOG_F("[SceneGame] リザルト画面表示開始: 勝者=%s",
 		(winnerTeam == 0) ? "逃げる側" : "鬼側");
-
-	// ★★★ サーバーの状態を待機中に戻す（ホストのみ）★★★
-	if (m_bIsHost && m_pServer)
-	{
-		// ServerManagerに新しいメソッドを追加する必要あり
-		// m_pServer->SetGameState(0);  // 0 = 待機中
-	}
 }
 
 void SceneGame::UpdateNetwork()
