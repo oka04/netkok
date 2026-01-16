@@ -11,5 +11,5 @@
   "gaugeThicknessMultiplier": 1.2,
   "gameDuration": 300.0,
   "resultSize": [500.0, 250.0],
-  "resultDisplayDuration": 5000
+  "resultDisplayDuration": 8000
 }

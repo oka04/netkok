@@ -185,15 +185,18 @@ void SceneGame::Update()
 			// リザルト表示終了 → ロビーに戻る
 			NET_LOG("[SceneGame] リザルト表示終了 - ロビーに遷移");
 
-			// ★★★ サーバーの状態を「待機中」に戻す ★★★
+			// ★★★ サーバーの状態を「待機中」に戻す（ホストのみ）★★★
 			if (m_bIsHost && m_pServer)
 			{
-				// Discoveryの状態を0（待機中）に設定
-				// これはServerManager内で管理されているDiscoveryインスタンスに対して行う
-				// （ServerManager.cppに後述のメソッドを追加する必要あり）
+				m_pServer->SetGameState(0);  // 0 = 待機中
+				NET_LOG("[SceneGame] ゲーム状態を待機中に変更");
 			}
 
-			m_nowSceneData.Set(Common::SCENE_LOBBY, false, nullptr);
+			// ★★★ フェードアウト開始 ★★★
+			m_fade.SetFadeOut();
+			m_gameState = FADE_OUT;
+			m_gameData.m_nextSceneNumber = Common::SCENE_LOBBY;
+			NET_LOG("[SceneGame] ロビーへのフェードアウト開始");
 		}
 		break;
 
@@ -1869,18 +1872,42 @@ void SceneGame::Draw()
 			"残り時間: %02d:%02d", minutes, seconds);
 	}
 
-	// ★★★ リザルト画面表示 ★★★
 	if (m_gameState == RESULT_DISPLAY)
-	{ 
+	{
+		// 背景を暗くする
 		SetRect(&sour, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 		m_pEngine->Blt(&sour, TEXTURE_FADE, &sour, 150, 0.0f);
 
+		//　ローカルプレイヤーの勝敗判定
+		bool isLocalWinner = false;
+		if (m_localRole == ROLE_RUNNER)
+		{
+			isLocalWinner = (m_winnerTeam == 0);
+		}
+		else if (m_localRole == ROLE_CHASER)
+		{
+			isLocalWinner = (m_winnerTeam == 1);
+		}
+
 		SetRect(&sour, 0, 0, (int)f_resultSize.x, (int)f_resultSize.y);
 
-		D3DXVECTOR2 center = { (float)WINDOW_WIDTH / 2.0f,(float)(WINDOW_HEIGHT / 2.0f) };
-		SetRect(&dest, (int)(center.x - f_resultSize.x / 2), (int)(center.y - f_resultSize.y / 2) , (int)(center.x + f_resultSize.x / 2), (int)(center.y + f_resultSize.y / 2));
-		
-		m_pEngine->Blt(&dest, TEXTURE_VICTORY, &sour, 255, 0.0f);
+		// 中央配置計算
+		D3DXVECTOR2 center = { (float)WINDOW_WIDTH / 2.0f, (float)(WINDOW_HEIGHT / 2.0f) };
+		SetRect(&dest,
+			(int)(center.x - f_resultSize.x / 2),
+			(int)(center.y - f_resultSize.y / 2),
+			(int)(center.x + f_resultSize.x / 2),
+			(int)(center.y + f_resultSize.y / 2));
+
+		// ★★★ 勝敗に応じた画像を表示 ★★★
+		if (isLocalWinner)
+		{
+			m_pEngine->Blt(&dest, TEXTURE_VICTORY, &sour, 255, 0.0f);
+		}
+		else
+		{
+			m_pEngine->Blt(&dest, TEXTURE_DEFEAT, &sour, 255, 0.0f);
+		}
 	}
 
 	m_fade.Draw(m_pEngine);
