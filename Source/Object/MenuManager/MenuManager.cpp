@@ -174,10 +174,12 @@ void MenuManager::LoadParameter()
 	f_minAlpha = config["minAlpha"];
 	f_changeAlphaValue = config["changeAlphaValue"];
 	f_textOffsetY = config["textOffsetY"];
-	f_titleText = config["titleText"];
 	f_clearText = config["clearText"];
 	f_gameOverText = config["gameOverText"];
 	f_pauseText = config["pauseText"];
+
+	std::string utf8Text = config["titleText"];
+	f_titleText = ConvertUTF8ToSJIS(utf8Text);
 
 	for (int i = 0; i < 2; i++)
 	{
@@ -195,7 +197,7 @@ void MenuManager::LoadParameter()
 
 	for (int i = 0; i < MAX_BUTTON; i++)
 	{
-		std::string utf8Text = config["buttonTexts"][i];  
+		utf8Text = config["buttonTexts"][i];  
 		std::string sjisText = ConvertUTF8ToSJIS(utf8Text); 
 		f_buttonTexts.push_back(sjisText);
 	}

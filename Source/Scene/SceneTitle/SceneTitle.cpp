@@ -32,7 +32,6 @@ void SceneTitle::Start()
 	m_buttons.clear();
 	m_buttons.push_back(HOST_BUTTON);
 	m_buttons.push_back(FIND_BUTTON);
-	m_buttons.push_back(OPERATION_BUTTON);
 	m_buttons.push_back(EXIT_BUTTON);
 	m_nowSceneNumber = m_nowSceneData.GetNowScene();
 	Initialize(m_pEngine);
