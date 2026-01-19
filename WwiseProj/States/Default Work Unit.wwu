@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{5C1BC299-392E-4DC8-B7A9-79C4119F6852}" SchemaVersion="85">
+	<States>
+		<WorkUnit Name="Default Work Unit" ID="{5C1BC299-392E-4DC8-B7A9-79C4119F6852}" PersistMode="Standalone">
+			<ChildrenList>
+				<StateGroup Name="New_State_Group" ID="{A9CA8576-A1F2-4B17-9CF8-B2A9C4EB2E77}">
+					<ChildrenList>
+						<State Name="None" ID="{5B4214BC-3170-480C-ABFD-706B8E73DF71}"/>
+					</ChildrenList>
+				</StateGroup>
+				<StateGroup Name="PlayerState" ID="{D2F1718B-D854-47FB-B753-5A88F8632D26}">
+					<ChildrenList>
+						<State Name="None" ID="{ADCE0059-67A0-43DC-8DD0-AD188B71A260}"/>
+						<State Name="Frozen" ID="{4E0DB2B2-1166-4D1F-B43B-807296F6784D}"/>
+						<State Name="Normal" ID="{A6D3F369-5AA1-4BEC-81F4-4BB25DD387F9}"/>
+					</ChildrenList>
+				</StateGroup>
+			</ChildrenList>
+		</WorkUnit>
+	</States>
+</WwiseDocument>

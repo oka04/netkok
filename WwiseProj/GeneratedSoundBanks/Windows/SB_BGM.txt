@@ -1,0 +1,13 @@
+Event	ID	Name			Wwise Object Path	Notes
+	379376351	Play_BGM_Title			\Default Work Unit\Play_BGM_Title	
+	1271303026	Play_BGM_Clear			\Default Work Unit\Play_BGM_Clear	
+	1680657859	Play_BGM_GameOver			\Default Work Unit\Play_BGM_GameOver	
+	3631763401	Play_BGM_Game			\Default Work Unit\Play_BGM_Game	
+
+In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
+	168293376	BGM_GameSearch	d:\Users\5231042\Desktop\kirikawaran\2_SilentMissionTest\SilentMission\WwiseProj\.cache\Windows\SFX\BGM_GameSearch_F17FB28C.wem		\Interactive Music Hierarchy\Default Work Unit\BGM_Game\BGM_GameSearch\BGM_GameSearch		28463084
+	276443723	BGM_Title	d:\Users\5231042\Desktop\kirikawaran\2_SilentMissionTest\SilentMission\WwiseProj\.cache\Windows\SFX\BGM_Title_F17FB28C.wem		\Interactive Music Hierarchy\Default Work Unit\BGM_Title\BGM_Title		15372604
+	640593961	BGM_GameOver	d:\Users\5231042\Desktop\kirikawaran\2_SilentMissionTest\SilentMission\WwiseProj\.cache\Windows\SFX\BGM_GameOver_F17FB28C.wem		\Interactive Music Hierarchy\Default Work Unit\BGM_GameOver\BGM_GameOver		20849540
+	990260411	BGM_Clear	d:\Users\5231042\Desktop\kirikawaran\2_SilentMissionTest\SilentMission\WwiseProj\.cache\Windows\SFX\BGM_Clear_F17FB28C.wem		\Interactive Music Hierarchy\Default Work Unit\BGM_Clear\BGM_Clear		26341524
+	1043048754	BGM_GameChase	d:\Users\5231042\Desktop\kirikawaran\2_SilentMissionTest\SilentMission\WwiseProj\.cache\Windows\SFX\BGM_GameChase_F17FB28C.wem		\Interactive Music Hierarchy\Default Work Unit\BGM_Game\BGM_GameChase\BGM_GameChase		18497264
+

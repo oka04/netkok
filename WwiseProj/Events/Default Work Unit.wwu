@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{A0E65DC8-199F-462F-A220-FC8711A45E37}" SchemaVersion="85">
+	<Events>
+		<WorkUnit Name="Default Work Unit" ID="{A0E65DC8-199F-462F-A220-FC8711A45E37}" PersistMode="Standalone">
+			<ChildrenList>
+				<Event Name="Play_SE_Back" ID="{64335A5C-B349-4EC2-81E2-F40424B51BAC}">
+					<ChildrenList>
+						<Action Name="" ID="{577ED2DC-21F5-4CA2-9C72-9F0D10678F5E}" ShortID="668223532">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="SE_Back" ID="{52E47E9E-1054-49EC-B223-A7BC0C46FD5D}" WorkUnitID="{8D2A76F7-0BE0-419A-A4AC-4646F8092B1D}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_SE_Decide" ID="{E4FA9A7B-D367-4DC3-AE8E-A342B6C0F4C3}">
+					<ChildrenList>
+						<Action Name="" ID="{402145A7-2380-4562-9008-D3BDB25A1EDA}" ShortID="734571995">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="SE_Decide" ID="{21DAB129-D48C-4DFD-814B-BF7AA0B24916}" WorkUnitID="{8D2A76F7-0BE0-419A-A4AC-4646F8092B1D}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_SE_Pause" ID="{4863D37D-AF41-4122-BD11-C4D6ED5CD957}">
+					<ChildrenList>
+						<Action Name="" ID="{DD019320-8D5F-4385-9A55-C1422CCD321E}" ShortID="910591199">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="SE_Pause" ID="{4F1D19ED-1D17-48FD-8685-44148B08557C}" WorkUnitID="{8D2A76F7-0BE0-419A-A4AC-4646F8092B1D}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_SE_Select" ID="{83F6D7CF-A867-4204-A0A6-74DDFED6006B}">
+					<ChildrenList>
+						<Action Name="" ID="{573B3321-0336-439E-B6D7-348C481AD06A}" ShortID="765504120">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="SE_Select" ID="{5DE1AAB3-6AE0-48BB-A23E-72BFAAEDC660}" WorkUnitID="{8D2A76F7-0BE0-419A-A4AC-4646F8092B1D}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_BGM_Game" ID="{10B72837-87C7-4993-BCF6-71670AD49CF3}">
+					<ChildrenList>
+						<Action Name="" ID="{D1DA31B5-7D01-46C8-8D7F-EC5BF7743374}" ShortID="807144750">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="BGM_Game" ID="{52313CBF-8658-4DC4-9AD3-52BEC9B13DA9}" WorkUnitID="{83B883D1-38C6-479A-98D5-20CB3CAB66CA}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_BGM_Title" ID="{12CCF949-7F4F-43FD-B0AE-5E8935836515}">
+					<ChildrenList>
+						<Action Name="" ID="{DD20B975-4E18-4EC3-801E-57D7CD90C285}" ShortID="621842752">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="BGM_Title" ID="{BA0C7403-71D1-44CD-BFA5-A3E36B0EE9D4}" WorkUnitID="{83B883D1-38C6-479A-98D5-20CB3CAB66CA}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_SE_Foot" ID="{29FE8795-24C9-40CE-9FEB-EA1CCA85B591}">
+					<ChildrenList>
+						<Action Name="" ID="{65735000-78D3-4DDF-A3CC-EA099909EDF3}" ShortID="622529597">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="SE_Foot" ID="{E420D6E2-59DB-4740-9DDD-1E4AB31C1E4D}" WorkUnitID="{8D2A76F7-0BE0-419A-A4AC-4646F8092B1D}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_SE_Freeze" ID="{AFD587C5-CFD7-4149-89A5-DD2EB759FF22}">
+					<ChildrenList>
+						<Action Name="" ID="{1FA7BADA-44D2-4020-98CC-143B9CA4D2E4}" ShortID="679207067">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="SE_Freeze" ID="{438A19EE-C8F2-4D2E-9D95-55B2769AA636}" WorkUnitID="{8D2A76F7-0BE0-419A-A4AC-4646F8092B1D}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_SE_Thawing" ID="{DD2F5533-9A67-4BBC-9699-FE0AB21A79B9}">
+					<ChildrenList>
+						<Action Name="" ID="{B692FF14-C5F0-4EED-A251-53DC273FD875}" ShortID="708239150">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="SE_Thawing" ID="{62A08598-5EFE-4CB0-897A-884A010E7EC7}" WorkUnitID="{8D2A76F7-0BE0-419A-A4AC-4646F8092B1D}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_SE_Thaw_Complete" ID="{13E7FA64-BD36-4ED7-99C9-F1E78EB3E27D}">
+					<ChildrenList>
+						<Action Name="" ID="{E4CDF196-559F-4E56-A91D-BF8BF6AFB1BB}" ShortID="837783709">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="SE_Thaw_Complete" ID="{185AF318-28F0-49B6-949D-7288D0A528F8}" WorkUnitID="{8D2A76F7-0BE0-419A-A4AC-4646F8092B1D}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>

@@ -1885,7 +1885,6 @@ void SceneGame::Draw()
 		}
 
 		int yOffset = 500;
-
 		if (m_pLocalPlayer)
 		{
 			D3DCOLOR color = (m_localRole == ROLE_CHASER) ? Color::RED : Color::YELLOW;

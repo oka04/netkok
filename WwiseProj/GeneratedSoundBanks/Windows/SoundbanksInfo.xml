@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SoundBanksInfo Platform="Windows" BasePlatform="Windows" SchemaVersion="11" SoundbankVersion="128">
+	<RootPaths>
+		<ProjectRoot>d:\Users\5231042\Desktop\kirikawaran\2_SilentMissionTest\SilentMission\WwiseProj\</ProjectRoot>
+		<SourceFilesRoot>d:\Users\5231042\Desktop\kirikawaran\2_SilentMissionTest\SilentMission\WwiseProj\.cache\Windows\</SourceFilesRoot>
+		<SoundBanksRoot>d:\Users\5231042\Desktop\kirikawaran\2_SilentMissionTest\SilentMission\WwiseProj\GeneratedSoundBanks\Windows\</SoundBanksRoot>
+		<ExternalSourcesInputFile></ExternalSourcesInputFile>
+		<ExternalSourcesOutputRoot>d:\Users\5231042\Desktop\kirikawaran\2_SilentMissionTest\SilentMission\WwiseProj\GeneratedSoundBanks\Windows</ExternalSourcesOutputRoot>
+	</RootPaths>
+	<DialogueEvents/>
+	<StreamedFiles/>
+	<MediaFilesNotInAnyBank/>
+	<SoundBanks>
+		<SoundBank Id="323139049" Language="SFX">
+			<ObjectPath>\SoundBanks\Default Work Unit\SB_SE</ObjectPath>
+			<ShortName>SB_SE</ShortName>
+			<Path>SB_SE.bnk</Path>
+			<IncludedEvents>
+				<Event Id="1820465949" Name="Play_SE_Alert" ObjectPath="\Events\Default Work Unit\Play_SE_Alert"/>
+				<Event Id="909875588" Name="Play_SE_Back" ObjectPath="\Events\Default Work Unit\Play_SE_Back"/>
+				<Event Id="2004234489" Name="Play_SE_Decide" ObjectPath="\Events\Default Work Unit\Play_SE_Decide"/>
+				<Event Id="4008746553" Name="Play_SE_Foot" ObjectPath="\Events\Default Work Unit\Play_SE_Foot"/>
+				<Event Id="3570229889" Name="Play_SE_GameOver" ObjectPath="\Events\Default Work Unit\Play_SE_GameOver"/>
+				<Event Id="1004830121" Name="Play_SE_Pause" ObjectPath="\Events\Default Work Unit\Play_SE_Pause"/>
+				<Event Id="328156833" Name="Play_SE_Select" ObjectPath="\Events\Default Work Unit\Play_SE_Select"/>
+				<Event Id="479297711" Name="Play_SE_StickWall" ObjectPath="\Events\Default Work Unit\Play_SE_StickWall"/>
+			</IncludedEvents>
+			<IncludedMemoryFiles>
+				<File Id="46521232" Language="SFX">
+					<ShortName>SE_Decide.wav</ShortName>
+					<Path>SFX\SE_Decide_1C9C67B2.wem</Path>
+				</File>
+				<File Id="122502298" Language="SFX">
+					<ShortName>SE_StickWall.wav</ShortName>
+					<Path>SFX\SE_StickWall_1C9C67B2.wem</Path>
+				</File>
+				<File Id="146805001" Language="SFX">
+					<ShortName>SE_Pause.wav</ShortName>
+					<Path>SFX\SE_Pause_1C9C67B2.wem</Path>
+				</File>
+				<File Id="504277473" Language="SFX">
+					<ShortName>SE_Select.wav</ShortName>
+					<Path>SFX\SE_Select_1C9C67B2.wem</Path>
+				</File>
+				<File Id="507167483" Language="SFX">
+					<ShortName>SE_Alert.wav</ShortName>
+					<Path>SFX\SE_Alert_1C9C67B2.wem</Path>
+				</File>
+				<File Id="798345518" Language="SFX">
+					<ShortName>SE_Foot.wav</ShortName>
+					<Path>SFX\SE_Foot_1C9C67B2.wem</Path>
+				</File>
+				<File Id="933052835" Language="SFX">
+					<ShortName>SE_GameOver.wav</ShortName>
+					<Path>SFX\SE_GameOver_1C9C67B2.wem</Path>
+				</File>
+				<File Id="1050200881" Language="SFX">
+					<ShortName>SE_Back.wav</ShortName>
+					<Path>SFX\SE_Back_1C9C67B2.wem</Path>
+				</File>
+			</IncludedMemoryFiles>
+		</SoundBank>
+		<SoundBank Id="1026403989" Language="SFX">
+			<ObjectPath>\SoundBanks\Default Work Unit\SB_BGM</ObjectPath>
+			<ShortName>SB_BGM</ShortName>
+			<Path>SB_BGM.bnk</Path>
+			<IncludedEvents>
+				<Event Id="1271303026" Name="Play_BGM_Clear" ObjectPath="\Events\Default Work Unit\Play_BGM_Clear"/>
+				<Event Id="3631763401" Name="Play_BGM_Game" ObjectPath="\Events\Default Work Unit\Play_BGM_Game"/>
+				<Event Id="1680657859" Name="Play_BGM_GameOver" ObjectPath="\Events\Default Work Unit\Play_BGM_GameOver"/>
+				<Event Id="379376351" Name="Play_BGM_Title" ObjectPath="\Events\Default Work Unit\Play_BGM_Title"/>
+			</IncludedEvents>
+			<IncludedMemoryFiles>
+				<File Id="168293376" Language="SFX">
+					<ShortName>BGM_GameSearch.wav</ShortName>
+					<Path>SFX\BGM_GameSearch_F17FB28C.wem</Path>
+				</File>
+				<File Id="276443723" Language="SFX">
+					<ShortName>BGM_Title.wav</ShortName>
+					<Path>SFX\BGM_Title_F17FB28C.wem</Path>
+				</File>
+				<File Id="640593961" Language="SFX">
+					<ShortName>BGM_GameOver.wav</ShortName>
+					<Path>SFX\BGM_GameOver_F17FB28C.wem</Path>
+				</File>
+				<File Id="990260411" Language="SFX">
+					<ShortName>BGM_Clear.wav</ShortName>
+					<Path>SFX\BGM_Clear_F17FB28C.wem</Path>
+				</File>
+				<File Id="1043048754" Language="SFX">
+					<ShortName>BGM_GameChase.wav</ShortName>
+					<Path>SFX\BGM_GameChase_F17FB28C.wem</Path>
+				</File>
+			</IncludedMemoryFiles>
+		</SoundBank>
+		<SoundBank Id="1355168291" Language="SFX">
+			<ObjectPath>Init</ObjectPath>
+			<ShortName>Init</ShortName>
+			<Path>Init.bnk</Path>
+		</SoundBank>
+	</SoundBanks>
+</SoundBanksInfo>

@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{83B883D1-38C6-479A-98D5-20CB3CAB66CA}" SchemaVersion="85">
+	<InteractiveMusic>
+		<WorkUnit Name="Default Work Unit" ID="{83B883D1-38C6-479A-98D5-20CB3CAB66CA}" PersistMode="Standalone">
+			<ChildrenList>
+				<MusicSegment Name="BGM_Title" ID="{BA0C7403-71D1-44CD-BFA5-A3E36B0EE9D4}" ShortID="845694022">
+					<PropertyList>
+						<Property Name="EndPosition" Type="Real64" Value="80065.3125"/>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{7116DCE4-8780-42C7-A782-D2A18B862ACF}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{D46DB120-88F8-467B-9844-1A5D8083431E}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<MusicTrack Name="BGM_Title" ID="{71FF5CAC-209C-4DA6-8BEC-A3FCEADA411D}" ShortID="726566857">
+							<ReferenceList>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{D46DB120-88F8-467B-9844-1A5D8083431E}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="BGM_Title" ID="{0377AFC8-6D02-42DA-A7C6-5128B87083B3}" ShortID="276443723">
+									<Language>SFX</Language>
+									<AudioFile>BGM_Title.wav</AudioFile>
+								</AudioFileSource>
+							</ChildrenList>
+							<TransitionList>
+								<MusicTransition Name="Root" ID="{248BCA2E-31D8-402B-95F3-39687FB8A5D0}">
+									<PropertyList>
+										<Property Name="IsFolder" Type="bool" Value="True"/>
+									</PropertyList>
+									<TransitionInfo/>
+								</MusicTransition>
+							</TransitionList>
+							<SequenceList>
+								<MusicTrackSequence Name="" ID="{01D3B20A-F3D7-46DE-B23E-13F42C87BC62}">
+									<ClipList>
+										<MusicClip Name="BGM_Title" ID="{53DA9FF0-57C7-4182-A075-820903541906}">
+											<PropertyList>
+												<Property Name="EndTrimOffset" Type="Real64" Value="80065.3125"/>
+												<Property Name="FadeInMode" Type="int16" Value="0"/>
+												<Property Name="FadeOutMode" Type="int16" Value="0"/>
+											</PropertyList>
+											<AudioSourceRef Name="BGM_Title" ID="{0377AFC8-6D02-42DA-A7C6-5128B87083B3}"/>
+										</MusicClip>
+									</ClipList>
+								</MusicTrackSequence>
+							</SequenceList>
+						</MusicTrack>
+					</ChildrenList>
+					<CueList>
+						<MusicCue Name="Entry Cue" ID="{60663489-16B0-4BD9-8E1B-3A9E68A7BD92}"/>
+						<MusicCue Name="Exit Cue" ID="{28C9979B-003E-4345-A8A4-697A981FE1EB}">
+							<PropertyList>
+								<Property Name="CueType" Type="int16" Value="1"/>
+								<Property Name="TimeMs" Type="Real64" Value="80065.3125"/>
+							</PropertyList>
+						</MusicCue>
+					</CueList>
+				</MusicSegment>
+				<MusicSegment Name="BGM_GameOver" ID="{1FE37610-04BF-4560-B080-11A11E2AB3D1}" ShortID="852795088">
+					<PropertyList>
+						<Property Name="EndPosition" Type="Real64" Value="108591.020833333"/>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{7116DCE4-8780-42C7-A782-D2A18B862ACF}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{D46DB120-88F8-467B-9844-1A5D8083431E}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<MusicTrack Name="BGM_GameOver" ID="{3B44DFCA-E19B-4170-B02E-9F6039976E01}" ShortID="378232541">
+							<ReferenceList>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{D46DB120-88F8-467B-9844-1A5D8083431E}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="BGM_GameOver" ID="{6943FD1E-7C50-4DDF-9CEA-51742BBDD10A}" ShortID="640593961">
+									<Language>SFX</Language>
+									<AudioFile>BGM_GameOver.wav</AudioFile>
+								</AudioFileSource>
+							</ChildrenList>
+							<TransitionList>
+								<MusicTransition Name="Root" ID="{3AD82536-684A-4013-BC17-89DAEDFAC556}">
+									<PropertyList>
+										<Property Name="IsFolder" Type="bool" Value="True"/>
+									</PropertyList>
+									<TransitionInfo/>
+								</MusicTransition>
+							</TransitionList>
+							<SequenceList>
+								<MusicTrackSequence Name="" ID="{17953535-8111-4C51-9BC5-49DB1602122C}">
+									<ClipList>
+										<MusicClip Name="BGM_GameOver" ID="{B89B5606-45E2-486B-B806-FE8064074A2E}">
+											<PropertyList>
+												<Property Name="EndTrimOffset" Type="Real64" Value="108591.020833333"/>
+												<Property Name="FadeInMode" Type="int16" Value="0"/>
+												<Property Name="FadeOutMode" Type="int16" Value="0"/>
+											</PropertyList>
+											<AudioSourceRef Name="BGM_GameOver" ID="{6943FD1E-7C50-4DDF-9CEA-51742BBDD10A}"/>
+										</MusicClip>
+									</ClipList>
+								</MusicTrackSequence>
+							</SequenceList>
+						</MusicTrack>
+					</ChildrenList>
+					<CueList>
+						<MusicCue Name="Entry Cue" ID="{93F99BE5-C3A8-46AB-A8A0-8AA7EA15A242}"/>
+						<MusicCue Name="Exit Cue" ID="{52F40F72-E049-48EC-BF83-7FC98248EC61}">
+							<PropertyList>
+								<Property Name="CueType" Type="int16" Value="1"/>
+								<Property Name="TimeMs" Type="Real64" Value="108591.020833333"/>
+							</PropertyList>
+						</MusicCue>
+					</CueList>
+				</MusicSegment>
+				<MusicSegment Name="BGM_Clear" ID="{27162B2F-8600-48F9-A662-8949B7F0B6BD}" ShortID="100955016">
+					<PropertyList>
+						<Property Name="EndPosition" Type="Real64" Value="137195.104166667"/>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{7116DCE4-8780-42C7-A782-D2A18B862ACF}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{D46DB120-88F8-467B-9844-1A5D8083431E}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<MusicTrack Name="BGM_Clear" ID="{94354A63-10C2-41EC-86D7-B46D83D84FAE}" ShortID="565097009">
+							<ReferenceList>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{D46DB120-88F8-467B-9844-1A5D8083431E}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="BGM_Clear" ID="{F0275B90-2B97-4829-835E-AA39790A2B6A}" ShortID="990260411">
+									<Language>SFX</Language>
+									<AudioFile>BGM_Clear.wav</AudioFile>
+								</AudioFileSource>
+							</ChildrenList>
+							<TransitionList>
+								<MusicTransition Name="Root" ID="{F93C2C3E-8F8B-4995-8866-46CE06210467}">
+									<PropertyList>
+										<Property Name="IsFolder" Type="bool" Value="True"/>
+									</PropertyList>
+									<TransitionInfo/>
+								</MusicTransition>
+							</TransitionList>
+							<SequenceList>
+								<MusicTrackSequence Name="" ID="{254AFAF0-A41A-47D9-8C9D-95E25B42FF60}">
+									<ClipList>
+										<MusicClip Name="BGM_Clear" ID="{A6AD41F3-FF1E-405F-B4B1-828F9B130ED7}">
+											<PropertyList>
+												<Property Name="EndTrimOffset" Type="Real64" Value="137195.104166667"/>
+												<Property Name="FadeInMode" Type="int16" Value="0"/>
+												<Property Name="FadeOutMode" Type="int16" Value="0"/>
+											</PropertyList>
+											<AudioSourceRef Name="BGM_Clear" ID="{F0275B90-2B97-4829-835E-AA39790A2B6A}"/>
+										</MusicClip>
+									</ClipList>
+								</MusicTrackSequence>
+							</SequenceList>
+						</MusicTrack>
+					</ChildrenList>
+					<CueList>
+						<MusicCue Name="Entry Cue" ID="{58F7EB13-9563-44F7-A156-D0B09F073D7A}"/>
+						<MusicCue Name="Exit Cue" ID="{0CF8D9BB-4FDB-4828-AF66-9E135B2F5738}">
+							<PropertyList>
+								<Property Name="CueType" Type="int16" Value="1"/>
+								<Property Name="TimeMs" Type="Real64" Value="137195.104166667"/>
+							</PropertyList>
+						</MusicCue>
+					</CueList>
+				</MusicSegment>
+				<MusicSwitchContainer Name="BGM_Game" ID="{52313CBF-8658-4DC4-9AD3-52BEC9B13DA9}" ShortID="804524424">
+					<PropertyList>
+						<Property Name="ContinuePlay" Type="bool" Value="False"/>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{7116DCE4-8780-42C7-A782-D2A18B862ACF}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{D46DB120-88F8-467B-9844-1A5D8083431E}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<MusicSegment Name="BGM_GameSearch" ID="{C1F6EF7D-4BFD-483A-A3A8-E5752FB3CD37}" ShortID="14591576">
+							<PropertyList>
+								<Property Name="EndPosition" Type="Real64" Value="148244.895833333"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{7116DCE4-8780-42C7-A782-D2A18B862ACF}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{D46DB120-88F8-467B-9844-1A5D8083431E}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<MusicTrack Name="BGM_GameSearch" ID="{16B246F2-B28F-4C77-BB5C-C1D9A0E3BAA8}" ShortID="339333450">
+									<ReferenceList>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{D46DB120-88F8-467B-9844-1A5D8083431E}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="BGM_GameSearch" ID="{C2BAABF0-C5E7-4F07-B800-803CD533C406}" ShortID="3178537">
+											<Language>SFX</Language>
+											<AudioFile>BGM_GameSearch.wav</AudioFile>
+											<ConvertedFileIDList>
+												<File ID="168293376"/>
+											</ConvertedFileIDList>
+										</AudioFileSource>
+									</ChildrenList>
+									<TransitionList>
+										<MusicTransition Name="Root" ID="{843680E3-5CC4-4761-92A2-338C59815D8C}">
+											<PropertyList>
+												<Property Name="IsFolder" Type="bool" Value="True"/>
+											</PropertyList>
+											<TransitionInfo/>
+										</MusicTransition>
+									</TransitionList>
+									<SequenceList>
+										<MusicTrackSequence Name="" ID="{12C88382-C1AE-4271-83C1-304DC0C35783}">
+											<ClipList>
+												<MusicClip Name="BGM_GameSearch" ID="{50BE97AC-E9C0-4744-B2C5-99C463664659}">
+													<PropertyList>
+														<Property Name="EndTrimOffset" Type="Real64" Value="148244.895833333"/>
+														<Property Name="FadeInMode" Type="int16" Value="0"/>
+														<Property Name="FadeOutMode" Type="int16" Value="0"/>
+													</PropertyList>
+													<AudioSourceRef Name="BGM_GameSearch" ID="{C2BAABF0-C5E7-4F07-B800-803CD533C406}"/>
+												</MusicClip>
+											</ClipList>
+										</MusicTrackSequence>
+									</SequenceList>
+								</MusicTrack>
+							</ChildrenList>
+							<CueList>
+								<MusicCue Name="Entry Cue" ID="{29317735-AA2F-4055-9DC3-4705D8FF2514}"/>
+								<MusicCue Name="Exit Cue" ID="{FA39344D-CBAC-4265-BDE4-F7F474C0B24D}">
+									<PropertyList>
+										<Property Name="CueType" Type="int16" Value="1"/>
+										<Property Name="TimeMs" Type="Real64" Value="148244.895833333"/>
+									</PropertyList>
+								</MusicCue>
+							</CueList>
+						</MusicSegment>
+						<MusicSegment Name="BGM_GameChase" ID="{13DBBC75-B030-49E0-BA19-0FFCAF9E2C19}" ShortID="408689187">
+							<PropertyList>
+								<Property Name="EndPosition" Type="Real64" Value="96339.5833333333"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{7116DCE4-8780-42C7-A782-D2A18B862ACF}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{D46DB120-88F8-467B-9844-1A5D8083431E}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<MusicTrack Name="BGM_GameChase" ID="{5D9AA1AA-8449-4884-BED5-9AB99FF75CCC}" ShortID="111264114">
+									<ReferenceList>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{D46DB120-88F8-467B-9844-1A5D8083431E}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="BGM_GameChase" ID="{C1F2BBD7-1E6F-4A58-85BF-FB4DC9AFE5ED}" ShortID="555175228">
+											<Language>SFX</Language>
+											<AudioFile>BGM_GameChase.wav</AudioFile>
+											<ConvertedFileIDList>
+												<File ID="1043048754"/>
+											</ConvertedFileIDList>
+										</AudioFileSource>
+									</ChildrenList>
+									<TransitionList>
+										<MusicTransition Name="Root" ID="{763073F7-42B8-4EDE-B741-B1207FA768C9}">
+											<PropertyList>
+												<Property Name="IsFolder" Type="bool" Value="True"/>
+											</PropertyList>
+											<TransitionInfo/>
+										</MusicTransition>
+									</TransitionList>
+									<SequenceList>
+										<MusicTrackSequence Name="" ID="{3589B69D-E60B-4C9E-BA95-96FBA76D97A1}">
+											<ClipList>
+												<MusicClip Name="BGM_GameChase" ID="{FA7DF7D0-48A3-447C-A41E-77F7D7312BF2}">
+													<PropertyList>
+														<Property Name="EndTrimOffset" Type="Real64" Value="96339.5833333333"/>
+														<Property Name="FadeInMode" Type="int16" Value="0"/>
+														<Property Name="FadeOutMode" Type="int16" Value="0"/>
+													</PropertyList>
+													<AudioSourceRef Name="BGM_GameChase" ID="{C1F2BBD7-1E6F-4A58-85BF-FB4DC9AFE5ED}"/>
+												</MusicClip>
+											</ClipList>
+										</MusicTrackSequence>
+									</SequenceList>
+								</MusicTrack>
+							</ChildrenList>
+							<CueList>
+								<MusicCue Name="Entry Cue" ID="{A17E8A30-21F1-4977-92C6-0EF0FD360616}"/>
+								<MusicCue Name="Exit Cue" ID="{EEDC0BB1-A4CC-48A4-8A3D-B7303A24FCEB}">
+									<PropertyList>
+										<Property Name="CueType" Type="int16" Value="1"/>
+										<Property Name="TimeMs" Type="Real64" Value="96339.5833333333"/>
+									</PropertyList>
+								</MusicCue>
+							</CueList>
+						</MusicSegment>
+					</ChildrenList>
+					<TransitionList>
+						<MusicTransition Name="Root" ID="{E3B703E6-643F-43C9-BBDC-29093771D8DA}">
+							<PropertyList>
+								<Property Name="IsFolder" Type="bool" Value="True"/>
+							</PropertyList>
+							<ChildrenList>
+								<MusicTransition Name="Transition" ID="{C7EDC017-E0D8-45CC-A744-407F359A7D3B}">
+									<PropertyList>
+										<Property Name="ExitSourceAt" Type="int16" Value="0"/>
+									</PropertyList>
+									<TransitionInfo/>
+								</MusicTransition>
+								<MusicTransition Name="Transition" ID="{759E3EFD-9A8E-4B35-BE52-45F206B927DB}">
+									<PropertyList>
+										<Property Name="DestinationContextType" Type="int16" Value="2"/>
+										<Property Name="EnableDestinationFadeIn" Type="bool" Value="True"/>
+										<Property Name="EnableSourceFadeOut" Type="bool" Value="True"/>
+										<Property Name="ExitSourceAt" Type="int16" Value="0"/>
+										<Property Name="SourceContextType" Type="int16" Value="2"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="DestinationContextObject">
+											<ObjectRef Name="BGM_GameSearch" ID="{C1F6EF7D-4BFD-483A-A3A8-E5752FB3CD37}" WorkUnitID="{83B883D1-38C6-479A-98D5-20CB3CAB66CA}"/>
+										</Reference>
+										<Reference Name="SourceContextObject">
+											<ObjectRef Name="BGM_GameChase" ID="{13DBBC75-B030-49E0-BA19-0FFCAF9E2C19}" WorkUnitID="{83B883D1-38C6-479A-98D5-20CB3CAB66CA}"/>
+										</Reference>
+									</ReferenceList>
+									<TransitionInfo>
+										<SourceFadeOut>
+											<MusicFade Name="Source Fade-out" ID="{C9BC5797-449F-493D-81AE-97A632B1C0DC}">
+												<PropertyList>
+													<Property Name="FadeTime" Type="Real64" Value="0.5"/>
+													<Property Name="FadeType" Type="int16" Value="1"/>
+												</PropertyList>
+											</MusicFade>
+										</SourceFadeOut>
+										<DestinationFadeIn>
+											<MusicFade Name="Destination Fade-in" ID="{0C77CD05-8B6C-4275-958F-2CDFE517DC91}">
+												<PropertyList>
+													<Property Name="FadeTime" Type="Real64" Value="0.5"/>
+												</PropertyList>
+											</MusicFade>
+										</DestinationFadeIn>
+									</TransitionInfo>
+								</MusicTransition>
+								<MusicTransition Name="Transition" ID="{2410AE6F-8B80-402B-96B8-ED41D127ED1F}">
+									<PropertyList>
+										<Property Name="DestinationContextType" Type="int16" Value="2"/>
+										<Property Name="EnableDestinationFadeIn" Type="bool" Value="True"/>
+										<Property Name="EnableSourceFadeOut" Type="bool" Value="True"/>
+										<Property Name="ExitSourceAt" Type="int16" Value="0"/>
+										<Property Name="SourceContextType" Type="int16" Value="2"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="DestinationContextObject">
+											<ObjectRef Name="BGM_GameChase" ID="{13DBBC75-B030-49E0-BA19-0FFCAF9E2C19}" WorkUnitID="{83B883D1-38C6-479A-98D5-20CB3CAB66CA}"/>
+										</Reference>
+										<Reference Name="SourceContextObject">
+											<ObjectRef Name="BGM_GameSearch" ID="{C1F6EF7D-4BFD-483A-A3A8-E5752FB3CD37}" WorkUnitID="{83B883D1-38C6-479A-98D5-20CB3CAB66CA}"/>
+										</Reference>
+									</ReferenceList>
+									<TransitionInfo>
+										<SourceFadeOut>
+											<MusicFade Name="Source Fade-out" ID="{ED69F158-CED8-4F78-B7E7-F6C63A72B85D}">
+												<PropertyList>
+													<Property Name="FadeTime" Type="Real64" Value="0.05"/>
+													<Property Name="FadeType" Type="int16" Value="1"/>
+												</PropertyList>
+											</MusicFade>
+										</SourceFadeOut>
+										<DestinationFadeIn>
+											<MusicFade Name="Destination Fade-in" ID="{AA364E98-E56A-47B1-B92D-B397971EB902}">
+												<PropertyList>
+													<Property Name="FadeTime" Type="Real64" Value="0.05"/>
+												</PropertyList>
+											</MusicFade>
+										</DestinationFadeIn>
+									</TransitionInfo>
+								</MusicTransition>
+							</ChildrenList>
+							<TransitionInfo/>
+						</MusicTransition>
+					</TransitionList>
+					<ArgumentList>
+						<ArgumentRef Name="GAME_BGM" ID="{C244DB0E-2CF1-4937-8925-7D42E33F347C}"/>
+					</ArgumentList>
+					<EntryList>
+						<Entry>
+							<Path>
+								<PathElementRef Name="Chase" ID="{199BA4C7-DF21-4FCF-916A-358FB76A787A}"/>
+							</Path>
+							<AudioNodeInfo>
+								<AudioNodeRef Name="BGM_GameChase" ID="{13DBBC75-B030-49E0-BA19-0FFCAF9E2C19}" WorkUnitID="{83B883D1-38C6-479A-98D5-20CB3CAB66CA}" Platform="Linked"/>
+							</AudioNodeInfo>
+						</Entry>
+						<Entry>
+							<Path>
+								<PathElementRef Name="Search" ID="{CABDBEB8-3975-453A-AD22-A7F94339F963}"/>
+							</Path>
+							<AudioNodeInfo>
+								<AudioNodeRef Name="BGM_GameSearch" ID="{C1F6EF7D-4BFD-483A-A3A8-E5752FB3CD37}" WorkUnitID="{83B883D1-38C6-479A-98D5-20CB3CAB66CA}" Platform="Linked"/>
+							</AudioNodeInfo>
+						</Entry>
+					</EntryList>
+				</MusicSwitchContainer>
+			</ChildrenList>
+		</WorkUnit>
+	</InteractiveMusic>
+</WwiseDocument>

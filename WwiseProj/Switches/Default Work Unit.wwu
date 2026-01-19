@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{68F4299E-4AE3-46AB-AED2-11C19544BF27}" SchemaVersion="85">
+	<Switches>
+		<WorkUnit Name="Default Work Unit" ID="{68F4299E-4AE3-46AB-AED2-11C19544BF27}" PersistMode="Standalone">
+			<ChildrenList>
+				<SwitchGroup Name="GAME_BGM" ID="{C244DB0E-2CF1-4937-8925-7D42E33F347C}">
+					<ChildrenList>
+						<Switch Name="Search" ID="{CABDBEB8-3975-453A-AD22-A7F94339F963}"/>
+						<Switch Name="Chase" ID="{199BA4C7-DF21-4FCF-916A-358FB76A787A}"/>
+					</ChildrenList>
+				</SwitchGroup>
+			</ChildrenList>
+		</WorkUnit>
+	</Switches>
+</WwiseDocument>

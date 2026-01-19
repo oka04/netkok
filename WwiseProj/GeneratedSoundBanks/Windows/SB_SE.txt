@@ -1,0 +1,23 @@
+Event	ID	Name			Wwise Object Path	Notes
+	328156833	Play_SE_Select			\Default Work Unit\Play_SE_Select	
+	479297711	Play_SE_StickWall			\Default Work Unit\Play_SE_StickWall	
+	909875588	Play_SE_Back			\Default Work Unit\Play_SE_Back	
+	1004830121	Play_SE_Pause			\Default Work Unit\Play_SE_Pause	
+	1820465949	Play_SE_Alert			\Default Work Unit\Play_SE_Alert	
+	2004234489	Play_SE_Decide			\Default Work Unit\Play_SE_Decide	
+	3570229889	Play_SE_GameOver			\Default Work Unit\Play_SE_GameOver	
+	4008746553	Play_SE_Foot			\Default Work Unit\Play_SE_Foot	
+
+Game Parameter	ID	Name			Wwise Object Path	Notes
+	1297515238	FootSpeed			\Default Work Unit\FootSpeed	
+
+In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
+	46521232	SE_Decide	d:\Users\5231042\Desktop\kirikawaran\2_SilentMissionTest\SilentMission\WwiseProj\.cache\Windows\SFX\SE_Decide_1C9C67B2.wem		\Actor-Mixer Hierarchy\Default Work Unit\UI\SE_Decide		187672
+	122502298	SE_StickWall	d:\Users\5231042\Desktop\kirikawaran\2_SilentMissionTest\SilentMission\WwiseProj\.cache\Windows\SFX\SE_StickWall_1C9C67B2.wem		\Actor-Mixer Hierarchy\Default Work Unit\Player\SE_StickWall		188660
+	146805001	SE_Pause	d:\Users\5231042\Desktop\kirikawaran\2_SilentMissionTest\SilentMission\WwiseProj\.cache\Windows\SFX\SE_Pause_1C9C67B2.wem		\Actor-Mixer Hierarchy\Default Work Unit\UI\SE_Pause		305312
+	504277473	SE_Select	d:\Users\5231042\Desktop\kirikawaran\2_SilentMissionTest\SilentMission\WwiseProj\.cache\Windows\SFX\SE_Select_1C9C67B2.wem		\Actor-Mixer Hierarchy\Default Work Unit\UI\SE_Select		185024
+	507167483	SE_Alert	d:\Users\5231042\Desktop\kirikawaran\2_SilentMissionTest\SilentMission\WwiseProj\.cache\Windows\SFX\SE_Alert_1C9C67B2.wem		\Actor-Mixer Hierarchy\Default Work Unit\Patroller\SE_Alert		133712
+	798345518	SE_RightFoot	d:\Users\5231042\Desktop\kirikawaran\2_SilentMissionTest\SilentMission\WwiseProj\.cache\Windows\SFX\SE_Foot_1C9C67B2.wem		\Actor-Mixer Hierarchy\Default Work Unit\Patroller\SE_Foot\SE_RightFoot		129388
+	933052835	SE_GameOver	d:\Users\5231042\Desktop\kirikawaran\2_SilentMissionTest\SilentMission\WwiseProj\.cache\Windows\SFX\SE_GameOver_1C9C67B2.wem		\Actor-Mixer Hierarchy\Default Work Unit\Player\SE_GameOver		350600
+	1050200881	SE_Back	d:\Users\5231042\Desktop\kirikawaran\2_SilentMissionTest\SilentMission\WwiseProj\.cache\Windows\SFX\SE_Back_1C9C67B2.wem		\Actor-Mixer Hierarchy\Default Work Unit\UI\SE_Back		178272
+
