@@ -28,7 +28,6 @@ void Map::Initialize(Engine * pEngine, Camera * pCamera, Projection * pProj, Amb
 	pEngine->AddTexture(TEXTURE_MINI_MAP);
 	pEngine->AddTexture(TEXTURE_PLAYER_PIN);
 	pEngine->AddTexture(TEXTURE_ENEMY_PIN);
-	pEngine->AddTexture(TEXTURE_GOAL_PIN);
 	pEngine->AddTexture(TEXTURE_NORMAL_CIRCLE);
 	pEngine->AddTexture(TEXTURE_CHASE_CIRCLE);
 }
@@ -38,7 +37,6 @@ void Map::Release(Engine * pEngine)
 	pEngine->ReleaseTexture(TEXTURE_MINI_MAP);
 	pEngine->ReleaseTexture(TEXTURE_PLAYER_PIN);
 	pEngine->ReleaseTexture(TEXTURE_ENEMY_PIN);
-	pEngine->ReleaseTexture(TEXTURE_GOAL_PIN);
 	pEngine->ReleaseTexture(TEXTURE_NORMAL_CIRCLE);
 	pEngine->ReleaseTexture(TEXTURE_CHASE_CIRCLE);
 }
@@ -116,31 +114,6 @@ void Map::DrawMiniMap(Engine* pEngine, const D3DXVECTOR2& playerPosition, const 
 	}
 
 */
-	// ゴールピンの描画
-	D3DXVECTOR2 goalPosition2D(m_goalPosition.x, m_goalPosition.z);
-	D3DXVECTOR2 relativePos = goalPosition2D - playerPosition;
-	float goalDistSq = D3DXVec2LengthSq(&relativePos);
-	float miniMapRadiusSq = (float)(f_miniMapSourHalfSize * f_miniMapSourHalfSize);
-	D3DXVECTOR2 drawGoalPosition;
-	float goalAngle = 0.0f;
-
-	if (goalDistSq > miniMapRadiusSq) {
-		// ミニマップの外にある場合、円周上に描画する
-		D3DXVECTOR2 dir = relativePos;
-		D3DXVec2Normalize(&dir, &dir);
-		drawGoalPosition = miniMapCenter + D3DXVECTOR2(dir.x, -dir.y) * (f_miniMapScreenRadius - f_goalPinDestHalfSize.x - f_goalPinOffset);
-		goalAngle = atan2f(-dir.x, -dir.y);
-	}
-	else {
-		// ミニマップの内にある場合、そのまま描画する
-		drawGoalPosition = miniMapCenter + D3DXVECTOR2(relativePos.x, -relativePos.y) * scale;
-	}
-
-	dest.left = (int)(drawGoalPosition.x - f_goalPinDestHalfSize.x);
-	dest.top = (int)(drawGoalPosition.y - f_goalPinDestHalfSize.y);
-	dest.right = (int)(drawGoalPosition.x + f_goalPinDestHalfSize.x);
-	dest.bottom = (int)(drawGoalPosition.y + f_goalPinDestHalfSize.y);
-	pEngine->Blt(&dest, TEXTURE_GOAL_PIN, &sour, 255, goalAngle);
 
 	// プレイヤーの位置の描画
 	dest.left = (int)(miniMapCenter.x - f_playerPinDestHalfSize.x);
@@ -348,18 +321,6 @@ bool Map::RayToWallIntersection(const D3DXVECTOR3& rayOrigin, const D3DXVECTOR3&
 	return false;
 }
 
-bool Map::CheckGoal(const D3DXVECTOR3 & playerPosition)
-{
-	int playerX = (int)(playerPosition.x / f_wallSize);
-	int playerY = (int)((m_row * f_wallSize - playerPosition.z) / f_wallSize);
-
-	int goalX = (int)(m_goalPosition.x / f_wallSize);
-	int goalY = (int)((m_row * f_wallSize - m_goalPosition.z) / f_wallSize);
-
-	return ((playerX == goalX) && (playerY == goalY));
-
-}
-
 // 3人称視点にしたときのカメラの位置が壁の裏側に行かないようにする
 const D3DXVECTOR3 Map::AdjustCameraPosition(const D3DXVECTOR3& playerPosition, const D3DXVECTOR3& desiredCameraPosition)
 {
@@ -536,7 +497,6 @@ void Map::LoadParameter()
 	f_miniMapScreenRadius = config["miniMapScreenRadius"];
 	f_miniMapSourHalfSize = config["miniMapSourHalfSize"];
 	f_miniMapDiv = config["miniMapDiv"];
-	f_goalPinOffset = config["goalPinOffset"];
 	f_cameraWallOffset = config["cameraWallOffset"];
 	
 	for (int i = 0; i < 2; i++)
@@ -544,7 +504,6 @@ void Map::LoadParameter()
 		f_pinSourSize[i] = config["pinSourSize"][i];
 		f_playerPinDestHalfSize[i] = config["playerPinDestHalfSize"][i];
 		f_enemyPinDestHalfSize[i] = config["enemyPinDestHalfSize"][i];
-		f_goalPinDestHalfSize[i] = config["goalPinDestHalfSize"][i];
 		f_miniMapPosition[i] = config["miniMapPosition"][i];
 	}
 

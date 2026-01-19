@@ -32,7 +32,6 @@ public:
 	//壁の張り付きの確認
 	bool StickWallCheck(D3DXVECTOR3& position, float radius, float checkDist, D3DXVECTOR3* outNormal);
 	bool RayToWallIntersection(const D3DXVECTOR3& rayOrigin, const D3DXVECTOR3& rayEnd, D3DXVECTOR3* outIntersection);
-	bool CheckGoal(const D3DXVECTOR3& playerPosition);
 
 	const D3DXVECTOR3 AdjustCameraPosition(const D3DXVECTOR3& playerPosition, const D3DXVECTOR3& desiredCameraPosition);
 	const D3DXVECTOR3& GetPlayerStartPosition();
@@ -78,11 +77,9 @@ private:
 	float f_miniMapSaveScale;
 	float f_miniMapScreenRadius;
 	float f_cameraWallOffset;
-	float f_goalPinOffset;
 	D3DXVECTOR2 f_pinSourSize;
 	D3DXVECTOR2 f_playerPinDestHalfSize;
 	D3DXVECTOR2 f_enemyPinDestHalfSize;
-	D3DXVECTOR2 f_goalPinDestHalfSize;
 	D3DXVECTOR2 f_miniMapPosition;
 	D3DCOLORVALUE f_lineColor;
 	D3DMATERIAL9 f_groundMaterial;
@@ -115,7 +112,6 @@ private:
 	D3DXVECTOR3 m_mapSize;
 	D3DXVECTOR2 m_mapSaveSize;
 	D3DXVECTOR3 m_playerStartPosition;
-	D3DXVECTOR3 m_goalPosition;
 
 	Primitive m_ground;
 };
