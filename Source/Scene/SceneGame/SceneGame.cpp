@@ -751,7 +751,7 @@ void SceneGame::UpdateRemotePlayers()
 		// ★★★ Patroller方式の3Dサウンド位置更新 ★★★
 		D3DXVECTOR3 remotePos = kv.second->GetPosition();
 		D3DXVECTOR3 remoteDir = kv.second->GetDepth();
-
+			
 		// ★★★ 3D位置を常に更新（Patroller::UpdateSoundと同じ方式）★★★
 		SoundManager::SetPosition(remotePos, remoteDir, CharacterBase::UP_DIRECTION, kv.first);
 
@@ -1475,6 +1475,12 @@ void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name,
 	p->SetCharacterName(name);
 	p->SetPosition(spawnPos);
 
+	// ★★★ 新規追加: IDを設定した後にWwiseに登録 ★★★
+	const char* objName = (role == ROLE_CHASER) ? "Chaser" : "Runner";
+	SoundManager::RegisterGameObject(clientId, objName);
+	NET_LOG_F("[SceneGame] Wwiseに登録: ID=%u Name=%s Role=%s",
+		clientId, objName, (role == ROLE_CHASER) ? "鬼" : "逃げる側");
+
 	// ★★★ デバッグ: 設定後のID確認 ★★★
 	NET_LOG_F("[SceneGame] プレイヤーID設定: IsLocal=%s, ClientID=%u (GetClientId()=%u)",
 		isLocal ? "Yes" : "No", clientId, p->GetClientId());
@@ -1508,6 +1514,10 @@ void SceneGame::DespawnPlayer(uint32_t clientId)
 		return;
 	}
 
+	// ★★★ 新規追加: Wwiseから登録解除 ★★★
+	SoundManager::UnregisterGameObject(clientId);
+	NET_LOG_F("[SceneGame] Wwiseから登録解除: ID=%u", clientId);
+
 	if (it->second)
 	{
 		if (m_playerRoles[clientId] == ROLE_RUNNER)
@@ -1525,6 +1535,7 @@ void SceneGame::DespawnPlayer(uint32_t clientId)
 
 	NET_LOG_F("[SceneGame] プレイヤー削除完了: ID=%u", clientId);
 }
+
 
 void SceneGame::Draw()
 {
