@@ -7,12 +7,16 @@
 					<ObjectInclusionList>
 						<ObjectRef Name="Play_SE_Foot" ID="{29FE8795-24C9-40CE-9FEB-EA1CCA85B591}" WorkUnitID="{A0E65DC8-199F-462F-A220-FC8711A45E37}" Filter="7" Origin="Manual"/>
 						<ObjectRef Name="Play_SE_Pause" ID="{4863D37D-AF41-4122-BD11-C4D6ED5CD957}" WorkUnitID="{A0E65DC8-199F-462F-A220-FC8711A45E37}" Filter="7" Origin="Manual"/>
+						<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{D46DB120-88F8-467B-9844-1A5D8083431E}" Filter="7" Origin="Manual"/>
+						<ObjectRef Name="Play_SE_Freeze" ID="{AFD587C5-CFD7-4149-89A5-DD2EB759FF22}" WorkUnitID="{A0E65DC8-199F-462F-A220-FC8711A45E37}" Filter="7" Origin="Manual"/>
 						<ObjectRef Name="Play_SE_Select" ID="{83F6D7CF-A867-4204-A0A6-74DDFED6006B}" WorkUnitID="{A0E65DC8-199F-462F-A220-FC8711A45E37}" Filter="7" Origin="Manual"/>
-						<ObjectRef Name="Play_SE_GameOver" ID="{354DD411-69A9-471F-BBA9-8B19C4903CC9}" WorkUnitID="{A0E65DC8-199F-462F-A220-FC8711A45E37}" Filter="7" Origin="Manual"/>
-						<ObjectRef Name="Play_SE_StickWall" ID="{3651950B-62C7-481A-8ECA-E64C24370B9A}" WorkUnitID="{A0E65DC8-199F-462F-A220-FC8711A45E37}" Filter="7" Origin="Manual"/>
+						<ObjectRef Name="Play_BGM_Title" ID="{12CCF949-7F4F-43FD-B0AE-5E8935836515}" WorkUnitID="{A0E65DC8-199F-462F-A220-FC8711A45E37}" Filter="7" Origin="Manual"/>
+						<ObjectRef Name="Play_SE_Bracelet" ID="{E28D8C40-A250-483D-8602-18A3629E8591}" WorkUnitID="{A0E65DC8-199F-462F-A220-FC8711A45E37}" Filter="7" Origin="Manual"/>
+						<ObjectRef Name="Play_BGM_Game" ID="{10B72837-87C7-4993-BCF6-71670AD49CF3}" WorkUnitID="{A0E65DC8-199F-462F-A220-FC8711A45E37}" Filter="7" Origin="Manual"/>
+						<ObjectRef Name="Play_SE_Thawing" ID="{DD2F5533-9A67-4BBC-9699-FE0AB21A79B9}" WorkUnitID="{A0E65DC8-199F-462F-A220-FC8711A45E37}" Filter="7" Origin="Manual"/>
 						<ObjectRef Name="Play_SE_Decide" ID="{E4FA9A7B-D367-4DC3-AE8E-A342B6C0F4C3}" WorkUnitID="{A0E65DC8-199F-462F-A220-FC8711A45E37}" Filter="7" Origin="Manual"/>
 						<ObjectRef Name="Play_SE_Back" ID="{64335A5C-B349-4EC2-81E2-F40424B51BAC}" WorkUnitID="{A0E65DC8-199F-462F-A220-FC8711A45E37}" Filter="7" Origin="Manual"/>
-						<ObjectRef Name="Play_SE_Alert" ID="{09C55558-F952-4F62-A7DD-38EA9ADE5C3B}" WorkUnitID="{A0E65DC8-199F-462F-A220-FC8711A45E37}" Filter="7" Origin="Manual"/>
+						<ObjectRef Name="Play_SE_Thaw_Complete" ID="{13E7FA64-BD36-4ED7-99C9-F1E78EB3E27D}" WorkUnitID="{A0E65DC8-199F-462F-A220-FC8711A45E37}" Filter="7" Origin="Manual"/>
 					</ObjectInclusionList>
 					<ObjectExclusionList/>
 					<GameSyncExclusionList/>
@@ -21,8 +25,6 @@
 					<ObjectInclusionList>
 						<ObjectRef Name="Play_BGM_Title" ID="{12CCF949-7F4F-43FD-B0AE-5E8935836515}" WorkUnitID="{A0E65DC8-199F-462F-A220-FC8711A45E37}" Filter="7" Origin="Manual"/>
 						<ObjectRef Name="Play_BGM_Game" ID="{10B72837-87C7-4993-BCF6-71670AD49CF3}" WorkUnitID="{A0E65DC8-199F-462F-A220-FC8711A45E37}" Filter="7" Origin="Manual"/>
-						<ObjectRef Name="Play_BGM_GameOver" ID="{4CEFA74B-B1EB-4C4C-B9A0-20C3613E014D}" WorkUnitID="{A0E65DC8-199F-462F-A220-FC8711A45E37}" Filter="7" Origin="Manual"/>
-						<ObjectRef Name="Play_BGM_Clear" ID="{5D0B53A0-78F9-4FF4-9FB4-8074BD3C4B66}" WorkUnitID="{A0E65DC8-199F-462F-A220-FC8711A45E37}" Filter="7" Origin="Manual"/>
 					</ObjectInclusionList>
 					<ObjectExclusionList/>
 					<GameSyncExclusionList/>

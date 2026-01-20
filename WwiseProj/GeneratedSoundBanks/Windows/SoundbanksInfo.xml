@@ -16,7 +16,10 @@
 			<ShortName>SB_SE</ShortName>
 			<Path>SB_SE.bnk</Path>
 			<IncludedEvents>
+				<Event Id="3631763401" Name="Play_BGM_Game" ObjectPath="\Events\Default Work Unit\Play_BGM_Game"/>
+				<Event Id="379376351" Name="Play_BGM_Title" ObjectPath="\Events\Default Work Unit\Play_BGM_Title"/>
 				<Event Id="909875588" Name="Play_SE_Back" ObjectPath="\Events\Default Work Unit\Play_SE_Back"/>
+				<Event Id="2343202269" Name="Play_SE_Bracelet" ObjectPath="\Events\Default Work Unit\Play_SE_Bracelet"/>
 				<Event Id="2004234489" Name="Play_SE_Decide" ObjectPath="\Events\Default Work Unit\Play_SE_Decide"/>
 				<Event Id="4008746553" Name="Play_SE_Foot" ObjectPath="\Events\Default Work Unit\Play_SE_Foot"/>
 				<Event Id="678536556" Name="Play_SE_Freeze" ObjectPath="\Events\Default Work Unit\Play_SE_Freeze"/>
@@ -34,21 +37,29 @@
 					<ShortName>SE_Pause.wav</ShortName>
 					<Path>SFX\SE_Pause_1C9C67B2.wem</Path>
 				</File>
+				<File Id="168293376" Language="SFX">
+					<ShortName>BGM_GameSearch.wav</ShortName>
+					<Path>SFX\BGM_GameSearch_F17FB28C.wem</Path>
+				</File>
 				<File Id="197401109" Language="SFX">
 					<ShortName>SE_Thaw_Complete.wav</ShortName>
 					<Path>SFX\SE_Thaw_Complete_1C9C67B2.wem</Path>
+				</File>
+				<File Id="276443723" Language="SFX">
+					<ShortName>BGM_Title.wav</ShortName>
+					<Path>SFX\BGM_Title_F17FB28C.wem</Path>
 				</File>
 				<File Id="504277473" Language="SFX">
 					<ShortName>SE_Select.wav</ShortName>
 					<Path>SFX\SE_Select_1C9C67B2.wem</Path>
 				</File>
-				<File Id="515258537" Language="SFX">
-					<ShortName>風が吹く1.wav</ShortName>
-					<Path>SFX\風が吹く1_1C9C67B2.wem</Path>
-				</File>
 				<File Id="520278521" Language="SFX">
 					<ShortName>SE_Freeze.wav</ShortName>
 					<Path>SFX\SE_Freeze_1C9C67B2.wem</Path>
+				</File>
+				<File Id="649418891" Language="SFX">
+					<ShortName>風が吹く1.wav</ShortName>
+					<Path>SFX\風が吹く1_1C9C67B2.wem</Path>
 				</File>
 				<File Id="662532748" Language="SFX">
 					<ShortName>SE_Foot.wav</ShortName>
@@ -65,6 +76,10 @@
 				<File Id="737176884" Language="SFX">
 					<ShortName>SE_Thawing1.wav</ShortName>
 					<Path>SFX\SE_Thawing1_1C9C67B2.wem</Path>
+				</File>
+				<File Id="1043048754" Language="SFX">
+					<ShortName>BGM_GameChase.wav</ShortName>
+					<Path>SFX\BGM_GameChase_F17FB28C.wem</Path>
 				</File>
 				<File Id="1050200881" Language="SFX">
 					<ShortName>SE_Back.wav</ShortName>

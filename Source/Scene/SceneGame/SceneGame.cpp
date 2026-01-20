@@ -742,6 +742,55 @@ void SceneGame::UpdateRemotePlayers()
 			kv.second->PredictMovement(m_deltaTime);
 		}
 
+		// ★★★ Patroller方式の3Dサウンド位置更新 ★★★
+		D3DXVECTOR3 remotePos = kv.second->GetPosition();
+		D3DXVECTOR3 remoteDir = kv.second->GetDepth();
+
+		// ★★★ 3D位置を常に更新（Patroller::UpdateSoundと同じ方式）★★★
+		SoundManager::SetPosition(remotePos, remoteDir, CharacterBase::UP_DIRECTION, kv.first);
+
+		// ★★★ 足音の聞こえ方制御（Patrollerの遮蔽/遮音と同じロジック）★★★
+		if (m_pLocalPlayer)
+		{
+			D3DXVECTOR3 localPos = m_pLocalPlayer->GetPosition();
+			D3DXVECTOR3 eyePos = localPos;
+			eyePos.y += 1.5f; // 目の高さ
+
+			D3DXVECTOR3 intersection;
+			bool blocked = m_map.RayToWallIntersection(eyePos, remotePos, &intersection);
+
+			// ★★★ 距離による減衰計算 ★★★
+			D3DXVECTOR3 dir_toRemote = remotePos - eyePos;
+			float dist = D3DXVec3Length(&dir_toRemote);
+			float maxDist = 50.0f; // 最大聴取距離
+			float distFactor = min(dist / maxDist, 1.0f) / 2.0f;
+
+			float obstruction = 0.0f;
+			float occlusion = 0.0f;
+
+			if (blocked)
+			{
+				// 壁を挟んでいる場合
+				obstruction = 0.7f + distFactor;
+				occlusion = 0.5f + distFactor;
+			}
+			else
+			{
+				// 壁を挟んでいないが距離がある場合
+				obstruction = distFactor;
+				occlusion = distFactor * 0.3f;
+			}
+
+			// ★★★ Wwise に遮蔽/遮音値を送信 ★★★
+			AK::SoundEngine::SetObjectObstructionAndOcclusion(
+				kv.first,
+				SoundManager::ID_LISTENER,
+				min(obstruction, 1.0f),
+				min(occlusion, 1.0f)
+			);
+		}
+
+		// ★★★ 以下、既存のライト処理 ★★★
 		if (m_playerRoles[kv.first] == ROLE_CHASER)
 		{
 			Chaser* chaser = dynamic_cast<Chaser*>(kv.second);

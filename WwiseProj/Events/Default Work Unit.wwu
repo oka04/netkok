@@ -143,6 +143,20 @@
 						</Action>
 					</ChildrenList>
 				</Event>
+				<Event Name="Play_SE_Bracelet" ID="{E28D8C40-A250-483D-8602-18A3629E8591}">
+					<ChildrenList>
+						<Action Name="" ID="{8584B2EC-34CA-4FC9-9777-8C8CA867E06A}" ShortID="817960273">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="SE_Bracelet" ID="{B859F226-CDD5-4C9D-A0BB-104F53F5A785}" WorkUnitID="{8D2A76F7-0BE0-419A-A4AC-4646F8092B1D}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>

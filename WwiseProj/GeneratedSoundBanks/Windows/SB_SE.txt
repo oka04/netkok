@@ -1,9 +1,12 @@
 Event	ID	Name			Wwise Object Path	Notes
 	328156833	Play_SE_Select			\Default Work Unit\Play_SE_Select	
+	379376351	Play_BGM_Title			\Default Work Unit\Play_BGM_Title	
 	678536556	Play_SE_Freeze			\Default Work Unit\Play_SE_Freeze	
 	909875588	Play_SE_Back			\Default Work Unit\Play_SE_Back	
 	1004830121	Play_SE_Pause			\Default Work Unit\Play_SE_Pause	
 	2004234489	Play_SE_Decide			\Default Work Unit\Play_SE_Decide	
+	2343202269	Play_SE_Bracelet			\Default Work Unit\Play_SE_Bracelet	
+	3631763401	Play_BGM_Game			\Default Work Unit\Play_BGM_Game	
 	3979858179	Play_SE_Thawing			\Default Work Unit\Play_SE_Thawing	
 	4008746553	Play_SE_Foot			\Default Work Unit\Play_SE_Foot	
 	4167532877	Play_SE_Thaw_Complete			\Default Work Unit\Play_SE_Thaw_Complete	
@@ -26,4 +29,4 @@ Audio Bus	ID	Name			Wwise Object Path	Notes
 	3803692087	Master Audio Bus			\Default Work Unit\Master Audio Bus	
 
 In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
-	46521232	SE_Decide	d:\Users\5231042\Desktop\	146805001	SE_Pause	d:\Users\5231042\Desktop\	197401109	SE_Thaw_Complete	d:\Users\5231042\Desktop\	504277473	SE_Select	d:\Users\5231042\Desktop\	515258537	SE_Bracelet	d:\Users\5231042\Desktop\	520278521	SE_Freeze	d:\Users\5231042\Desktop\	662532748	SE_RightFoot	d:\Users\5231042\Desktop\	664212180	SE_Thawing3	d:\Users\5231042\Desktop\	700210698	SE_Thawing2	d:\Users\5231042\Desktop\	737176884	SE_Thawing1	d:\Users\5231042\Desktop\	1050200881	SE_Back	d:\Users\5231042\Desktop\
+	46521232	SE_Decide	d:\Users\5231042\Desktop\	146805001	SE_Pause	d:\Users\5231042\Desktop\	168293376	BGM_GameSearch	d:\Users\5231042\Desktop\	197401109	SE_Thaw_Complete	d:\Users\5231042\Desktop\	276443723	BGM_Title	d:\Users\5231042\Desktop\	504277473	SE_Select	d:\Users\5231042\Desktop\	520278521	SE_Freeze	d:\Users\5231042\Desktop\	649418891	SE_Bracelet	d:\Users\5231042\Desktop\	662532748	SE_RightFoot	d:\Users\5231042\Desktop\	664212180	SE_Thawing3	d:\Users\5231042\Desktop\	700210698	SE_Thawing2	d:\Users\5231042\Desktop\	737176884	SE_Thawing1	d:\Users\5231042\Desktop\	1043048754	BGM_GameChase	d:\Users\5231042\Desktop\	1050200881	SE_Back	d:\Users\5231042\Desktop\

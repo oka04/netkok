@@ -16,6 +16,7 @@ namespace AK
         static const AkUniqueID PLAY_BGM_GAME = 3631763401U;
         static const AkUniqueID PLAY_BGM_TITLE = 379376351U;
         static const AkUniqueID PLAY_SE_BACK = 909875588U;
+        static const AkUniqueID PLAY_SE_BRACELET = 2343202269U;
         static const AkUniqueID PLAY_SE_DECIDE = 2004234489U;
         static const AkUniqueID PLAY_SE_FOOT = 4008746553U;
         static const AkUniqueID PLAY_SE_FREEZE = 678536556U;

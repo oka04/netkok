@@ -18,5 +18,5 @@
   "lightCone": [1.0, 30.0, 50.0],
   "lightRange": 8.0,
   "breathCooldown": 3.0,
-  "breathDuration": 1000
+  "breathDuration": 2500
 }

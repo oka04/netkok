@@ -10,8 +10,8 @@
   "fadeInSpeed": 0.02,
   "minAlpha": 0.3,
   "maxAlpha": 0.7,
-  "particleExistTime": 2000,
-  "particleFadeTime": 1200,
+  "particleExistTime": 2600,
+  "particleFadeTime": 2200,
   "coneAngle": 0.8,
   "gravity": 0.003
 }

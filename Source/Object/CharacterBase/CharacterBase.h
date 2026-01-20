@@ -14,6 +14,8 @@ class Map;
 class CharacterBase
 {
 public:
+	CharacterBase();
+
 	virtual void Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight& light, float deltaTime) = 0;
 	void Draw(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight);
 
@@ -57,10 +59,13 @@ public:
 	virtual uint32_t GetMeltTargetId() const { return 0; }
 	unsigned char GetKeyFlag() const { return m_keyFlag; }
 
+	static const D3DXVECTOR3 UP_DIRECTION;
+	AkPlayingID m_seFootId;
 protected:
 	static const D3DXVECTOR3 DEPTH_DIRECTION;
-	static const D3DXVECTOR3 UP_DIRECTION;
 
+	void CharacterBase::PlayFootstepSound();
+	void CharacterBase::StopFootstepSound();
 	enum KEY_FLAG
 	{
 		W_KEY = 1 << 0,

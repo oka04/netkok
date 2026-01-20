@@ -92,6 +92,11 @@ void CharacterBase::UpdateMatrix(DirectionalLight &light)
 	m_model.SetWorldTransform(&m_matWorld);
 }
 
+CharacterBase::CharacterBase()
+	: m_seFootId(AK_INVALID_PLAYING_ID)
+{
+}
+
 //描画
 void CharacterBase::Draw(Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight)
 {
@@ -190,7 +195,6 @@ void CharacterBase::Input(Engine * pEngine)
 	}
 }
 
-//m_speedを変えてから呼び出す
 void CharacterBase::Move(Map & map)
 {
 	m_direction = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -203,18 +207,64 @@ void CharacterBase::Move(Map & map)
 	//移動キーを入力しているか
 	if (D3DXVec3Length(&m_direction) > 0.0f)
 	{
-		//m_speedだけ呼び出す先のクラスで決める
-
 		D3DXVECTOR3 vector = m_direction * m_speed;
 		vector.y = 0;
 
 		map.MoveCheck(m_position, vector, f_radius);
+
+		// ★★★ 足音再生（ローカルプレイヤーは自分の足音を再生しない）★★★
+		if (!m_bIsLocal)
+		{
+			PlayFootstepSound();
+		}
+	}
+	else
+	{
+		// ★★★ 移動していない場合は足音を停止 ★★★
+		StopFootstepSound();
 	}
 
 	//目の位置の調整
 	m_eyePosition = m_position + ((m_keyFlag & CROUCH_KEY) ? f_crouchEyePosition : f_standEyePosition);
 }
 
+void CharacterBase::PlayFootstepSound()
+{
+	// ★★★ 足音の速度を計算（Patrollerと同じ方式）★★★
+	float footspeedParam = 0.0f;
+
+	if (m_keyFlag & DASH_KEY)
+	{
+		footspeedParam = 1.0f; // ダッシュ時は速く
+	}
+	else if (m_keyFlag & CROUCH_KEY)
+	{
+		footspeedParam = 0.3f; // しゃがみ時は遅く
+	}
+	else
+	{
+		footspeedParam = 0.6f; // 歩行時は中間
+	}
+
+	// ★★★ RTPCで足音の速度を設定 ★★★
+	AK::SoundEngine::SetRTPCValue(AK::GAME_PARAMETERS::FOOTSPEED, footspeedParam, m_clientId);
+
+	// ★★★ まだ足音が再生されていなければ開始 ★★★
+	if (m_seFootId == AK_INVALID_PLAYING_ID)
+	{
+		SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, m_clientId);
+		m_seFootId = SoundManager::Play(AK::EVENTS::PLAY_SE_FOOT, m_clientId);
+	}
+}
+
+void CharacterBase::StopFootstepSound()
+{
+	if (m_seFootId != AK_INVALID_PLAYING_ID)
+	{
+		SoundManager::StopEvent(m_seFootId);
+		m_seFootId = AK_INVALID_PLAYING_ID;
+	}
+}
 void CharacterBase::SetMouseCursor(Engine * pEngine, Camera & camera)
 {
 	POINT move = pEngine->GetMouseMove();

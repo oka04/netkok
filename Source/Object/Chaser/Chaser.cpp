@@ -122,68 +122,70 @@ void Chaser::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 
 void Chaser::UpdateBreathAttack(Engine* pEngine)
 {
-	if (!m_bIsLocal || !m_pIceBreath)
-		return;
+    if (!m_bIsLocal || !m_pIceBreath)
+        return;
 
-	bool isAttackPressed = (m_keyFlag & ATTACK_KEY) != 0;
-	bool isButtonJustPressed = isAttackPressed && !m_bBreathButtonPressed;
-	m_bBreathButtonPressed = isAttackPressed;
+    bool isAttackPressed = (m_keyFlag & ATTACK_KEY) != 0;
+    bool isButtonJustPressed = isAttackPressed && !m_bBreathButtonPressed;
+    m_bBreathButtonPressed = isAttackPressed;
 
-	if (m_bBreathActive)
-	{
-		D3DXVECTOR3 adjustedDirection = m_depth;
+    if (m_bBreathActive)
+    {
+        D3DXVECTOR3 adjustedDirection = m_depth;
 
-		
-		D3DXVECTOR3 rightVec;
-		D3DXVECTOR3 upVec = UP_DIRECTION;
-		D3DXVec3Cross(&rightVec, &upVec, &m_depth);
-		D3DXVec3Normalize(&rightVec, &rightVec);
+        D3DXVECTOR3 rightVec;
+        D3DXVECTOR3 upVec = UP_DIRECTION;
+        D3DXVec3Cross(&rightVec, &upVec, &m_depth);
+        D3DXVec3Normalize(&rightVec, &rightVec);
 
-		//正確な上方向ベクトルを計算
-		D3DXVec3Cross(&upVec, &m_depth, &rightVec);
-		D3DXVec3Normalize(&upVec, &upVec);
+        D3DXVec3Cross(&upVec, &m_depth, &rightVec);
+        D3DXVec3Normalize(&upVec, &upVec);
 
-		D3DXMATRIX matRotation;
-		D3DXMatrixRotationAxis(&matRotation, &rightVec, D3DXToRadian(15.0f));
-		D3DXVec3TransformCoord(&adjustedDirection, &m_depth, &matRotation);
-		D3DXVec3Normalize(&adjustedDirection, &adjustedDirection);
+        D3DXMATRIX matRotation;
+        D3DXMatrixRotationAxis(&matRotation, &rightVec, D3DXToRadian(15.0f));
+        D3DXVec3TransformCoord(&adjustedDirection, &m_depth, &matRotation);
+        D3DXVec3Normalize(&adjustedDirection, &adjustedDirection);
 
-		m_pIceBreath->SetPosition(m_eyePosition);
-		m_pIceBreath->SetDirection(adjustedDirection);
+        m_pIceBreath->SetPosition(m_eyePosition);
+        m_pIceBreath->SetDirection(adjustedDirection);
 
-		m_pIceBreath->Update();
+        m_pIceBreath->Update();
 
-		if (!m_pIceBreath->IsActive())
-		{
-			m_bBreathActive = false;
-			NET_LOG_F("[Chaser] ブレス終了: ID=%u", m_clientId);
-		}
-	}
+        if (!m_pIceBreath->IsActive())
+        {
+            m_bBreathActive = false;
+            
+            NET_LOG_F("[Chaser] ブレス終了: ID=%u", m_clientId);
+        }
+    }
 
-	if (isButtonJustPressed && !m_bBreathActive && CanUseBreath())
-	{
-		D3DXVECTOR3 adjustedDirection = m_depth;
+    if (isButtonJustPressed && !m_bBreathActive && CanUseBreath())
+    {
+        D3DXVECTOR3 adjustedDirection = m_depth;
 
-		D3DXVECTOR3 rightVec;
-		D3DXVec3Cross(&rightVec, &UP_DIRECTION, &m_depth);
-		D3DXVec3Normalize(&rightVec, &rightVec);
+        D3DXVECTOR3 rightVec;
+        D3DXVec3Cross(&rightVec, &UP_DIRECTION, &m_depth);
+        D3DXVec3Normalize(&rightVec, &rightVec);
 
-		D3DXMATRIX matRotation;
-		D3DXMatrixRotationAxis(&matRotation, &rightVec, D3DXToRadian(10.0f));
-		D3DXVec3TransformCoord(&adjustedDirection, &m_depth, &matRotation);
-		D3DXVec3Normalize(&adjustedDirection, &adjustedDirection);
+        D3DXMATRIX matRotation;
+        D3DXMatrixRotationAxis(&matRotation, &rightVec, D3DXToRadian(10.0f));
+        D3DXVec3TransformCoord(&adjustedDirection, &m_depth, &matRotation);
+        D3DXVec3Normalize(&adjustedDirection, &adjustedDirection);
 
-		m_pIceBreath->Activate(m_eyePosition, adjustedDirection);
-		m_bBreathActive = true;
-		m_lastBreathTime = timeGetTime();
+        m_pIceBreath->Activate(m_eyePosition, adjustedDirection);
+        m_bBreathActive = true;
+        m_lastBreathTime = timeGetTime();
 
-		NET_LOG_F("[Chaser] ブレス発動: ID=%u Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
-			m_clientId,
-			m_eyePosition.x, m_eyePosition.y, m_eyePosition.z,
-			adjustedDirection.x, adjustedDirection.y, adjustedDirection.z);
-	}
+        // ★★★ ブレス発動音を再生 ★★★
+        SoundManager::SetPosition(m_eyePosition, m_depth, UP_DIRECTION, m_clientId);
+        SoundManager::Play(AK::EVENTS::PLAY_SE_BRACELET, m_clientId);
+
+        NET_LOG_F("[Chaser] ブレス発動: ID=%u Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
+            m_clientId,
+            m_eyePosition.x, m_eyePosition.y, m_eyePosition.z,
+            adjustedDirection.x, adjustedDirection.y, adjustedDirection.z);
+    }
 }
-
 bool Chaser::CanUseBreath() const
 {
 	DWORD now = timeGetTime();
