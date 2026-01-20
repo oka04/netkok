@@ -41,8 +41,6 @@ void SceneClear::Start()
 	m_buttons.push_back(TITLE_BUTTON);
 	m_buttons.push_back(EXIT_BUTTON);
 
-	SoundManager::Play(AK::EVENTS::PLAY_BGM_CLEAR, ID_BGM);
-
 	m_nowSceneNumber = m_nowSceneData.GetNowScene();
 	Initialize(m_pEngine);
 	m_lastTime = timeGetTime();

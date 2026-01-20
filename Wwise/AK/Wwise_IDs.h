@@ -13,19 +13,41 @@ namespace AK
 {
     namespace EVENTS
     {
-        static const AkUniqueID PLAY_BGM_CLEAR = 1271303026U;
         static const AkUniqueID PLAY_BGM_GAME = 3631763401U;
-        static const AkUniqueID PLAY_BGM_GAMEOVER = 1680657859U;
         static const AkUniqueID PLAY_BGM_TITLE = 379376351U;
-        static const AkUniqueID PLAY_SE_ALERT = 1820465949U;
         static const AkUniqueID PLAY_SE_BACK = 909875588U;
         static const AkUniqueID PLAY_SE_DECIDE = 2004234489U;
         static const AkUniqueID PLAY_SE_FOOT = 4008746553U;
-        static const AkUniqueID PLAY_SE_GAMEOVER = 3570229889U;
+        static const AkUniqueID PLAY_SE_FREEZE = 678536556U;
         static const AkUniqueID PLAY_SE_PAUSE = 1004830121U;
         static const AkUniqueID PLAY_SE_SELECT = 328156833U;
-        static const AkUniqueID PLAY_SE_STICKWALL = 479297711U;
+        static const AkUniqueID PLAY_SE_THAW_COMPLETE = 4167532877U;
+        static const AkUniqueID PLAY_SE_THAWING = 3979858179U;
     } // namespace EVENTS
+
+    namespace STATES
+    {
+        namespace NEW_STATE_GROUP
+        {
+            static const AkUniqueID GROUP = 2012657067U;
+
+            namespace STATE
+            {
+            } // namespace STATE
+        } // namespace NEW_STATE_GROUP
+
+        namespace PLAYERSTATE
+        {
+            static const AkUniqueID GROUP = 3285234865U;
+
+            namespace STATE
+            {
+                static const AkUniqueID FROZEN = 1763750795U;
+                static const AkUniqueID NORMAL = 1160234136U;
+            } // namespace STATE
+        } // namespace PLAYERSTATE
+
+    } // namespace STATES
 
     namespace SWITCHES
     {

@@ -196,3 +196,17 @@ void SoundManager::UnregisterGameObject(AkGameObjectID id)
 {
 	AK::SoundEngine::UnregisterGameObj(id);
 }
+
+void SoundManager::UpdatePlayerState(bool isFrozen)
+{
+	if (isFrozen)
+	{
+		// 全体の音をこもらせる状態にする
+		AK::SoundEngine::SetState(L"PlayerState", L"Frozen");
+	}
+	else
+	{
+		// 通常の状態に戻す
+		AK::SoundEngine::SetState(L"PlayerState", L"Normal");
+	}
+}

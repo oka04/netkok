@@ -30,7 +30,7 @@ public:
 	static void SetPosition(const D3DXVECTOR3& pos, const D3DXVECTOR3& forward, const D3DXVECTOR3& up, AkGameObjectID gameObjectId);
     static void RegisterGameObject(AkGameObjectID id, const char* name);
     static void UnregisterGameObject(AkGameObjectID id);
-
+	static void UpdatePlayerState(bool isFrozen);
 	static const AkGameObjectID ID_LISTENER;
 private:
     static bool s_isInitialized;

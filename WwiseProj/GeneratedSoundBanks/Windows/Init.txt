@@ -1,3 +1,16 @@
+State Group	ID	Name			Wwise Object Path	Notes
+	2012657067	New_State_Group			\Default Work Unit\New_State_Group	
+	3285234865	PlayerState			\Default Work Unit\PlayerState	
+
+State	ID	Name	State Group			Notes
+	0	None	New_State_Group			
+	0	None	PlayerState			
+	1160234136	Normal	PlayerState			
+	1763750795	Frozen	PlayerState			
+
+Custom State	ID	Name	State Group	Owner		Notes
+	255873538	Frozen	PlayerState	\Master-Mixer Hierarchy\Default Work Unit\Master Audio Bus		
+
 Game Parameter	ID	Name			Wwise Object Path	Notes
 	504532776	Brick			\Factory Reflect Acoustic Textures\Textures\Brick	
 	513139656	Mountain			\Factory Reflect Acoustic Textures\Textures\Mountain	

@@ -175,3 +175,13 @@ Network Debug Log
 [13:54:58] [ClientManager] RefreshAvailableServers 完了: 追加=0 スキップ=0 全体=0
 [13:54:58] [SceneSelectClient] リスト更新: 待機中=0 ゲーム中=0
 [13:54:59] [SceneSelectClient] Exit
+[09:12:08] [Map::DrawMap] ライト数: 0 シャドウマップ数: -1
+[09:12:19] [Map::DrawMap] ライト数: 0 シャドウマップ数: -1
+[09:12:22] [Map::DrawMap] ライト数: -1 シャドウマップ数: -1
+[09:12:25] [Map::DrawMap] ライト数: -1 シャドウマップ数: -1
+[09:12:28] [Map::DrawMap] ライト数: -1 シャドウマップ数: -1
+[09:12:31] [Map::DrawMap] ライト数: -1 シャドウマップ数: -1
+[09:12:34] [Map::DrawMap] ライト数: -1 シャドウマップ数: -1
+[09:13:47] [Map::DrawMap] ライト数: 0 シャドウマップ数: -1
+[09:14:53] [Map::DrawMap] ライト数: 0 シャドウマップ数: -1
+[09:15:06] [Map::DrawMap] ライト数: 0 シャドウマップ数: -1
