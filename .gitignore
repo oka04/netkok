@@ -11,7 +11,7 @@ bin/
 obj/
 network_debug.txt
 
-*.bnk
+
 *.wav
 *.mp3
 
