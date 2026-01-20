@@ -100,9 +100,11 @@ void Chaser::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 {
 	m_deltaTime = deltaTime;
 
+	m_soundEvents = 0;
+
 	Input(pEngine);
 	UpdateBreathAttack(pEngine);
-	
+
 	if (!m_bBreathActive)
 	{
 		SetMouseCursor(pEngine, camera);
@@ -112,6 +114,7 @@ void Chaser::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 	else
 	{
 		m_speed = 0.0f;
+		m_soundEvents |= SOUND_BREATH;
 	}
 
 	SetThirdPersonFromBehind(pEngine, camera, map);

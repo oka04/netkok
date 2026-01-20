@@ -42,7 +42,6 @@ SceneGame::~SceneGame()
 
 void SceneGame::Start()
 {
-	m_pEngine->AddFont(FONT_GOTHIC40);
 
 	m_camera.m_vecEye = D3DXVECTOR3(50.0f, 150.0f, 50.0f);
 	m_camera.m_vecAt = D3DXVECTOR3(50.0f, 0.0f, 50.0f);
@@ -78,7 +77,9 @@ void SceneGame::Initialize()
 	m_pEngine->AddTexture(TEXTURE_VICTORY);
 	m_pEngine->AddTexture(TEXTURE_DEFEAT);
 	m_pEngine->AddTexture(TEXTURE_FADE);
+
 	m_pEngine->AddFont(FONT_GOTHIC60);
+	m_pEngine->AddFont(FONT_GOTHIC40);
 
 	m_gameTime = 0.0f;
 	m_bGameEnded = false;
@@ -236,6 +237,8 @@ void SceneGame::Update()
 			break;
 		case Common::SCENE_GAME:
 			m_gameState = IN_GAME;
+			m_pEngine->AddFont(FONT_GOTHIC60);
+			m_pEngine->AddFont(FONT_GOTHIC40);
 			break;
 		default:
 			SoundManager::StopAll(ID_BGM);
@@ -741,6 +744,9 @@ void SceneGame::UpdateRemotePlayers()
 		{
 			kv.second->PredictMovement(m_deltaTime);
 		}
+
+		// ★★★ 音イベント情報を取得 ★★★
+		uint8_t soundEvents = kv.second->GetSoundEvents();
 
 		// ★★★ Patroller方式の3Dサウンド位置更新 ★★★
 		D3DXVECTOR3 remotePos = kv.second->GetPosition();

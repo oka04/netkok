@@ -58,6 +58,10 @@ public:
 
 	virtual uint32_t GetMeltTargetId() const { return 0; }
 	unsigned char GetKeyFlag() const { return m_keyFlag; }
+	uint8_t m_soundEvents;
+	// ★★★ 音イベント管理 ★★★
+	uint8_t GetSoundEvents() const { return m_soundEvents; }
+	void SetSoundEvents(uint8_t events) { m_soundEvents = events; }
 
 	static const D3DXVECTOR3 UP_DIRECTION;
 	AkPlayingID m_seFootId;

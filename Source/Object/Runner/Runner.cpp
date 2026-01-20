@@ -109,17 +109,31 @@ void Runner::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 
 	UpdateFrozenState(deltaTime);
 
+	m_soundEvents = 0;
+
 	if (!m_bFrozen)
 	{
 		Input(pEngine);
 		UpdateStamina(deltaTime);
 		ChangeSpeed();
 		Move(map);
+
+		// ★★★ ローカルプレイヤーの凍結状態を音に反映 ★★★
+		if (m_bIsLocal)
+		{
+			SoundManager::UpdatePlayerState(false);
+		}
 	}
 	else
 	{
 		//凍結中は完全に動けない
 		m_speed = 0.0f;
+
+		// ★★★ ローカルプレイヤーの凍結状態を音に反映 ★★★
+		if (m_bIsLocal)
+		{
+			SoundManager::UpdatePlayerState(true);
+		}
 
 		// 氷ブロックの位置を毎フレーム更新
 		if (m_pIceBlock)

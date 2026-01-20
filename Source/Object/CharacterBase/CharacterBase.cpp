@@ -44,7 +44,7 @@ void CharacterBase::Initialize(Engine *pEngine, std::string filename, Projection
 	m_positionHistoryCount = 0;
 	m_lastUpdateTime = 0;
 	m_timeSinceLastUpdate = 0.0f;
-
+	m_soundEvents = 0;
 	for (int i = 0; i < MAX_POSITION_HISTORY; i++)
 	{
 		m_positionHistory[i] = D3DXVECTOR3(0.0f, 0.0f, 0.0f);

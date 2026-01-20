@@ -13,6 +13,17 @@ enum PlayerRole : uint8_t
 	ROLE_CHASER = 2
 };
 
+// ★★★ 音イベントフラグ ★★★
+enum SoundEventFlags : uint8_t
+{
+	SOUND_NONE = 0,
+	SOUND_FOOTSTEP = 1 << 0,      
+	SOUND_FREEZE = 1 << 1,        
+	SOUND_THAWING = 1 << 2,       
+	SOUND_THAW_COMPLETE = 1 << 3, 
+	SOUND_BREATH = 1 << 4,        
+};
+
 // ★★★ ネットワークメッセージタイプ ★★★
 enum NetMessageType : uint8_t
 {
