@@ -219,70 +219,63 @@ void CharacterBase::Move(Map & map)
 
 		map.MoveCheck(m_position, vector, f_radius);
 
-		// ★★★ 足音フラグを立てる ★★★
+		// ★★★ 足音フラグを立てる（ネットワーク送信用）★★★
 		m_soundEvents |= SOUND_FOOTSTEP;
 
-		// ★★★ 修正: ローカルプレイヤーは足音を再生しない ★★★
-		// （リモートプレイヤーのみUpdateRemotePlayers()で再生）
+		// ★★★ ローカルプレイヤーのみ自分の足音を再生 ★★★
+		if (m_bIsLocal)
+		{
+			PlayFootstepSound();
+		}
 	}
 	else
 	{
 		// ★★★ 足音フラグをクリア ★★★
 		m_soundEvents &= ~SOUND_FOOTSTEP;
 
-		// ★★★ ローカルプレイヤーの足音停止も不要 ★★★
+		// ★★★ ローカルプレイヤーのみ自分の足音を停止 ★★★
+		if (m_bIsLocal)
+		{
+			StopFootstepSound();
+		}
 	}
 
 	m_eyePosition = m_position + ((m_keyFlag & CROUCH_KEY) ? f_crouchEyePosition : f_standEyePosition);
 }
 void CharacterBase::PlayFootstepSound()
 {
-	// ★★★ 足音の速度を計算（Patrollerと同じ方式）★★★
+	// ★★★ ローカルプレイヤー専用の足音再生 ★★★
+	if (!m_bIsLocal) return;
+
 	float footspeedParam = 0.0f;
 
 	if (m_keyFlag & DASH_KEY)
 	{
-		footspeedParam = 1.0f; // ダッシュ時は速く
+		footspeedParam = 1.0f;
 	}
 	else if (m_keyFlag & CROUCH_KEY)
 	{
-		footspeedParam = 0.3f; // しゃがみ時は遅く
+		footspeedParam = 0.3f;
 	}
 	else
 	{
-		footspeedParam = 0.6f; // 歩行時は中間
+		footspeedParam = 0.6f;
 	}
 
-	// ★★★ RTPCで足音の速度を設定 ★★★
 	AK::SoundEngine::SetRTPCValue(AK::GAME_PARAMETERS::FOOTSPEED, footspeedParam, m_clientId);
 
-	// ★★★ まだ足音が再生されていなければ開始 ★★★
 	if (m_seFootId == AK_INVALID_PLAYING_ID)
 	{
 		SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, m_clientId);
-
-		// ★★★ デバッグ: 足音再生前のログ ★★★
-		static std::map<uint32_t, DWORD> lastPlayLog;
-		DWORD now = timeGetTime();
-		if (now - lastPlayLog[m_clientId] > 2000)
-		{
-			NET_LOG_F("[CharacterBase::PlayFootstepSound] ID=%u で足音再生開始 (IsLocal=%s)",
-				m_clientId, m_bIsLocal ? "Yes" : "No");
-			lastPlayLog[m_clientId] = now;
-		}
-
 		m_seFootId = SoundManager::Play(AK::EVENTS::PLAY_SE_FOOT, m_clientId);
-
-		// ★★★ デバッグ: 再生結果の確認 ★★★
-		if (m_seFootId == AK_INVALID_PLAYING_ID)
-		{
-			NET_LOG_F("[CharacterBase::PlayFootstepSound] エラー: ID=%u の足音再生に失敗！", m_clientId);
-		}
 	}
 }
 
 void CharacterBase::StopFootstepSound()
 {
+	// ★★★ ローカルプレイヤー専用の足音停止 ★★★
+	if (!m_bIsLocal) return;
+
 	if (m_seFootId != AK_INVALID_PLAYING_ID)
 	{
 		SoundManager::StopEvent(m_seFootId);
