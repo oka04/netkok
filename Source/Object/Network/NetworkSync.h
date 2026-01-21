@@ -73,6 +73,9 @@ struct NetPlayerState
 
 	uint32_t meltTargetId;
 
+	// ★★★ 追加: 音イベントフラグ ★★★
+	uint8_t soundEvents;
+
 	void SetFirstPerson(bool fp)
 	{
 		if (fp) flags |= 0x01;

@@ -56,8 +56,10 @@ void CharacterBase::Initialize(Engine *pEngine, std::string filename, Projection
 
 void CharacterBase::UpdateMatrix(DirectionalLight &light)
 {
-	// ★★★ 音イベントフラグをクリア（毎フレーム）★★★
-	m_soundEvents = 0;
+	if (m_bIsLocal)
+	{
+		m_soundEvents = 0;
+	}
 
 	float currentAngle = D3DXToRadian(m_hAngle);
 
@@ -208,10 +210,6 @@ void CharacterBase::Move(Map & map)
 
 	// 移動キーを入力しているか
 	float moveLength = D3DXVec3Length(&m_direction);
-	
-	static std::map<uint32_t, DWORD> lastMoveLog;
-	DWORD now = timeGetTime();
-	bool shouldLog = (now - lastMoveLog[m_clientId] > 2000);
 
 	if (moveLength > 0.0f)
 	{
@@ -220,36 +218,24 @@ void CharacterBase::Move(Map & map)
 
 		map.MoveCheck(m_position, vector, f_radius);
 
-		// ★★★ ローカルプレイヤーのみ足音を再生 ★★★
-		// （リモートプレイヤーはUpdateRemotePlayersで再生）
+		// ★★★ 修正: ローカル・リモート共通で足音フラグを立てる ★★★
+		m_soundEvents |= SOUND_FOOTSTEP;
+
+		// ★★★ ローカルプレイヤーのみ直接再生 ★★★
 		if (m_bIsLocal)
 		{
 			PlayFootstepSound();
 		}
-		else
-		{
-			// ★★★ リモートプレイヤーは足音フラグを立てる ★★★
-			m_soundEvents |= SOUND_FOOTSTEP;
-
-			if (shouldLog)
-			{
-				NET_LOG_F("[CharacterBase::Move] ★足音フラグON★ ID=%u moveLength=%.3f KeyFlag=0x%02X",
-					m_clientId, moveLength, m_keyFlag);
-				lastMoveLog[m_clientId] = now;
-			}
-		}
 	}
 	else
 	{
-		// ★★★ ローカルプレイヤーのみ足音を停止 ★★★
+		// ★★★ 足音フラグをクリア ★★★
+		m_soundEvents &= ~SOUND_FOOTSTEP;
+
+		// ★★★ ローカルプレイヤーのみ停止 ★★★
 		if (m_bIsLocal)
 		{
 			StopFootstepSound();
-		}
-		else if (shouldLog)
-		{
-			NET_LOG_F("[CharacterBase::Move] 足音フラグOFF ID=%u (移動なし)", m_clientId);
-			lastMoveLog[m_clientId] = now;
 		}
 	}
 
@@ -437,6 +423,9 @@ NetPlayerState CharacterBase::GetNetState() const
 	state.flags = 0;
 	state.SetFirstPerson(m_bFirstPerson);
 
+	// ★★★ 追加: 音イベントフラグを送信 ★★★
+	state.soundEvents = m_soundEvents;
+
 	// ★★★ ライト情報を初期化（派生クラスで上書き）★★★
 	state.lightPosX = 0.0f;
 	state.lightPosY = 0.0f;
@@ -563,6 +552,9 @@ void CharacterBase::UpdateFromNetwork(const NetPlayerState& state, DirectionalLi
 	m_depth = D3DXVECTOR3(state.depthX, state.depthY, state.depthZ);
 	m_keyFlag = state.keyFlag;
 	m_bFirstPerson = state.IsFirstPerson();
+
+	// ★★★ 追加: 音イベントフラグを受信して設定 ★★★
+	m_soundEvents = state.soundEvents;
 
 	// 目の位置を更新
 	m_eyePosition = m_position + ((m_keyFlag & CROUCH_KEY) ? f_crouchEyePosition : f_standEyePosition);
