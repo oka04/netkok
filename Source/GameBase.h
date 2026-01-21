@@ -44,8 +44,8 @@
 //Ｃ言語でのdefine、構造体などはこちらで宣言します。
 //-----------------------------------------------------------------------------
 
-static constexpr AkGameObjectID ID_BGM = 2;
-static constexpr AkGameObjectID ID_UI = 3;
+static constexpr AkGameObjectID ID_BGM = 12;
+static constexpr AkGameObjectID ID_UI = 13;
 static constexpr AkGameObjectID ID_PALYER = 4;
 static constexpr AkGameObjectID ID_PATROLLER_START = 100;
 
