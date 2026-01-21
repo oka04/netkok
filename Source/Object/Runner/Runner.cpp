@@ -123,6 +123,12 @@ void Runner::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 		{
 			SoundManager::UpdatePlayerState(false);
 		}
+
+		// ★★★ 移動中は足音フラグを立てる ★★★
+		if (D3DXVec3Length(&m_direction) > 0.01f)
+		{
+			m_soundEvents |= SOUND_FOOTSTEP;
+		}
 	}
 	else
 	{

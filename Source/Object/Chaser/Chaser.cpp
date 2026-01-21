@@ -122,7 +122,6 @@ void Chaser::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 	UpdateLightMatrices();
 	UpdateMatrix(light);
 }
-
 void Chaser::UpdateBreathAttack(Engine* pEngine)
 {
     if (!m_bIsLocal || !m_pIceBreath)

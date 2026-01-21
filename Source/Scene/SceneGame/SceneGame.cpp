@@ -735,6 +735,9 @@ void SceneGame::UpdateRemotePlayers()
 	DWORD now = timeGetTime();
 	bool shouldLog = (now - lastLog > 5000);
 
+	// ★★★ 各プレイヤーの音再生状態を管理するマップ ★★★
+	static std::map<uint32_t, AkPlayingID> footstepSounds;
+
 	for (auto& kv : m_players)
 	{
 		if (!kv.second || kv.second->IsLocal())
@@ -751,9 +754,65 @@ void SceneGame::UpdateRemotePlayers()
 		// ★★★ Patroller方式の3Dサウンド位置更新 ★★★
 		D3DXVECTOR3 remotePos = kv.second->GetPosition();
 		D3DXVECTOR3 remoteDir = kv.second->GetDepth();
-			
+
 		// ★★★ 3D位置を常に更新（Patroller::UpdateSoundと同じ方式）★★★
 		SoundManager::SetPosition(remotePos, remoteDir, CharacterBase::UP_DIRECTION, kv.first);
+
+		// ★★★ 足音の再生制御 ★★★
+		if (soundEvents & SOUND_FOOTSTEP)
+		{
+			// 足音が鳴っているべき状態
+			if (footstepSounds[kv.first] == AK_INVALID_PLAYING_ID)
+			{
+				// まだ再生していないので開始
+				footstepSounds[kv.first] = SoundManager::Play(AK::EVENTS::PLAY_SE_FOOT, kv.first);
+
+				// Runnerの場合はRTPCを設定
+				if (m_playerRoles[kv.first] == ROLE_RUNNER)
+				{
+					Runner* runner = dynamic_cast<Runner*>(kv.second);
+					if (runner)
+					{
+						float footspeedParam = 0.6f; // デフォルト歩行速度
+						unsigned char keyFlag = runner->GetKeyFlag();
+
+						if (keyFlag & 0x20) // DASH_KEY
+							footspeedParam = 1.0f;
+						else if (keyFlag & 0x10) // CROUCH_KEY
+							footspeedParam = 0.3f;
+
+						AK::SoundEngine::SetRTPCValue(AK::GAME_PARAMETERS::FOOTSPEED, footspeedParam, kv.first);
+					}
+				}
+			}
+		}
+		else
+		{
+			// 足音を止めるべき状態
+			if (footstepSounds[kv.first] != AK_INVALID_PLAYING_ID)
+			{
+				SoundManager::StopEvent(footstepSounds[kv.first]);
+				footstepSounds[kv.first] = AK_INVALID_PLAYING_ID;
+			}
+		}
+
+		// ★★★ 凍結音の再生 ★★★
+		if (soundEvents & SOUND_FREEZE)
+		{
+			SoundManager::Play(AK::EVENTS::PLAY_SE_FREEZE, kv.first);
+		}
+
+		// ★★★ 解凍完了音の再生 ★★★
+		if (soundEvents & SOUND_THAW_COMPLETE)
+		{
+			SoundManager::Play(AK::EVENTS::PLAY_SE_THAW_COMPLETE, kv.first);
+		}
+
+		// ★★★ ブレス音の再生（鬼の場合）★★★
+		if (soundEvents & SOUND_BREATH)
+		{
+			// ブレス音は継続的なので、IceBreath側で管理
+		}
 
 		// ★★★ 足音の聞こえ方制御（Patrollerの遮蔽/遮音と同じロジック）★★★
 		if (m_pLocalPlayer)
