@@ -109,6 +109,7 @@ void Runner::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 
 	UpdateFrozenState(deltaTime);
 
+	// ★★★ 音イベントフラグをクリア ★★★
 	m_soundEvents = 0;
 
 	if (!m_bFrozen)
@@ -124,15 +125,28 @@ void Runner::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 			SoundManager::UpdatePlayerState(false);
 		}
 
+		// ★★★ 移動方向ベクトルの長さで判定 ★★★
+		float moveLength = D3DXVec3Length(&m_direction);
+
+		// ★★★ デバッグ: 移動状態のログ ★★★
+		static std::map<uint32_t, DWORD> lastMoveLog;
+		DWORD now = timeGetTime();
+		if (now - lastMoveLog[m_clientId] > 2000)
+		{
+			NET_LOG_F("[Runner::Update] ID=%u 移動判定: moveLength=%.3f KeyFlag=0x%02X IsLocal=%s",
+				m_clientId, moveLength, m_keyFlag, m_bIsLocal ? "Yes" : "No");
+			lastMoveLog[m_clientId] = now;
+		}
+
 		// ★★★ 移動中は足音フラグを立てる ★★★
-		if (D3DXVec3Length(&m_direction) > 0.01f)
+		if (moveLength > 0.01f)
 		{
 			m_soundEvents |= SOUND_FOOTSTEP;
 		}
 	}
 	else
 	{
-		//凍結中は完全に動けない
+		// 凍結中は完全に動けない
 		m_speed = 0.0f;
 
 		// ★★★ ローカルプレイヤーの凍結状態を音に反映 ★★★

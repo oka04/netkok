@@ -253,7 +253,24 @@ void CharacterBase::PlayFootstepSound()
 	if (m_seFootId == AK_INVALID_PLAYING_ID)
 	{
 		SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, m_clientId);
+
+		// ★★★ デバッグ: 足音再生前のログ ★★★
+		static std::map<uint32_t, DWORD> lastPlayLog;
+		DWORD now = timeGetTime();
+		if (now - lastPlayLog[m_clientId] > 2000)
+		{
+			NET_LOG_F("[CharacterBase::PlayFootstepSound] ID=%u で足音再生開始 (IsLocal=%s)",
+				m_clientId, m_bIsLocal ? "Yes" : "No");
+			lastPlayLog[m_clientId] = now;
+		}
+
 		m_seFootId = SoundManager::Play(AK::EVENTS::PLAY_SE_FOOT, m_clientId);
+
+		// ★★★ デバッグ: 再生結果の確認 ★★★
+		if (m_seFootId == AK_INVALID_PLAYING_ID)
+		{
+			NET_LOG_F("[CharacterBase::PlayFootstepSound] エラー: ID=%u の足音再生に失敗！", m_clientId);
+		}
 	}
 }
 

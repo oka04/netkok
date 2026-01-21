@@ -100,6 +100,7 @@ void Chaser::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 {
 	m_deltaTime = deltaTime;
 
+	// ★★★ 音イベントフラグをクリア ★★★
 	m_soundEvents = 0;
 
 	Input(pEngine);
@@ -110,6 +111,25 @@ void Chaser::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 		SetMouseCursor(pEngine, camera);
 		m_speed = f_walkSpeed * m_deltaTime;
 		Move(map);
+
+		// ★★★ 移動方向ベクトルの長さで判定 ★★★
+		float moveLength = D3DXVec3Length(&m_direction);
+
+		// ★★★ デバッグ: 移動状態のログ ★★★
+		static std::map<uint32_t, DWORD> lastMoveLog;
+		DWORD now = timeGetTime();
+		if (now - lastMoveLog[m_clientId] > 2000)
+		{
+			NET_LOG_F("[Chaser::Update] ID=%u 移動判定: moveLength=%.3f KeyFlag=0x%02X IsLocal=%s",
+				m_clientId, moveLength, m_keyFlag, m_bIsLocal ? "Yes" : "No");
+			lastMoveLog[m_clientId] = now;
+		}
+
+		// ★★★ 移動中は足音フラグを立てる ★★★
+		if (moveLength > 0.01f)
+		{
+			m_soundEvents |= SOUND_FOOTSTEP;
+		}
 	}
 	else
 	{
