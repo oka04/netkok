@@ -752,11 +752,6 @@ void SceneGame::UpdateRemotePlayers()
 		D3DXVECTOR3 remoteDir = pRemote->GetDepth();
 		SoundManager::SetPosition(remotePos, remoteDir, CharacterBase::UP_DIRECTION, remoteId);
 
-		// ★★★ 移動判定 ★★★
-		D3DXVECTOR3 direction = pRemote->GetDirection();
-		float moveLength = D3DXVec3Length(&direction);
-		bool isMoving = (moveLength > 0.01f);
-
 		// ★★★ Runnerの場合は凍結チェック ★★★
 		bool isFrozen = false;
 		if (m_playerRoles[remoteId] == ROLE_RUNNER)
@@ -768,8 +763,11 @@ void SceneGame::UpdateRemotePlayers()
 			}
 		}
 
-		// ★★★ 足音の制御 ★★★
-		if (isMoving && !isFrozen)
+		// ★★★ 音イベントフラグに基づいて音を再生 ★★★
+		uint8_t soundEvents = pRemote->GetSoundEvents();
+
+		// ★★★ 足音処理 ★★★
+		if ((soundEvents & SOUND_FOOTSTEP) && !isFrozen)
 		{
 			// ★★★ 足音速度の計算 ★★★
 			float footspeedParam = 0.6f;
@@ -787,20 +785,39 @@ void SceneGame::UpdateRemotePlayers()
 			{
 				pRemote->m_seFootId = SoundManager::Play(AK::EVENTS::PLAY_SE_FOOT, remoteId);
 
-				NET_LOG_F("[UpdateRemotePlayers] ★足音開始★ ID=%u PlayingID=%u Speed=%.2f",
-					remoteId, pRemote->m_seFootId, footspeedParam);
+				if (shouldLog)
+				{
+					NET_LOG_F("[UpdateRemotePlayers] ★足音開始★ ID=%u PlayingID=%u Speed=%.2f",
+						remoteId, pRemote->m_seFootId, footspeedParam);
+				}
 			}
 		}
 		else
 		{
-			// ★★★ 移動していない or 凍結中は足音停止 ★★★
+			// ★★★ 足音停止 ★★★
 			if (pRemote->m_seFootId != AK_INVALID_PLAYING_ID)
 			{
 				SoundManager::StopEvent(pRemote->m_seFootId);
 				pRemote->m_seFootId = AK_INVALID_PLAYING_ID;
 
-				NET_LOG_F("[UpdateRemotePlayers] ★足音停止★ ID=%u (Moving=%s Frozen=%s)",
-					remoteId, isMoving ? "Yes" : "No", isFrozen ? "Yes" : "No");
+				if (shouldLog)
+				{
+					NET_LOG_F("[UpdateRemotePlayers] ★足音停止★ ID=%u (Frozen=%s)",
+						remoteId, isFrozen ? "Yes" : "No");
+				}
+			}
+		}
+
+		// ★★★ ブレス音処理（鬼のみ）★★★
+		if (m_playerRoles[remoteId] == ROLE_CHASER)
+		{
+			Chaser* chaser = dynamic_cast<Chaser*>(pRemote);
+			if (chaser)
+			{
+				bool isBreathing = chaser->IsBreathing();
+
+				// ★★★ ブレス音は別途管理が必要な場合はここで処理 ★★★
+				// 現在はUpdateBreathAttack()内で再生しているため、追加処理不要
 			}
 		}
 
@@ -862,21 +879,19 @@ void SceneGame::UpdateRemotePlayers()
 	if (shouldLog)
 	{
 		int totalRemote = 0;
-		int movingCount = 0;
-		int soundingCount = 0;
+		int footstepCount = 0;
 
 		for (auto& kv : m_players)
 		{
 			if (!kv.second || kv.second->IsLocal()) continue;
 			totalRemote++;
 
-			D3DXVECTOR3 dir = kv.second->GetDirection();
-			if (D3DXVec3Length(&dir) > 0.01f) movingCount++;
-			if (kv.second->m_seFootId != AK_INVALID_PLAYING_ID) soundingCount++;
+			uint8_t soundEvents = kv.second->GetSoundEvents();
+			if (soundEvents & SOUND_FOOTSTEP) footstepCount++;
 		}
 
-		NET_LOG_F("[UpdateRemotePlayers] ★状況★ Total=%d Moving=%d Sounding=%d",
-			totalRemote, movingCount, soundingCount);
+		NET_LOG_F("[UpdateRemotePlayers] ★状況★ Total=%d Footstep=%d",
+			totalRemote, footstepCount);
 		lastLog = now;
 	}
 }

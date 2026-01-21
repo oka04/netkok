@@ -54,9 +54,11 @@ void CharacterBase::Initialize(Engine *pEngine, std::string filename, Projection
 	UpdateMatrix(light);
 }
 
-//更新
 void CharacterBase::UpdateMatrix(DirectionalLight &light)
 {
+	// ★★★ 音イベントフラグをクリア（毎フレーム）★★★
+	m_soundEvents = 0;
+
 	float currentAngle = D3DXToRadian(m_hAngle);
 
 	D3DXVECTOR3 baseDirection;
@@ -217,6 +219,11 @@ void CharacterBase::Move(Map & map)
 		if (m_bIsLocal)
 		{
 			PlayFootstepSound();
+		}
+		else
+		{
+			// ★★★ リモートプレイヤーは足音フラグを立てる ★★★
+			m_soundEvents |= SOUND_FOOTSTEP;
 		}
 	}
 	else
