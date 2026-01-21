@@ -207,7 +207,13 @@ void CharacterBase::Move(Map & map)
 	D3DXVec3Normalize(&m_direction, &m_direction);
 
 	// 移動キーを入力しているか
-	if (D3DXVec3Length(&m_direction) > 0.0f)
+	float moveLength = D3DXVec3Length(&m_direction);
+	
+	static std::map<uint32_t, DWORD> lastMoveLog;
+	DWORD now = timeGetTime();
+	bool shouldLog = (now - lastMoveLog[m_clientId] > 2000);
+
+	if (moveLength > 0.0f)
 	{
 		D3DXVECTOR3 vector = m_direction * m_speed;
 		vector.y = 0;
@@ -224,6 +230,13 @@ void CharacterBase::Move(Map & map)
 		{
 			// ★★★ リモートプレイヤーは足音フラグを立てる ★★★
 			m_soundEvents |= SOUND_FOOTSTEP;
+
+			if (shouldLog)
+			{
+				NET_LOG_F("[CharacterBase::Move] ★足音フラグON★ ID=%u moveLength=%.3f KeyFlag=0x%02X",
+					m_clientId, moveLength, m_keyFlag);
+				lastMoveLog[m_clientId] = now;
+			}
 		}
 	}
 	else
@@ -233,12 +246,16 @@ void CharacterBase::Move(Map & map)
 		{
 			StopFootstepSound();
 		}
+		else if (shouldLog)
+		{
+			NET_LOG_F("[CharacterBase::Move] 足音フラグOFF ID=%u (移動なし)", m_clientId);
+			lastMoveLog[m_clientId] = now;
+		}
 	}
 
 	// 目の位置の調整
 	m_eyePosition = m_position + ((m_keyFlag & CROUCH_KEY) ? f_crouchEyePosition : f_standEyePosition);
 }
-
 void CharacterBase::PlayFootstepSound()
 {
 	// ★★★ 足音の速度を計算（Patrollerと同じ方式）★★★

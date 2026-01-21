@@ -732,7 +732,7 @@ void SceneGame::UpdateRemotePlayers()
 {
 	static DWORD lastLog = 0;
 	DWORD now = timeGetTime();
-	bool shouldLog = (now - lastLog > 5000);
+	bool shouldLog = (now - lastLog > 2000); // 2秒ごとにログ
 
 	for (auto& kv : m_players)
 	{
@@ -766,6 +766,22 @@ void SceneGame::UpdateRemotePlayers()
 		// ★★★ 音イベントフラグに基づいて音を再生 ★★★
 		uint8_t soundEvents = pRemote->GetSoundEvents();
 
+		// ★★★ デバッグ: 毎フレーム詳細ログ ★★★
+		if (shouldLog)
+		{
+			NET_LOG_F("[UpdateRemotePlayers] ========== Player[%u] ==========", remoteId);
+			NET_LOG_F("  Position: (%.1f, %.1f, %.1f)", remotePos.x, remotePos.y, remotePos.z);
+			NET_LOG_F("  Direction: (%.2f, %.2f, %.2f)", remoteDir.x, remoteDir.y, remoteDir.z);
+			NET_LOG_F("  SoundEvents: 0x%02X (FOOTSTEP=%s, BREATH=%s, FREEZE=%s)",
+				soundEvents,
+				(soundEvents & SOUND_FOOTSTEP) ? "ON" : "OFF",
+				(soundEvents & SOUND_BREATH) ? "ON" : "OFF",
+				(soundEvents & SOUND_FREEZE) ? "ON" : "OFF");
+			NET_LOG_F("  KeyFlag: 0x%02X", pRemote->GetKeyFlag());
+			NET_LOG_F("  IsFrozen: %s", isFrozen ? "Yes" : "No");
+			NET_LOG_F("  Current PlayingID: %u", pRemote->m_seFootId);
+		}
+
 		// ★★★ 足音処理 ★★★
 		if ((soundEvents & SOUND_FOOTSTEP) && !isFrozen)
 		{
@@ -783,13 +799,31 @@ void SceneGame::UpdateRemotePlayers()
 			// ★★★ 足音が再生されていなければ開始 ★★★
 			if (pRemote->m_seFootId == AK_INVALID_PLAYING_ID)
 			{
+				NET_LOG_F("[UpdateRemotePlayers] ★★★ 足音再生開始 ★★★");
+				NET_LOG_F("  Player ID: %u", remoteId);
+				NET_LOG_F("  Position: (%.1f, %.1f, %.1f)", remotePos.x, remotePos.y, remotePos.z);
+				NET_LOG_F("  Speed Param: %.2f", footspeedParam);
+
+				// ★★★ 位置を設定してから再生 ★★★
+				SoundManager::SetPosition(remotePos, remoteDir, CharacterBase::UP_DIRECTION, remoteId);
+
 				pRemote->m_seFootId = SoundManager::Play(AK::EVENTS::PLAY_SE_FOOT, remoteId);
 
-				if (shouldLog)
+				NET_LOG_F("  Result PlayingID: %u", pRemote->m_seFootId);
+
+				if (pRemote->m_seFootId == AK_INVALID_PLAYING_ID)
 				{
-					NET_LOG_F("[UpdateRemotePlayers] ★足音開始★ ID=%u PlayingID=%u Speed=%.2f",
-						remoteId, pRemote->m_seFootId, footspeedParam);
+					NET_LOG_F("  ★★★ エラー: 足音再生に失敗！ ★★★");
 				}
+				else
+				{
+					NET_LOG_F("  ★成功: 足音再生開始★");
+				}
+			}
+			else if (shouldLog)
+			{
+				NET_LOG_F("[UpdateRemotePlayers] Player[%u] 足音継続中: PlayingID=%u Speed=%.2f",
+					remoteId, pRemote->m_seFootId, footspeedParam);
 			}
 		}
 		else
@@ -797,14 +831,12 @@ void SceneGame::UpdateRemotePlayers()
 			// ★★★ 足音停止 ★★★
 			if (pRemote->m_seFootId != AK_INVALID_PLAYING_ID)
 			{
+				NET_LOG_F("[UpdateRemotePlayers] ★足音停止★ Player[%u] PlayingID=%u (Reason: %s)",
+					remoteId, pRemote->m_seFootId,
+					isFrozen ? "Frozen" : "Not Moving");
+
 				SoundManager::StopEvent(pRemote->m_seFootId);
 				pRemote->m_seFootId = AK_INVALID_PLAYING_ID;
-
-				if (shouldLog)
-				{
-					NET_LOG_F("[UpdateRemotePlayers] ★足音停止★ ID=%u (Frozen=%s)",
-						remoteId, isFrozen ? "Yes" : "No");
-				}
 			}
 		}
 
@@ -816,8 +848,13 @@ void SceneGame::UpdateRemotePlayers()
 			{
 				bool isBreathing = chaser->IsBreathing();
 
-				// ★★★ ブレス音は別途管理が必要な場合はここで処理 ★★★
-				// 現在はUpdateBreathAttack()内で再生しているため、追加処理不要
+				if (shouldLog)
+				{
+					NET_LOG_F("[UpdateRemotePlayers] Chaser[%u] IsBreathing=%s",
+						remoteId, isBreathing ? "Yes" : "No");
+				}
+
+				// ★★★ ブレス音はUpdateBreathAttack()で再生済み ★★★
 			}
 		}
 
@@ -845,6 +882,12 @@ void SceneGame::UpdateRemotePlayers()
 				min(obstruction, 1.0f),
 				min(occlusion, 1.0f)
 			);
+
+			if (shouldLog)
+			{
+				NET_LOG_F("  Occlusion: Dist=%.1f Blocked=%s Obst=%.2f Occl=%.2f",
+					dist, blocked ? "Yes" : "No", obstruction, occlusion);
+			}
 		}
 
 		// ★★★ ライト処理（既存） ★★★
@@ -878,8 +921,12 @@ void SceneGame::UpdateRemotePlayers()
 
 	if (shouldLog)
 	{
+		NET_LOG_F("[UpdateRemotePlayers] ========================================");
+		NET_LOG_F("[UpdateRemotePlayers] サマリー:");
+
 		int totalRemote = 0;
-		int footstepCount = 0;
+		int footstepFlagCount = 0;
+		int playingCount = 0;
 
 		for (auto& kv : m_players)
 		{
@@ -887,15 +934,18 @@ void SceneGame::UpdateRemotePlayers()
 			totalRemote++;
 
 			uint8_t soundEvents = kv.second->GetSoundEvents();
-			if (soundEvents & SOUND_FOOTSTEP) footstepCount++;
+			if (soundEvents & SOUND_FOOTSTEP) footstepFlagCount++;
+			if (kv.second->m_seFootId != AK_INVALID_PLAYING_ID) playingCount++;
 		}
 
-		NET_LOG_F("[UpdateRemotePlayers] ★状況★ Total=%d Footstep=%d",
-			totalRemote, footstepCount);
+		NET_LOG_F("  Total Remote: %d", totalRemote);
+		NET_LOG_F("  Footstep Flag ON: %d", footstepFlagCount);
+		NET_LOG_F("  Actually Playing: %d", playingCount);
+		NET_LOG_F("[UpdateRemotePlayers] ========================================");
+
 		lastLog = now;
 	}
 }
-
 
 void SceneGame::CheckBreathHitPlayers()
 {
@@ -1400,181 +1450,205 @@ void SceneGame::RenderShadowMaps()
 }
 
 void SceneGame::UpdateChaserLights()
-{
-	m_chaserLights.clear();
-
-	static DWORD lastLog = 0;
-	DWORD now = timeGetTime();
-
-	if (m_pLocalPlayer && m_localRole == ROLE_CHASER)
 	{
-		Chaser* localChaser = dynamic_cast<Chaser*>(m_pLocalPlayer);
-		if (localChaser && localChaser->IsShadowMapEnabled())
-		{
-			SpotLight* light = localChaser->GetLights();
-			if (light)
-			{
-				m_chaserLights.push_back(light);
+		m_chaserLights.clear();
 
-				if (now - lastLog > 3000)
+		static DWORD lastLog = 0;
+		DWORD now = timeGetTime();
+
+		if (m_pLocalPlayer && m_localRole == ROLE_CHASER)
+		{
+			Chaser* localChaser = dynamic_cast<Chaser*>(m_pLocalPlayer);
+			if (localChaser && localChaser->IsShadowMapEnabled())
+			{
+				SpotLight* light = localChaser->GetLights();
+				if (light)
 				{
-					const D3DLIGHT9& l = light->GetLight();
-					NET_LOG_F("[UpdateChaserLights] ローカル鬼追加: ID=%u LightIndex=%d Pos=(%.1f,%.1f,%.1f)",
-						m_localClientId, (int)m_chaserLights.size() - 1,
-						l.Position.x, l.Position.y, l.Position.z);
+					m_chaserLights.push_back(light);
+
+					if (now - lastLog > 3000)
+					{
+						const D3DLIGHT9& l = light->GetLight();
+						NET_LOG_F("[UpdateChaserLights] ローカル鬼追加: ID=%u LightIndex=%d Pos=(%.1f,%.1f,%.1f)",
+							m_localClientId, (int)m_chaserLights.size() - 1,
+							l.Position.x, l.Position.y, l.Position.z);
+					}
 				}
 			}
 		}
-	}
 
-	for (auto& kv : m_players)
-	{
-		if (kv.first == m_localClientId)
-			continue;
-
-		if (!kv.second)
-			continue;
-
-		auto roleIt = m_playerRoles.find(kv.first);
-		if (roleIt == m_playerRoles.end() || roleIt->second != ROLE_CHASER)
-			continue;
-
-		Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
-		if (chaser && chaser->IsShadowMapEnabled())
+		for (auto& kv : m_players)
 		{
-			SpotLight* light = chaser->GetLights();
-			if (light)
-			{
-				m_chaserLights.push_back(light);
+			if (kv.first == m_localClientId)
+				continue;
 
-				if (now - lastLog > 3000)
+			if (!kv.second)
+				continue;
+
+			auto roleIt = m_playerRoles.find(kv.first);
+			if (roleIt == m_playerRoles.end() || roleIt->second != ROLE_CHASER)
+				continue;
+
+			Chaser* chaser = dynamic_cast<Chaser*>(kv.second);
+			if (chaser && chaser->IsShadowMapEnabled())
+			{
+				SpotLight* light = chaser->GetLights();
+				if (light)
 				{
-					const D3DLIGHT9& l = light->GetLight();
-					NET_LOG_F("[UpdateChaserLights] リモート鬼追加: ID=%u LightIndex=%d Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
-						kv.first, (int)m_chaserLights.size() - 1,
-						l.Position.x, l.Position.y, l.Position.z,
-						l.Direction.x, l.Direction.y, l.Direction.z);
+					m_chaserLights.push_back(light);
+
+					if (now - lastLog > 3000)
+					{
+						const D3DLIGHT9& l = light->GetLight();
+						NET_LOG_F("[UpdateChaserLights] リモート鬼追加: ID=%u LightIndex=%d Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
+							kv.first, (int)m_chaserLights.size() - 1,
+							l.Position.x, l.Position.y, l.Position.z,
+							l.Direction.x, l.Direction.y, l.Direction.z);
+					}
 				}
 			}
 		}
-	}
 
-	if (now - lastLog > 3000)
-	{
-		NET_LOG_F("[UpdateChaserLights] ライト収集完了: %d 個", (int)m_chaserLights.size());
-		lastLog = now;
+		if (now - lastLog > 3000)
+		{
+			NET_LOG_F("[UpdateChaserLights] ライト収集完了: %d 個", (int)m_chaserLights.size());
+			lastLog = now;
+		}
 	}
-}
 
 void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name,
-	const D3DXVECTOR3& pos, PlayerRole role)
-{
-	if (m_players.find(clientId) != m_players.end())
+		const D3DXVECTOR3& pos, PlayerRole role)
 	{
-		NET_LOG_F("[SceneGame] プレイヤー %u は既に存在 - スキップ", clientId);
-		return;
-	}
+		if (m_players.find(clientId) != m_players.end())
+		{
+			NET_LOG_F("[SceneGame] プレイヤー %u は既に存在 - スキップ", clientId);
+			return;
+		}
 
-	NET_LOG_F("========================================");
-	NET_LOG_F("[SceneGame] ★プレイヤー生成開始★ ID=%u Name=%s Role=%s",
-		clientId, name.c_str(), (role == ROLE_CHASER) ? "鬼" : "逃げる側");
+		NET_LOG_F("========================================");
+		NET_LOG_F("[SceneGame] ★プレイヤー生成開始★ ID=%u Name=%s Role=%s",
+			clientId, name.c_str(), (role == ROLE_CHASER) ? "鬼" : "逃げる側");
 
-	CharacterBase* p = nullptr;
+		CharacterBase* p = nullptr;
 
-	if (role == ROLE_RUNNER)
-	{
-		p = new Runner();
-	}
-	else if (role == ROLE_CHASER)
-	{
-		p = new Chaser();
-	}
-	else
-	{
-		p = new Runner();
-	}
-
-	bool isLocal = (clientId == m_localClientId);
-
-	D3DXVECTOR3 spawnPos = (pos.x == 0.0f && pos.y == 0.0f && pos.z == 0.0f)
-		? m_map.GetPlayerStartPosition() : pos;
-
-	// ★★★ ステップ1: Wwiseに登録 ★★★
-	const char* objName = (role == ROLE_CHASER) ? "Chaser" : "Runner";
-	SoundManager::RegisterGameObject(clientId, objName);
-	NET_LOG_F("[SceneGame] ステップ1: Wwise登録 ID=%u Name=%s", clientId, objName);
-
-	// ★★★ ステップ2: Initialize()呼び出し ★★★
-	if (isLocal)
-	{
 		if (role == ROLE_RUNNER)
 		{
-			((Runner*)p)->Initialize(m_pEngine, m_map, &m_projection, m_camera, m_light);
+			p = new Runner();
+		}
+		else if (role == ROLE_CHASER)
+		{
+			p = new Chaser();
 		}
 		else
 		{
-			((Chaser*)p)->Initialize(m_pEngine, m_map, &m_projection, m_camera, m_light);
+			p = new Runner();
 		}
-		m_pLocalPlayer = p;
-		NET_LOG_F("[SceneGame] ステップ2: ローカル初期化完了");
-	}
-	else
-	{
-		if (role == ROLE_RUNNER)
+
+		bool isLocal = (clientId == m_localClientId);
+
+		D3DXVECTOR3 spawnPos = (pos.x == 0.0f && pos.y == 0.0f && pos.z == 0.0f)
+			? m_map.GetPlayerStartPosition() : pos;
+
+		// ★★★ ステップ1: Wwiseに登録 ★★★
+		const char* objName = (role == ROLE_CHASER) ? "Chaser" : "Runner";
+
+		NET_LOG_F("[SceneGame] ステップ1: Wwise登録開始");
+		NET_LOG_F("  Client ID: %u", clientId);
+		NET_LOG_F("  Object Name: %s", objName);
+
+		SoundManager::RegisterGameObject(clientId, objName);
+
+		NET_LOG_F("[SceneGame] ステップ1完了: Wwise登録完了");
+
+		// ★★★ ステップ2: Initialize()呼び出し ★★★
+		NET_LOG_F("[SceneGame] ステップ2: Initialize開始 (IsLocal=%s)", isLocal ? "Yes" : "No");
+
+		if (isLocal)
 		{
-			((Runner*)p)->InitializeAtPosition(m_pEngine, spawnPos, &m_projection,
-				m_camera, m_light);
+			if (role == ROLE_RUNNER)
+			{
+				((Runner*)p)->Initialize(m_pEngine, m_map, &m_projection, m_camera, m_light);
+			}
+			else
+			{
+				((Chaser*)p)->Initialize(m_pEngine, m_map, &m_projection, m_camera, m_light);
+			}
+			m_pLocalPlayer = p;
+			NET_LOG_F("[SceneGame] ステップ2完了: ローカル初期化完了");
 		}
 		else
 		{
-			((Chaser*)p)->InitializeAtPosition(m_pEngine, spawnPos, &m_projection,
-				m_camera, m_light);
+			if (role == ROLE_RUNNER)
+			{
+				((Runner*)p)->InitializeAtPosition(m_pEngine, spawnPos, &m_projection,
+					m_camera, m_light);
+			}
+			else
+			{
+				((Chaser*)p)->InitializeAtPosition(m_pEngine, spawnPos, &m_projection,
+					m_camera, m_light);
+			}
+			NET_LOG_F("[SceneGame] ステップ2完了: リモート初期化完了");
 		}
-		NET_LOG_F("[SceneGame] ステップ2: リモート初期化完了");
-	}
 
-	// ★★★ ステップ3: ID設定 ★★★
-	p->SetIsLocal(isLocal);
-	p->SetClientId(clientId);
-	p->SetCharacterName(name);
-	p->SetPosition(spawnPos);
-	NET_LOG_F("[SceneGame] ステップ3: ID設定完了 GetClientId()=%u", p->GetClientId());
+		// ★★★ ステップ3: ID設定 ★★★
+		NET_LOG_F("[SceneGame] ステップ3: ID設定開始");
 
-	// ★★★ ステップ4: マップに登録 ★★★
-	m_players[clientId] = p;
-	m_playerRoles[clientId] = role;
-	NET_LOG_F("[SceneGame] ステップ4: マップ登録完了");
+		p->SetIsLocal(isLocal);
+		p->SetClientId(clientId);
+		p->SetCharacterName(name);
+		p->SetPosition(spawnPos);
 
-	// ★★★ ステップ5: テスト音再生 ★★★
-	if (!isLocal)
-	{
-		NET_LOG_F("[SceneGame] ステップ5: テスト音再生開始 ID=%u", clientId);
+		NET_LOG_F("[SceneGame] ステップ3完了: ID設定完了 GetClientId()=%u", p->GetClientId());
 
-		// 3D位置設定
-		SoundManager::SetPosition(spawnPos, D3DXVECTOR3(0, 0, -1), D3DXVECTOR3(0, 1, 0), clientId);
+		// ★★★ ステップ4: マップに登録 ★★★
+		m_players[clientId] = p;
+		m_playerRoles[clientId] = role;
+		NET_LOG_F("[SceneGame] ステップ4完了: マップ登録完了");
 
-		// テスト音再生（凍結音）
-		AkPlayingID testId = SoundManager::Play(AK::EVENTS::PLAY_SE_FREEZE, clientId);
-		NET_LOG_F("[SceneGame] テスト音再生結果: PlayingID=%u", testId);
-
-		if (testId == AK_INVALID_PLAYING_ID)
+		// ★★★ ステップ5: リモートプレイヤーの場合、テスト音再生 ★★★
+		if (!isLocal)
 		{
-			NET_LOG_F("[SceneGame] ★★★エラー★★★ ID=%u のテスト音再生に失敗！", clientId);
-		}
-		else
-		{
-			NET_LOG_F("[SceneGame] ★成功★ ID=%u のテスト音再生成功！", clientId);
-			// 2秒後に停止
-			Sleep(2000);
-			SoundManager::StopEvent(testId);
-		}
-	}
+			NET_LOG_F("[SceneGame] ステップ5: テスト音再生開始");
+			NET_LOG_F("  Client ID: %u", clientId);
+			NET_LOG_F("  Position: (%.1f, %.1f, %.1f)", spawnPos.x, spawnPos.y, spawnPos.z);
 
-	NET_LOG_F("[SceneGame] ★プレイヤー生成完了★ ID=%u IsLocal=%s Pos=(%.1f,%.1f,%.1f)",
-		clientId, isLocal ? "Yes" : "No", spawnPos.x, spawnPos.y, spawnPos.z);
-	NET_LOG_F("========================================");
-}
-	
+			// 3D位置設定
+			SoundManager::SetPosition(spawnPos, D3DXVECTOR3(0, 0, -1), D3DXVECTOR3(0, 1, 0), clientId);
+			NET_LOG_F("  3D位置設定完了");
+
+			// テスト音再生（凍結音）
+			NET_LOG_F("  テスト音再生開始: Event=PLAY_SE_FREEZE GameObjectID=%u", clientId);
+			AkPlayingID testId = SoundManager::Play(AK::EVENTS::PLAY_SE_FREEZE, clientId);
+			NET_LOG_F("  テスト音再生結果: PlayingID=%u", testId);
+
+			if (testId == AK_INVALID_PLAYING_ID)
+			{
+				NET_LOG_F("  ★★★エラー★★★ ID=%u のテスト音再生に失敗！", clientId);
+				NET_LOG_F("  考えられる原因:");
+				NET_LOG_F("    - Wwiseへの登録失敗");
+				NET_LOG_F("    - イベント名が間違っている");
+				NET_LOG_F("    - バンクがロードされていない");
+			}
+			else
+			{
+				NET_LOG_F("  ★成功★ ID=%u のテスト音再生成功！ PlayingID=%u", clientId, testId);
+
+				// 2秒後に停止
+				Sleep(2000);
+				SoundManager::StopEvent(testId);
+				NET_LOG_F("  テスト音停止完了");
+			}
+		}
+
+		NET_LOG_F("[SceneGame] ★プレイヤー生成完了★");
+		NET_LOG_F("  Client ID: %u", clientId);
+		NET_LOG_F("  Name: %s", name.c_str());
+		NET_LOG_F("  Role: %s", (role == ROLE_CHASER) ? "鬼" : "逃げる側");
+		NET_LOG_F("  IsLocal: %s", isLocal ? "Yes" : "No");
+		NET_LOG_F("  Position: (%.1f, %.1f, %.1f)", spawnPos.x, spawnPos.y, spawnPos.z);
+		NET_LOG_F("========================================");
+	}
 void SceneGame::DespawnPlayer(uint32_t clientId)
 {
 	auto it = m_players.find(clientId);

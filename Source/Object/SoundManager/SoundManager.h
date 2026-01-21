@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include <d3dx9.h>
 #include "..\\..\\Source\\System\\Engine\\Engine.h"
-
 #include <AK\SoundEngine\Common\AkSoundEngine.h>
 #include <AK\SoundEngine\Common\AkSpeakerConfig.h>
 #include <AK\SoundEngine\Common\AkTypes.h>
