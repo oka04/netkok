@@ -77,6 +77,10 @@
 					<ShortName>SE_Thawing1.wav</ShortName>
 					<Path>SFX\SE_Thawing1_1C9C67B2.wem</Path>
 				</File>
+				<File Id="1043048754" Language="SFX">
+					<ShortName>BGM_GameChase.wav</ShortName>
+					<Path>SFX\BGM_GameChase_F17FB28C.wem</Path>
+				</File>
 				<File Id="1050200881" Language="SFX">
 					<ShortName>SE_Back.wav</ShortName>
 					<Path>SFX\SE_Back_1C9C67B2.wem</Path>
@@ -99,6 +103,10 @@
 				<File Id="276443723" Language="SFX">
 					<ShortName>BGM_Title.wav</ShortName>
 					<Path>SFX\BGM_Title_F17FB28C.wem</Path>
+				</File>
+				<File Id="1043048754" Language="SFX">
+					<ShortName>BGM_GameChase.wav</ShortName>
+					<Path>SFX\BGM_GameChase_F17FB28C.wem</Path>
 				</File>
 			</IncludedMemoryFiles>
 		</SoundBank>

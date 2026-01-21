@@ -156,11 +156,11 @@ void ServerManager::BroadcastGameResult(int winnerTeam)
 
 	NET_LOG_F("[ServerManager] ゲーム結果をブロードキャスト: winner=%d", winnerTeam);
 
-	// ★★★ 修正: ゲーム状態を「待機中」に戻す ★★★
+	// ★★★ ゲーム状態を「待機中」に戻す ★★★
 	SetGameState(0);
 	NET_LOG("[ServerManager] サーバー状態を待機中(0)に変更");
 
-	// ★★★ 修正: 役割情報をクリア（次回ゲーム時に再割り当て）★★★
+	// ★★★ 修正: 役割情報を完全にクリア（次回ゲーム時に再割り当て）★★★
 	m_hostRole = ROLE_NONE;
 	for (auto& kv : m_clients)
 	{
@@ -171,7 +171,7 @@ void ServerManager::BroadcastGameResult(int winnerTeam)
 	}
 	NET_LOG("[ServerManager] 全プレイヤーの役割をクリア");
 
-	// ★★★ 追加: Discovery の状態も更新 ★★★
+	// ★★★ Discovery の状態も更新 ★★★
 	if (m_advertiser)
 	{
 		m_advertiser->SetAdvertiseState(0);

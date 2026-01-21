@@ -210,7 +210,6 @@ void CharacterBase::Move(Map & map)
 	if (m_keyFlag & A_KEY) m_direction -= m_hori;
 	D3DXVec3Normalize(&m_direction, &m_direction);
 
-	// 移動キーを入力しているか
 	float moveLength = D3DXVec3Length(&m_direction);
 
 	if (moveLength > 0.0f)
@@ -220,28 +219,20 @@ void CharacterBase::Move(Map & map)
 
 		map.MoveCheck(m_position, vector, f_radius);
 
-		// ★★★ 修正: 足音フラグを立てる（ローカル・リモート共通）★★★
+		// ★★★ 足音フラグを立てる ★★★
 		m_soundEvents |= SOUND_FOOTSTEP;
 
-		// ★★★ ローカルプレイヤーのみ直接再生 ★★★
-		if (m_bIsLocal)
-		{
-			PlayFootstepSound();
-		}
+		// ★★★ 修正: ローカルプレイヤーは足音を再生しない ★★★
+		// （リモートプレイヤーのみUpdateRemotePlayers()で再生）
 	}
 	else
 	{
 		// ★★★ 足音フラグをクリア ★★★
 		m_soundEvents &= ~SOUND_FOOTSTEP;
 
-		// ★★★ ローカルプレイヤーのみ停止 ★★★
-		if (m_bIsLocal)
-		{
-			StopFootstepSound();
-		}
+		// ★★★ ローカルプレイヤーの足音停止も不要 ★★★
 	}
 
-	// 目の位置の調整
 	m_eyePosition = m_position + ((m_keyFlag & CROUCH_KEY) ? f_crouchEyePosition : f_standEyePosition);
 }
 void CharacterBase::PlayFootstepSound()

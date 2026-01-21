@@ -732,7 +732,7 @@ void SceneGame::UpdateRemotePlayers()
 {
 	static DWORD lastLog = 0;
 	DWORD now = timeGetTime();
-	bool shouldLog = (now - lastLog > 2000); // 2秒ごとにログ
+	bool shouldLog = (now - lastLog > 2000);
 
 	for (auto& kv : m_players)
 	{
@@ -752,40 +752,12 @@ void SceneGame::UpdateRemotePlayers()
 		D3DXVECTOR3 remoteDir = pRemote->GetDepth();
 		SoundManager::SetPosition(remotePos, remoteDir, CharacterBase::UP_DIRECTION, remoteId);
 
-		// ★★★ Runnerの場合は凍結チェック ★★★
-		bool isFrozen = false;
-		if (m_playerRoles[remoteId] == ROLE_RUNNER)
-		{
-			Runner* runner = dynamic_cast<Runner*>(pRemote);
-			if (runner)
-			{
-				isFrozen = runner->IsFrozen();
-			}
-		}
-
-		// ★★★ 音イベントフラグに基づいて音を再生 ★★★
+		// ★★★ 音イベントフラグを取得 ★★★
 		uint8_t soundEvents = pRemote->GetSoundEvents();
 
-		// ★★★ デバッグ: 毎フレーム詳細ログ ★★★
-		if (shouldLog)
-		{
-			NET_LOG_F("[UpdateRemotePlayers] ========== Player[%u] ==========", remoteId);
-			NET_LOG_F("  Position: (%.1f, %.1f, %.1f)", remotePos.x, remotePos.y, remotePos.z);
-			NET_LOG_F("  Direction: (%.2f, %.2f, %.2f)", remoteDir.x, remoteDir.y, remoteDir.z);
-			NET_LOG_F("  SoundEvents: 0x%02X (FOOTSTEP=%s, BREATH=%s, FREEZE=%s)",
-				soundEvents,
-				(soundEvents & SOUND_FOOTSTEP) ? "ON" : "OFF",
-				(soundEvents & SOUND_BREATH) ? "ON" : "OFF",
-				(soundEvents & SOUND_FREEZE) ? "ON" : "OFF");
-			NET_LOG_F("  KeyFlag: 0x%02X", pRemote->GetKeyFlag());
-			NET_LOG_F("  IsFrozen: %s", isFrozen ? "Yes" : "No");
-			NET_LOG_F("  Current PlayingID: %u", pRemote->m_seFootId);
-		}
-
 		// ★★★ 足音処理 ★★★
-		if ((soundEvents & SOUND_FOOTSTEP) && !isFrozen)
+		if (soundEvents & SOUND_FOOTSTEP)
 		{
-			// ★★★ 足音速度の計算 ★★★
 			float footspeedParam = 0.6f;
 			unsigned char keyFlag = pRemote->GetKeyFlag();
 
@@ -796,34 +768,16 @@ void SceneGame::UpdateRemotePlayers()
 
 			AK::SoundEngine::SetRTPCValue(AK::GAME_PARAMETERS::FOOTSPEED, footspeedParam, remoteId);
 
-			// ★★★ 足音が再生されていなければ開始 ★★★
 			if (pRemote->m_seFootId == AK_INVALID_PLAYING_ID)
 			{
-				NET_LOG_F("[UpdateRemotePlayers] ★★★ 足音再生開始 ★★★");
-				NET_LOG_F("  Player ID: %u", remoteId);
-				NET_LOG_F("  Position: (%.1f, %.1f, %.1f)", remotePos.x, remotePos.y, remotePos.z);
-				NET_LOG_F("  Speed Param: %.2f", footspeedParam);
-
-				// ★★★ 位置を設定してから再生 ★★★
 				SoundManager::SetPosition(remotePos, remoteDir, CharacterBase::UP_DIRECTION, remoteId);
-
 				pRemote->m_seFootId = SoundManager::Play(AK::EVENTS::PLAY_SE_FOOT, remoteId);
 
-				NET_LOG_F("  Result PlayingID: %u", pRemote->m_seFootId);
-
-				if (pRemote->m_seFootId == AK_INVALID_PLAYING_ID)
+				if (shouldLog)
 				{
-					NET_LOG_F("  ★★★ エラー: 足音再生に失敗！ ★★★");
+					NET_LOG_F("[UpdateRemotePlayers] ★足音再生開始★ Player[%u] PlayingID=%u",
+						remoteId, pRemote->m_seFootId);
 				}
-				else
-				{
-					NET_LOG_F("  ★成功: 足音再生開始★");
-				}
-			}
-			else if (shouldLog)
-			{
-				NET_LOG_F("[UpdateRemotePlayers] Player[%u] 足音継続中: PlayingID=%u Speed=%.2f",
-					remoteId, pRemote->m_seFootId, footspeedParam);
 			}
 		}
 		else
@@ -831,12 +785,13 @@ void SceneGame::UpdateRemotePlayers()
 			// ★★★ 足音停止 ★★★
 			if (pRemote->m_seFootId != AK_INVALID_PLAYING_ID)
 			{
-				NET_LOG_F("[UpdateRemotePlayers] ★足音停止★ Player[%u] PlayingID=%u (Reason: %s)",
-					remoteId, pRemote->m_seFootId,
-					isFrozen ? "Frozen" : "Not Moving");
-
 				SoundManager::StopEvent(pRemote->m_seFootId);
 				pRemote->m_seFootId = AK_INVALID_PLAYING_ID;
+
+				if (shouldLog)
+				{
+					NET_LOG_F("[UpdateRemotePlayers] ★足音停止★ Player[%u]", remoteId);
+				}
 			}
 		}
 
@@ -848,13 +803,33 @@ void SceneGame::UpdateRemotePlayers()
 			{
 				bool isBreathing = chaser->IsBreathing();
 
-				if (shouldLog)
+				// ★★★ ブレス中は音を再生 ★★★
+				if (isBreathing)
 				{
-					NET_LOG_F("[UpdateRemotePlayers] Chaser[%u] IsBreathing=%s",
-						remoteId, isBreathing ? "Yes" : "No");
-				}
+					static std::map<uint32_t, AkPlayingID> breathSounds;
 
-				// ★★★ ブレス音はUpdateBreathAttack()で再生済み ★★★
+					if (breathSounds[remoteId] == AK_INVALID_PLAYING_ID)
+					{
+						SoundManager::SetPosition(remotePos, remoteDir, CharacterBase::UP_DIRECTION, remoteId);
+						breathSounds[remoteId] = SoundManager::Play(AK::EVENTS::PLAY_SE_BRACELET, remoteId);
+
+						NET_LOG_F("[UpdateRemotePlayers] ★ブレス音再生開始★ Chaser[%u] PlayingID=%u",
+							remoteId, breathSounds[remoteId]);
+					}
+				}
+				else
+				{
+					// ★★★ ブレス終了時は音を停止 ★★★
+					static std::map<uint32_t, AkPlayingID> breathSounds;
+
+					if (breathSounds[remoteId] != AK_INVALID_PLAYING_ID)
+					{
+						SoundManager::StopEvent(breathSounds[remoteId]);
+						breathSounds[remoteId] = AK_INVALID_PLAYING_ID;
+
+						NET_LOG_F("[UpdateRemotePlayers] ★ブレス音停止★ Chaser[%u]", remoteId);
+					}
+				}
 			}
 		}
 
@@ -882,67 +857,11 @@ void SceneGame::UpdateRemotePlayers()
 				min(obstruction, 1.0f),
 				min(occlusion, 1.0f)
 			);
-
-			if (shouldLog)
-			{
-				NET_LOG_F("  Occlusion: Dist=%.1f Blocked=%s Obst=%.2f Occl=%.2f",
-					dist, blocked ? "Yes" : "No", obstruction, occlusion);
-			}
-		}
-
-		// ★★★ ライト処理（既存） ★★★
-		if (m_playerRoles[remoteId] == ROLE_CHASER)
-		{
-			Chaser* chaser = dynamic_cast<Chaser*>(pRemote);
-			if (chaser)
-			{
-				chaser->UpdateLight(m_pEngine);
-
-				SpotLight* light = chaser->GetLights();
-				if (light)
-				{
-					int lightIndex = 0;
-					if (m_localRole == ROLE_CHASER && m_pLocalPlayer)
-					{
-						lightIndex = 1;
-						for (auto& kv2 : m_players)
-						{
-							if (kv2.first < remoteId && m_playerRoles[kv2.first] == ROLE_CHASER)
-							{
-								lightIndex++;
-							}
-						}
-					}
-					light->SetDevice(m_pEngine, lightIndex);
-				}
-			}
 		}
 	}
 
 	if (shouldLog)
 	{
-		NET_LOG_F("[UpdateRemotePlayers] ========================================");
-		NET_LOG_F("[UpdateRemotePlayers] サマリー:");
-
-		int totalRemote = 0;
-		int footstepFlagCount = 0;
-		int playingCount = 0;
-
-		for (auto& kv : m_players)
-		{
-			if (!kv.second || kv.second->IsLocal()) continue;
-			totalRemote++;
-
-			uint8_t soundEvents = kv.second->GetSoundEvents();
-			if (soundEvents & SOUND_FOOTSTEP) footstepFlagCount++;
-			if (kv.second->m_seFootId != AK_INVALID_PLAYING_ID) playingCount++;
-		}
-
-		NET_LOG_F("  Total Remote: %d", totalRemote);
-		NET_LOG_F("  Footstep Flag ON: %d", footstepFlagCount);
-		NET_LOG_F("  Actually Playing: %d", playingCount);
-		NET_LOG_F("[UpdateRemotePlayers] ========================================");
-
 		lastLog = now;
 	}
 }
@@ -2222,6 +2141,34 @@ void SceneGame::PostEffect()
 void SceneGame::Exit()
 {
 	NET_LOG("[SceneGame] Exit開始");
+
+	// ★★★ 追加: 全プレイヤーの音を停止 ★★★
+	for (auto& kv : m_players)
+	{
+		if (kv.second)
+		{
+			// 足音停止
+			if (kv.second->m_seFootId != AK_INVALID_PLAYING_ID)
+			{
+				SoundManager::StopEvent(kv.second->m_seFootId);
+				kv.second->m_seFootId = AK_INVALID_PLAYING_ID;
+			}
+
+			// 全音停止
+			SoundManager::StopAll(kv.first);
+		}
+	}
+
+	// ★★★ ローカルプレイヤーの音も停止 ★★★
+	if (m_pLocalPlayer)
+	{
+		if (m_pLocalPlayer->m_seFootId != AK_INVALID_PLAYING_ID)
+		{
+			SoundManager::StopEvent(m_pLocalPlayer->m_seFootId);
+			m_pLocalPlayer->m_seFootId = AK_INVALID_PLAYING_ID;
+		}
+		SoundManager::StopAll(m_localClientId);
+	}
 
 	// プレイヤーの削除
 	for (auto& kv : m_players)

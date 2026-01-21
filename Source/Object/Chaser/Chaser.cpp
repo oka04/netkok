@@ -112,15 +112,14 @@ void Chaser::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 	}
 	else
 	{
+		// ★★★ ブレス中は移動不可 ★★★
 		m_speed = 0.0f;
-		// ★★★ 修正: ブレス中は音フラグを立てる ★★★
-		m_soundEvents |= SOUND_BREATH;
 
-		// ★★★ ローカルプレイヤーのみ直接再生 ★★★
-		if (m_bIsLocal)
-		{
-			// 既にUpdateBreathAttack()で再生済み
-		}
+		// ★★★ 足音フラグをクリア（ブレス中は足音なし）★★★
+		m_soundEvents &= ~SOUND_FOOTSTEP;
+
+		// ★★★ ブレスフラグを立てる ★★★
+		m_soundEvents |= SOUND_BREATH;
 	}
 
 	SetThirdPersonFromBehind(pEngine, camera, map);
@@ -128,7 +127,6 @@ void Chaser::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 	UpdateLightMatrices();
 	UpdateMatrix(light);
 }
-
 void Chaser::UpdateBreathAttack(Engine* pEngine)
 {
     if (!m_bIsLocal || !m_pIceBreath)
