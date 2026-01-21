@@ -766,6 +766,13 @@ void SceneGame::UpdateRemotePlayers()
 		bool isDashing = (keyFlag & 0x20) != 0; // DASH_KEY
 		bool isCrouching = (keyFlag & 0x10) != 0; // CROUCH_KEY
 
+												  // ★★★ ローカルプレイヤーとリモートプレイヤーの役割を取得 ★★★
+		PlayerRole localRole = m_localRole;
+		PlayerRole remoteRole = m_playerRoles[remoteId];
+
+		// ★★★ 役割が異なる場合のみ足音を再生（同じ役割の足音は聞こえない）★★★
+		bool shouldPlayFootsteps = (localRole != remoteRole);
+
 		if (shouldLog)
 		{
 			NET_LOG_F("[UpdateRemotePlayers] ========== Player[%u] ==========", remoteId);
@@ -776,15 +783,19 @@ void SceneGame::UpdateRemotePlayers()
 				isMoving ? "Yes" : "No",
 				isDashing ? "Yes" : "No",
 				isCrouching ? "Yes" : "No");
+			NET_LOG_F("  Role: Local=%s Remote=%s ShouldPlayFootsteps=%s",
+				(localRole == ROLE_CHASER) ? "鬼" : "逃げる側",
+				(remoteRole == ROLE_CHASER) ? "鬼" : "逃げる側",
+				shouldPlayFootsteps ? "Yes" : "No");
 		}
 
-		// ★★★ 足音処理（キーフラグから直接判定）★★★
-		if (isMoving)
+		// ★★★ 足音処理（役割が異なる場合のみ）★★★
+		if (isMoving && shouldPlayFootsteps)
 		{
-			// 速度パラメータ設定
+			// ★★★ 速度パラメータ設定（移動速度に応じて音の速さを変える）★★★
 			float footspeedParam = 0.6f; // 通常歩き
-			if (isDashing) footspeedParam = 1.0f; // ダッシュ
-			else if (isCrouching) footspeedParam = 0.3f; // しゃがみ
+			if (isDashing) footspeedParam = 1.0f; // ダッシュ（速い）
+			else if (isCrouching) footspeedParam = 0.3f; // しゃがみ（遅い）
 
 			AK::SoundEngine::SetRTPCValue(AK::GAME_PARAMETERS::FOOTSPEED, footspeedParam, remoteId);
 
@@ -800,7 +811,7 @@ void SceneGame::UpdateRemotePlayers()
 		}
 		else
 		{
-			// 移動していない場合は足音停止
+			// 移動していない、または同じ役割の場合は足音停止
 			if (footSoundMap[remoteId] != AK_INVALID_PLAYING_ID)
 			{
 				SoundManager::StopEvent(footSoundMap[remoteId]);
@@ -808,7 +819,8 @@ void SceneGame::UpdateRemotePlayers()
 
 				if (shouldLog)
 				{
-					NET_LOG_F("[UpdateRemotePlayers] ★足音停止★ Player[%u]", remoteId);
+					NET_LOG_F("[UpdateRemotePlayers] ★足音停止★ Player[%u] (Moving=%s ShouldPlay=%s)",
+						remoteId, isMoving ? "Yes" : "No", shouldPlayFootsteps ? "Yes" : "No");
 				}
 			}
 		}
@@ -861,13 +873,16 @@ void SceneGame::UpdateRemotePlayers()
 			Runner* runner = dynamic_cast<Runner*>(pRemote);
 			if (runner)
 			{
-				// 解凍ターゲットがいるかチェック（キーフラグ経由で判定）
+				// ★★★ 解凍ターゲットがいるかチェック ★★★
 				uint32_t meltTarget = runner->GetMeltTargetId();
 				bool isAttacking = (keyFlag & 0x40) != 0; // ATTACK_KEY
 
 				static std::map<uint32_t, AkPlayingID> meltSoundMap;
 
-				if (isAttacking && meltTarget != 0)
+				// ★★★ 修正: 攻撃キーが押されている AND ターゲットがいる場合のみ再生 ★★★
+				bool shouldPlayMeltSound = (isAttacking && meltTarget != 0);
+
+				if (shouldPlayMeltSound)
 				{
 					// 解凍音再生
 					if (meltSoundMap[remoteId] == AK_INVALID_PLAYING_ID)
@@ -881,16 +896,14 @@ void SceneGame::UpdateRemotePlayers()
 				}
 				else
 				{
-					// 解凍音停止
+					// ★★★ 修正: 攻撃キーが離された OR ターゲットがいなくなった → 即座に停止 ★★★
 					if (meltSoundMap[remoteId] != AK_INVALID_PLAYING_ID)
 					{
 						SoundManager::StopEvent(meltSoundMap[remoteId]);
 						meltSoundMap[remoteId] = AK_INVALID_PLAYING_ID;
 
-						if (shouldLog)
-						{
-							NET_LOG_F("[UpdateRemotePlayers] ★解凍音停止★ Runner[%u]", remoteId);
-						}
+						NET_LOG_F("[UpdateRemotePlayers] ★解凍音停止★ Runner[%u] (Attacking=%s Target=%u)",
+							remoteId, isAttacking ? "Yes" : "No", meltTarget);
 					}
 				}
 
@@ -901,7 +914,7 @@ void SceneGame::UpdateRemotePlayers()
 
 				if (isFrozen && !wasFrozen)
 				{
-					// 新規凍結
+					// ★★★ 新規凍結 → 凍結音を再生 ★★★
 					SoundManager::SetPosition(remotePos, remoteDir, CharacterBase::UP_DIRECTION, remoteId);
 					SoundManager::Play(AK::EVENTS::PLAY_SE_FREEZE, remoteId);
 

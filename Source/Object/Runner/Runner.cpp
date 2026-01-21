@@ -436,16 +436,20 @@ void Runner::UpdateFrozenState(float deltaTime)
 
 void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBase*>>& players)
 {
+	// ★★★ 静的変数を関数外で管理 ★★★
+	static AkPlayingID meltingSound = AK_INVALID_PLAYING_ID;
+
+	// ★★★ ローカルプレイヤー以外、または凍結中は何もしない ★★★
 	if (!m_bIsLocal || m_bFrozen)
 	{
 		m_targetMeltPlayer = 0;
 
-		// ★★★ 解凍音を停止 ★★★
-		static AkPlayingID meltingSound = AK_INVALID_PLAYING_ID;
+		// ★★★ 解凍音を即座に停止 ★★★
 		if (meltingSound != AK_INVALID_PLAYING_ID)
 		{
 			SoundManager::StopEvent(meltingSound);
 			meltingSound = AK_INVALID_PLAYING_ID;
+			NET_LOG_F("[Runner::UpdateMeltTarget] 解凍音停止: ID=%u (凍結中またはリモート)", m_clientId);
 		}
 
 		return;
@@ -478,15 +482,14 @@ void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBas
 	}
 
 	// ★★★ ターゲットが変わったとき ★★★
-	static AkPlayingID meltingSound = AK_INVALID_PLAYING_ID;
-
 	if (newTarget != m_targetMeltPlayer)
 	{
-		// ★★★ 前のターゲットの解凍音を停止 ★★★
+		// ★★★ 前のターゲットの解凍音を即座に停止 ★★★
 		if (m_targetMeltPlayer != 0 && meltingSound != AK_INVALID_PLAYING_ID)
 		{
 			SoundManager::StopEvent(meltingSound);
 			meltingSound = AK_INVALID_PLAYING_ID;
+			NET_LOG_F("[Runner::UpdateMeltTarget] 解凍音停止: ID=%u (ターゲット変更)", m_clientId);
 		}
 
 		// ★★★ 新しいターゲットの解凍音を再生 ★★★
@@ -499,22 +502,22 @@ void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBas
 				m_clientId, newTarget, meltingSound);
 		}
 	}
-	// ★★★ 左クリックを離したとき ★★★
+	// ★★★ 攻撃キーを離したとき（ターゲットは同じだが、newTarget=0になる）★★★
 	else if (newTarget == 0 && m_targetMeltPlayer != 0)
 	{
+		// ★★★ 即座に解凍音を停止 ★★★
 		if (meltingSound != AK_INVALID_PLAYING_ID)
 		{
 			SoundManager::StopEvent(meltingSound);
 			meltingSound = AK_INVALID_PLAYING_ID;
 
-			NET_LOG_F("[Runner::UpdateMeltTarget] 解凍音停止: ID=%u (左クリック解放)",
+			NET_LOG_F("[Runner::UpdateMeltTarget] 解凍音停止: ID=%u (攻撃キー解放)",
 				m_clientId);
 		}
 	}
 
 	m_targetMeltPlayer = newTarget;
 }
-
 
 NetPlayerState Runner::GetNetState() const
 {
@@ -582,15 +585,17 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 			m_pIceBlock->SetMeltAmount(m_frozenAmount);
 		}
 
-		// ★★★ 凍結音を再生（ローカルプレイヤーのみ）★★★
-		if (m_bIsLocal)
-		{
-			SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, m_clientId);
-			SoundManager::Play(AK::EVENTS::PLAY_SE_FREEZE, m_clientId);
-		}
+		// ★★★ 修正: 凍結音を確実に再生（リモートプレイヤーでも）★★★
+		SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, m_clientId);
+		AkPlayingID freezeId = SoundManager::Play(AK::EVENTS::PLAY_SE_FREEZE, m_clientId);
 
-		NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 新規凍結 amount=%.3f (m_bFullyMelted=false)",
-			m_clientId, netAmount);
+		NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u ★新規凍結★ 凍結音再生 PlayingID=%u amount=%.3f",
+			m_clientId, freezeId, netAmount);
+
+		if (freezeId == AK_INVALID_PLAYING_ID)
+		{
+			NET_LOG_F("[Runner::UpdateFromNetwork] ★★★エラー★★★ ID=%u 凍結音再生失敗！", m_clientId);
+		}
 	}
 	else if (wasFrozen && newFrozen)
 	{
@@ -612,6 +617,8 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 				{
 					SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, m_clientId);
 					meltingSounds[m_clientId] = SoundManager::Play(AK::EVENTS::PLAY_SE_THAWING, m_clientId);
+					NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 解凍音再生開始 PlayingID=%u",
+						m_clientId, meltingSounds[m_clientId]);
 				}
 			}
 
@@ -630,9 +637,9 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 				m_frozenAmount = 1.0f;
 				m_targetMeltPlayer = 0;
 
-				// ★★★ 修正: 解凍完了音を再生 ★★★
+				// ★★★ 解凍完了音を再生 ★★★
 				SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, m_clientId);
-				SoundManager::Play(AK::EVENTS::PLAY_SE_THAW_COMPLETE, m_clientId);
+				AkPlayingID completeId = SoundManager::Play(AK::EVENTS::PLAY_SE_THAW_COMPLETE, m_clientId);
 
 				// ★★★ 解凍中の音を停止 ★★★
 				if (meltingSounds[m_clientId] != AK_INVALID_PLAYING_ID)
@@ -641,7 +648,8 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 					meltingSounds[m_clientId] = AK_INVALID_PLAYING_ID;
 				}
 
-				NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u ★完全解凍★ 完了音再生", m_clientId);
+				NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u ★完全解凍★ 完了音再生 PlayingID=%u",
+					m_clientId, completeId);
 			}
 		}
 	}
@@ -658,11 +666,8 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 		}
 
 		// ★★★ 解凍完了音を再生 ★★★
-		if (m_bIsLocal)
-		{
-			SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, m_clientId);
-			SoundManager::Play(AK::EVENTS::PLAY_SE_THAW_COMPLETE, m_clientId);
-		}
+		SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, m_clientId);
+		AkPlayingID completeId = SoundManager::Play(AK::EVENTS::PLAY_SE_THAW_COMPLETE, m_clientId);
 
 		// ★★★ 解凍中の音を停止 ★★★
 		if (meltingSounds[m_clientId] != AK_INVALID_PLAYING_ID)
@@ -671,8 +676,8 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 			meltingSounds[m_clientId] = AK_INVALID_PLAYING_ID;
 		}
 
-		NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 凍結解除 amount=1.0(固定)",
-			m_clientId);
+		NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u 凍結解除 完了音再生 PlayingID=%u",
+			m_clientId, completeId);
 	}
 
 	if (state.meltTargetId != m_targetMeltPlayer)
