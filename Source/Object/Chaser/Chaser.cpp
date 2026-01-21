@@ -129,69 +129,87 @@ void Chaser::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 }
 void Chaser::UpdateBreathAttack(Engine* pEngine)
 {
-    if (!m_bIsLocal || !m_pIceBreath)
-        return;
+	if (!m_bIsLocal || !m_pIceBreath)
+		return;
 
-    bool isAttackPressed = (m_keyFlag & ATTACK_KEY) != 0;
-    bool isButtonJustPressed = isAttackPressed && !m_bBreathButtonPressed;
-    m_bBreathButtonPressed = isAttackPressed;
+	// ★★★ 現在の攻撃キーの状態 ★★★
+	bool isAttackPressed = (m_keyFlag & ATTACK_KEY) != 0;
 
-    if (m_bBreathActive)
-    {
-        D3DXVECTOR3 adjustedDirection = m_depth;
+	// ★★★ ボタンが「押された瞬間」を検出 ★★★
+	// 前フレームで押されていなくて、今フレームで押されている = 押された瞬間
+	bool isButtonJustPressed = isAttackPressed && !m_bBreathButtonPressed;
 
-        D3DXVECTOR3 rightVec;
-        D3DXVECTOR3 upVec = UP_DIRECTION;
-        D3DXVec3Cross(&rightVec, &upVec, &m_depth);
-        D3DXVec3Normalize(&rightVec, &rightVec);
+	// ★★★ 次のフレーム用に現在の状態を保存 ★★★
+	m_bBreathButtonPressed = isAttackPressed;
 
-        D3DXVec3Cross(&upVec, &m_depth, &rightVec);
-        D3DXVec3Normalize(&upVec, &upVec);
+	// ★★★ ブレス中の処理 ★★★
+	if (m_bBreathActive)
+	{
+		// 方向を下方向に傾ける
+		D3DXVECTOR3 adjustedDirection = m_depth;
 
-        D3DXMATRIX matRotation;
-        D3DXMatrixRotationAxis(&matRotation, &rightVec, D3DXToRadian(15.0f));
-        D3DXVec3TransformCoord(&adjustedDirection, &m_depth, &matRotation);
-        D3DXVec3Normalize(&adjustedDirection, &adjustedDirection);
+		D3DXVECTOR3 rightVec;
+		D3DXVECTOR3 upVec = UP_DIRECTION;
+		D3DXVec3Cross(&rightVec, &upVec, &m_depth);
+		D3DXVec3Normalize(&rightVec, &rightVec);
 
-        m_pIceBreath->SetPosition(m_eyePosition);
-        m_pIceBreath->SetDirection(adjustedDirection);
+		D3DXVec3Cross(&upVec, &m_depth, &rightVec);
+		D3DXVec3Normalize(&upVec, &upVec);
 
-        m_pIceBreath->Update();
+		D3DXMATRIX matRotation;
+		D3DXMatrixRotationAxis(&matRotation, &rightVec, D3DXToRadian(15.0f));
+		D3DXVec3TransformCoord(&adjustedDirection, &m_depth, &matRotation);
+		D3DXVec3Normalize(&adjustedDirection, &adjustedDirection);
 
-        if (!m_pIceBreath->IsActive())
-        {
-            m_bBreathActive = false;
-            
-            NET_LOG_F("[Chaser] ブレス終了: ID=%u", m_clientId);
-        }
-    }
+		// ブレスの位置と方向を更新
+		m_pIceBreath->SetPosition(m_eyePosition);
+		m_pIceBreath->SetDirection(adjustedDirection);
 
-    if (isButtonJustPressed && !m_bBreathActive && CanUseBreath())
-    {
-        D3DXVECTOR3 adjustedDirection = m_depth;
+		// ブレスの更新
+		m_pIceBreath->Update();
 
-        D3DXVECTOR3 rightVec;
-        D3DXVec3Cross(&rightVec, &UP_DIRECTION, &m_depth);
-        D3DXVec3Normalize(&rightVec, &rightVec);
+		// ★★★ ブレスが終了したか確認 ★★★
+		if (!m_pIceBreath->IsActive())
+		{
+			m_bBreathActive = false;
+			NET_LOG_F("[Chaser] ブレス終了: ID=%u", m_clientId);
+		}
 
-        D3DXMATRIX matRotation;
-        D3DXMatrixRotationAxis(&matRotation, &rightVec, D3DXToRadian(10.0f));
-        D3DXVec3TransformCoord(&adjustedDirection, &m_depth, &matRotation);
-        D3DXVec3Normalize(&adjustedDirection, &adjustedDirection);
+		return; // ★★★ ブレス中は新規発動をチェックしない ★★★
+	}
 
-        m_pIceBreath->Activate(m_eyePosition, adjustedDirection);
-        m_bBreathActive = true;
-        m_lastBreathTime = timeGetTime();
+	// ★★★ ブレス発動条件チェック ★★★
+	// 1. ボタンが「押された瞬間」である
+	// 2. 現在ブレス中ではない
+	// 3. クールダウンが終わっている
+	if (isButtonJustPressed && !m_bBreathActive && CanUseBreath())
+	{
+		// ブレス方向を下方向に傾ける
+		D3DXVECTOR3 adjustedDirection = m_depth;
 
-        // ★★★ ブレス発動音を再生 ★★★
-        SoundManager::SetPosition(m_eyePosition, m_depth, UP_DIRECTION, m_clientId);
-        SoundManager::Play(AK::EVENTS::PLAY_SE_BRACELET, m_clientId);
+		D3DXVECTOR3 rightVec;
+		D3DXVec3Cross(&rightVec, &UP_DIRECTION, &m_depth);
+		D3DXVec3Normalize(&rightVec, &rightVec);
 
-        NET_LOG_F("[Chaser] ブレス発動: ID=%u Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
-            m_clientId,
-            m_eyePosition.x, m_eyePosition.y, m_eyePosition.z,
-            adjustedDirection.x, adjustedDirection.y, adjustedDirection.z);
-    }
+		D3DXMATRIX matRotation;
+		D3DXMatrixRotationAxis(&matRotation, &rightVec, D3DXToRadian(10.0f));
+		D3DXVec3TransformCoord(&adjustedDirection, &m_depth, &matRotation);
+		D3DXVec3Normalize(&adjustedDirection, &adjustedDirection);
+
+		// ブレス発動
+		m_pIceBreath->Activate(m_eyePosition, adjustedDirection);
+		m_bBreathActive = true;
+		m_lastBreathTime = timeGetTime();
+
+		// ★★★ ブレス発動音を再生 ★★★
+		SoundManager::SetPosition(m_eyePosition, m_depth, UP_DIRECTION, m_clientId);
+		SoundManager::Play(AK::EVENTS::PLAY_SE_BRACELET, m_clientId);
+
+		NET_LOG_F("[Chaser] ブレス発動: ID=%u Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
+			m_clientId,
+			m_eyePosition.x, m_eyePosition.y, m_eyePosition.z,
+			adjustedDirection.x, adjustedDirection.y, adjustedDirection.z);
+	}
 }
 bool Chaser::CanUseBreath() const
 {

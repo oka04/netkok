@@ -436,7 +436,7 @@ void Runner::UpdateFrozenState(float deltaTime)
 
 void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBase*>>& players)
 {
-	// ★★★ 静的変数を関数外で管理 ★★★
+	// ★★★ 静的変数で解凍音のPlayingIDを管理 ★★★
 	static AkPlayingID meltingSound = AK_INVALID_PLAYING_ID;
 
 	// ★★★ ローカルプレイヤー以外、または凍結中は何もしない ★★★
@@ -444,7 +444,7 @@ void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBas
 	{
 		m_targetMeltPlayer = 0;
 
-		// ★★★ 解凍音を即座に停止 ★★★
+		// ★★★ 即座に音を停止 ★★★
 		if (meltingSound != AK_INVALID_PLAYING_ID)
 		{
 			SoundManager::StopEvent(meltingSound);
@@ -455,6 +455,7 @@ void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBas
 		return;
 	}
 
+	// ★★★ 攻撃キーが押されているかチェック ★★★
 	bool isHelping = (m_keyFlag & ATTACK_KEY) != 0;
 
 	uint32_t newTarget = 0;
@@ -481,18 +482,19 @@ void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBas
 		}
 	}
 
-	// ★★★ ターゲットが変わったとき ★★★
+	// ★★★ ターゲットが変わった、または攻撃キーが離された場合 ★★★
 	if (newTarget != m_targetMeltPlayer)
 	{
-		// ★★★ 前のターゲットの解凍音を即座に停止 ★★★
-		if (m_targetMeltPlayer != 0 && meltingSound != AK_INVALID_PLAYING_ID)
+		// ★★★ 前の音を即座に停止 ★★★
+		if (meltingSound != AK_INVALID_PLAYING_ID)
 		{
 			SoundManager::StopEvent(meltingSound);
 			meltingSound = AK_INVALID_PLAYING_ID;
-			NET_LOG_F("[Runner::UpdateMeltTarget] 解凍音停止: ID=%u (ターゲット変更)", m_clientId);
+			NET_LOG_F("[Runner::UpdateMeltTarget] 解凍音停止: ID=%u (ターゲット変更: %u -> %u)",
+				m_clientId, m_targetMeltPlayer, newTarget);
 		}
 
-		// ★★★ 新しいターゲットの解凍音を再生 ★★★
+		// ★★★ 新しいターゲットがいる場合のみ音を再生 ★★★
 		if (newTarget != 0)
 		{
 			SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, m_clientId);
@@ -502,23 +504,9 @@ void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBas
 				m_clientId, newTarget, meltingSound);
 		}
 	}
-	// ★★★ 攻撃キーを離したとき（ターゲットは同じだが、newTarget=0になる）★★★
-	else if (newTarget == 0 && m_targetMeltPlayer != 0)
-	{
-		// ★★★ 即座に解凍音を停止 ★★★
-		if (meltingSound != AK_INVALID_PLAYING_ID)
-		{
-			SoundManager::StopEvent(meltingSound);
-			meltingSound = AK_INVALID_PLAYING_ID;
-
-			NET_LOG_F("[Runner::UpdateMeltTarget] 解凍音停止: ID=%u (攻撃キー解放)",
-				m_clientId);
-		}
-	}
 
 	m_targetMeltPlayer = newTarget;
 }
-
 NetPlayerState Runner::GetNetState() const
 {
 	NetPlayerState state = CharacterBase::GetNetState();
