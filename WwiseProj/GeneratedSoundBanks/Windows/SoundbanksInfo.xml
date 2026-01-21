@@ -53,13 +53,13 @@
 					<ShortName>SE_Select.wav</ShortName>
 					<Path>SFX\SE_Select_1C9C67B2.wem</Path>
 				</File>
+				<File Id="515258537" Language="SFX">
+					<ShortName>風が吹く1.wav</ShortName>
+					<Path>SFX\風が吹く1_1C9C67B2.wem</Path>
+				</File>
 				<File Id="520278521" Language="SFX">
 					<ShortName>SE_Freeze.wav</ShortName>
 					<Path>SFX\SE_Freeze_1C9C67B2.wem</Path>
-				</File>
-				<File Id="649418891" Language="SFX">
-					<ShortName>風が吹く1.wav</ShortName>
-					<Path>SFX\風が吹く1_1C9C67B2.wem</Path>
 				</File>
 				<File Id="662532748" Language="SFX">
 					<ShortName>SE_Foot.wav</ShortName>
@@ -76,10 +76,6 @@
 				<File Id="737176884" Language="SFX">
 					<ShortName>SE_Thawing1.wav</ShortName>
 					<Path>SFX\SE_Thawing1_1C9C67B2.wem</Path>
-				</File>
-				<File Id="1043048754" Language="SFX">
-					<ShortName>BGM_GameChase.wav</ShortName>
-					<Path>SFX\BGM_GameChase_F17FB28C.wem</Path>
 				</File>
 				<File Id="1050200881" Language="SFX">
 					<ShortName>SE_Back.wav</ShortName>
@@ -103,10 +99,6 @@
 				<File Id="276443723" Language="SFX">
 					<ShortName>BGM_Title.wav</ShortName>
 					<Path>SFX\BGM_Title_F17FB28C.wem</Path>
-				</File>
-				<File Id="1043048754" Language="SFX">
-					<ShortName>BGM_GameChase.wav</ShortName>
-					<Path>SFX\BGM_GameChase_F17FB28C.wem</Path>
 				</File>
 			</IncludedMemoryFiles>
 		</SoundBank>
