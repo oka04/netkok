@@ -773,6 +773,17 @@ void SceneGame::UpdateRemotePlayers()
 		// ★★★ 役割が異なる場合のみ足音を再生（同じ役割の足音は聞こえない）★★★
 		bool shouldPlayFootsteps = (localRole != remoteRole);
 
+		// ★★★ 追加: 鬼の場合、ブレス中かチェック ★★★
+		bool isBreathing = false;
+		if (remoteRole == ROLE_CHASER)
+		{
+			Chaser* chaser = dynamic_cast<Chaser*>(pRemote);
+			if (chaser)
+			{
+				isBreathing = chaser->IsBreathing();
+			}
+		}
+
 		if (shouldLog)
 		{
 			NET_LOG_F("[UpdateRemotePlayers] ========== Player[%u] ==========", remoteId);
@@ -783,14 +794,16 @@ void SceneGame::UpdateRemotePlayers()
 				isMoving ? "Yes" : "No",
 				isDashing ? "Yes" : "No",
 				isCrouching ? "Yes" : "No");
-			NET_LOG_F("  Role: Local=%s Remote=%s ShouldPlayFootsteps=%s",
+			NET_LOG_F("  Role: Local=%s Remote=%s",
 				(localRole == ROLE_CHASER) ? "鬼" : "逃げる側",
-				(remoteRole == ROLE_CHASER) ? "鬼" : "逃げる側",
+				(remoteRole == ROLE_CHASER) ? "鬼" : "逃げる側");
+			NET_LOG_F("  IsBreathing=%s ShouldPlayFootsteps=%s",
+				isBreathing ? "Yes" : "No",
 				shouldPlayFootsteps ? "Yes" : "No");
 		}
 
-		// ★★★ 足音処理（役割が異なる場合のみ）★★★
-		if (isMoving && shouldPlayFootsteps)
+		// ★★★ 足音処理（役割が異なる場合 AND ブレス中でない場合のみ）★★★
+		if (isMoving && shouldPlayFootsteps && !isBreathing)
 		{
 			// ★★★ 速度パラメータ設定（移動速度に応じて音の速さを変える）★★★
 			float footspeedParam = 0.6f; // 通常歩き
@@ -811,7 +824,7 @@ void SceneGame::UpdateRemotePlayers()
 		}
 		else
 		{
-			// 移動していない、または同じ役割の場合は足音停止
+			// ★★★ 移動していない、同じ役割、またはブレス中の場合は足音停止 ★★★
 			if (footSoundMap[remoteId] != AK_INVALID_PLAYING_ID)
 			{
 				SoundManager::StopEvent(footSoundMap[remoteId]);
@@ -819,20 +832,18 @@ void SceneGame::UpdateRemotePlayers()
 
 				if (shouldLog)
 				{
-					NET_LOG_F("[UpdateRemotePlayers] ★足音停止★ Player[%u] (Moving=%s ShouldPlay=%s)",
-						remoteId, isMoving ? "Yes" : "No", shouldPlayFootsteps ? "Yes" : "No");
+					NET_LOG_F("[UpdateRemotePlayers] ★足音停止★ Player[%u] (Moving=%s Breathing=%s)",
+						remoteId, isMoving ? "Yes" : "No", isBreathing ? "Yes" : "No");
 				}
 			}
 		}
 
 		// ★★★ ブレス音処理（鬼のみ）★★★
-		if (m_playerRoles[remoteId] == ROLE_CHASER)
+		if (remoteRole == ROLE_CHASER)
 		{
 			Chaser* chaser = dynamic_cast<Chaser*>(pRemote);
 			if (chaser)
 			{
-				bool isBreathing = chaser->IsBreathing();
-
 				if (shouldLog)
 				{
 					NET_LOG_F("[UpdateRemotePlayers] Chaser[%u] IsBreathing=%s CurrentBreathID=%u",
@@ -868,7 +879,7 @@ void SceneGame::UpdateRemotePlayers()
 		}
 
 		// ★★★ Runner の解凍音処理 ★★★
-		if (m_playerRoles[remoteId] == ROLE_RUNNER)
+		if (remoteRole == ROLE_RUNNER)
 		{
 			Runner* runner = dynamic_cast<Runner*>(pRemote);
 			if (runner)

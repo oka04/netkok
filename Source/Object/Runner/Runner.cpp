@@ -19,6 +19,7 @@ Runner::Runner()
 	, f_meltSpeed(0.2f)
 	, m_targetMeltPlayer(0)
 	, m_bFullyMelted(false)
+	, m_meltingSoundId(AK_INVALID_PLAYING_ID)
 {
 }
 
@@ -90,6 +91,14 @@ void Runner::InitializeAtPosition(Engine* pEngine, const D3DXVECTOR3& startPos, 
 void Runner::Release(Engine* pEngine)
 {
 	pEngine->ReleaseTexture(TEXTURE_STAMINA_GAUGE);
+
+	// ★★★ 追加: 解凍音を停止 ★★★
+	if (m_meltingSoundId != AK_INVALID_PLAYING_ID)
+	{
+		SoundManager::StopEvent(m_meltingSoundId);
+		m_meltingSoundId = AK_INVALID_PLAYING_ID;
+		NET_LOG_F("[Runner::Release] 解凍音停止: ID=%u", m_clientId);
+	}
 
 	if (m_pIceBlock)
 	{
@@ -436,19 +445,16 @@ void Runner::UpdateFrozenState(float deltaTime)
 
 void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBase*>>& players)
 {
-	// ★★★ 静的変数で解凍音のPlayingIDを管理 ★★★
-	static AkPlayingID meltingSound = AK_INVALID_PLAYING_ID;
-
 	// ★★★ ローカルプレイヤー以外、または凍結中は何もしない ★★★
 	if (!m_bIsLocal || m_bFrozen)
 	{
 		m_targetMeltPlayer = 0;
 
-		// ★★★ 即座に音を停止 ★★★
-		if (meltingSound != AK_INVALID_PLAYING_ID)
+		// ★★★ 即座に音を停止（メンバー変数を使用）★★★
+		if (m_meltingSoundId != AK_INVALID_PLAYING_ID)
 		{
-			SoundManager::StopEvent(meltingSound);
-			meltingSound = AK_INVALID_PLAYING_ID;
+			SoundManager::StopEvent(m_meltingSoundId);
+			m_meltingSoundId = AK_INVALID_PLAYING_ID;
 			NET_LOG_F("[Runner::UpdateMeltTarget] 解凍音停止: ID=%u (凍結中またはリモート)", m_clientId);
 		}
 
@@ -485,11 +491,11 @@ void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBas
 	// ★★★ ターゲットが変わった、または攻撃キーが離された場合 ★★★
 	if (newTarget != m_targetMeltPlayer)
 	{
-		// ★★★ 前の音を即座に停止 ★★★
-		if (meltingSound != AK_INVALID_PLAYING_ID)
+		// ★★★ 前の音を即座に停止（メンバー変数を使用）★★★
+		if (m_meltingSoundId != AK_INVALID_PLAYING_ID)
 		{
-			SoundManager::StopEvent(meltingSound);
-			meltingSound = AK_INVALID_PLAYING_ID;
+			SoundManager::StopEvent(m_meltingSoundId);
+			m_meltingSoundId = AK_INVALID_PLAYING_ID;
 			NET_LOG_F("[Runner::UpdateMeltTarget] 解凍音停止: ID=%u (ターゲット変更: %u -> %u)",
 				m_clientId, m_targetMeltPlayer, newTarget);
 		}
@@ -498,10 +504,10 @@ void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBas
 		if (newTarget != 0)
 		{
 			SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, m_clientId);
-			meltingSound = SoundManager::Play(AK::EVENTS::PLAY_SE_THAWING, m_clientId);
+			m_meltingSoundId = SoundManager::Play(AK::EVENTS::PLAY_SE_THAWING, m_clientId);
 
 			NET_LOG_F("[Runner::UpdateMeltTarget] 解凍音開始: ID=%u -> Target=%u PlayingID=%u",
-				m_clientId, newTarget, meltingSound);
+				m_clientId, newTarget, m_meltingSoundId);
 		}
 	}
 

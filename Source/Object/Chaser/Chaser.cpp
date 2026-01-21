@@ -15,8 +15,8 @@ Chaser::Chaser()
 	, m_pShadowSurface(nullptr)
 	, m_pShadowDepthSurface(nullptr)
 	, m_pIceBreath(nullptr)
-	, m_bBreathActive(false)
 	, m_bBreathButtonPressed(false)
+	, m_bBreathActive(false)
 	, m_lastBreathTime(0)
 	, f_breathCooldown(3.0f)
 	, m_breathDuration(3000)
@@ -96,6 +96,7 @@ void Chaser::Release(Engine* pEngine)
 		SoundManager::UnregisterGameObject(ID_PALYER);
 }
 
+
 void Chaser::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight& light, float deltaTime)
 {
 	m_deltaTime = deltaTime;
@@ -109,10 +110,13 @@ void Chaser::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 		SetMouseCursor(pEngine, camera);
 		m_speed = f_walkSpeed * m_deltaTime;
 		Move(map);
+
+		// ★★★ ブレス中でない場合、通常の足音処理 ★★★
+		// (Move()内で自動的に処理される)
 	}
 	else
 	{
-		// ★★★ ブレス中は移動不可 ★★★
+		// ★★★ ブレス中は完全に移動不可 ★★★
 		m_speed = 0.0f;
 
 		// ★★★ 足音フラグをクリア（ブレス中は足音なし）★★★
@@ -120,6 +124,12 @@ void Chaser::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 
 		// ★★★ ブレスフラグを立てる ★★★
 		m_soundEvents |= SOUND_BREATH;
+
+		// ★★★ 追加: ローカルプレイヤーの足音を明示的に停止 ★★★
+		if (m_bIsLocal)
+		{
+			StopFootstepSound();
+		}
 	}
 
 	SetThirdPersonFromBehind(pEngine, camera, map);
@@ -129,22 +139,33 @@ void Chaser::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 }
 void Chaser::UpdateBreathAttack(Engine* pEngine)
 {
+	// ★★★ ローカルプレイヤー以外は処理しない ★★★
 	if (!m_bIsLocal || !m_pIceBreath)
+	{
 		return;
+	}
 
-	// ★★★ 現在の攻撃キーの状態 ★★★
+	// ★★★ 現在の攻撃キーの状態（マウス入力から直接取得）★★★
 	bool isAttackPressed = (m_keyFlag & ATTACK_KEY) != 0;
 
-	// ★★★ ボタンが「押された瞬間」を検出 ★★★
-	// 前フレームで押されていなくて、今フレームで押されている = 押された瞬間
-	bool isButtonJustPressed = isAttackPressed && !m_bBreathButtonPressed;
-
-	// ★★★ 次のフレーム用に現在の状態を保存 ★★★
-	m_bBreathButtonPressed = isAttackPressed;
+	// ★★★ デバッグログ（頻度を下げる）★★★
+	static DWORD lastInputLog = 0;
+	DWORD now = timeGetTime();
+	if (now - lastInputLog > 500)
+	{
+		NET_LOG_F("[Chaser::UpdateBreathAttack] ID=%u Input Check: KeyFlag=0x%02X AttackPressed=%s ButtonState=%s Active=%s",
+			m_clientId, m_keyFlag,
+			isAttackPressed ? "Yes" : "No",
+			m_bBreathButtonPressed ? "Yes" : "No",
+			m_bBreathActive ? "Yes" : "No");
+		lastInputLog = now;
+	}
 
 	// ★★★ ブレス中の処理 ★★★
 	if (m_bBreathActive)
 	{
+		// ★★★ ブレス中はボタン状態を更新しない（押しっぱなし防止）★★★
+
 		// 方向を下方向に傾ける
 		D3DXVECTOR3 adjustedDirection = m_depth;
 
@@ -172,11 +193,22 @@ void Chaser::UpdateBreathAttack(Engine* pEngine)
 		if (!m_pIceBreath->IsActive())
 		{
 			m_bBreathActive = false;
-			NET_LOG_F("[Chaser] ブレス終了: ID=%u", m_clientId);
+
+			// ★★★ ブレス終了時にボタン状態をリセット ★★★
+			m_bBreathButtonPressed = isAttackPressed;
+
+			NET_LOG_F("[Chaser] ブレス終了: ID=%u ButtonState=%s",
+				m_clientId, m_bBreathButtonPressed ? "Pressed" : "Released");
 		}
 
 		return; // ★★★ ブレス中は新規発動をチェックしない ★★★
 	}
+
+	// ★★★ ボタンが「押された瞬間」を検出（エッジ検出）★★★
+	bool isButtonJustPressed = isAttackPressed && !m_bBreathButtonPressed;
+
+	// ★★★ 次のフレーム用に現在の状態を保存 ★★★
+	m_bBreathButtonPressed = isAttackPressed;
 
 	// ★★★ ブレス発動条件チェック ★★★
 	// 1. ボタンが「押された瞬間」である
@@ -205,10 +237,23 @@ void Chaser::UpdateBreathAttack(Engine* pEngine)
 		SoundManager::SetPosition(m_eyePosition, m_depth, UP_DIRECTION, m_clientId);
 		SoundManager::Play(AK::EVENTS::PLAY_SE_BRACELET, m_clientId);
 
-		NET_LOG_F("[Chaser] ブレス発動: ID=%u Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
+		NET_LOG_F("[Chaser] ★★★ブレス発動★★★ ID=%u Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
 			m_clientId,
 			m_eyePosition.x, m_eyePosition.y, m_eyePosition.z,
 			adjustedDirection.x, adjustedDirection.y, adjustedDirection.z);
+	}
+	else if (isButtonJustPressed)
+	{
+		// ★★★ 押されたが発動しない理由をログ ★★★
+		if (m_bBreathActive)
+		{
+			NET_LOG_F("[Chaser] ブレス発動失敗: 既にブレス中");
+		}
+		else if (!CanUseBreath())
+		{
+			float remaining = f_breathCooldown - ((now - m_lastBreathTime) / 1000.0f);
+			NET_LOG_F("[Chaser] ブレス発動失敗: クールダウン中 残り%.1f秒", remaining);
+		}
 	}
 }
 bool Chaser::CanUseBreath() const
