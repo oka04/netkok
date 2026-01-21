@@ -10,6 +10,8 @@ const D3DXVECTOR3 CharacterBase::UP_DIRECTION = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 const D3DXVECTOR3 CharacterBase::DEPTH_DIRECTION = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 
 //初期化
+// CharacterBase.cpp - 初期化順序を修正
+
 void CharacterBase::Initialize(Engine *pEngine, std::string filename, Projection* projection, Camera& camera, DirectionalLight &light)
 {
 	m_model.SetModel(pEngine->GetModel(filename));
@@ -27,10 +29,17 @@ void CharacterBase::Initialize(Engine *pEngine, std::string filename, Projection
 
 	m_keyFlag = 0x00;
 
-	// ★★★ ネットワーク関連の初期化 ★★★
-	m_clientId = 0;
-	m_characterName = "";
-	m_bIsLocal = true;
+	// ★★★ 重要: ネットワーク関連の初期化時にIDをリセットしない ★★★
+	// m_clientId と m_characterName は SpawnPlayerWithRole() で既に設定済み
+	// ここでリセットすると Wwise 登録が無効になる
+
+	// m_clientId = 0;  // ★★★ コメントアウト！
+	// m_characterName = "";  // ★★★ コメントアウト！
+
+	// ★★★ m_bIsLocal だけは初期化時に設定されていない場合のみデフォルト値を設定 ★★★
+	// （既に SetIsLocal() で設定済みの場合は上書きしない）
+	// m_bIsLocal = true;  // ★★★ コメントアウト！
+
 	m_targetPosition = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_targetHAngle = 0.0f;
 	m_targetVAngle = 0.0f;
