@@ -56,6 +56,8 @@ void CharacterBase::Initialize(Engine *pEngine, std::string filename, Projection
 
 void CharacterBase::UpdateMatrix(DirectionalLight &light)
 {
+	// ★★★ 修正: ローカルプレイヤーのみフラグをクリア ★★★
+	// （リモートプレイヤーはネットワークから受信したフラグを保持）
 	if (m_bIsLocal)
 	{
 		m_soundEvents = 0;
@@ -218,7 +220,7 @@ void CharacterBase::Move(Map & map)
 
 		map.MoveCheck(m_position, vector, f_radius);
 
-		// ★★★ 修正: ローカル・リモート共通で足音フラグを立てる ★★★
+		// ★★★ 修正: 足音フラグを立てる（ローカル・リモート共通）★★★
 		m_soundEvents |= SOUND_FOOTSTEP;
 
 		// ★★★ ローカルプレイヤーのみ直接再生 ★★★
@@ -454,8 +456,6 @@ NetPlayerState CharacterBase::GetNetState() const
 	return state;
 }
 
-
-// ★★★ ネットワークからの更新 ★★★
 void CharacterBase::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& light, float deltaTime)
 {
 	DWORD now = timeGetTime();

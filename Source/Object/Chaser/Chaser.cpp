@@ -113,10 +113,13 @@ void Chaser::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 	else
 	{
 		m_speed = 0.0f;
-		// ★★★ ブレス中はブレス音フラグを立てる（リモートプレイヤーのみ）★★★
-		if (!m_bIsLocal)
+		// ★★★ 修正: ブレス中は音フラグを立てる ★★★
+		m_soundEvents |= SOUND_BREATH;
+
+		// ★★★ ローカルプレイヤーのみ直接再生 ★★★
+		if (m_bIsLocal)
 		{
-			m_soundEvents |= SOUND_BREATH;
+			// 既にUpdateBreathAttack()で再生済み
 		}
 	}
 
@@ -125,6 +128,7 @@ void Chaser::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 	UpdateLightMatrices();
 	UpdateMatrix(light);
 }
+
 void Chaser::UpdateBreathAttack(Engine* pEngine)
 {
     if (!m_bIsLocal || !m_pIceBreath)
