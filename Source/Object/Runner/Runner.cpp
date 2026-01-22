@@ -602,7 +602,7 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 			m_pIceBlock->SetMeltAmount(m_frozenAmount);
 		}
 
-		// ★★★ 修正: 凍結音を確実に再生（リモートプレイヤーでも）★★★
+		// ★★★ 凍結音を確実に再生 ★★★
 		SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, m_clientId);
 		AkPlayingID freezeId = SoundManager::Play(AK::EVENTS::PLAY_SE_FREEZE, m_clientId);
 
@@ -627,7 +627,7 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 				m_pIceBlock->SetMeltAmount(m_frozenAmount);
 			}
 
-			// ★★★ 解凍が進んでいる場合、解凍中の音を再生 ★★★
+			// ★★★ 修正: 解凍が進んでいる場合のみ音を再生 ★★★
 			if (m_frozenAmount > oldAmount)
 			{
 				if (meltingSounds[m_clientId] == AK_INVALID_PLAYING_ID)
@@ -667,6 +667,18 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 
 				NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u ★完全解凍★ 完了音再生 PlayingID=%u",
 					m_clientId, completeId);
+			}
+		}
+		else
+		{
+			// ★★★ 新規追加: 解凍が進んでいない（誰も助けていない）場合、音を止める ★★★
+			if (meltingSounds[m_clientId] != AK_INVALID_PLAYING_ID)
+			{
+				SoundManager::StopEvent(meltingSounds[m_clientId]);
+				meltingSounds[m_clientId] = AK_INVALID_PLAYING_ID;
+
+				NET_LOG_F("[Runner::UpdateFromNetwork] ID=%u ★解凍音停止★ (誰も助けていない) amount=%.3f",
+					m_clientId, m_frozenAmount);
 			}
 		}
 	}
