@@ -149,9 +149,10 @@ void Chaser::UpdateBreathAttack(Engine* pEngine)
 	// m_keyFlagはネットワーク同期で上書きされるため、ローカル入力判定には使用できない
 	bool isAttackPressed = pEngine->GetMouseButton(0);  // 0 = 左ボタン
 
-														// ★★★ デバッグログ（頻度を下げる）★★★
-	static DWORD lastInputLog = 0;
 	DWORD now = timeGetTime();
+
+	// ★★★ デバッグログ（頻度を下げる）★★★
+	static DWORD lastInputLog = 0;
 	if (now - lastInputLog > 200)  // 200msごとにログ
 	{
 		NET_LOG_F("[Chaser::UpdateBreathAttack] ID=%u 直接入力: MouseButton=%s ButtonState=%s Active=%s Cooldown=%.1f",
@@ -166,8 +167,6 @@ void Chaser::UpdateBreathAttack(Engine* pEngine)
 	// ★★★ ブレス中の処理 ★★★
 	if (m_bBreathActive)
 	{
-		// ★★★ ブレス中はボタン状態を更新しない（押しっぱなし防止）★★★
-
 		// 方向を下方向に傾ける
 		D3DXVECTOR3 adjustedDirection = m_depth;
 
@@ -196,11 +195,18 @@ void Chaser::UpdateBreathAttack(Engine* pEngine)
 		{
 			m_bBreathActive = false;
 
-			// ★★★ ブレス終了時にボタン状態をリセット（現在の入力状態で）★★★
-			m_bBreathButtonPressed = isAttackPressed;
+			// ★★★ 重要: ブレス終了時は必ずボタン状態を「離された」としてリセット ★★★
+			// これにより、次のブレスは「押された瞬間」のみ発動する
+			m_bBreathButtonPressed = false;
 
-			NET_LOG_F("[Chaser] ★★★ブレス終了★★★ ID=%u 終了時のボタン状態=%s",
-				m_clientId, m_bBreathButtonPressed ? "Pressed" : "Released");
+			NET_LOG_F("[Chaser] ★★★ブレス終了★★★ ID=%u ボタン状態を強制リセット",
+				m_clientId);
+		}
+		else
+		{
+			// ★★★ ブレス中は常にボタン状態を「押されている」にする ★★★
+			// これにより、ブレス中にボタンを離して再び押しても反応しない
+			m_bBreathButtonPressed = true;
 		}
 
 		return; // ★★★ ブレス中は新規発動をチェックしない ★★★
@@ -243,9 +249,9 @@ void Chaser::UpdateBreathAttack(Engine* pEngine)
 		// ブレス発動
 		m_pIceBreath->Activate(m_eyePosition, adjustedDirection);
 		m_bBreathActive = true;
-		m_lastBreathTime = timeGetTime();
+		m_lastBreathTime = now;  // ★★★ クールダウンタイマー開始 ★★★
 
-		// ★★★ ブレス発動音を再生 ★★★
+								 // ★★★ ブレス発動音を再生 ★★★
 		SoundManager::SetPosition(m_eyePosition, m_depth, UP_DIRECTION, m_clientId);
 		SoundManager::Play(AK::EVENTS::PLAY_SE_BRACELET, m_clientId);
 

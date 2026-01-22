@@ -448,14 +448,18 @@ void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBas
 	// ★★★ ローカルプレイヤー以外、または凍結中は何もしない ★★★
 	if (!m_bIsLocal || m_bFrozen)
 	{
-		m_targetMeltPlayer = 0;
-
-		// ★★★ 即座に音を停止（メンバー変数を使用）★★★
-		if (m_meltingSoundId != AK_INVALID_PLAYING_ID)
+		// ★★★ ターゲットをクリア ★★★
+		if (m_targetMeltPlayer != 0)
 		{
-			SoundManager::StopEvent(m_meltingSoundId);
-			m_meltingSoundId = AK_INVALID_PLAYING_ID;
-			NET_LOG_F("[Runner::UpdateMeltTarget] 解凍音停止: ID=%u (凍結中またはリモート)", m_clientId);
+			m_targetMeltPlayer = 0;
+
+			// ★★★ 解凍音を即座に停止 ★★★
+			if (m_meltingSoundId != AK_INVALID_PLAYING_ID)
+			{
+				SoundManager::StopEvent(m_meltingSoundId);
+				m_meltingSoundId = AK_INVALID_PLAYING_ID;
+				NET_LOG_F("[Runner::UpdateMeltTarget] 解凍音停止: ID=%u (凍結中またはリモート)", m_clientId);
+			}
 		}
 
 		return;
@@ -464,34 +468,50 @@ void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBas
 	// ★★★ 攻撃キーが押されているかチェック ★★★
 	bool isHelping = (m_keyFlag & ATTACK_KEY) != 0;
 
-	uint32_t newTarget = 0;
-	if (isHelping)
+	// ★★★ 攻撃キーが離されている場合は即座にターゲットをクリア ★★★
+	if (!isHelping)
 	{
-		D3DXVECTOR3 myPos = GetCenterPosition();
-		float minDist = f_meltRange;
-
-		for (const auto& kv : players)
+		if (m_targetMeltPlayer != 0)
 		{
-			if (kv.first == m_clientId) continue;
-
-			Runner* other = dynamic_cast<Runner*>(kv.second);
-			if (!other || !other->IsFrozen()) continue;
-
-			D3DXVECTOR3 diff = other->GetCenterPosition() - myPos;
-			float dist = D3DXVec3Length(&diff);
-
-			if (dist < minDist)
+			// ★★★ 解凍音を即座に停止 ★★★
+			if (m_meltingSoundId != AK_INVALID_PLAYING_ID)
 			{
-				minDist = dist;
-				newTarget = kv.first;
+				SoundManager::StopEvent(m_meltingSoundId);
+				m_meltingSoundId = AK_INVALID_PLAYING_ID;
+				NET_LOG_F("[Runner::UpdateMeltTarget] 解凍音停止: ID=%u (攻撃キー離された)", m_clientId);
 			}
+
+			m_targetMeltPlayer = 0;
+		}
+		return;
+	}
+
+	// ★★★ 攻撃キーが押されている場合、最も近い凍結プレイヤーを探す ★★★
+	uint32_t newTarget = 0;
+	D3DXVECTOR3 myPos = GetCenterPosition();
+	float minDist = f_meltRange;
+
+	for (const auto& kv : players)
+	{
+		if (kv.first == m_clientId) continue;
+
+		Runner* other = dynamic_cast<Runner*>(kv.second);
+		if (!other || !other->IsFrozen()) continue;
+
+		D3DXVECTOR3 diff = other->GetCenterPosition() - myPos;
+		float dist = D3DXVec3Length(&diff);
+
+		if (dist < minDist)
+		{
+			minDist = dist;
+			newTarget = kv.first;
 		}
 	}
 
-	// ★★★ ターゲットが変わった、または攻撃キーが離された場合 ★★★
+	// ★★★ ターゲットが変わった場合 ★★★
 	if (newTarget != m_targetMeltPlayer)
 	{
-		// ★★★ 前の音を即座に停止（メンバー変数を使用）★★★
+		// ★★★ 前の音を即座に停止 ★★★
 		if (m_meltingSoundId != AK_INVALID_PLAYING_ID)
 		{
 			SoundManager::StopEvent(m_meltingSoundId);
