@@ -730,58 +730,62 @@ void SceneGame::UpdateLocalPlayer()
 	}
 }
 
-// SceneGame.cpp - UpdateRemotePlayers() の完全修正版
-
 void SceneGame::UpdateRemotePlayers()
 {
 	static DWORD lastLog = 0;
 	DWORD now = timeGetTime();
 	bool shouldLog = (now - lastLog > 2000);
 
-	// ★★★ static変数をグローバルスコープに配置 ★★★
+	// 再生中の PlayingID をプレイヤーごとに保持
 	static std::map<uint32_t, AkPlayingID> footSoundMap;
 	static std::map<uint32_t, AkPlayingID> breathSoundMap;
-		
+	static std::map<uint32_t, AkPlayingID> remoteMeltSounds;
+	static std::map<uint32_t, uint32_t> lastMeltTarget; // 前回の melt target
+	static std::map<uint32_t, bool> wasFrozenMap;
+
 	for (auto& kv : m_players)
 	{
-		if (!kv.second || kv.second->IsLocal())
-			continue;
+		if (!kv.second) continue;
 
 		uint32_t remoteId = kv.first;
 		CharacterBase* pRemote = kv.second;
 
+		// ★★ 重要: 自分のクライアントはここで更新しない（ホストの二重適用防止） ★★
+		if (remoteId == m_localClientId) continue;
+		if (pRemote->IsLocal()) continue; // 念のためのガード
+
+										  // 予測移動が有効なら予測を適用
 		if (m_bEnablePrediction)
 		{
 			pRemote->PredictMovement(m_deltaTime);
 		}
 
-		// ★★★ 3D位置を常に更新 ★★★
+		// 常に 3D サウンドの位置は更新する
 		D3DXVECTOR3 remotePos = pRemote->GetPosition();
 		D3DXVECTOR3 remoteDir = pRemote->GetDepth();
 		SoundManager::SetPosition(remotePos, remoteDir, CharacterBase::UP_DIRECTION, remoteId);
 
-		// ★★★ キーフラグから直接判定（soundEvents に依存しない）★★★
+		// キーフラグから移動状態を判定
 		unsigned char keyFlag = pRemote->GetKeyFlag();
-		bool isMoving = (keyFlag & 0x0F) != 0; // W,A,S,Dのいずれか
-		bool isDashing = (keyFlag & 0x20) != 0; // DASH_KEY
-		bool isCrouching = (keyFlag & 0x10) != 0; // CROUCH_KEY
+		bool isMoving = (keyFlag & 0x0F) != 0; // W,A,S,D のいずれか
+		bool isDashing = (keyFlag & DASH_KEY) != 0;
+		bool isCrouching = (keyFlag & CROUCH_KEY) != 0;
 
-												  // ★★★ ローカルプレイヤーとリモートプレイヤーの役割を取得 ★★★
+		// ローカル／リモートの役割で足音を聞くか決める
 		PlayerRole localRole = m_localRole;
-		PlayerRole remoteRole = m_playerRoles[remoteId];
-
-		// ★★★ 役割が異なる場合のみ足音を再生（同じ役割の足音は聞こえない）★★★
+		PlayerRole remoteRole = ROLE_NONE;
+		{
+			auto it = m_playerRoles.find(remoteId);
+			if (it != m_playerRoles.end()) remoteRole = it->second;
+		}
 		bool shouldPlayFootsteps = (localRole != remoteRole);
 
-		// ★★★ 追加: 鬼の場合、ブレス中かチェック ★★★
+		// 鬼のブレス中は足音を抑制する（既存仕様）
 		bool isBreathing = false;
 		if (remoteRole == ROLE_CHASER)
 		{
 			Chaser* chaser = dynamic_cast<Chaser*>(pRemote);
-			if (chaser)
-			{
-				isBreathing = chaser->IsBreathing();
-			}
+			if (chaser) isBreathing = chaser->IsBreathing();
 		}
 
 		if (shouldLog)
@@ -802,29 +806,35 @@ void SceneGame::UpdateRemotePlayers()
 				shouldPlayFootsteps ? "Yes" : "No");
 		}
 
-		// ★★★ 足音処理（役割が異なる場合 AND ブレス中でない場合のみ）★★★
+		// ===== 足音処理 =====
 		if (isMoving && shouldPlayFootsteps && !isBreathing)
 		{
-			// ★★★ 速度パラメータ設定（移動速度に応じて音の速さを変える）★★★
-			float footspeedParam = 0.6f; // 通常歩き
-			if (isDashing) footspeedParam = 1.0f; // ダッシュ（速い）
-			else if (isCrouching) footspeedParam = 0.3f; // しゃがみ（遅い）
-
+			// 速度に応じた RTPC を設定（歩行・ダッシュ・しゃがみ）
+			float footspeedParam = 0.6f;
+			if (isDashing) footspeedParam = 1.0f;
+			else if (isCrouching) footspeedParam = 0.3f;
 			AK::SoundEngine::SetRTPCValue(AK::GAME_PARAMETERS::FOOTSPEED, footspeedParam, remoteId);
 
-			// 足音が再生されていなければ開始
+			// 再生されていなければ開始（再生中なら再生を重ねない）
 			if (footSoundMap[remoteId] == AK_INVALID_PLAYING_ID)
 			{
 				SoundManager::SetPosition(remotePos, remoteDir, CharacterBase::UP_DIRECTION, remoteId);
 				footSoundMap[remoteId] = SoundManager::Play(AK::EVENTS::PLAY_SE_FOOT, remoteId);
 
-				NET_LOG_F("[UpdateRemotePlayers] ★足音再生開始★ Player[%u] PlayingID=%u Speed=%.2f",
-					remoteId, footSoundMap[remoteId], footspeedParam);
+				if (shouldLog)
+				{
+					NET_LOG_F("[UpdateRemotePlayers] ★足音再生開始★ Player[%u] PlayingID=%u Speed=%.2f",
+						remoteId, footSoundMap[remoteId], footspeedParam);
+				}
+			}
+			else
+			{
+				// 再生中であれば RTPC 更新のみ（再生を再起動しない）
 			}
 		}
 		else
 		{
-			// ★★★ 移動していない、同じ役割、またはブレス中の場合は足音停止 ★★★
+			// 止まった／ブレス中／同役割 の場合は足音を停止（既に停止済みなら何もしない）
 			if (footSoundMap[remoteId] != AK_INVALID_PLAYING_ID)
 			{
 				SoundManager::StopEvent(footSoundMap[remoteId]);
@@ -838,19 +848,12 @@ void SceneGame::UpdateRemotePlayers()
 			}
 		}
 
-		// ★★★ ブレス音処理（鬼のみ）★★★
+		// ===== ブレス（鬼）処理 =====
 		if (remoteRole == ROLE_CHASER)
 		{
 			Chaser* chaser = dynamic_cast<Chaser*>(pRemote);
 			if (chaser)
 			{
-				if (shouldLog)
-				{
-					NET_LOG_F("[UpdateRemotePlayers] Chaser[%u] IsBreathing=%s CurrentBreathID=%u",
-						remoteId, isBreathing ? "Yes" : "No", breathSoundMap[remoteId]);
-				}
-
-				// ★★★ ブレス中は音を再生 ★★★
 				if (isBreathing)
 				{
 					if (breathSoundMap[remoteId] == AK_INVALID_PLAYING_ID)
@@ -858,118 +861,96 @@ void SceneGame::UpdateRemotePlayers()
 						SoundManager::SetPosition(remotePos, remoteDir, CharacterBase::UP_DIRECTION, remoteId);
 						breathSoundMap[remoteId] = SoundManager::Play(AK::EVENTS::PLAY_SE_BRACELET, remoteId);
 
-						NET_LOG_F("[UpdateRemotePlayers] ★ブレス音再生開始★ Chaser[%u] PlayingID=%u",
-							remoteId, breathSoundMap[remoteId]);
+						if (shouldLog)
+						{
+							NET_LOG_F("[UpdateRemotePlayers] ★ブレス音再生開始★ Chaser[%u] PlayingID=%u",
+								remoteId, breathSoundMap[remoteId]);
+						}
 					}
 				}
 				else
 				{
-					// ★★★ ブレス終了時は音を停止 ★★★
 					if (breathSoundMap[remoteId] != AK_INVALID_PLAYING_ID)
 					{
 						SoundManager::StopEvent(breathSoundMap[remoteId]);
-
-						NET_LOG_F("[UpdateRemotePlayers] ★ブレス音停止★ Chaser[%u] PlayingID=%u",
-							remoteId, breathSoundMap[remoteId]);
-
 						breathSoundMap[remoteId] = AK_INVALID_PLAYING_ID;
+
+						if (shouldLog)
+						{
+							NET_LOG_F("[UpdateRemotePlayers] ★ブレス音停止★ Chaser[%u] PlayingID=%u", remoteId, breathSoundMap[remoteId]);
+						}
 					}
 				}
 			}
 		}
 
+		// ===== Runner（解凍/凍結）処理 =====
 		if (remoteRole == ROLE_RUNNER)
 		{
 			Runner* runner = dynamic_cast<Runner*>(pRemote);
 			if (runner)
 			{
-				// ★★★ 完全解凍時と同じ方法で音を管理（static map使用） ★★★
-				static std::map<uint32_t, AkPlayingID> remoteMeltSounds;
-				static std::map<uint32_t, uint32_t> lastMeltTarget; // 前回のターゲットID
-
-																	// ★★★ 解凍ターゲットがいるかチェック ★★★
+				// melt sound 管理（UpdateRemotePlayers 側で remote の解凍音を管理）
 				uint32_t meltTarget = runner->GetMeltTargetId();
-				bool isAttacking = (keyFlag & 0x40) != 0; // ATTACK_KEY
+				bool isFrozen = runner->IsFrozen();
 
-														  // ★★★ 攻撃キーが押されている AND ターゲットがいる → 音を再生 ★★★
-				bool shouldPlayMeltSound = (isAttacking && meltTarget != 0);
-
-				if (shouldPlayMeltSound)
+				// 凍結開始検出
+				bool wasFrozen = wasFrozenMap[remoteId];
+				if (isFrozen && !wasFrozen)
 				{
-					// ★★★ ターゲットが変わった場合、または音が停止している場合のみ再生 ★★★
-					if (meltTarget != lastMeltTarget[remoteId] ||
-						remoteMeltSounds[remoteId] == AK_INVALID_PLAYING_ID)
+					// 冷凍音を再生
+					SoundManager::SetPosition(remotePos, remoteDir, CharacterBase::UP_DIRECTION, remoteId);
+					SoundManager::Play(AK::EVENTS::PLAY_SE_FREEZE, remoteId);
+
+					if (shouldLog)
 					{
-						// 前の音を停止
-						if (remoteMeltSounds[remoteId] != AK_INVALID_PLAYING_ID)
-						{
-							SoundManager::StopEvent(remoteMeltSounds[remoteId]);
-							remoteMeltSounds[remoteId] = AK_INVALID_PLAYING_ID;
-						}
+						NET_LOG_F("[UpdateRemotePlayers] ★凍結音再生★ Runner[%u]", remoteId);
+					}
+				}
 
-						// 新しい音を再生
+				// 解凍ターゲット変更で音の停止/開始を管理（remoteMeltSounds map を使う）
+				if (meltTarget != lastMeltTarget[remoteId])
+				{
+					// ターゲットが変わる場合は既存の解凍音を止める
+					if (remoteMeltSounds[remoteId] != AK_INVALID_PLAYING_ID)
+					{
+						SoundManager::StopEvent(remoteMeltSounds[remoteId]);
+						remoteMeltSounds[remoteId] = AK_INVALID_PLAYING_ID;
+						if (shouldLog) NET_LOG_F("[UpdateRemotePlayers] ★解凍音停止(ターゲット変更)★ Runner[%u]", remoteId);
+					}
+					lastMeltTarget[remoteId] = meltTarget;
+				}
+
+				// 解凍が進行している場合は再生開始（remote 側の再生はここで一元化）
+				// runner->GetNetState().frozenAmount の更新タイミング等で再生判定
+				// ※ 実際の量判定は Runner 側の状態に依存するため簡易に isFrozen==true で管理しない
+				// （解凍量の増加検出は Runner::UpdateFromNetwork 内でも行っているが、remote ではここで確実に管理）
+				// ここでは既に音が再生中でなければ開始する簡易ルールを採用
+				if (!isFrozen && runner->GetMeltTargetId() != 0)
+				{
+					if (remoteMeltSounds[remoteId] == AK_INVALID_PLAYING_ID)
+					{
 						SoundManager::SetPosition(remotePos, remoteDir, CharacterBase::UP_DIRECTION, remoteId);
-						//remoteMeltSounds[remoteId] = SoundManager::Play(AK::EVENTS::PLAY_SE_THAWING, remoteId);
-
-						NET_LOG_F("[UpdateRemotePlayers] ★解凍音再生開始★ Runner[%u] Target=%u->%u PlayingID=%u",
-							remoteId, lastMeltTarget[remoteId], meltTarget, remoteMeltSounds[remoteId]);
-
-						lastMeltTarget[remoteId] = meltTarget;
+						remoteMeltSounds[remoteId] = SoundManager::Play(AK::EVENTS::PLAY_SE_THAWING, remoteId);
+						if (shouldLog) NET_LOG_F("[UpdateRemotePlayers] ★解凍音再生開始★ Runner[%u] PlayingID=%u", remoteId, remoteMeltSounds[remoteId]);
 					}
 				}
 				else
 				{
-					// ★★★ 攻撃キーが離された OR ターゲットがいない → 音を停止 ★★★
+					// 解凍中でないなら解凍音を停止
 					if (remoteMeltSounds[remoteId] != AK_INVALID_PLAYING_ID)
 					{
 						SoundManager::StopEvent(remoteMeltSounds[remoteId]);
 						remoteMeltSounds[remoteId] = AK_INVALID_PLAYING_ID;
-
-						NET_LOG_F("[UpdateRemotePlayers] ★解凍音停止★ Runner[%u] (Attacking=%s Target=%u)",
-							remoteId, isAttacking ? "Yes" : "No", meltTarget);
+						if (shouldLog) NET_LOG_F("[UpdateRemotePlayers] ★解凍音停止★ Runner[%u]", remoteId);
 					}
-
-					// ターゲットもクリア
-					lastMeltTarget[remoteId] = 0;
-				}
-
-				// ★★★ 凍結音処理（既存のまま維持）★★★
-				static std::map<uint32_t, bool> wasFrozenMap;
-				bool isFrozen = runner->IsFrozen();
-				bool wasFrozen = wasFrozenMap[remoteId];
-
-				if (isFrozen && !wasFrozen)
-				{
-					// ★★★ 新規凍結 → 凍結音を再生 ★★★
-					SoundManager::SetPosition(remotePos, remoteDir, CharacterBase::UP_DIRECTION, remoteId);
-					SoundManager::Play(AK::EVENTS::PLAY_SE_FREEZE, remoteId);
-
-					NET_LOG_F("[UpdateRemotePlayers] ★凍結音再生★ Runner[%u]", remoteId);
-				}
-				else if (!isFrozen && wasFrozen)
-				{
-					// ★★★ 解凍完了時は解凍音も停止 ★★★
-					if (remoteMeltSounds[remoteId] != AK_INVALID_PLAYING_ID)
-					{
-						SoundManager::StopEvent(remoteMeltSounds[remoteId]);
-						remoteMeltSounds[remoteId] = AK_INVALID_PLAYING_ID;
-					}
-
-					// 解凍完了音を再生
-					SoundManager::SetPosition(remotePos, remoteDir, CharacterBase::UP_DIRECTION, remoteId);
-					SoundManager::Play(AK::EVENTS::PLAY_SE_THAW_COMPLETE, remoteId);
-
-					NET_LOG_F("[UpdateRemotePlayers] ★解凍完了音再生★ Runner[%u]", remoteId);
-
-					// ターゲットもクリア
-					lastMeltTarget[remoteId] = 0;
 				}
 
 				wasFrozenMap[remoteId] = isFrozen;
 			}
 		}
 
-		// ★★★ 遮蔽/遮音の計算 ★★★
+		// ===== 遮蔽・遮音の計算（リスナー = ローカルプレイヤー） =====
 		if (m_pLocalPlayer)
 		{
 			D3DXVECTOR3 localPos = m_pLocalPlayer->GetPosition();
@@ -982,16 +963,22 @@ void SceneGame::UpdateRemotePlayers()
 			D3DXVECTOR3 dir_toRemote = remotePos - eyePos;
 			float dist = D3DXVec3Length(&dir_toRemote);
 			float maxDist = 50.0f;
+
+			// 距離による小さなファクタ（遠ければ小さくする）
 			float distFactor = min(dist / maxDist, 1.0f) / 2.0f;
 
-			float obstruction = blocked ? (0.7f + distFactor) : distFactor;
-			float occlusion = blocked ? (0.5f + distFactor) : (distFactor * 0.3f);
+			// blocked のときでも完全消音にならないように穏やかめの係数にする
+			float obstruction = blocked ? (0.6f + distFactor * 0.4f) : distFactor;
+			float occlusion = blocked ? (0.4f + distFactor * 0.6f) : (distFactor * 0.3f);
+
+			obstruction = min(obstruction, 1.0f);
+			occlusion = min(occlusion, 1.0f);
 
 			AK::SoundEngine::SetObjectObstructionAndOcclusion(
 				remoteId,
 				SoundManager::ID_LISTENER,
-				min(obstruction, 1.0f),
-				min(occlusion, 1.0f)
+				obstruction,
+				occlusion
 			);
 
 			if (shouldLog)

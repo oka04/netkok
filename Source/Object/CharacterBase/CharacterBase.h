@@ -66,6 +66,7 @@ public:
 	static const D3DXVECTOR3 UP_DIRECTION;
 	AkPlayingID m_seFootId;
 protected:
+	AkPlayingID m_footstepPlayingId = AK_INVALID_PLAYING_ID;
 	static const D3DXVECTOR3 DEPTH_DIRECTION;
 
 	void CharacterBase::PlayFootstepSound();

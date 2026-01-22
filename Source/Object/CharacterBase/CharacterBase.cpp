@@ -243,6 +243,10 @@ void CharacterBase::Move(Map & map)
 }
 void CharacterBase::PlayFootstepSound()
 {
+	// 既に足音が再生中であれば二重再生を防ぐ
+	if (m_seFootId != AK_INVALID_PLAYING_ID) return;
+
+	// フットスピードパラメータを決定
 	float footspeedParam = 0.0f;
 
 	if (m_keyFlag & DASH_KEY)
@@ -258,31 +262,28 @@ void CharacterBase::PlayFootstepSound()
 		footspeedParam = 0.6f; // 歩行時は中間
 	}
 
-	// ★★★ RTPCで足音の速度を設定 ★★★
+	// RTPC で足音の速度を設定
 	AK::SoundEngine::SetRTPCValue(AK::GAME_PARAMETERS::FOOTSPEED, footspeedParam, m_clientId);
 
-	// ★★★ まだ足音が再生されていなければ開始 ★★★
+	// 足音を再生
+	SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, m_clientId);
+
+	// デバッグログ（頻度を下げる）
+	static std::map<uint32_t, DWORD> lastPlayLog;
+	DWORD now = timeGetTime();
+	if (now - lastPlayLog[m_clientId] > 2000)
+	{
+		NET_LOG_F("[CharacterBase::PlayFootstepSound] ID=%u で足音再生開始 (IsLocal=%s)",
+			m_clientId, m_bIsLocal ? "Yes" : "No");
+		lastPlayLog[m_clientId] = now;
+	}
+
+	m_seFootId = SoundManager::Play(AK::EVENTS::PLAY_SE_FOOT, m_clientId);
+
+	// 再生に失敗したらログを出す
 	if (m_seFootId == AK_INVALID_PLAYING_ID)
 	{
-		SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, m_clientId);
-
-		// ★★★ デバッグ: 足音再生前のログ ★★★
-		static std::map<uint32_t, DWORD> lastPlayLog;
-		DWORD now = timeGetTime();
-		if (now - lastPlayLog[m_clientId] > 2000)
-		{
-			NET_LOG_F("[CharacterBase::PlayFootstepSound] ID=%u で足音再生開始 (IsLocal=%s)",
-				m_clientId, m_bIsLocal ? "Yes" : "No");
-			lastPlayLog[m_clientId] = now;
-		}
-
-		m_seFootId = SoundManager::Play(AK::EVENTS::PLAY_SE_FOOT, m_clientId);
-
-		// ★★★ デバッグ: 再生結果の確認 ★★★
-		if (m_seFootId == AK_INVALID_PLAYING_ID)
-		{
-			NET_LOG_F("[CharacterBase::PlayFootstepSound] エラー: ID=%u の足音再生に失敗！", m_clientId);
-		}
+		NET_LOG_F("[CharacterBase::PlayFootstepSound] エラー: ID=%u の足音再生に失敗！", m_clientId);
 	}
 }
 
@@ -294,6 +295,7 @@ void CharacterBase::StopFootstepSound()
 		m_seFootId = AK_INVALID_PLAYING_ID;
 	}
 }
+
 void CharacterBase::SetMouseCursor(Engine * pEngine, Camera & camera)
 {
 	POINT move = pEngine->GetMouseMove();
