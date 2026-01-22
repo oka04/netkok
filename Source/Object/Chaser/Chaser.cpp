@@ -145,19 +145,21 @@ void Chaser::UpdateBreathAttack(Engine* pEngine)
 		return;
 	}
 
-	// ★★★ 現在の攻撃キーの状態（マウス入力から直接取得）★★★
-	bool isAttackPressed = (m_keyFlag & ATTACK_KEY) != 0;
+	// ★★★ 重要: Engineから直接マウス入力を取得（m_keyFlagは使わない）★★★
+	// m_keyFlagはネットワーク同期で上書きされるため、ローカル入力判定には使用できない
+	bool isAttackPressed = pEngine->GetMouseButton(0);  // 0 = 左ボタン
 
-	// ★★★ デバッグログ（頻度を下げる）★★★
+														// ★★★ デバッグログ（頻度を下げる）★★★
 	static DWORD lastInputLog = 0;
 	DWORD now = timeGetTime();
-	if (now - lastInputLog > 500)
+	if (now - lastInputLog > 200)  // 200msごとにログ
 	{
-		NET_LOG_F("[Chaser::UpdateBreathAttack] ID=%u Input Check: KeyFlag=0x%02X AttackPressed=%s ButtonState=%s Active=%s",
-			m_clientId, m_keyFlag,
-			isAttackPressed ? "Yes" : "No",
-			m_bBreathButtonPressed ? "Yes" : "No",
-			m_bBreathActive ? "Yes" : "No");
+		NET_LOG_F("[Chaser::UpdateBreathAttack] ID=%u 直接入力: MouseButton=%s ButtonState=%s Active=%s Cooldown=%.1f",
+			m_clientId,
+			isAttackPressed ? "Pressed" : "Released",
+			m_bBreathButtonPressed ? "WasPressed" : "WasReleased",
+			m_bBreathActive ? "Active" : "Inactive",
+			f_breathCooldown - ((now - m_lastBreathTime) / 1000.0f));
 		lastInputLog = now;
 	}
 
@@ -194,10 +196,10 @@ void Chaser::UpdateBreathAttack(Engine* pEngine)
 		{
 			m_bBreathActive = false;
 
-			// ★★★ ブレス終了時にボタン状態をリセット ★★★
+			// ★★★ ブレス終了時にボタン状態をリセット（現在の入力状態で）★★★
 			m_bBreathButtonPressed = isAttackPressed;
 
-			NET_LOG_F("[Chaser] ブレス終了: ID=%u ButtonState=%s",
+			NET_LOG_F("[Chaser] ★★★ブレス終了★★★ ID=%u 終了時のボタン状態=%s",
 				m_clientId, m_bBreathButtonPressed ? "Pressed" : "Released");
 		}
 
@@ -205,10 +207,20 @@ void Chaser::UpdateBreathAttack(Engine* pEngine)
 	}
 
 	// ★★★ ボタンが「押された瞬間」を検出（エッジ検出）★★★
+	// 前フレームで押されていなくて、今フレームで押されている = 押された瞬間
 	bool isButtonJustPressed = isAttackPressed && !m_bBreathButtonPressed;
 
 	// ★★★ 次のフレーム用に現在の状態を保存 ★★★
 	m_bBreathButtonPressed = isAttackPressed;
+
+	// ★★★ デバッグログ（押された瞬間のみ）★★★
+	if (isButtonJustPressed)
+	{
+		NET_LOG_F("[Chaser] ★ボタン押下検出★ ID=%u Cooldown=%.1f CanUse=%s",
+			m_clientId,
+			f_breathCooldown - ((now - m_lastBreathTime) / 1000.0f),
+			CanUseBreath() ? "Yes" : "No");
+	}
 
 	// ★★★ ブレス発動条件チェック ★★★
 	// 1. ボタンが「押された瞬間」である
@@ -237,7 +249,7 @@ void Chaser::UpdateBreathAttack(Engine* pEngine)
 		SoundManager::SetPosition(m_eyePosition, m_depth, UP_DIRECTION, m_clientId);
 		SoundManager::Play(AK::EVENTS::PLAY_SE_BRACELET, m_clientId);
 
-		NET_LOG_F("[Chaser] ★★★ブレス発動★★★ ID=%u Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
+		NET_LOG_F("[Chaser] ★★★ブレス発動成功★★★ ID=%u Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
 			m_clientId,
 			m_eyePosition.x, m_eyePosition.y, m_eyePosition.z,
 			adjustedDirection.x, adjustedDirection.y, adjustedDirection.z);

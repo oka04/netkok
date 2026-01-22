@@ -24,7 +24,7 @@
 								<StateRef Name="Frozen" ID="{4E0DB2B2-1166-4D1F-B43B-807296F6784D}"/>
 								<State Name="" ID="{B29FF4D7-AB97-4480-974C-4B571B412E2D}" ShortID="255873538">
 									<PropertyList>
-										<Property Name="Lowpass" Type="int16" Value="80"/>
+										<Property Name="Lowpass" Type="int16" Value="30"/>
 									</PropertyList>
 								</State>
 							</CustomState>

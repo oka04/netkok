@@ -95,4 +95,5 @@ private:
 	float f_meltSpeed;
 	uint32_t m_targetMeltPlayer;
 	bool m_bFullyMelted;
+	AkPlayingID m_meltingSoundId;
 };
