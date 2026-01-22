@@ -228,11 +228,8 @@ void CharacterBase::Move(Map & map)
 
 		map.MoveCheck(m_position, vector, f_radius);
 
-		// ★★★ 足音フラグを立てる ★★★
 		m_soundEvents |= SOUND_FOOTSTEP;
 
-		// ★★★ 修正: ローカルプレイヤーは足音を再生しない ★★★
-		// （リモートプレイヤーのみUpdateRemotePlayers()で再生）
 	}
 	else
 	{
@@ -246,7 +243,6 @@ void CharacterBase::Move(Map & map)
 }
 void CharacterBase::PlayFootstepSound()
 {
-	// ★★★ 足音の速度を計算（Patrollerと同じ方式）★★★
 	float footspeedParam = 0.0f;
 
 	if (m_keyFlag & DASH_KEY)

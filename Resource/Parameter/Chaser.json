@@ -1,5 +1,5 @@
 {
-  "crouchSpeed": 1.5,
+  "crouchSpeed": 5.5,
   "walkSpeed": 5.5,
   "maxAngleV": 60.0,
   "minAngleV": -10.0,
