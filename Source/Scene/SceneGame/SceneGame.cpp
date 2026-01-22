@@ -884,34 +884,35 @@ void SceneGame::UpdateRemotePlayers()
 			Runner* runner = dynamic_cast<Runner*>(pRemote);
 			if (runner)
 			{
+				// ★★★ 完全解凍時と同じ方法で音を管理（static map使用） ★★★
+				static std::map<uint32_t, AkPlayingID> remoteMeltSounds;
+
 				// ★★★ 解凍ターゲットがいるかチェック ★★★
 				uint32_t meltTarget = runner->GetMeltTargetId();
 				bool isAttacking = (keyFlag & 0x40) != 0; // ATTACK_KEY
 
-				static std::map<uint32_t, AkPlayingID> meltSoundMap;
-
-				// ★★★ 修正: 攻撃キーが押されている AND ターゲットがいる → 音を再生 ★★★
+														  // ★★★ 攻撃キーが押されている AND ターゲットがいる → 音を再生 ★★★
 				bool shouldPlayMeltSound = (isAttacking && meltTarget != 0);
 
 				if (shouldPlayMeltSound)
 				{
 					// 解凍音再生（まだ再生されていなければ）
-					if (meltSoundMap[remoteId] == AK_INVALID_PLAYING_ID)
+					if (remoteMeltSounds[remoteId] == AK_INVALID_PLAYING_ID)
 					{
 						SoundManager::SetPosition(remotePos, remoteDir, CharacterBase::UP_DIRECTION, remoteId);
-						meltSoundMap[remoteId] = SoundManager::Play(AK::EVENTS::PLAY_SE_THAWING, remoteId);
+						remoteMeltSounds[remoteId] = SoundManager::Play(AK::EVENTS::PLAY_SE_THAWING, remoteId);
 
 						NET_LOG_F("[UpdateRemotePlayers] ★解凍音再生開始★ Runner[%u] Target=%u PlayingID=%u",
-							remoteId, meltTarget, meltSoundMap[remoteId]);
+							remoteId, meltTarget, remoteMeltSounds[remoteId]);
 					}
 				}
 				else
 				{
-					// ★★★ 攻撃キーが離された OR ターゲットがいない → 即座に停止 ★★★
-					if (meltSoundMap[remoteId] != AK_INVALID_PLAYING_ID)
+					// ★★★ 攻撃キーが離された OR ターゲットがいない → 音を停止（完全解凍時と同じ方法） ★★★
+					if (remoteMeltSounds[remoteId] != AK_INVALID_PLAYING_ID)
 					{
-						SoundManager::StopEvent(meltSoundMap[remoteId]);
-						meltSoundMap[remoteId] = AK_INVALID_PLAYING_ID;
+						SoundManager::StopEvent(remoteMeltSounds[remoteId]);
+						remoteMeltSounds[remoteId] = AK_INVALID_PLAYING_ID;
 
 						NET_LOG_F("[UpdateRemotePlayers] ★解凍音停止★ Runner[%u] (Attacking=%s Target=%u)",
 							remoteId, isAttacking ? "Yes" : "No", meltTarget);
@@ -2280,54 +2281,18 @@ void SceneGame::Exit()
 	{
 		if (kv.second)
 		{
-			// 足音
-			if (kv.second->m_seFootId != AK_INVALID_PLAYING_ID)
-			{
-				SoundManager::StopEvent(kv.second->m_seFootId);
-				kv.second->m_seFootId = AK_INVALID_PLAYING_ID;
-			}
-
-			// Runner の解凍音
-			if (m_playerRoles[kv.first] == ROLE_RUNNER)
-			{
-				Runner* runner = dynamic_cast<Runner*>(kv.second);
-				if (runner && runner->m_meltingSoundId != AK_INVALID_PLAYING_ID)
-				{
-					SoundManager::StopEvent(runner->m_meltingSoundId);
-					runner->m_meltingSoundId = AK_INVALID_PLAYING_ID;
-				}
-			}
-
 			// そのプレイヤーIDに紐づく全音を停止
 			SoundManager::StopAll(kv.first);
-			NET_LOG_F("[SceneGame] Player[%u]の音停止完了", kv.first);
+			NET_LOG_F("[SceneGame] Player[%u]の全音停止完了", kv.first);
 		}
 	}
 
 	// ★★★ 3. ローカルプレイヤーの音を停止 ★★★
 	if (m_pLocalPlayer)
 	{
-		// 足音
-		if (m_pLocalPlayer->m_seFootId != AK_INVALID_PLAYING_ID)
-		{
-			SoundManager::StopEvent(m_pLocalPlayer->m_seFootId);
-			m_pLocalPlayer->m_seFootId = AK_INVALID_PLAYING_ID;
-		}
-
-		// Runner の解凍音
-		if (m_localRole == ROLE_RUNNER)
-		{
-			Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
-			if (localRunner && localRunner->m_meltingSoundId != AK_INVALID_PLAYING_ID)
-			{
-				SoundManager::StopEvent(localRunner->m_meltingSoundId);
-				localRunner->m_meltingSoundId = AK_INVALID_PLAYING_ID;
-			}
-		}
-
 		// ローカルプレイヤーIDに紐づく全音を停止
 		SoundManager::StopAll(m_localClientId);
-		NET_LOG_F("[SceneGame] LocalPlayer[%u]の音停止完了", m_localClientId);
+		NET_LOG_F("[SceneGame] LocalPlayer[%u]の全音停止完了", m_localClientId);
 	}
 
 	NET_LOG("[SceneGame] 全音停止完了");
@@ -2363,7 +2328,6 @@ void SceneGame::Exit()
 
 	NET_LOG("[SceneGame] Exit完了");
 }
-
 void SceneGame::LoadGameParameter()
 {
 	std::ifstream file(JSON_GAME_PARAMETER);
