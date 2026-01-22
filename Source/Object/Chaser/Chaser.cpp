@@ -110,22 +110,13 @@ void Chaser::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 		SetMouseCursor(pEngine, camera);
 		m_speed = f_walkSpeed * m_deltaTime;
 		Move(map);
-
-		// ★★★ ブレス中でない場合、通常の足音処理 ★★★
-		// (Move()内で自動的に処理される)
 	}
 	else
 	{
-		// ★★★ ブレス中は完全に移動不可 ★★★
 		m_speed = 0.0f;
-
-		// ★★★ 足音フラグをクリア（ブレス中は足音なし）★★★
 		m_soundEvents &= ~SOUND_FOOTSTEP;
-
-		// ★★★ ブレスフラグを立てる ★★★
 		m_soundEvents |= SOUND_BREATH;
 
-		// ★★★ 追加: ローカルプレイヤーの足音を明示的に停止 ★★★
 		if (m_bIsLocal)
 		{
 			StopFootstepSound();
@@ -137,37 +128,31 @@ void Chaser::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 	UpdateLightMatrices();
 	UpdateMatrix(light);
 }
+
 void Chaser::UpdateBreathAttack(Engine* pEngine)
 {
-	// ★★★ ローカルプレイヤー以外は処理しない ★★★
 	if (!m_bIsLocal || !m_pIceBreath)
 	{
 		return;
 	}
 
-	// ★★★ 重要: Engineから直接マウス入力を取得（m_keyFlagは使わない）★★★
-	// m_keyFlagはネットワーク同期で上書きされるため、ローカル入力判定には使用できない
-	bool isAttackPressed = pEngine->GetMouseButton(0);  // 0 = 左ボタン
-
+	bool isAttackPressed = pEngine->GetMouseButton(0);
 	DWORD now = timeGetTime();
 
-	// ★★★ デバッグログ（頻度を下げる）★★★
 	static DWORD lastInputLog = 0;
-	if (now - lastInputLog > 200)  // 200msごとにログ
+	if (now - lastInputLog > 200)
 	{
-		NET_LOG_F("[Chaser::UpdateBreathAttack] ID=%u 直接入力: MouseButton=%s ButtonState=%s Active=%s Cooldown=%.1f",
+		NET_LOG_F("[Chaser::UpdateBreathAttack] ID=%u Mouse=%s BtnState=%s Active=%s Cooldown=%.1f",
 			m_clientId,
-			isAttackPressed ? "Pressed" : "Released",
-			m_bBreathButtonPressed ? "WasPressed" : "WasReleased",
-			m_bBreathActive ? "Active" : "Inactive",
+			isAttackPressed ? "Down" : "Up",
+			m_bBreathButtonPressed ? "WasDown" : "WasUp",
+			m_bBreathActive ? "Yes" : "No",
 			f_breathCooldown - ((now - m_lastBreathTime) / 1000.0f));
 		lastInputLog = now;
 	}
 
-	// ★★★ ブレス中の処理 ★★★
 	if (m_bBreathActive)
 	{
-		// 方向を下方向に傾ける
 		D3DXVECTOR3 adjustedDirection = m_depth;
 
 		D3DXVECTOR3 rightVec;
@@ -183,58 +168,51 @@ void Chaser::UpdateBreathAttack(Engine* pEngine)
 		D3DXVec3TransformCoord(&adjustedDirection, &m_depth, &matRotation);
 		D3DXVec3Normalize(&adjustedDirection, &adjustedDirection);
 
-		// ブレスの位置と方向を更新
 		m_pIceBreath->SetPosition(m_eyePosition);
 		m_pIceBreath->SetDirection(adjustedDirection);
-
-		// ブレスの更新
 		m_pIceBreath->Update();
 
-		// ★★★ ブレスが終了したか確認 ★★★
 		if (!m_pIceBreath->IsActive())
 		{
 			m_bBreathActive = false;
+			m_bBreathButtonPressed = isAttackPressed;
 
-			// ★★★ 重要: ブレス終了時は必ずボタン状態を「離された」としてリセット ★★★
-			// これにより、次のブレスは「押された瞬間」のみ発動する
-			m_bBreathButtonPressed = false;
-
-			NET_LOG_F("[Chaser] ★★★ブレス終了★★★ ID=%u ボタン状態を強制リセット",
-				m_clientId);
+			NET_LOG_F("[Chaser] ★★★ブレス終了★★★ ID=%u CurrentBtn=%s",
+				m_clientId, isAttackPressed ? "Down" : "Up");
 		}
 		else
 		{
-			// ★★★ ブレス中は常にボタン状態を「押されている」にする ★★★
-			// これにより、ブレス中にボタンを離して再び押しても反応しない
-			m_bBreathButtonPressed = true;
+			m_bBreathButtonPressed = isAttackPressed;
 		}
 
-		return; // ★★★ ブレス中は新規発動をチェックしない ★★★
+		return;
 	}
 
-	// ★★★ ボタンが「押された瞬間」を検出（エッジ検出）★★★
-	// 前フレームで押されていなくて、今フレームで押されている = 押された瞬間
-	bool isButtonJustPressed = isAttackPressed && !m_bBreathButtonPressed;
+	if (!CanUseBreath())
+	{
+		m_bBreathButtonPressed = isAttackPressed;
 
-	// ★★★ 次のフレーム用に現在の状態を保存 ★★★
+		static DWORD lastCooldownLog = 0;
+		if (isAttackPressed && now - lastCooldownLog > 500)
+		{
+			float remaining = f_breathCooldown - ((now - m_lastBreathTime) / 1000.0f);
+			NET_LOG_F("[Chaser] クールダウン中: 残り%.1f秒", remaining);
+			lastCooldownLog = now;
+		}
+
+		return;
+	}
+
+	bool isButtonJustPressed = isAttackPressed && !m_bBreathButtonPressed;
 	m_bBreathButtonPressed = isAttackPressed;
 
-	// ★★★ デバッグログ（押された瞬間のみ）★★★
 	if (isButtonJustPressed)
 	{
-		NET_LOG_F("[Chaser] ★ボタン押下検出★ ID=%u Cooldown=%.1f CanUse=%s",
-			m_clientId,
-			f_breathCooldown - ((now - m_lastBreathTime) / 1000.0f),
-			CanUseBreath() ? "Yes" : "No");
+		NET_LOG_F("[Chaser] ★ボタン押下検出★ ID=%u 発動チェック開始", m_clientId);
 	}
 
-	// ★★★ ブレス発動条件チェック ★★★
-	// 1. ボタンが「押された瞬間」である
-	// 2. 現在ブレス中ではない
-	// 3. クールダウンが終わっている
-	if (isButtonJustPressed && !m_bBreathActive && CanUseBreath())
+	if (isButtonJustPressed)
 	{
-		// ブレス方向を下方向に傾ける
 		D3DXVECTOR3 adjustedDirection = m_depth;
 
 		D3DXVECTOR3 rightVec;
@@ -246,12 +224,10 @@ void Chaser::UpdateBreathAttack(Engine* pEngine)
 		D3DXVec3TransformCoord(&adjustedDirection, &m_depth, &matRotation);
 		D3DXVec3Normalize(&adjustedDirection, &adjustedDirection);
 
-		// ブレス発動
 		m_pIceBreath->Activate(m_eyePosition, adjustedDirection);
 		m_bBreathActive = true;
-		m_lastBreathTime = now;  // ★★★ クールダウンタイマー開始 ★★★
+		m_lastBreathTime = now;
 
-								 // ★★★ ブレス発動音を再生 ★★★
 		SoundManager::SetPosition(m_eyePosition, m_depth, UP_DIRECTION, m_clientId);
 		SoundManager::Play(AK::EVENTS::PLAY_SE_BRACELET, m_clientId);
 
@@ -260,20 +236,8 @@ void Chaser::UpdateBreathAttack(Engine* pEngine)
 			m_eyePosition.x, m_eyePosition.y, m_eyePosition.z,
 			adjustedDirection.x, adjustedDirection.y, adjustedDirection.z);
 	}
-	else if (isButtonJustPressed)
-	{
-		// ★★★ 押されたが発動しない理由をログ ★★★
-		if (m_bBreathActive)
-		{
-			NET_LOG_F("[Chaser] ブレス発動失敗: 既にブレス中");
-		}
-		else if (!CanUseBreath())
-		{
-			float remaining = f_breathCooldown - ((now - m_lastBreathTime) / 1000.0f);
-			NET_LOG_F("[Chaser] ブレス発動失敗: クールダウン中 残り%.1f秒", remaining);
-		}
-	}
 }
+
 bool Chaser::CanUseBreath() const
 {
 	DWORD now = timeGetTime();
@@ -298,10 +262,8 @@ NetPlayerState Chaser::GetNetState() const
 
 	if (m_pIceBreath && m_bBreathActive)
 	{
-		// ブレスの現在位置と方向を送信
 		D3DXVECTOR3 breathPos = m_eyePosition;
 
-		// 調整済みの方向を計算
 		D3DXVECTOR3 adjustedDirection = m_depth;
 		D3DXVECTOR3 rightVec;
 		D3DXVECTOR3 upVec(0.0f, 1.0f, 0.0f);
@@ -322,7 +284,6 @@ NetPlayerState Chaser::GetNetState() const
 	}
 	else
 	{
-		// ブレスが非アクティブの場合は0で初期化
 		state.breathPosX = 0.0f;
 		state.breathPosY = 0.0f;
 		state.breathPosZ = 0.0f;
@@ -369,17 +330,14 @@ void Chaser::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 
 		if (shouldBeActive && !m_bBreathActive)
 		{
-			//ブレスを開始
 			D3DXVECTOR3 breathPos(state.breathPosX, state.breathPosY, state.breathPosZ);
 			D3DXVECTOR3 breathDir(state.breathDirX, state.breathDirY, state.breathDirZ);
 
-			//x位置が無効な場合はm_eyePositionを使用
 			if (D3DXVec3Length(&breathPos) < 0.01f)
 			{
 				breathPos = m_eyePosition;
 			}
 
-			//方向が無効な場合はm_depthを使用
 			if (D3DXVec3Length(&breathDir) < 0.01f)
 			{
 				breathDir = m_depth;
@@ -387,14 +345,14 @@ void Chaser::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 
 			m_pIceBreath->Activate(breathPos, breathDir);
 			m_bBreathActive = true;
+			m_lastBreathTime = timeGetTime();
 
-			NET_LOG_F("[Chaser::UpdateFromNetwork] ID=%u ブレス開始: Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
+			NET_LOG_F("[Chaser::UpdateFromNetwork] ID=%u ブレス開始: Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f) Cooldown設定",
 				m_clientId, breathPos.x, breathPos.y, breathPos.z,
 				breathDir.x, breathDir.y, breathDir.z);
 		}
 		else if (!shouldBeActive && m_bBreathActive)
 		{
-			//ブレスを終了
 			m_pIceBreath->Deactivate();
 			m_bBreathActive = false;
 
@@ -402,7 +360,6 @@ void Chaser::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 		}
 		else if (shouldBeActive && m_bBreathActive)
 		{
-			//ブレス継続中 - 位置と方向を更新
 			D3DXVECTOR3 breathPos(state.breathPosX, state.breathPosY, state.breathPosZ);
 			D3DXVECTOR3 breathDir(state.breathDirX, state.breathDirY, state.breathDirZ);
 
@@ -745,6 +702,7 @@ void Chaser::CheckBreathHitPlayers(const std::vector<std::pair<uint32_t, Charact
 		lastLog = now;
 	}
 }
+
 void Chaser::LoadParameter()
 {
 	std::ifstream file(JSON_CHASER_PARAMETER);
