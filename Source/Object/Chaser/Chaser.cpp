@@ -128,7 +128,6 @@ void Chaser::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 	UpdateLightMatrices();
 	UpdateMatrix(light);
 }
-
 void Chaser::UpdateBreathAttack(Engine* pEngine)
 {
 	if (!m_bIsLocal || !m_pIceBreath)
@@ -136,6 +135,7 @@ void Chaser::UpdateBreathAttack(Engine* pEngine)
 		return;
 	}
 
+	// ★★★ 修正1: 常に現在のボタン状態を取得 ★★★
 	bool isAttackPressed = pEngine->GetMouseButton(0);
 	DWORD now = timeGetTime();
 
@@ -151,6 +151,7 @@ void Chaser::UpdateBreathAttack(Engine* pEngine)
 		lastInputLog = now;
 	}
 
+	// ★★★ ケース1: ブレス発動中 ★★★
 	if (m_bBreathActive)
 	{
 		D3DXVECTOR3 adjustedDirection = m_depth;
@@ -172,24 +173,29 @@ void Chaser::UpdateBreathAttack(Engine* pEngine)
 		m_pIceBreath->SetDirection(adjustedDirection);
 		m_pIceBreath->Update();
 
+		// ★★★ 修正2: ブレス終了判定を先に行う ★★★
 		if (!m_pIceBreath->IsActive())
 		{
+			// ブレス終了
 			m_bBreathActive = false;
-			m_bBreathButtonPressed = isAttackPressed;
 
-			NET_LOG_F("[Chaser] ★★★ブレス終了★★★ ID=%u CurrentBtn=%s",
+			// ★★★ 修正3: クールダウンタイマーを設定 ★★★
+			m_lastBreathTime = now;
+
+			NET_LOG_F("[Chaser] ★★★ブレス終了★★★ ID=%u クールダウン開始 CurrentBtn=%s",
 				m_clientId, isAttackPressed ? "Down" : "Up");
 		}
-		else
-		{
-			m_bBreathButtonPressed = isAttackPressed;
-		}
+
+		// ★★★ 修正4: ブレス中でも常にボタン状態を更新 ★★★
+		m_bBreathButtonPressed = isAttackPressed;
 
 		return;
 	}
 
+	// ★★★ ケース2: クールダウン中 ★★★
 	if (!CanUseBreath())
 	{
+		// ★★★ 修正5: クールダウン中もボタン状態を更新（重要！）★★★
 		m_bBreathButtonPressed = isAttackPressed;
 
 		static DWORD lastCooldownLog = 0;
@@ -203,7 +209,11 @@ void Chaser::UpdateBreathAttack(Engine* pEngine)
 		return;
 	}
 
+	// ★★★ ケース3: ブレス発動可能状態 ★★★
+	// ボタンが「押された瞬間」を検出（エッジ検出）
 	bool isButtonJustPressed = isAttackPressed && !m_bBreathButtonPressed;
+
+	// ★★★ 修正6: ボタン状態を即座に更新 ★★★
 	m_bBreathButtonPressed = isAttackPressed;
 
 	if (isButtonJustPressed)
@@ -226,7 +236,9 @@ void Chaser::UpdateBreathAttack(Engine* pEngine)
 
 		m_pIceBreath->Activate(m_eyePosition, adjustedDirection);
 		m_bBreathActive = true;
-		m_lastBreathTime = now;
+
+		// ★★★ 修正7: 発動時点ではクールダウンタイマーを設定しない ★★★
+		// （ブレス終了時に設定する）
 
 		SoundManager::SetPosition(m_eyePosition, m_depth, UP_DIRECTION, m_clientId);
 		SoundManager::Play(AK::EVENTS::PLAY_SE_BRACELET, m_clientId);
@@ -345,9 +357,11 @@ void Chaser::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 
 			m_pIceBreath->Activate(breathPos, breathDir);
 			m_bBreathActive = true;
-			m_lastBreathTime = timeGetTime();
 
-			NET_LOG_F("[Chaser::UpdateFromNetwork] ID=%u ブレス開始: Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f) Cooldown設定",
+			// ★★★ 修正8: ネットワークからブレス開始を受信した時点ではクールダウン設定しない ★★★
+			// （ブレス終了時に設定する必要があるが、リモートなので不要）
+
+			NET_LOG_F("[Chaser::UpdateFromNetwork] ID=%u ブレス開始: Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
 				m_clientId, breathPos.x, breathPos.y, breathPos.z,
 				breathDir.x, breathDir.y, breathDir.z);
 		}
