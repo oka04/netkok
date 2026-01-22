@@ -34,7 +34,8 @@ public:
 	bool RayToWallIntersection(const D3DXVECTOR3& rayOrigin, const D3DXVECTOR3& rayEnd, D3DXVECTOR3* outIntersection);
 
 	const D3DXVECTOR3 AdjustCameraPosition(const D3DXVECTOR3& playerPosition, const D3DXVECTOR3& desiredCameraPosition);
-	const D3DXVECTOR3& GetPlayerStartPosition();
+	const D3DXVECTOR3& GetChaserStartPosition();
+	const D3DXVECTOR3& GetRunnerStartPosition();
 
 	// A*アルゴリズムで目的地までの最短経路を調べる
 	const std::vector<D3DXVECTOR3> FindPath(const D3DXVECTOR3& startPos, const D3DXVECTOR3& targetPos);
@@ -90,10 +91,10 @@ private:
 	{
 		WALL,
 		GROUND,
-		PLAYER,
+		RUNNER_START,   
+		CHASER_START,   
 		WAYPOINT_OFFSET = 10,
 	};
-
 	struct GridCell
 	{
 		std::vector<WallRect*> wallRects;
@@ -111,7 +112,8 @@ private:
 
 	D3DXVECTOR3 m_mapSize;
 	D3DXVECTOR2 m_mapSaveSize;
-	D3DXVECTOR3 m_playerStartPosition;
+	D3DXVECTOR3 m_runnerStartPosition;  
+	D3DXVECTOR3 m_chaserStartPosition;
 
 	Primitive m_ground;
 };

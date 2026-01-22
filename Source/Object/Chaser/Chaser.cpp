@@ -43,7 +43,7 @@ void Chaser::Initialize(Engine* pEngine, Map& map, Projection* projection, Camer
 
 	LoadParameter();
 	CharacterBase::Initialize(pEngine, MODEL_CHARACTER, projection, camera, light);
-	m_position = map.GetPlayerStartPosition();
+	m_position = map.GetChaserStartPosition();
 	m_targetPosition = m_position;
 
 	CreateShadowMap(pEngine);

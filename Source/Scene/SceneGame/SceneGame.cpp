@@ -526,7 +526,7 @@ void SceneGame::UpdateNetwork()
 		if (roleAssign.clientId == m_localClientId && !m_pLocalPlayer)
 		{
 			m_localRole = roleAssign.role;
-			D3DXVECTOR3 startPos = m_map.GetPlayerStartPosition();
+			D3DXVECTOR3 startPos = m_map.GetRunnerStartPosition();
 			std::string myName = m_pClient->GetPlayerName();
 
 			NET_LOG_F("[SceneGame] ローカルプレイヤー即座に生成: Role=%s",
@@ -878,7 +878,6 @@ void SceneGame::UpdateRemotePlayers()
 			}
 		}
 
-		// ★★★ Runner の解凍音処理 ★★★
 		if (remoteRole == ROLE_RUNNER)
 		{
 			Runner* runner = dynamic_cast<Runner*>(pRemote);
@@ -886,8 +885,9 @@ void SceneGame::UpdateRemotePlayers()
 			{
 				// ★★★ 完全解凍時と同じ方法で音を管理（static map使用） ★★★
 				static std::map<uint32_t, AkPlayingID> remoteMeltSounds;
+				static std::map<uint32_t, uint32_t> lastMeltTarget; // 前回のターゲットID
 
-				// ★★★ 解凍ターゲットがいるかチェック ★★★
+																	// ★★★ 解凍ターゲットがいるかチェック ★★★
 				uint32_t meltTarget = runner->GetMeltTargetId();
 				bool isAttacking = (keyFlag & 0x40) != 0; // ATTACK_KEY
 
@@ -896,19 +896,30 @@ void SceneGame::UpdateRemotePlayers()
 
 				if (shouldPlayMeltSound)
 				{
-					// 解凍音再生（まだ再生されていなければ）
-					if (remoteMeltSounds[remoteId] == AK_INVALID_PLAYING_ID)
+					// ★★★ ターゲットが変わった場合、または音が停止している場合のみ再生 ★★★
+					if (meltTarget != lastMeltTarget[remoteId] ||
+						remoteMeltSounds[remoteId] == AK_INVALID_PLAYING_ID)
 					{
+						// 前の音を停止
+						if (remoteMeltSounds[remoteId] != AK_INVALID_PLAYING_ID)
+						{
+							SoundManager::StopEvent(remoteMeltSounds[remoteId]);
+							remoteMeltSounds[remoteId] = AK_INVALID_PLAYING_ID;
+						}
+
+						// 新しい音を再生
 						SoundManager::SetPosition(remotePos, remoteDir, CharacterBase::UP_DIRECTION, remoteId);
 						remoteMeltSounds[remoteId] = SoundManager::Play(AK::EVENTS::PLAY_SE_THAWING, remoteId);
 
-						NET_LOG_F("[UpdateRemotePlayers] ★解凍音再生開始★ Runner[%u] Target=%u PlayingID=%u",
-							remoteId, meltTarget, remoteMeltSounds[remoteId]);
+						NET_LOG_F("[UpdateRemotePlayers] ★解凍音再生開始★ Runner[%u] Target=%u->%u PlayingID=%u",
+							remoteId, lastMeltTarget[remoteId], meltTarget, remoteMeltSounds[remoteId]);
+
+						lastMeltTarget[remoteId] = meltTarget;
 					}
 				}
 				else
 				{
-					// ★★★ 攻撃キーが離された OR ターゲットがいない → 音を停止（完全解凍時と同じ方法） ★★★
+					// ★★★ 攻撃キーが離された OR ターゲットがいない → 音を停止 ★★★
 					if (remoteMeltSounds[remoteId] != AK_INVALID_PLAYING_ID)
 					{
 						SoundManager::StopEvent(remoteMeltSounds[remoteId]);
@@ -917,6 +928,9 @@ void SceneGame::UpdateRemotePlayers()
 						NET_LOG_F("[UpdateRemotePlayers] ★解凍音停止★ Runner[%u] (Attacking=%s Target=%u)",
 							remoteId, isAttacking ? "Yes" : "No", meltTarget);
 					}
+
+					// ターゲットもクリア
+					lastMeltTarget[remoteId] = 0;
 				}
 
 				// ★★★ 凍結音処理（既存のまま維持）★★★
@@ -934,11 +948,21 @@ void SceneGame::UpdateRemotePlayers()
 				}
 				else if (!isFrozen && wasFrozen)
 				{
-					// 解凍完了
+					// ★★★ 解凍完了時は解凍音も停止 ★★★
+					if (remoteMeltSounds[remoteId] != AK_INVALID_PLAYING_ID)
+					{
+						SoundManager::StopEvent(remoteMeltSounds[remoteId]);
+						remoteMeltSounds[remoteId] = AK_INVALID_PLAYING_ID;
+					}
+
+					// 解凍完了音を再生
 					SoundManager::SetPosition(remotePos, remoteDir, CharacterBase::UP_DIRECTION, remoteId);
 					SoundManager::Play(AK::EVENTS::PLAY_SE_THAW_COMPLETE, remoteId);
 
 					NET_LOG_F("[UpdateRemotePlayers] ★解凍完了音再生★ Runner[%u]", remoteId);
+
+					// ターゲットもクリア
+					lastMeltTarget[remoteId] = 0;
 				}
 
 				wasFrozenMap[remoteId] = isFrozen;
@@ -1585,8 +1609,32 @@ void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name,
 	}
 
 	bool isLocal = (clientId == m_localClientId);
-	D3DXVECTOR3 spawnPos = (pos.x == 0.0f && pos.y == 0.0f && pos.z == 0.0f)
-		? m_map.GetPlayerStartPosition() : pos;
+
+	// ★★★ 修正: 役割に応じたスタート位置を取得 ★★★
+	D3DXVECTOR3 spawnPos;
+	if (pos.x == 0.0f && pos.y == 0.0f && pos.z == 0.0f)
+	{
+		// 位置が指定されていない場合、役割に応じたスタート位置を使用
+		if (role == ROLE_CHASER)
+		{
+			spawnPos = m_map.GetChaserStartPosition();
+			NET_LOG_F("[SceneGame] 鬼のスタート位置使用: (%.1f, %.1f, %.1f)",
+				spawnPos.x, spawnPos.y, spawnPos.z);
+		}
+		else
+		{
+			spawnPos = m_map.GetRunnerStartPosition();
+			NET_LOG_F("[SceneGame] 逃げる側のスタート位置使用: (%.1f, %.1f, %.1f)",
+				spawnPos.x, spawnPos.y, spawnPos.z);
+		}
+	}
+	else
+	{
+		// 位置が明示的に指定されている場合はそれを使用
+		spawnPos = pos;
+		NET_LOG_F("[SceneGame] 指定位置使用: (%.1f, %.1f, %.1f)",
+			spawnPos.x, spawnPos.y, spawnPos.z);
+	}
 
 	// ★★★ ステップ1: Initialize() より前に ID とフラグを設定 ★★★
 	NET_LOG_F("[SceneGame] ステップ1: ID設定開始");

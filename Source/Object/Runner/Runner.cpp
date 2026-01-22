@@ -39,7 +39,7 @@ void Runner::Initialize(Engine* pEngine, Map& map, Projection* projection, Camer
 
 	LoadParameter();
 	CharacterBase::Initialize(pEngine, MODEL_CHARACTER, projection, camera, light);
-	m_position = map.GetPlayerStartPosition();
+	m_position = map.GetRunnerStartPosition();
 	m_targetPosition = m_position;
 	pEngine->AddTexture(TEXTURE_STAMINA_GAUGE);
 	m_stamina = f_maxStamina;
@@ -533,9 +533,23 @@ void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBas
 				m_clientId, newTarget, localMeltSounds[m_clientId]);
 		}
 	}
+	// ★★★ 追加: ターゲットが同じ場合でも音が再生されているか確認 ★★★
+	else if (newTarget != 0)
+	{
+		// ターゲットは同じだが音が停止している場合は再生
+		if (localMeltSounds[m_clientId] == AK_INVALID_PLAYING_ID)
+		{
+			SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, m_clientId);
+			localMeltSounds[m_clientId] = SoundManager::Play(AK::EVENTS::PLAY_SE_THAWING, m_clientId);
+
+			NET_LOG_F("[Runner::UpdateMeltTarget] 解凍音再開: ID=%u -> Target=%u PlayingID=%u",
+				m_clientId, newTarget, localMeltSounds[m_clientId]);
+		}
+	}
 
 	m_targetMeltPlayer = newTarget;
 }
+
 NetPlayerState Runner::GetNetState() const
 {
 	NetPlayerState state = CharacterBase::GetNetState();

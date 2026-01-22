@@ -357,12 +357,6 @@ const D3DXVECTOR3 Map::AdjustCameraPosition(const D3DXVECTOR3& playerPosition, c
 	return finalCameraPosition;
 }
 
-// プレイヤーの開始位置の取得
-const D3DXVECTOR3& Map::GetPlayerStartPosition()
-{
-	return m_playerStartPosition;
-}
-
 // A*アルゴリズムで目的地までの最短経路を調べる
 const vector<D3DXVECTOR3> Map::FindPath(const D3DXVECTOR3& startPos, const D3DXVECTOR3& targetPos) 
 {
@@ -548,18 +542,34 @@ void Map::LoadMap(Engine * pEngine, Camera * pCamera, Projection * pProj, Ambien
 	m_waypoints.resize(maxWaypoint);
 	m_map.resize(m_row, vector<int>(m_col, WALL));
 
-	// マップ情報をいったん格納する
+	// ★★★ 修正: プレイヤーと鬼のスタート位置を別々に管理 ★★★
+	m_runnerStartPosition = D3DXVECTOR3(0.0f, 0.0f, 0.0f);  // 逃げる側（2）
+	m_chaserStartPosition = D3DXVECTOR3(0.0f, 0.0f, 0.0f);  // 鬼（3）
+
+															// マップ情報をいったん格納する
 	for (int i = 0; i < m_row; i++)
 	{
 		for (int j = 0; j < m_col; j++) {
 			ifsMap >> m_map[i][j];
 
-			if (m_map[i][j] == PLAYER)
+			// ★★★ 2 = 逃げる側のスタート位置 ★★★
+			if (m_map[i][j] == RUNNER_START)
 			{
 				m_map[i][j] = GROUND;
-				m_playerStartPosition = D3DXVECTOR3(j * f_wallSize + f_wallSize / 2, f_groundHeight / 2, (m_row - i) * f_wallSize - f_wallSize / 2);
+				m_runnerStartPosition = D3DXVECTOR3(j * f_wallSize + f_wallSize / 2, f_groundHeight / 2, (m_row - i) * f_wallSize - f_wallSize / 2);
+				NET_LOG_F("[Map] 逃げる側スタート位置設定: (%.1f, %.1f, %.1f)",
+					m_runnerStartPosition.x, m_runnerStartPosition.y, m_runnerStartPosition.z);
 			}
-			if (m_map[i][j] >= WAYPOINT_OFFSET)
+			// ★★★ 3 = 鬼のスタート位置 ★★★
+			else if (m_map[i][j] == CHASER_START)
+			{
+				m_map[i][j] = GROUND;
+				m_chaserStartPosition = D3DXVECTOR3(j * f_wallSize + f_wallSize / 2, f_groundHeight / 2, (m_row - i) * f_wallSize - f_wallSize / 2);
+				NET_LOG_F("[Map] 鬼スタート位置設定: (%.1f, %.1f, %.1f)",
+					m_chaserStartPosition.x, m_chaserStartPosition.y, m_chaserStartPosition.z);
+			}
+			// ★★★ ウェイポイント（10以上の値）★★★
+			else if (m_map[i][j] >= WAYPOINT_OFFSET)
 			{
 				m_waypoints[m_map[i][j] - WAYPOINT_OFFSET] = D3DXVECTOR3(j * f_wallSize + f_wallSize / 2, f_groundHeight / 2, (m_row - i) * f_wallSize - f_wallSize / 2);
 				m_map[i][j] = GROUND;
@@ -588,6 +598,17 @@ void Map::LoadMap(Engine * pEngine, Camera * pCamera, Projection * pProj, Ambien
 	ifsMap.close();
 }
 
+// プレイヤーの開始位置の取得（逃げる側用）
+const D3DXVECTOR3& Map::GetRunnerStartPosition()
+{
+	return m_runnerStartPosition;
+}
+
+// ★★★ 新規追加: 鬼のスタート位置取得 ★★★
+const D3DXVECTOR3& Map::GetChaserStartPosition()
+{
+	return m_chaserStartPosition;
+}
 // 壁の生成
 void Map::CreateWall(Engine* pEngine)
 {
