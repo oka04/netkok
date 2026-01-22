@@ -55,6 +55,7 @@ public:
 	bool IsFullyMelted() const { return m_bFullyMelted; }
 	void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBase*>>& playerss);
 
+	AkPlayingID m_meltingSoundId;
 private:
 	void LoadParameter() override;
 	void ChangeSpeed();
@@ -95,5 +96,4 @@ private:
 	float f_meltSpeed;
 	uint32_t m_targetMeltPlayer;
 	bool m_bFullyMelted;
-	AkPlayingID m_meltingSoundId;
 };
