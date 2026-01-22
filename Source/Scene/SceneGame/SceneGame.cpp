@@ -741,7 +741,7 @@ void SceneGame::UpdateRemotePlayers()
 	// ★★★ static変数をグローバルスコープに配置 ★★★
 	static std::map<uint32_t, AkPlayingID> footSoundMap;
 	static std::map<uint32_t, AkPlayingID> breathSoundMap;
-
+		
 	for (auto& kv : m_players)
 	{
 		if (!kv.second || kv.second->IsLocal())
@@ -909,7 +909,7 @@ void SceneGame::UpdateRemotePlayers()
 
 						// 新しい音を再生
 						SoundManager::SetPosition(remotePos, remoteDir, CharacterBase::UP_DIRECTION, remoteId);
-						remoteMeltSounds[remoteId] = SoundManager::Play(AK::EVENTS::PLAY_SE_THAWING, remoteId);
+						//remoteMeltSounds[remoteId] = SoundManager::Play(AK::EVENTS::PLAY_SE_THAWING, remoteId);
 
 						NET_LOG_F("[UpdateRemotePlayers] ★解凍音再生開始★ Runner[%u] Target=%u->%u PlayingID=%u",
 							remoteId, lastMeltTarget[remoteId], meltTarget, remoteMeltSounds[remoteId]);
