@@ -9,9 +9,9 @@
   "fatigueRecoveryThreshold": 0.5,
   "fatigueSpeed": 3.0, 
   "crouchSpeed": 1.5, 
-  "walkSpeed": 4.0,  
+  "walkSpeed": 5.0,  
   "height": 1.8, 
-  "dashSpeed": 6.0, 
+  "dashSpeed": 7.0, 
   "maxAngleV": 60.0,
   "minAngleV": -10.0,
   "defaultSenseV": 763.0,  
@@ -32,5 +32,5 @@
   "standEyePosition": [0.0, 1.5, 0.0], 
   "crouchEyePosition": [0.0, 1.2, 0.0],
   "meltRange": 2.0,
-  "meltSpeed": 0.1
+  "meltSpeed": 0.03
 }

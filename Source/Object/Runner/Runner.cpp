@@ -442,54 +442,40 @@ void Runner::UpdateFrozenState(float deltaTime)
 		}
 	}
 }
-
 void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBase*>>& players)
 {
-	// ★★★ 完全解凍時と同じ方法で音を管理（static map使用） ★★★
 	static std::map<uint32_t, AkPlayingID> localMeltSounds;
 
-	// ★★★ ローカルプレイヤー以外、または凍結中は何もしない ★★★
 	if (!m_bIsLocal || m_bFrozen)
 	{
-		// ★★★ ターゲットをクリア ★★★
 		if (m_targetMeltPlayer != 0)
 		{
 			m_targetMeltPlayer = 0;
-
-			// ★★★ 音を停止（完全解凍時と同じ方法） ★★★
 			if (localMeltSounds[m_clientId] != AK_INVALID_PLAYING_ID)
 			{
 				SoundManager::StopEvent(localMeltSounds[m_clientId]);
 				localMeltSounds[m_clientId] = AK_INVALID_PLAYING_ID;
-				NET_LOG_F("[Runner::UpdateMeltTarget] 解凍音停止: ID=%u (凍結中またはリモート)", m_clientId);
 			}
 		}
-
 		return;
 	}
 
-	// ★★★ 攻撃キーが押されているかチェック ★★★
 	bool isHelping = (m_keyFlag & ATTACK_KEY) != 0;
 
-	// ★★★ 攻撃キーが離されている場合は即座にターゲットをクリア ★★★
 	if (!isHelping)
 	{
 		if (m_targetMeltPlayer != 0)
 		{
-			// ★★★ 音を停止（完全解凍時と同じ方法） ★★★
 			if (localMeltSounds[m_clientId] != AK_INVALID_PLAYING_ID)
 			{
 				SoundManager::StopEvent(localMeltSounds[m_clientId]);
 				localMeltSounds[m_clientId] = AK_INVALID_PLAYING_ID;
-				NET_LOG_F("[Runner::UpdateMeltTarget] 解凍音停止: ID=%u (攻撃キー離された)", m_clientId);
 			}
-
 			m_targetMeltPlayer = 0;
 		}
 		return;
 	}
 
-	// ★★★ 攻撃キーが押されている場合、最も近い凍結プレイヤーを探す ★★★
 	uint32_t newTarget = 0;
 	D3DXVECTOR3 myPos = GetCenterPosition();
 	float minDist = f_meltRange;
@@ -497,7 +483,6 @@ void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBas
 	for (const auto& kv : players)
 	{
 		if (kv.first == m_clientId) continue;
-
 		Runner* other = dynamic_cast<Runner*>(kv.second);
 		if (!other || !other->IsFrozen()) continue;
 
@@ -511,39 +496,33 @@ void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBas
 		}
 	}
 
-	// ★★★ ターゲットが変わった場合 ★★★
+	// ★★★ 重複再生防止ロジック ★★★
 	if (newTarget != m_targetMeltPlayer)
 	{
-		// ★★★ 前の音を停止（完全解凍時と同じ方法） ★★★
 		if (localMeltSounds[m_clientId] != AK_INVALID_PLAYING_ID)
 		{
 			SoundManager::StopEvent(localMeltSounds[m_clientId]);
 			localMeltSounds[m_clientId] = AK_INVALID_PLAYING_ID;
-			NET_LOG_F("[Runner::UpdateMeltTarget] 解凍音停止: ID=%u (ターゲット変更: %u -> %u)",
-				m_clientId, m_targetMeltPlayer, newTarget);
 		}
 
-		// ★★★ 新しいターゲットがいる場合のみ音を再生 ★★★
 		if (newTarget != 0)
 		{
 			SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, m_clientId);
 			localMeltSounds[m_clientId] = SoundManager::Play(AK::EVENTS::PLAY_SE_THAWING, m_clientId);
-
-			NET_LOG_F("[Runner::UpdateMeltTarget] 解凍音開始: ID=%u -> Target=%u PlayingID=%u",
-				m_clientId, newTarget, localMeltSounds[m_clientId]);
 		}
 	}
-	// ★★★ 追加: ターゲットが同じ場合でも音が再生されているか確認 ★★★
 	else if (newTarget != 0)
 	{
-		// ターゲットは同じだが音が停止している場合は再生
+		// ターゲットが同じで、かつ音が止まってしまっている場合のみ再開
 		if (localMeltSounds[m_clientId] == AK_INVALID_PLAYING_ID)
 		{
 			SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, m_clientId);
 			localMeltSounds[m_clientId] = SoundManager::Play(AK::EVENTS::PLAY_SE_THAWING, m_clientId);
-
-			NET_LOG_F("[Runner::UpdateMeltTarget] 解凍音再開: ID=%u -> Target=%u PlayingID=%u",
-				m_clientId, newTarget, localMeltSounds[m_clientId]);
+		}
+		else
+		{
+			// 再生中の場合は位置更新のみ行う（二重再生しない）
+			SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, m_clientId);
 		}
 	}
 
