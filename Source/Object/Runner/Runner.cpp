@@ -444,35 +444,29 @@ void Runner::UpdateFrozenState(float deltaTime)
 }
 void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBase*>>& players)
 {
-	static std::map<uint32_t, AkPlayingID> localMeltSounds;
-
 	if (!m_bIsLocal || m_bFrozen)
 	{
-		if (m_targetMeltPlayer != 0)
+		// 自分が凍っているかローカルでなければ音を止める
+		if (m_meltingSoundId != AK_INVALID_PLAYING_ID)
 		{
-			m_targetMeltPlayer = 0;
-			if (localMeltSounds[m_clientId] != AK_INVALID_PLAYING_ID)
-			{
-				SoundManager::StopEvent(localMeltSounds[m_clientId]);
-				localMeltSounds[m_clientId] = AK_INVALID_PLAYING_ID;
-			}
+			SoundManager::StopEvent(m_meltingSoundId);
+			m_meltingSoundId = AK_INVALID_PLAYING_ID;
 		}
+		m_targetMeltPlayer = 0;
 		return;
 	}
 
 	bool isHelping = (m_keyFlag & ATTACK_KEY) != 0;
 
+	// ボタンを離したら即座に音を止める
 	if (!isHelping)
 	{
-		if (m_targetMeltPlayer != 0)
+		if (m_meltingSoundId != AK_INVALID_PLAYING_ID)
 		{
-			if (localMeltSounds[m_clientId] != AK_INVALID_PLAYING_ID)
-			{
-				SoundManager::StopEvent(localMeltSounds[m_clientId]);
-				localMeltSounds[m_clientId] = AK_INVALID_PLAYING_ID;
-			}
-			m_targetMeltPlayer = 0;
+			SoundManager::StopEvent(m_meltingSoundId);
+			m_meltingSoundId = AK_INVALID_PLAYING_ID;
 		}
+		m_targetMeltPlayer = 0;
 		return;
 	}
 
@@ -486,7 +480,8 @@ void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBas
 		Runner* other = dynamic_cast<Runner*>(kv.second);
 		if (!other || !other->IsFrozen()) continue;
 
-		D3DXVECTOR3 diff = other->GetCenterPosition() - myPos;
+		D3DXVECTOR3 otherPos = other->GetCenterPosition();
+		D3DXVECTOR3 diff = otherPos - myPos;
 		float dist = D3DXVec3Length(&diff);
 
 		if (dist < minDist)
@@ -496,37 +491,36 @@ void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBas
 		}
 	}
 
-	// ★★★ 重複再生防止ロジック ★★★
+	// ターゲットが変わった場合
 	if (newTarget != m_targetMeltPlayer)
 	{
-		if (localMeltSounds[m_clientId] != AK_INVALID_PLAYING_ID)
+		// 前の音を止める
+		if (m_meltingSoundId != AK_INVALID_PLAYING_ID)
 		{
-			SoundManager::StopEvent(localMeltSounds[m_clientId]);
-			localMeltSounds[m_clientId] = AK_INVALID_PLAYING_ID;
+			SoundManager::StopEvent(m_meltingSoundId);
+			m_meltingSoundId = AK_INVALID_PLAYING_ID;
 		}
 
+		// 新しいターゲットがいれば再生
 		if (newTarget != 0)
 		{
 			SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, m_clientId);
-			localMeltSounds[m_clientId] = SoundManager::Play(AK::EVENTS::PLAY_SE_THAWING, m_clientId);
+			// ここで一度だけ再生
+			m_meltingSoundId = SoundManager::Play(AK::EVENTS::PLAY_SE_THAWING, m_clientId);
 		}
+		m_targetMeltPlayer = newTarget;
 	}
-	else if (newTarget != 0)
+	else if (m_targetMeltPlayer != 0)
 	{
-		// ターゲットが同じで、かつ音が止まってしまっている場合のみ再開
-		if (localMeltSounds[m_clientId] == AK_INVALID_PLAYING_ID)
+		// ターゲットが同じなら位置更新だけ
+		SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, m_clientId);
+
+		// 万が一音が止まっていたら再開（保険）
+		if (m_meltingSoundId == AK_INVALID_PLAYING_ID)
 		{
-			SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, m_clientId);
-			localMeltSounds[m_clientId] = SoundManager::Play(AK::EVENTS::PLAY_SE_THAWING, m_clientId);
-		}
-		else
-		{
-			// 再生中の場合は位置更新のみ行う（二重再生しない）
-			SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, m_clientId);
+			m_meltingSoundId = SoundManager::Play(AK::EVENTS::PLAY_SE_THAWING, m_clientId);
 		}
 	}
-
-	m_targetMeltPlayer = newTarget;
 }
 
 NetPlayerState Runner::GetNetState() const
