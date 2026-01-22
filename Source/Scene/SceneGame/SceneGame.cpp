@@ -730,6 +730,7 @@ void SceneGame::UpdateLocalPlayer()
 	}
 }
 
+// SceneGame::UpdateRemotePlayers - 差し替え用：全文
 void SceneGame::UpdateRemotePlayers()
 {
 	static DWORD lastLog = 0;
@@ -750,11 +751,11 @@ void SceneGame::UpdateRemotePlayers()
 		uint32_t remoteId = kv.first;
 		CharacterBase* pRemote = kv.second;
 
-		// ★★ 重要: 自分のクライアントはここで更新しない（ホストの二重適用防止） ★★
+		// ★★ 重要: 自分のクライアントはここで更新しない（ホストやローカル二重適用の防止） ★★
 		if (remoteId == m_localClientId) continue;
-		if (pRemote->IsLocal()) continue; // 念のためのガード
+		if (pRemote->IsLocal()) continue;
 
-										  // 予測移動が有効なら予測を適用
+		// 予測移動が有効なら予測を適用
 		if (m_bEnablePrediction)
 		{
 			pRemote->PredictMovement(m_deltaTime);
@@ -768,8 +769,8 @@ void SceneGame::UpdateRemotePlayers()
 		// キーフラグから移動状態を判定
 		unsigned char keyFlag = pRemote->GetKeyFlag();
 		bool isMoving = (keyFlag & 0x0F) != 0; // W,A,S,D のいずれか
-		bool isDashing = (keyFlag & DASH_KEY) != 0;
-		bool isCrouching = (keyFlag & CROUCH_KEY) != 0;
+		bool isDashing = (keyFlag & 0x20) != 0;
+		bool isCrouching = (keyFlag & 0x10) != 0;
 
 		// ローカル／リモートの役割で足音を聞くか決める
 		PlayerRole localRole = m_localRole;
@@ -827,10 +828,6 @@ void SceneGame::UpdateRemotePlayers()
 						remoteId, footSoundMap[remoteId], footspeedParam);
 				}
 			}
-			else
-			{
-				// 再生中であれば RTPC 更新のみ（再生を再起動しない）
-			}
 		}
 		else
 		{
@@ -884,34 +881,28 @@ void SceneGame::UpdateRemotePlayers()
 			}
 		}
 
-		// ===== Runner（解凍/凍結）処理 =====
+		// ===== Runner（解凍/凍結）処理（音の開始/停止はここで一元管理） =====
 		if (remoteRole == ROLE_RUNNER)
 		{
 			Runner* runner = dynamic_cast<Runner*>(pRemote);
 			if (runner)
 			{
-				// melt sound 管理（UpdateRemotePlayers 側で remote の解凍音を管理）
 				uint32_t meltTarget = runner->GetMeltTargetId();
 				bool isFrozen = runner->IsFrozen();
 
-				// 凍結開始検出
+				// 凍結開始検出（ログのみ。音は一括管理）
 				bool wasFrozen = wasFrozenMap[remoteId];
 				if (isFrozen && !wasFrozen)
 				{
-					// 冷凍音を再生
 					SoundManager::SetPosition(remotePos, remoteDir, CharacterBase::UP_DIRECTION, remoteId);
 					SoundManager::Play(AK::EVENTS::PLAY_SE_FREEZE, remoteId);
 
-					if (shouldLog)
-					{
-						NET_LOG_F("[UpdateRemotePlayers] ★凍結音再生★ Runner[%u]", remoteId);
-					}
+					if (shouldLog) NET_LOG_F("[UpdateRemotePlayers] ★凍結音再生★ Runner[%u]", remoteId);
 				}
 
-				// 解凍ターゲット変更で音の停止/開始を管理（remoteMeltSounds map を使う）
+				// meltTarget 変化で既存の解凍音を停止
 				if (meltTarget != lastMeltTarget[remoteId])
 				{
-					// ターゲットが変わる場合は既存の解凍音を止める
 					if (remoteMeltSounds[remoteId] != AK_INVALID_PLAYING_ID)
 					{
 						SoundManager::StopEvent(remoteMeltSounds[remoteId]);
@@ -921,12 +912,8 @@ void SceneGame::UpdateRemotePlayers()
 					lastMeltTarget[remoteId] = meltTarget;
 				}
 
-				// 解凍が進行している場合は再生開始（remote 側の再生はここで一元化）
-				// runner->GetNetState().frozenAmount の更新タイミング等で再生判定
-				// ※ 実際の量判定は Runner 側の状態に依存するため簡易に isFrozen==true で管理しない
-				// （解凍量の増加検出は Runner::UpdateFromNetwork 内でも行っているが、remote ではここで確実に管理）
-				// ここでは既に音が再生中でなければ開始する簡易ルールを採用
-				if (!isFrozen && runner->GetMeltTargetId() != 0)
+				// 解凍進行の開始：meltTarget が存在すれば解凍音を再生（重複防止）
+				if (meltTarget != 0)
 				{
 					if (remoteMeltSounds[remoteId] == AK_INVALID_PLAYING_ID)
 					{
@@ -937,7 +924,6 @@ void SceneGame::UpdateRemotePlayers()
 				}
 				else
 				{
-					// 解凍中でないなら解凍音を停止
 					if (remoteMeltSounds[remoteId] != AK_INVALID_PLAYING_ID)
 					{
 						SoundManager::StopEvent(remoteMeltSounds[remoteId]);
@@ -964,15 +950,18 @@ void SceneGame::UpdateRemotePlayers()
 			float dist = D3DXVec3Length(&dir_toRemote);
 			float maxDist = 50.0f;
 
-			// 距離による小さなファクタ（遠ければ小さくする）
 			float distFactor = min(dist / maxDist, 1.0f) / 2.0f;
 
-			// blocked のときでも完全消音にならないように穏やかめの係数にする
+			// 完全消音にならないように上限を下げる（壁越しでも小さい音は残す）
 			float obstruction = blocked ? (0.6f + distFactor * 0.4f) : distFactor;
 			float occlusion = blocked ? (0.4f + distFactor * 0.6f) : (distFactor * 0.3f);
 
-			obstruction = min(obstruction, 1.0f);
-			occlusion = min(occlusion, 1.0f);
+			// 上限を 1.0 ではなく安全な値にクリップ
+			const float MAX_OBSTRUCTION = 0.85f;
+			const float MAX_OCCLUSION = 0.80f;
+
+			obstruction = min(obstruction, MAX_OBSTRUCTION);
+			occlusion = min(occlusion, MAX_OCCLUSION);
 
 			AK::SoundEngine::SetObjectObstructionAndOcclusion(
 				remoteId,
@@ -1203,6 +1192,7 @@ void SceneGame::ProcessPlayerMelting()
 	}
 }
 
+// SceneGame::ReceiveWorldState - 差し替え用：全文
 void SceneGame::ReceiveWorldState()
 {
 	if (!m_pClient) return;
@@ -1216,12 +1206,12 @@ void SceneGame::ReceiveWorldState()
 	{
 		const NetPlayerState& ps = world.players[i];
 
-		// ===== ローカルプレイヤー =====
+		// ===== ローカルプレイヤー（自分自身）処理 =====
 		if (ps.clientId == m_localClientId)
 		{
 			if (!m_pLocalPlayer) continue;
 
-			// ★ ホストでも Runner の凍結状態だけは反映する ★
+			// Runner の凍結状態だけはサーバーの情報で反映させる（ホストでも）
 			if (m_localRole == ROLE_RUNNER)
 			{
 				Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
@@ -1233,13 +1223,13 @@ void SceneGame::ReceiveWorldState()
 				bool wasFrozen = localRunner->IsFrozen();
 				float oldAmount = localRunner->GetFrozenAmount();
 
-				// 新規凍結
+				// 新規凍結開始
 				if (!wasFrozen && newFrozen)
 				{
 					localRunner->SetFrozen(true);
 					localRunner->SetFrozenAmount(netAmount);
 				}
-				// 解凍進行
+				// 解凍進行（増加分のみ反映）
 				else if (wasFrozen && newFrozen && netAmount > oldAmount + 0.001f)
 				{
 					localRunner->SetFrozenAmount(netAmount);
@@ -1252,13 +1242,14 @@ void SceneGame::ReceiveWorldState()
 				}
 			}
 
-			// ★ 位置・回転などはホストなら無視 ★
+			// ★ ホストは自分の位置／向き等のネットワーク適用を行わない（ローカルで処理済み）
+			//    また、クライアント側でも自分には UpdateFromNetwork を通常適用しないこと
 			if (m_bIsHost)
 			{
 				continue;
 			}
 
-			// クライアントの場合は通常同期
+			// クライアントの場合はローカルプレイヤーに対しても UpdateFromNetwork を適用する
 			m_pLocalPlayer->UpdateFromNetwork(ps, m_light, m_deltaTime);
 			continue;
 		}
@@ -1267,10 +1258,13 @@ void SceneGame::ReceiveWorldState()
 		auto it = m_players.find(ps.clientId);
 		if (it == m_players.end() || !it->second) continue;
 
+		// 追加ガード：対象オブジェクトがローカルフラグを持っていれば適用しない（上書きを避ける）
+		if (it->second->IsLocal()) continue;
+
+		// リモートプレイヤーへネットワーク状態を適用
 		it->second->UpdateFromNetwork(ps, m_light, m_deltaTime);
 	}
 }
-
 void SceneGame::RenderShadowMaps()
 {
 	LPDIRECT3DDEVICE9 pDevice = m_pEngine->GetDevice();
