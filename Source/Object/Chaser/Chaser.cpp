@@ -311,6 +311,7 @@ void Chaser::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 {
 	CharacterBase::UpdateFromNetwork(state, light, deltaTime);
 
+	// ★★★ ライト情報は常に更新（ローカル・リモート共通） ★★★
 	D3DXVECTOR3 lightPos(state.lightPosX, state.lightPosY, state.lightPosZ);
 	D3DXVECTOR3 lightDir(state.lightDirX, state.lightDirY, state.lightDirZ);
 
@@ -336,12 +337,30 @@ void Chaser::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 
 	UpdateLightMatrices();
 
+	// ★★★ 重要！ローカルプレイヤーの場合はブレス状態を同期しない ★★★
+	if (m_bIsLocal)
+	{
+		// ローカルプレイヤーのブレスは UpdateBreathAttack() で完全に管理
+		// ネットワークからの状態で上書きすると、終了判定が無効化されてしまう
+		static DWORD lastLog = 0;
+		DWORD now = timeGetTime();
+		if (now - lastLog > 5000)
+		{
+			NET_LOG_F("[Chaser::UpdateFromNetwork] ID=%u ローカルプレイヤー - ブレス同期スキップ (Active=%s)",
+				m_clientId, m_bBreathActive ? "Yes" : "No");
+			lastLog = now;
+		}
+		return;
+	}
+
+	// ★★★ 以下はリモートプレイヤーのみ実行 ★★★
 	if (m_pIceBreath)
 	{
 		bool shouldBeActive = (state.breathActive != 0);
 
 		if (shouldBeActive && !m_bBreathActive)
 		{
+			// ブレス開始
 			D3DXVECTOR3 breathPos(state.breathPosX, state.breathPosY, state.breathPosZ);
 			D3DXVECTOR3 breathDir(state.breathDirX, state.breathDirY, state.breathDirZ);
 
@@ -358,22 +377,21 @@ void Chaser::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 			m_pIceBreath->Activate(breathPos, breathDir);
 			m_bBreathActive = true;
 
-			// ★★★ 修正8: ネットワークからブレス開始を受信した時点ではクールダウン設定しない ★★★
-			// （ブレス終了時に設定する必要があるが、リモートなので不要）
-
-			NET_LOG_F("[Chaser::UpdateFromNetwork] ID=%u ブレス開始: Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
+			NET_LOG_F("[Chaser::UpdateFromNetwork] ID=%u リモートブレス開始: Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f)",
 				m_clientId, breathPos.x, breathPos.y, breathPos.z,
 				breathDir.x, breathDir.y, breathDir.z);
 		}
 		else if (!shouldBeActive && m_bBreathActive)
 		{
+			// ブレス終了
 			m_pIceBreath->Deactivate();
 			m_bBreathActive = false;
 
-			NET_LOG_F("[Chaser::UpdateFromNetwork] ID=%u ブレス終了", m_clientId);
+			NET_LOG_F("[Chaser::UpdateFromNetwork] ID=%u リモートブレス終了", m_clientId);
 		}
 		else if (shouldBeActive && m_bBreathActive)
 		{
+			// ブレス継続中
 			D3DXVECTOR3 breathPos(state.breathPosX, state.breathPosY, state.breathPosZ);
 			D3DXVECTOR3 breathDir(state.breathDirX, state.breathDirY, state.breathDirZ);
 
@@ -395,7 +413,7 @@ void Chaser::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 	DWORD now = timeGetTime();
 	if (now - lastLogPerChaser[m_clientId] > 5000)
 	{
-		NET_LOG_F("[Chaser::UpdateFromNetwork] ID=%u ライト更新: Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f) Range=%.2f Breath=%s",
+		NET_LOG_F("[Chaser::UpdateFromNetwork] ID=%u リモートライト更新: Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f) Range=%.2f Breath=%s",
 			m_clientId,
 			lightPos.x, lightPos.y, lightPos.z,
 			lightDir.x, lightDir.y, lightDir.z,
