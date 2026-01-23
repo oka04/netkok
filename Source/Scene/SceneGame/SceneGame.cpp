@@ -385,43 +385,20 @@ void SceneGame::SyncToServer()
 			localId, state.clientId);
 	}
 
-	static uint32_t lastMeltTarget = 0;
-	static DWORD lastLogTime = 0;
-	DWORD now = timeGetTime();
-
-	if (state.meltTargetId != 0 || lastMeltTarget != 0)
-	{
-		if (state.meltTargetId != lastMeltTarget || now - lastLogTime > 1000)
-		{
-			NET_LOG_F("[SceneGame::SyncToServer] ID=%u meltTarget=%u を送信",
-				state.clientId, state.meltTargetId);
-			lastMeltTarget = state.meltTargetId;
-			lastLogTime = now;
-		}
-	}
-
-	static DWORD lastPositionLog = 0;
-	if (now - lastPositionLog > 3000)
-	{
-		NET_LOG_F("[SceneGame] 送信: ID=%u Pos=(%.1f,%.1f,%.1f) Interval=%dms",
-			state.clientId, state.posX, state.posY, state.posZ, f_networkSendInterval);
-		lastPositionLog = now;
-	}
-
-	// ★★★ 修正: ホスト・クライアント共通の送信処理 ★★★
+	// ホストの場合はサーバーに直接状態を設定し、即時ワールドブロードキャストを行う
 	if (m_bIsHost && m_pServer)
 	{
-		// ホストの場合：サーバーに直接状態を設定
 		m_pServer->SetHostState(state);
+
+		// ホストで状態が変わった場合、すぐにワールド状態を配信してクライアント側の遅延を減らす
 		m_pServer->BroadcastWorldState();
 	}
 	else
 	{
-		// クライアントの場合：サーバーに送信
+		// クライアントの場合はサーバーへ送信（従来通り）
 		m_pClient->SendPlayerState(state);
 	}
 }
-
 bool SceneGame::AreAllRunnersFrozen()
 {
 	int totalRunners = 0;
@@ -1550,201 +1527,115 @@ void SceneGame::UpdateChaserLights()
 
 // SceneGame.cpp - SpawnPlayerWithRole() の修正版
 
-void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name,
-	const D3DXVECTOR3& pos, PlayerRole role)
+void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name, const D3DXVECTOR3& pos, PlayerRole role)
 {
-	if (m_players.find(clientId) != m_players.end())
-	{
-		NET_LOG_F("[SceneGame] プレイヤー %u は既に存在 - スキップ", clientId);
-		return;
-	}
-
-	NET_LOG_F("========================================");
-	NET_LOG_F("[SceneGame] ★プレイヤー生成開始★ ID=%u Name=%s Role=%s",
-		clientId, name.c_str(), (role == ROLE_CHASER) ? "鬼" : "逃げる側");
-
-	CharacterBase* p = nullptr;
+	// 既存のプレイヤー生成ロジックを踏襲してプレイヤーインスタンスを作成します
+	CharacterBase* pPlayer = nullptr;
 
 	if (role == ROLE_RUNNER)
 	{
-		p = new Runner();
+		Runner* runner = new Runner();
+		runner->InitializeAtPosition(m_pEngine, pos, &m_projection, m_camera, m_light);
+		pPlayer = runner;
 	}
 	else if (role == ROLE_CHASER)
 	{
-		p = new Chaser();
+		Chaser* chaser = new Chaser();
+		chaser->InitializeAtPosition(m_pEngine, pos, &m_projection, m_camera, m_light);
+		pPlayer = chaser;
 	}
 	else
 	{
-		p = new Runner();
+		// 役割不明ならデフォルト Runner を割り当て（保険）
+		Runner* runner = new Runner();
+		runner->InitializeAtPosition(m_pEngine, pos, &m_projection, m_camera, m_light);
+		pPlayer = runner;
 	}
+
+	if (!pPlayer) return;
+
+	pPlayer->SetClientId(clientId);
+	pPlayer->SetCharacterName(name);
+	pPlayer->SetPosition(pos);
+
+	// ローカルプレイヤーかどうかを判定してフラグを設定
+	if (clientId == m_localClientId)
+	{
+		pPlayer->SetIsLocal(true);
+		m_pLocalPlayer = pPlayer;
+		m_localRole = role;
+		// ローカルかつホストならホスト減速係数をセット
+		if (m_bIsHost)
+		{
+			pPlayer->SetHostLocalFlag(true);
+			pPlayer->SetHostSpeedMultiplier(f_hostSpeedMultiplier);
+		}
+	}
+	else
+	{
+		pPlayer->SetIsLocal(false);
+	}
+
+	// プレイヤーリストに登録
+	m_players[clientId] = pPlayer;
+	m_playerRoles[clientId] = role;
+
+	// --- 重要: サウンド用に必ずゲームオブジェクトとして登録 ---
+	// Wwise 側で正しく 3D 音や停止/再生を扱うために RegisterGameObject を行う
 	char gameObjName[64];
 	sprintf_s(gameObjName, "Player_%u", clientId);
 	SoundManager::RegisterGameObject(clientId, gameObjName);
 
-	// ローカルプレイヤーであればリスナー設定や初期位置設定も行う
+	// ローカルで自分が生成されたらカメラ設定や Update を即時実行
 	if (clientId == m_localClientId)
 	{
-		// リスナーや位置など、必要ならここで設定
-		SoundManager::SetPosition(pos, D3DXVECTOR3(0, 0, 1), CharacterBase::UP_DIRECTION, SoundManager::ID_LISTENER);
-	}
-	bool isLocal = (clientId == m_localClientId);
-
-	// ★★★ 修正: 役割に応じたスタート位置を取得 ★★★
-	D3DXVECTOR3 spawnPos;
-	if (pos.x == 0.0f && pos.y == 0.0f && pos.z == 0.0f)
-	{
-		// 位置が指定されていない場合、役割に応じたスタート位置を使用
-		if (role == ROLE_CHASER)
-		{
-			spawnPos = m_map.GetChaserStartPosition();
-			NET_LOG_F("[SceneGame] 鬼のスタート位置使用: (%.1f, %.1f, %.1f)",
-				spawnPos.x, spawnPos.y, spawnPos.z);
-		}
-		else
-		{
-			spawnPos = m_map.GetRunnerStartPosition();
-			NET_LOG_F("[SceneGame] 逃げる側のスタート位置使用: (%.1f, %.1f, %.1f)",
-				spawnPos.x, spawnPos.y, spawnPos.z);
-		}
-	}
-	else
-	{
-		// 位置が明示的に指定されている場合はそれを使用
-		spawnPos = pos;
-		NET_LOG_F("[SceneGame] 指定位置使用: (%.1f, %.1f, %.1f)",
-			spawnPos.x, spawnPos.y, spawnPos.z);
+		NET_LOG_F("[SceneGame] ローカルプレイヤー生成完了: m_clientId=%u, GetClientId()=%u",
+			m_localClientId, m_pLocalPlayer->GetClientId());
+		m_pLocalPlayer->Update(m_pEngine, m_map, m_camera, m_light, 0);
+		m_pLocalPlayer->SetFirstPersonCamera(m_pEngine, m_camera);
 	}
 
-	// ★★★ ステップ1: Initialize() より前に ID とフラグを設定 ★★★
-	NET_LOG_F("[SceneGame] ステップ1: ID設定開始");
-	NET_LOG_F("  Client ID: %u", clientId);
-	NET_LOG_F("  Object Name: %s", name.c_str());
-	NET_LOG_F("  IsLocal: %s", isLocal ? "Yes" : "No");
-
-	p->SetIsLocal(isLocal);
-	p->SetClientId(clientId);
-	p->SetCharacterName(name);
-	p->SetPosition(spawnPos);
-
-	NET_LOG_F("[SceneGame] ステップ1完了: ID=%u Name=%s 設定完了",
-		p->GetClientId(), p->GetCharacterName().c_str());
-
-	// ★★★ ステップ2: Wwiseに登録（IDが正しく設定された後）★★★
-	const char* objName = (role == ROLE_CHASER) ? "Chaser" : "Runner";
-	NET_LOG_F("[SceneGame] ステップ2: Wwise登録開始 GameObjectID=%u ObjName=%s",
-		clientId, objName);
-
-	SoundManager::RegisterGameObject(clientId, objName);
-
-	NET_LOG_F("[SceneGame] ステップ2完了: Wwise登録完了");
-
-	// ★★★ ステップ3: Initialize()呼び出し（IDは既に設定済み）★★★
-	NET_LOG_F("[SceneGame] ステップ3: Initialize開始 (IsLocal=%s)", isLocal ? "Yes" : "No");
-
-	if (isLocal)
-	{
-		if (role == ROLE_RUNNER)
-		{
-			((Runner*)p)->Initialize(m_pEngine, m_map, &m_projection, m_camera, m_light);
-		}
-		else
-		{
-			((Chaser*)p)->Initialize(m_pEngine, m_map, &m_projection, m_camera, m_light);
-		}
-		m_pLocalPlayer = p;
-		NET_LOG_F("[SceneGame] ステップ3完了: ローカル初期化完了");
-	}
-	else
-	{
-		if (role == ROLE_RUNNER)
-		{
-			((Runner*)p)->InitializeAtPosition(m_pEngine, spawnPos, &m_projection,
-				m_camera, m_light);
-		}
-		else
-		{
-			((Chaser*)p)->InitializeAtPosition(m_pEngine, spawnPos, &m_projection,
-				m_camera, m_light);
-		}
-		NET_LOG_F("[SceneGame] ステップ3完了: リモート初期化完了");
-	}
-
-	// ★★★ ステップ4: ID確認（Initialize後もIDが保持されているか確認）★★★
-	NET_LOG_F("[SceneGame] ステップ4: ID確認");
-	if (p->GetClientId() != clientId)
-	{
-		NET_LOG_F("[SceneGame] ★★★エラー★★★ IDが変更されている！ 期待=%u 実際=%u",
-			clientId, p->GetClientId());
-		NET_LOG_F("[SceneGame] IDを再設定");
-		p->SetClientId(clientId);
-	}
-	NET_LOG_F("[SceneGame] ステップ4完了: ID確認OK GetClientId()=%u", p->GetClientId());
-
-	// ★★★ ステップ5: マップに登録 ★★★
-	m_players[clientId] = p;
-	m_playerRoles[clientId] = role;
-	NET_LOG_F("[SceneGame] ステップ5完了: マップ登録完了");
-
-	// ★★★ ステップ6: リモートプレイヤーのテスト音再生 ★★★
-	if (!isLocal)
-	{
-		NET_LOG_F("[SceneGame] ステップ6: リモートプレイヤー音テスト開始");
-		NET_LOG_F("  Client ID: %u", clientId);
-		NET_LOG_F("  Position: (%.1f, %.1f, %.1f)", spawnPos.x, spawnPos.y, spawnPos.z);
-
-		// 3D位置設定
-		D3DXVECTOR3 forward(0, 0, -1);
-		D3DXVECTOR3 up(0, 1, 0);
-		SoundManager::SetPosition(spawnPos, forward, up, clientId);
-		NET_LOG_F("  3D位置設定完了");
-
-		// テスト音再生（短く凍結音を鳴らす）
-		AkPlayingID testId = SoundManager::Play(AK::EVENTS::PLAY_SE_FREEZE, clientId);
-		NET_LOG_F("  テスト音再生: Event=PLAY_SE_FREEZE GameObjectID=%u PlayingID=%u",
-			clientId, testId);
-
-		if (testId == AK_INVALID_PLAYING_ID)
-		{
-			NET_LOG_F("  ★★★エラー★★★ テスト音再生失敗！");
-		}
-		else
-		{
-			NET_LOG_F("  ★成功★ テスト音再生成功");
-			// 1秒後に停止
-			Sleep(1000);
-			SoundManager::StopEvent(testId);
-			NET_LOG_F("  テスト音停止");
-		}
-	}
-
-	NET_LOG_F("[SceneGame] ★プレイヤー生成完了★");
-	NET_LOG_F("  Client ID: %u", clientId);
-	NET_LOG_F("  Name: %s", name.c_str());
-	NET_LOG_F("  Role: %s", (role == ROLE_CHASER) ? "鬼" : "逃げる側");
-	NET_LOG_F("  IsLocal: %s", isLocal ? "Yes" : "No");
-	NET_LOG_F("  Position: (%.1f, %.1f, %.1f)", spawnPos.x, spawnPos.y, spawnPos.z);
-	NET_LOG_F("========================================");
+	NET_LOG_F("[SceneGame] プレイヤー生成: ID=%u Name=%s Role=%s Pos=(%.1f,%.1f,%.1f)",
+		clientId, name.c_str(), (role == ROLE_CHASER) ? "鬼" : "逃げる側", pos.x, pos.y, pos.z);
 }
+
 void SceneGame::DespawnPlayer(uint32_t clientId)
 {
 	auto it = m_players.find(clientId);
-	if (it != m_players.end())
+	if (it == m_players.end()) return;
+
+	CharacterBase* p = it->second;
+
+	// まずサウンド停止・Unregister（Wwise 側をクリーンにする）
+	// そのプレイヤーに紐づく全ての音を停止
+	SoundManager::StopAll(clientId);
+	SoundManager::UnregisterGameObject(clientId);
+
+	// リソース解放（Runner / Chaser 固有の Release を呼ぶ）
+	if (m_playerRoles[clientId] == ROLE_RUNNER)
 	{
-		// サウンドを止めてから Wwise の登録解除
-		SoundManager::StopAll(clientId);
-		SoundManager::UnregisterGameObject(clientId);
+		Runner* r = dynamic_cast<Runner*>(p);
+		if (r) r->Release(m_pEngine);
+	}
+	else if (m_playerRoles[clientId] == ROLE_CHASER)
+	{
+		Chaser* c = dynamic_cast<Chaser*>(p);
+		if (c) c->Release(m_pEngine);
+	}
 
-		// その後に delete 等既存処理
-		if (m_playerRoles[clientId] == ROLE_RUNNER)
-			((Runner*)it->second)->Release(m_pEngine);
-		else if (m_playerRoles[clientId] == ROLE_CHASER)
-			((Chaser*)it->second)->Release(m_pEngine);
+	delete p;
+	m_players.erase(it);
+	m_playerRoles.erase(clientId);
 
-		delete it->second;
-		m_players.erase(it);
-		m_playerRoles.erase(clientId);
+	NET_LOG_F("[SceneGame] プレイヤー削除: ID=%u", clientId);
+
+	// ローカルプレイヤーだったらポインタをクリア
+	if (clientId == m_localClientId)
+	{
+		m_pLocalPlayer = nullptr;
 	}
 }
+
 void SceneGame::Draw()
 {
 	for (auto& kv : m_players)

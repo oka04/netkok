@@ -65,6 +65,8 @@ public:
 
 	static const D3DXVECTOR3 UP_DIRECTION;
 	AkPlayingID m_seFootId;
+	void SetHostSpeedMultiplier(float multiplier) { m_hostSpeedMultiplier = multiplier; }
+	void SetHostLocalFlag(bool flag) { m_isHostLocal = flag; }
 protected:
 	AkPlayingID m_footstepPlayingId = AK_INVALID_PLAYING_ID;
 	static const D3DXVECTOR3 DEPTH_DIRECTION;
@@ -106,6 +108,8 @@ protected:
 	// ★★★ ネットワーク同期用の内部メソッド ★★★
 	void AddPositionToHistory(const D3DXVECTOR3& pos);
 	D3DXVECTOR3 GetAveragedPosition() const;
+	float m_hostSpeedMultiplier = 1.0f;
+	bool m_isHostLocal = false;
 
 	//ファイルからの読み込み用
 	//必ず実装させるクラスですべて読み込むこと

@@ -213,8 +213,9 @@ void CharacterBase::Input(Engine * pEngine)
 	}
 }
 
-void CharacterBase::Move(Map & map)
+void CharacterBase::Move(Map& map)
 {
+	// 方向を初期化
 	m_direction = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	if (m_keyFlag & W_KEY) m_direction += m_depth;
 	if (m_keyFlag & S_KEY) m_direction -= m_depth;
@@ -226,27 +227,35 @@ void CharacterBase::Move(Map & map)
 
 	if (moveLength > 0.0f)
 	{
+		// ベースの移動ベクトル
 		D3DXVECTOR3 vector = m_direction * m_speed;
+
+		// ホストローカルプレイヤーなら減速係数を適用
+		if (m_bIsLocal && m_isHostLocal && m_hostSpeedMultiplier > 0.0f && m_hostSpeedMultiplier != 1.0f)
+		{
+			vector *= m_hostSpeedMultiplier;
+		}
+
+		// 垂直方向は無視
 		vector.y = 0;
 
+		// マップの当たり判定・移動
 		map.MoveCheck(m_position, vector, f_radius);
 
-		// ★★★ 修正: ローカルプレイヤーのみ足音フラグを設定 ★★★
+		// ローカルプレイヤーの足音フラグ設定（音はローカルから送る）
 		if (m_bIsLocal)
 		{
 			m_soundEvents |= SOUND_FOOTSTEP;
 		}
+
+		// 速度更新
+		m_velocity = vector;
 	}
 	else
 	{
-		// ★★★ ローカルプレイヤーのみフラグをクリア ★★★
-		if (m_bIsLocal)
-		{
-			m_soundEvents &= ~SOUND_FOOTSTEP;
-		}
+		// 動いていない
+		m_velocity = D3DXVECTOR3(0, 0, 0);
 	}
-
-	m_eyePosition = m_position + ((m_keyFlag & CROUCH_KEY) ? f_crouchEyePosition : f_standEyePosition);
 }
 void CharacterBase::PlayFootstepSound()
 {
@@ -461,6 +470,7 @@ NetPlayerState CharacterBase::GetNetState() const
 	return state;
 }
 
+
 void CharacterBase::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& light, float deltaTime)
 {
 	DWORD now = timeGetTime();
@@ -476,77 +486,103 @@ void CharacterBase::UpdateFromNetwork(const NetPlayerState& state, DirectionalLi
 	}
 	m_lastUpdateTime = now;
 
+	// 新しいターゲット位置を設定
 	D3DXVECTOR3 newTargetPos = D3DXVECTOR3(state.posX, state.posY, state.posZ);
 
 	// 速度の計算（予測移動用）
-	// ここで rawVelocity を計算して補間・補正に使う
 	D3DXVECTOR3 rawVelocity = (newTargetPos - m_targetPosition) / max(0.001f, m_timeSinceLastUpdate);
 
 	// 速度のスムージング（急激な変化を抑制）
-	// 以前は m_smoothedVelocity のみを参照していたため、速度が急変した際に遅く見えることがあった
-	// ここでは rawVelocity に基づく判定を追加し、差が大きければ smoothed をリセットする
-	const float RESET_THRESHOLD = 3.0f; // しきい値（必要に応じて調整）
+	// 急激に変化した場合は smoothed を raw に近づける
+	const float RESET_THRESHOLD = 3.0f; // 必要に応じて調整
 	float rawSpeed = D3DXVec3Length(&rawVelocity);
 	float smoothSpeed = D3DXVec3Length(&m_smoothedVelocity);
 
-	// 急変を検知したら smoothed を raw に近づける（遅延を減らす）
 	if (fabs(rawSpeed - smoothSpeed) > RESET_THRESHOLD)
 	{
-		// 大きな差がある場合はスムージングをリセット気味にする
+		// 大きく異なる場合はリセット気味にする（ホストとクライアント間で差が出るのを軽減）
 		m_smoothedVelocity = rawVelocity;
 	}
 	else
 	{
-		// 通常は緩やかに更新
-		float alpha = max(0.2f, min(0.0f, 1.0f)); // スムージング係数（必要ならパラメータ化）
+		// 通常スムージング
+		float alpha = m_velocitySmoothingFactor;
 		m_smoothedVelocity = m_smoothedVelocity * (1.0f - alpha) + rawVelocity * alpha;
 	}
 
-	// 適応的テレポート閾値（速度に応じて調整）
-	float speedFactor = D3DXVec3Length(&m_smoothedVelocity);
-	float teleportThreshold = 1.5f + speedFactor * 0.1f;
-	teleportThreshold = min(teleportThreshold, 5.0f);
+	// 新しいターゲット値を保持
+	m_targetPosition = newTargetPos;
+	m_targetHAngle = state.hAngle;
+	m_targetVAngle = state.vAngle;
 
-	if (D3DXVec3Length(&(m_position - newTargetPos)) > teleportThreshold)
+	// 位置履歴に追加（ジッター対策）
+	AddPositionToHistory(m_targetPosition);
+
+	// 現在位置との距離を計算
+	D3DXVECTOR3 diff = m_targetPosition - m_position;
+	float dist = D3DXVec3Length(&diff);
+
+	// デバッグログ（頻度を下げる）
+	static std::map<uint32_t, DWORD> lastLogPerPlayer;
+	if (now - lastLogPerPlayer[state.clientId] > 2000)
 	{
-		// 距離が大きい場合は即座にテレポート
-		m_position = newTargetPos;
-		m_velocity = m_smoothedVelocity;
-		m_targetPosition = newTargetPos;
+		NET_LOG_F("[CharacterBase] UpdateFromNetwork: ID=%u Dist=%.2f Speed=%.2f",
+			m_clientId, dist, D3DXVec3Length(&m_smoothedVelocity));
+		lastLogPerPlayer[state.clientId] = now;
+	}
+
+	// STOP_THRESHOLD: 一定距離以内なら補間や予測で暴れるのを止めてスナップする
+	const float STOP_THRESHOLD = 0.12f; // 0.12m くらい。調整可
+	if (dist <= STOP_THRESHOLD)
+	{
+		// 近ければターゲットにスナップして速度ゼロ化
+		m_position = m_targetPosition;
+		m_velocity = D3DXVECTOR3(0, 0, 0);
+		// 角度も直接合わせる
+		m_hAngle = m_targetHAngle;
+		m_vAngle = m_targetVAngle;
 	}
 	else
 	{
-		// 補間で位置更新（従来ロジック）
-		D3DXVECTOR3 diff = newTargetPos - m_position;
-		float dist = D3DXVec3Length(&diff);
-		if (dist > 0.01f)
+		// 適応的テレポート閾値（速度に応じて調整）
+		float speedFactor = D3DXVec3Length(&m_smoothedVelocity);
+		float teleportThreshold = 1.5f + speedFactor * 0.1f;
+		teleportThreshold = min(teleportThreshold, 5.0f);
+
+		if (dist > teleportThreshold)
 		{
+			// 距離が大きい場合は即座にテレポート
+			m_position = m_targetPosition;
+			m_velocity = m_smoothedVelocity;
+			NET_LOG_F("[CharacterBase] テレポート: ID=%u Dist=%.2f", m_clientId, dist);
+		}
+		else
+		{
+			// 補間による滑らかな移動
 			float distanceFactor = min(dist * 2.0f, 1.0f);
 			m_adaptiveInterpolationSpeed = m_interpolationSpeed * (1.0f + distanceFactor * 2.0f);
 			float t = min(1.0f, m_adaptiveInterpolationSpeed * deltaTime);
 			m_position += diff * t;
 			m_velocity = m_smoothedVelocity;
 		}
+
+		// 角度の補間
+		float hDiff = m_targetHAngle - m_hAngle;
+		while (hDiff > 180.0f) hDiff -= 360.0f;
+		while (hDiff < -180.0f) hDiff += 360.0f;
+		float angleLerpSpeed = m_interpolationSpeed * 1.5f;
+		m_hAngle += hDiff * min(1.0f, angleLerpSpeed * deltaTime);
+
+		float vDiff = m_targetVAngle - m_vAngle;
+		m_vAngle += vDiff * min(1.0f, angleLerpSpeed * deltaTime);
 	}
-
-	// 角度の補間（改善版）
-	float hDiff = m_targetHAngle - m_hAngle;
-	while (hDiff > 180.0f) hDiff -= 360.0f;
-	while (hDiff < -180.0f) hDiff += 360.0f;
-
-	// 角度も適応的に補間
-	float angleLerpSpeed = m_interpolationSpeed * 1.5f;
-	m_hAngle += hDiff * min(1.0f, angleLerpSpeed * deltaTime);
-
-	float vDiff = m_targetVAngle - m_vAngle;
-	m_vAngle += vDiff * min(1.0f, angleLerpSpeed * deltaTime);
 
 	// 向きベクトルとその他の状態を更新
 	m_depth = D3DXVECTOR3(state.depthX, state.depthY, state.depthZ);
 	m_keyFlag = state.keyFlag;
 	m_bFirstPerson = state.IsFirstPerson();
 
-	// ★★★ 追加: 音イベントフラグを受信して設定 ★★★
+	// 音イベントフラグを受信して設定
 	m_soundEvents = state.soundEvents;
 
 	// 目の位置を更新
@@ -556,12 +592,23 @@ void CharacterBase::UpdateFromNetwork(const NetPlayerState& state, DirectionalLi
 	UpdateMatrix(light);
 }
 
-// ★★★ 予測移動（フレーム間の補間）★★★
+// 変更点：PredictMovement を全文差し替え（近ければ予測停止）
 void CharacterBase::PredictMovement(float deltaTime)
 {
 	if (m_bIsLocal) return;  // ローカルキャラクターは予測不要
 
-							 // 速度ベースの予測
+							 // 位置がターゲットに十分近い場合は予測しない（あらぶり抑制）
+	const float STOP_THRESHOLD = 0.12f; // UpdateFromNetwork と合わせる
+	D3DXVECTOR3 toTarget = m_targetPosition - m_position;
+	float distToTarget = D3DXVec3Length(&toTarget);
+	if (distToTarget <= STOP_THRESHOLD)
+	{
+		// ほぼ到着しているので予測を行わない
+		m_predictedPosition = m_position;
+		return;
+	}
+
+	// 速度ベースの予測（従来ロジック）
 	if (D3DXVec3Length(&m_velocity) > 0.01f)
 	{
 		D3DXVECTOR3 prediction = m_velocity * deltaTime;
