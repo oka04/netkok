@@ -1046,18 +1046,16 @@ void SceneGame::CheckBreathHitPlayers()
 		}
 	}
 }
-
 void SceneGame::ProcessPlayerMelting()
 {
 	if (!m_bIsHost || !m_pServer) return;
 
 	std::map<uint32_t, std::vector<uint32_t>> targetToHelpers;
 
-	// ★ ホスト自身（ローカルプレイヤー）も含めて収集 ★
+	// ホスト自身（ローカルプレイヤー）も含めて収集
 	auto collectRunner = [&](uint32_t id, CharacterBase* base)
 	{
 		if (!base) return;
-
 		if (m_playerRoles[id] != ROLE_RUNNER) return;
 
 		Runner* runner = dynamic_cast<Runner*>(base);
@@ -1147,17 +1145,34 @@ void SceneGame::ProcessPlayerMelting()
 				target->SetFrozenAmount(newAmount);
 			}
 
+			// ここでサーバーに必ず最新状態を反映する（これが欠けるとクライアントは古い凍結状態を受け取る）
+			if (m_pServer)
+			{
+				NetPlayerState state = target->GetNetState();
+				// state.clientId は GetNetState 内で正しくセットされている想定だが、安全のため clientId を上書き
+				state.clientId = targetId;
+				if (targetId == m_localClientId)
+				{
+					// ホスト自身の状態は SetHostState で更新
+					m_pServer->SetHostState(state);
+				}
+				else
+				{
+					// リモートプレイヤーの状態をサーバーのストアに反映
+					m_pServer->UpdatePlayerState(targetId, state);
+				}
+			}
+
 			stateChanged = true;
 		}
 	}
 
-	// ★ 必ずサーバー状態を配信 ★
+	// 必ずサーバー状態を配信
 	if (stateChanged)
 	{
 		m_pServer->BroadcastWorldState();
 	}
 }
-
 // SceneGame::ReceiveWorldState - 差し替え用：全文
 void SceneGame::ReceiveWorldState()
 {
