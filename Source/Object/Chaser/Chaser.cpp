@@ -108,7 +108,8 @@ void Chaser::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 	if (!m_bBreathActive)
 	{
 		SetMouseCursor(pEngine, camera);
-		m_speed = f_walkSpeed * m_deltaTime;
+		// ★★★ 修正: deltaTimeを乗算しない（秒速のまま） ★★★
+		m_speed = f_walkSpeed;
 		Move(map);
 	}
 	else

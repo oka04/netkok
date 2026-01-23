@@ -732,6 +732,7 @@ void SceneGame::UpdateLocalPlayer()
 		m_lastNetworkSend = now;
 	}
 }
+
 void SceneGame::UpdateRemotePlayers()
 {
 	static DWORD lastLog = 0;
@@ -775,7 +776,6 @@ void SceneGame::UpdateRemotePlayers()
 			if (it != m_playerRoles.end()) remoteRole = it->second;
 		}
 
-		// ★★★ 修正: 足音だけ役割で判定、解凍音は全員が聞く ★★★
 		bool shouldPlayFootsteps = (localRole != remoteRole);
 
 		bool isBreathing = false;
@@ -898,7 +898,7 @@ void SceneGame::UpdateRemotePlayers()
 					lastMeltTarget[remoteId] = meltTarget;
 				}
 
-				// ★★★ 解凍音は全員が聞く（役割判定を削除） ★★★
+				// ★★★ 修正: 解凍音は全員が聞く（役割判定を完全削除） ★★★
 				if (meltTarget != 0 && isFrozen)
 				{
 					if (remoteMeltSounds[remoteId] == AK_INVALID_PLAYING_ID)
@@ -973,6 +973,7 @@ void SceneGame::UpdateRemotePlayers()
 		lastLog = now;
 	}
 }
+
 void SceneGame::CheckBreathHitPlayers()
 {
 	if (m_pLocalPlayer && m_localRole == ROLE_CHASER)
