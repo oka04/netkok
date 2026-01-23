@@ -753,7 +753,6 @@ void SceneGame::UpdateRemotePlayers()
 			if (it != m_playerRoles.end()) remoteRole = it->second;
 		}
 
-		// ★★★ 修正: 足音だけ役割で判定、解凍音は全員が聞く ★★★
 		bool shouldPlayFootsteps = (localRole != remoteRole);
 
 		bool isBreathing = false;
@@ -865,6 +864,7 @@ void SceneGame::UpdateRemotePlayers()
 					if (shouldLog) NET_LOG_F("[UpdateRemotePlayers] ★凍結音再生★ Runner[%u]", remoteId);
 				}
 
+				// ★★★ ターゲット変更時は音を停止 ★★★
 				if (meltTarget != lastMeltTarget[remoteId])
 				{
 					if (remoteMeltSounds[remoteId] != AK_INVALID_PLAYING_ID)
@@ -876,7 +876,7 @@ void SceneGame::UpdateRemotePlayers()
 					lastMeltTarget[remoteId] = meltTarget;
 				}
 
-				// ★★★ 解凍音は全員が聞く（役割判定を削除） ★★★
+				// ★★★ 修正: 解凍音は全員が聞く（役割判定を完全に削除）★★★
 				if (meltTarget != 0 && isFrozen)
 				{
 					if (remoteMeltSounds[remoteId] == AK_INVALID_PLAYING_ID)
@@ -884,11 +884,14 @@ void SceneGame::UpdateRemotePlayers()
 						SoundManager::SetPosition(remotePos, remoteDir, CharacterBase::UP_DIRECTION, remoteId);
 						remoteMeltSounds[remoteId] = SoundManager::Play(AK::EVENTS::PLAY_SE_THAWING, remoteId);
 
-						if (shouldLog)
+						// ★★★ ログを常に出力して確認 ★★★
+						NET_LOG_F("[UpdateRemotePlayers] ★★★解凍音再生開始★★★ Runner[%u] PlayingID=%u Target=%u LocalRole=%s",
+							remoteId, remoteMeltSounds[remoteId], meltTarget,
+							(localRole == ROLE_CHASER) ? "鬼" : "逃げる側");
+
+						if (remoteMeltSounds[remoteId] == AK_INVALID_PLAYING_ID)
 						{
-							NET_LOG_F("[UpdateRemotePlayers] ★解凍音再生開始★ Runner[%u] PlayingID=%u Target=%u (LocalRole=%s)",
-								remoteId, remoteMeltSounds[remoteId], meltTarget,
-								(localRole == ROLE_CHASER) ? "鬼" : "逃げる側");
+							NET_LOG_F("[UpdateRemotePlayers] ★★★エラー: 解凍音再生に失敗★★★ Runner[%u]", remoteId);
 						}
 					}
 				}
