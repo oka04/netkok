@@ -65,8 +65,7 @@ void CharacterBase::Initialize(Engine *pEngine, std::string filename, Projection
 
 void CharacterBase::UpdateMatrix(DirectionalLight &light)
 {
-	// ★★★ 修正: ローカルプレイヤーのみフラグをクリア ★★★
-	// （リモートプレイヤーはネットワークから受信したフラグを保持）
+	// ★★★ ローカルプレイヤーのみフラグをクリア（リモートは保持） ★★★
 	if (m_bIsLocal)
 	{
 		m_soundEvents = 0;
@@ -79,27 +78,32 @@ void CharacterBase::UpdateMatrix(DirectionalLight &light)
 	baseDirection = DEPTH_DIRECTION;
 	m_angle = currentAngle;
 
-	//m_hAngleによる回転行列を計算
 	D3DXMATRIX matRotationY;
 	D3DXMatrixRotationY(&matRotationY, currentAngle);
 
-	//基準方向を回転させてm_depth（カメラの奥行き、ライトの向き）を決める
 	m_depth = D3DXVec3TransformCoord(&baseDirection, &matRotationY);
 
 	m_hori = D3DXVec3Cross(&UP_DIRECTION, &m_depth);
 	D3DXVec3Normalize(&m_hori, &m_hori);
 
-	//カメラの上下の回転は常にマウス入力から計算
 	D3DXMATRIX matRotationV;
 	D3DXMatrixRotationAxis(&matRotationV, &m_hori, D3DXToRadian(m_vAngle));
 	m_cameraFront = D3DXVec3TransformCoord(&m_depth, &matRotationV);
 
-	//ライトをカメラの視線方向（m_depth）に設定する
 	light.SetDirection(m_depth);
 
-	SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, SoundManager::ID_LISTENER);
-	D3DXMatrixRotationY(&m_matRotate, m_angle);
+	// ★★★ ローカルプレイヤーのみサウンド位置を更新 ★★★
+	if (m_bIsLocal)
+	{
+		SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, SoundManager::ID_LISTENER);
+	}
+	else
+	{
+		// ★★★ リモートプレイヤーは自分のIDで位置更新 ★★★
+		SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, m_clientId);
+	}
 
+	D3DXMatrixRotationY(&m_matRotate, m_angle);
 	D3DXMatrixTranslation(&m_matTrans, &m_position);
 
 	m_matWorld = m_matRotate * m_matTrans;

@@ -159,26 +159,32 @@ void SceneGame::Update()
 	case IN_GAME:
 		m_gameData.m_gameTime += m_deltaTime;
 
+		// ★★★ 修正: 処理順序を整理 ★★★
+		// 1. ネットワーク受信（他プレイヤーの状態を取得）
 		UpdateNetwork();
+
+		// 2. ローカルプレイヤーの更新（入力→移動→カメラ）
 		UpdateLocalPlayer();
+
+		// 3. リモートプレイヤーの更新（補間・予測のみ、Update()は呼ばない）
 		UpdateRemotePlayers();
 
+		// 4. 鬼のライト更新
 		UpdateChaserLights();
+
+		// 5. ブレスの当たり判定
 		CheckBreathHitPlayers();
 
-		// ★★★ ゲームタイマー更新 ★★★
 		if (!m_bGameEnded)
 		{
 			UpdateGameTimer();
 
-			// ホストのみが勝敗判定を行う
 			if (m_bIsHost)
 			{
 				CheckGameEnd();
 			}
 		}
 
-		// ★★★ ポーズ処理（ゲーム中のみ）★★★
 		if (m_pEngine->GetKeyStateSync(DIK_ESCAPE) || m_pEngine->GetKeyStateSync(DIK_P))
 		{
 			m_pEngine->ScreenShot(TEXTURE_PAUSE);
@@ -729,7 +735,6 @@ void SceneGame::UpdateLocalPlayer()
 		m_lastNetworkSend = now;
 	}
 }
-
 void SceneGame::UpdateRemotePlayers()
 {
 	static DWORD lastLog = 0;
@@ -749,17 +754,14 @@ void SceneGame::UpdateRemotePlayers()
 		uint32_t remoteId = kv.first;
 		CharacterBase* pRemote = kv.second;
 
-		// ★★★ 修正: ローカルプレイヤー（自分自身）は完全にスキップ ★★★
 		if (remoteId == m_localClientId) continue;
 		if (pRemote->IsLocal()) continue;
 
-		// 予測移動が有効なら予測を適用
 		if (m_bEnablePrediction)
 		{
 			pRemote->PredictMovement(m_deltaTime);
 		}
 
-		// 常に 3D サウンドの位置は更新する
 		D3DXVECTOR3 remotePos = pRemote->GetPosition();
 		D3DXVECTOR3 remoteDir = pRemote->GetDepth();
 		SoundManager::SetPosition(remotePos, remoteDir, CharacterBase::UP_DIRECTION, remoteId);
@@ -775,6 +777,8 @@ void SceneGame::UpdateRemotePlayers()
 			auto it = m_playerRoles.find(remoteId);
 			if (it != m_playerRoles.end()) remoteRole = it->second;
 		}
+
+		// ★★★ 修正: 足音だけ役割で判定、解凍音は全員が聞く ★★★
 		bool shouldPlayFootsteps = (localRole != remoteRole);
 
 		bool isBreathing = false;
@@ -788,28 +792,20 @@ void SceneGame::UpdateRemotePlayers()
 		{
 			NET_LOG_F("[UpdateRemotePlayers] ========== Player[%u] ==========", remoteId);
 			NET_LOG_F("  Position: (%.1f, %.1f, %.1f)", remotePos.x, remotePos.y, remotePos.z);
-			NET_LOG_F("  Direction: (%.2f, %.2f, %.2f)", remoteDir.x, remoteDir.y, remoteDir.z);
 			NET_LOG_F("  KeyFlag: 0x%02X (Moving=%s Dash=%s Crouch=%s)",
-				keyFlag,
-				isMoving ? "Yes" : "No",
-				isDashing ? "Yes" : "No",
-				isCrouching ? "Yes" : "No");
+				keyFlag, isMoving ? "Yes" : "No", isDashing ? "Yes" : "No", isCrouching ? "Yes" : "No");
 			NET_LOG_F("  Role: Local=%s Remote=%s",
 				(localRole == ROLE_CHASER) ? "鬼" : "逃げる側",
 				(remoteRole == ROLE_CHASER) ? "鬼" : "逃げる側");
-			NET_LOG_F("  IsBreathing=%s ShouldPlayFootsteps=%s",
-				isBreathing ? "Yes" : "No",
-				shouldPlayFootsteps ? "Yes" : "No");
 		}
 
-		// ===== 足音処理 =====
+		// ===== 足音処理（役割が異なる場合のみ） =====
 		if (isMoving && shouldPlayFootsteps && !isBreathing)
 		{
 			float footspeedParam = 0.6f;
 			if (isDashing) footspeedParam = 1.0f;
 			else if (isCrouching) footspeedParam = 0.3f;
 
-			// ★★★ 修正: RTPC設定を再生前に1回だけ行う ★★★
 			AK::SoundEngine::SetRTPCValue(AK::GAME_PARAMETERS::FOOTSPEED, footspeedParam, remoteId);
 
 			if (footSoundMap[remoteId] == AK_INVALID_PLAYING_ID)
@@ -833,8 +829,7 @@ void SceneGame::UpdateRemotePlayers()
 
 				if (shouldLog)
 				{
-					NET_LOG_F("[UpdateRemotePlayers] ★足音停止★ Player[%u] (Moving=%s Breathing=%s)",
-						remoteId, isMoving ? "Yes" : "No", isBreathing ? "Yes" : "No");
+					NET_LOG_F("[UpdateRemotePlayers] ★足音停止★ Player[%u]", remoteId);
 				}
 			}
 		}
@@ -875,7 +870,7 @@ void SceneGame::UpdateRemotePlayers()
 			}
 		}
 
-		// ===== Runner（解凍/凍結）処理 =====
+		// ===== Runner（解凍/凍結）処理 ★★★ 役割に関係なく全員が聞く ★★★ =====
 		if (remoteRole == ROLE_RUNNER)
 		{
 			Runner* runner = dynamic_cast<Runner*>(pRemote);
@@ -885,6 +880,8 @@ void SceneGame::UpdateRemotePlayers()
 				bool isFrozen = runner->IsFrozen();
 
 				bool wasFrozen = wasFrozenMap[remoteId];
+
+				// ★★★ 凍結音は全員が聞く ★★★
 				if (isFrozen && !wasFrozen)
 				{
 					SoundManager::SetPosition(remotePos, remoteDir, CharacterBase::UP_DIRECTION, remoteId);
@@ -904,14 +901,20 @@ void SceneGame::UpdateRemotePlayers()
 					lastMeltTarget[remoteId] = meltTarget;
 				}
 
-				// ★★★ 修正: 解凍音の再生条件を厳密化 ★★★
+				// ★★★ 解凍音は全員が聞く（役割判定を削除） ★★★
 				if (meltTarget != 0 && isFrozen)
 				{
 					if (remoteMeltSounds[remoteId] == AK_INVALID_PLAYING_ID)
 					{
 						SoundManager::SetPosition(remotePos, remoteDir, CharacterBase::UP_DIRECTION, remoteId);
 						remoteMeltSounds[remoteId] = SoundManager::Play(AK::EVENTS::PLAY_SE_THAWING, remoteId);
-						if (shouldLog) NET_LOG_F("[UpdateRemotePlayers] ★解凍音再生開始★ Runner[%u] PlayingID=%u", remoteId, remoteMeltSounds[remoteId]);
+
+						if (shouldLog)
+						{
+							NET_LOG_F("[UpdateRemotePlayers] ★解凍音再生開始★ Runner[%u] PlayingID=%u Target=%u (LocalRole=%s)",
+								remoteId, remoteMeltSounds[remoteId], meltTarget,
+								(localRole == ROLE_CHASER) ? "鬼" : "逃げる側");
+						}
 					}
 				}
 				else
@@ -970,7 +973,6 @@ void SceneGame::UpdateRemotePlayers()
 
 	if (shouldLog)
 	{
-		NET_LOG_F("[UpdateRemotePlayers] ========================================");
 		lastLog = now;
 	}
 }

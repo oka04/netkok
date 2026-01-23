@@ -856,6 +856,8 @@ void Runner::LoadParameter()
 
 void Runner::ChangeSpeed()
 {
+	float oldSpeed = m_speed;
+
 	if (m_bFatigued)
 	{
 		m_speed = f_fatigueSpeed * m_deltaTime;
@@ -871,5 +873,21 @@ void Runner::ChangeSpeed()
 	else
 	{
 		m_speed = f_walkSpeed * m_deltaTime;
+	}
+
+	// ★★★ デバッグログ（速度変化を追跡） ★★★
+	static std::map<uint32_t, DWORD> lastSpeedLog;
+	DWORD now = timeGetTime();
+	if (now - lastSpeedLog[m_clientId] > 1000)
+	{
+		NET_LOG_F("[Runner::ChangeSpeed] ID=%u IsLocal=%s Speed=%.3f DeltaTime=%.4f Dash=%s Crouch=%s Fatigue=%s",
+			m_clientId,
+			m_bIsLocal ? "Yes" : "No",
+			m_speed,
+			m_deltaTime,
+			(m_keyFlag & DASH_KEY) ? "Yes" : "No",
+			(m_keyFlag & CROUCH_KEY) ? "Yes" : "No",
+			m_bFatigued ? "Yes" : "No");
+		lastSpeedLog[m_clientId] = now;
 	}
 }
