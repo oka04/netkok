@@ -391,6 +391,7 @@ void Runner::SetFrozen(bool frozen)
 void Runner::SetFrozenAmount(float amount)
 {
 	float oldAmount = m_frozenAmount;
+	bool wasFullyMelted = m_bFullyMelted;
 	m_frozenAmount = amount;
 
 	// ★★★ 完全解凍の判定 ★★★
@@ -401,7 +402,11 @@ void Runner::SetFrozenAmount(float amount)
 		m_bFullyMelted = true;
 		m_targetMeltPlayer = 0;
 
-		NET_LOG_F("[Runner::SetFrozenAmount] ID=%u 完全解凍 amount=1.0維持", m_clientId);
+		// ★★★ 完全解凍SE再生（全プレイヤーが聞く）★★★
+		SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, m_clientId);
+		SoundManager::Play(AK::EVENTS::PLAY_SE_THAW_COMPLETE, m_clientId);
+
+		NET_LOG_F("[Runner::SetFrozenAmount] ID=%u ★完全解凍★ SE再生", m_clientId);
 	}
 	// ★★★ 解凍完了後は1.0を維持 ★★★
 	else if (m_frozenAmount >= 1.0f && !m_bFrozen)

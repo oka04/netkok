@@ -43,8 +43,8 @@ void CharacterBase::Initialize(Engine *pEngine, std::string filename, Projection
 	m_targetPosition = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_targetHAngle = 0.0f;
 	m_targetVAngle = 0.0f;
-	m_interpolationSpeed = 30.0f;
-	m_adaptiveInterpolationSpeed = 30.0f;
+	m_interpolationSpeed = 60.0f;
+	m_adaptiveInterpolationSpeed = 60.0f;
 	m_velocity = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_predictedPosition = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_smoothedVelocity = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -569,19 +569,17 @@ void CharacterBase::UpdateFromNetwork(const NetPlayerState& state, DirectionalLi
 	UpdateMatrix(light);
 }
 
-// ★★★ 予測移動（フレーム間の補間）★★★
 void CharacterBase::PredictMovement(float deltaTime)
 {
-	if (m_bIsLocal) return;  // ローカルキャラクターは予測不要
+	if (m_bIsLocal) return;
 
-							 // 速度ベースの予測
 	if (D3DXVec3Length(&m_velocity) > 0.01f)
 	{
 		D3DXVECTOR3 prediction = m_velocity * deltaTime;
 		m_predictedPosition = m_position + prediction;
 
-		// 予測位置とターゲット位置の間で補間
-		float blend = 0.3f;  // 30%予測、70%現在位置
+		// ★★★ 予測の重みを上げる（0.3 → 0.5） ★★★
+		float blend = 0.5f;  // 50%予測、50%現在位置
 		m_position = m_position * (1.0f - blend) + m_predictedPosition * blend;
 	}
 }

@@ -160,7 +160,7 @@ protected:
 	D3DXVECTOR3 m_targetPosition;
 	float m_targetHAngle;
 	float m_targetVAngle;
-	float m_interpolationSpeed;
+	float m_interpolationSpeed;  
 	float m_adaptiveInterpolationSpeed;
 
 	// ★★★ 予測移動用変数 ★★★

@@ -778,7 +778,6 @@ void SceneGame::UpdateRemotePlayers()
 			if (it != m_playerRoles.end()) remoteRole = it->second;
 		}
 
-		// ★★★ 修正: 足音だけ役割で判定、解凍音は全員が聞く ★★★
 		bool shouldPlayFootsteps = (localRole != remoteRole);
 
 		bool isBreathing = false;
@@ -788,18 +787,7 @@ void SceneGame::UpdateRemotePlayers()
 			if (chaser) isBreathing = chaser->IsBreathing();
 		}
 
-		if (shouldLog)
-		{
-			NET_LOG_F("[UpdateRemotePlayers] ========== Player[%u] ==========", remoteId);
-			NET_LOG_F("  Position: (%.1f, %.1f, %.1f)", remotePos.x, remotePos.y, remotePos.z);
-			NET_LOG_F("  KeyFlag: 0x%02X (Moving=%s Dash=%s Crouch=%s)",
-				keyFlag, isMoving ? "Yes" : "No", isDashing ? "Yes" : "No", isCrouching ? "Yes" : "No");
-			NET_LOG_F("  Role: Local=%s Remote=%s",
-				(localRole == ROLE_CHASER) ? "鬼" : "逃げる側",
-				(remoteRole == ROLE_CHASER) ? "鬼" : "逃げる側");
-		}
-
-		// ===== 足音処理（役割が異なる場合のみ） =====
+		// ===== 足音処理 =====
 		if (isMoving && shouldPlayFootsteps && !isBreathing)
 		{
 			float footspeedParam = 0.6f;
@@ -826,15 +814,10 @@ void SceneGame::UpdateRemotePlayers()
 			{
 				SoundManager::StopEvent(footSoundMap[remoteId]);
 				footSoundMap[remoteId] = AK_INVALID_PLAYING_ID;
-
-				if (shouldLog)
-				{
-					NET_LOG_F("[UpdateRemotePlayers] ★足音停止★ Player[%u]", remoteId);
-				}
 			}
 		}
 
-		// ===== ブレス（鬼）処理 =====
+		// ===== ブレス処理 =====
 		if (remoteRole == ROLE_CHASER)
 		{
 			Chaser* chaser = dynamic_cast<Chaser*>(pRemote);
@@ -846,12 +829,6 @@ void SceneGame::UpdateRemotePlayers()
 					{
 						SoundManager::SetPosition(remotePos, remoteDir, CharacterBase::UP_DIRECTION, remoteId);
 						breathSoundMap[remoteId] = SoundManager::Play(AK::EVENTS::PLAY_SE_BRACELET, remoteId);
-
-						if (shouldLog)
-						{
-							NET_LOG_F("[UpdateRemotePlayers] ★ブレス音再生開始★ Chaser[%u] PlayingID=%u",
-								remoteId, breathSoundMap[remoteId]);
-						}
 					}
 				}
 				else
@@ -860,28 +837,21 @@ void SceneGame::UpdateRemotePlayers()
 					{
 						SoundManager::StopEvent(breathSoundMap[remoteId]);
 						breathSoundMap[remoteId] = AK_INVALID_PLAYING_ID;
-
-						if (shouldLog)
-						{
-							NET_LOG_F("[UpdateRemotePlayers] ★ブレス音停止★ Chaser[%u]", remoteId);
-						}
 					}
 				}
 			}
 		}
 
-		// ===== Runner（解凍/凍結）処理 ★★★ 役割に関係なく全員が聞く ★★★ =====
+		// ===== 解凍音処理（全員が聞く） =====
 		if (remoteRole == ROLE_RUNNER)
 		{
 			Runner* runner = dynamic_cast<Runner*>(pRemote);
 			if (runner)
 			{
-				uint32_t meltTarget = runner->GetMeltTargetId();
 				bool isFrozen = runner->IsFrozen();
-
 				bool wasFrozen = wasFrozenMap[remoteId];
 
-				// ★★★ 凍結音は全員が聞く ★★★
+				// 凍結音
 				if (isFrozen && !wasFrozen)
 				{
 					SoundManager::SetPosition(remotePos, remoteDir, CharacterBase::UP_DIRECTION, remoteId);
@@ -890,19 +860,36 @@ void SceneGame::UpdateRemotePlayers()
 					if (shouldLog) NET_LOG_F("[UpdateRemotePlayers] ★凍結音再生★ Runner[%u]", remoteId);
 				}
 
-				if (meltTarget != lastMeltTarget[remoteId])
+				// ★★★ 修正: 誰かがこの人を助けているかチェック ★★★
+				bool isBeingHelped = false;
+
+				// リモートプレイヤーをチェック
+				for (auto& kv2 : m_players)
 				{
-					if (remoteMeltSounds[remoteId] != AK_INVALID_PLAYING_ID)
+					if (kv2.first == remoteId) continue;
+					if (!kv2.second) continue;
+					if (m_playerRoles[kv2.first] != ROLE_RUNNER) continue;
+
+					Runner* helper = dynamic_cast<Runner*>(kv2.second);
+					if (helper && helper->GetMeltTargetId() == remoteId)
 					{
-						SoundManager::StopEvent(remoteMeltSounds[remoteId]);
-						remoteMeltSounds[remoteId] = AK_INVALID_PLAYING_ID;
-						if (shouldLog) NET_LOG_F("[UpdateRemotePlayers] ★解凍音停止(ターゲット変更)★ Runner[%u]", remoteId);
+						isBeingHelped = true;
+						break;
 					}
-					lastMeltTarget[remoteId] = meltTarget;
 				}
 
-				// ★★★ 解凍音は全員が聞く（役割判定を削除） ★★★
-				if (meltTarget != 0 && isFrozen)
+				// ローカルプレイヤーもチェック
+				if (!isBeingHelped && m_pLocalPlayer && m_localRole == ROLE_RUNNER)
+				{
+					Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
+					if (localRunner && localRunner->GetMeltTargetId() == remoteId)
+					{
+						isBeingHelped = true;
+					}
+				}
+
+				// 解凍音の再生・停止
+				if (isBeingHelped && isFrozen)
 				{
 					if (remoteMeltSounds[remoteId] == AK_INVALID_PLAYING_ID)
 					{
@@ -911,9 +898,8 @@ void SceneGame::UpdateRemotePlayers()
 
 						if (shouldLog)
 						{
-							NET_LOG_F("[UpdateRemotePlayers] ★解凍音再生開始★ Runner[%u] PlayingID=%u Target=%u (LocalRole=%s)",
-								remoteId, remoteMeltSounds[remoteId], meltTarget,
-								(localRole == ROLE_CHASER) ? "鬼" : "逃げる側");
+							NET_LOG_F("[UpdateRemotePlayers] ★解凍音再生開始★ Runner[%u] PlayingID=%u (被助者)",
+								remoteId, remoteMeltSounds[remoteId]);
 						}
 					}
 				}
@@ -962,12 +948,6 @@ void SceneGame::UpdateRemotePlayers()
 				obstruction,
 				occlusion
 			);
-
-			if (shouldLog)
-			{
-				NET_LOG_F("  Occlusion: Dist=%.1f Blocked=%s Obst=%.2f Occl=%.2f",
-					dist, blocked ? "Yes" : "No", obstruction, occlusion);
-			}
 		}
 	}
 
