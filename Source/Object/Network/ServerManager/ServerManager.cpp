@@ -569,7 +569,7 @@ void ServerManager::ProcessMeltingOnServer()
 	const float deltaTime = 0.016f; // 約60FPS想定
 
 									// ↓ ここを遅く変更（従来 0.2f → 新しい値 0.08f）
-	const float meltSpeed = 0.05f;   // ヘルパー1人あたりの解凍速度（調整可）
+	const float meltSpeed = 0.08f;   // ヘルパー1人あたりの解凍速度（調整可）
 
 	for (auto& pair : targetToHelpers)
 	{
