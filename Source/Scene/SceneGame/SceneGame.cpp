@@ -413,6 +413,7 @@ void SceneGame::SyncToServer()
 	{
 		// ホストの場合：サーバーに直接状態を設定
 		m_pServer->SetHostState(state);
+		m_pServer->BroadcastWorldState();
 	}
 	else
 	{
@@ -1576,7 +1577,16 @@ void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name,
 	{
 		p = new Runner();
 	}
+	char gameObjName[64];
+	sprintf_s(gameObjName, "Player_%u", clientId);
+	SoundManager::RegisterGameObject(clientId, gameObjName);
 
+	// ローカルプレイヤーであればリスナー設定や初期位置設定も行う
+	if (clientId == m_localClientId)
+	{
+		// リスナーや位置など、必要ならここで設定
+		SoundManager::SetPosition(pos, D3DXVECTOR3(0, 0, 1), CharacterBase::UP_DIRECTION, SoundManager::ID_LISTENER);
+	}
 	bool isLocal = (clientId == m_localClientId);
 
 	// ★★★ 修正: 役割に応じたスタート位置を取得 ★★★
@@ -1718,35 +1728,23 @@ void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name,
 void SceneGame::DespawnPlayer(uint32_t clientId)
 {
 	auto it = m_players.find(clientId);
-	if (it == m_players.end())
+	if (it != m_players.end())
 	{
-		NET_LOG_F("[SceneGame] プレイヤー %u は存在しない - 削除スキップ", clientId);
-		return;
-	}
+		// サウンドを止めてから Wwise の登録解除
+		SoundManager::StopAll(clientId);
+		SoundManager::UnregisterGameObject(clientId);
 
-	// ★★★ 新規追加: Wwiseから登録解除 ★★★
-	SoundManager::UnregisterGameObject(clientId);
-	NET_LOG_F("[SceneGame] Wwiseから登録解除: ID=%u", clientId);
-
-	if (it->second)
-	{
+		// その後に delete 等既存処理
 		if (m_playerRoles[clientId] == ROLE_RUNNER)
-		{
 			((Runner*)it->second)->Release(m_pEngine);
-		}
 		else if (m_playerRoles[clientId] == ROLE_CHASER)
-		{
 			((Chaser*)it->second)->Release(m_pEngine);
-		}
+
 		delete it->second;
+		m_players.erase(it);
+		m_playerRoles.erase(clientId);
 	}
-	m_players.erase(it);
-	m_playerRoles.erase(clientId);
-
-	NET_LOG_F("[SceneGame] プレイヤー削除完了: ID=%u", clientId);
 }
-
-
 void SceneGame::Draw()
 {
 	for (auto& kv : m_players)

@@ -1,7 +1,6 @@
 ﻿#define _USING_V110_SDK71_ 1
 
 #include "CharacterBase.h"
-
 using namespace KeyString;
 using namespace InputKey;
 using namespace WindowSetting;
@@ -477,35 +476,30 @@ void CharacterBase::UpdateFromNetwork(const NetPlayerState& state, DirectionalLi
 	}
 	m_lastUpdateTime = now;
 
-	// 新しいターゲット位置を設定
 	D3DXVECTOR3 newTargetPos = D3DXVECTOR3(state.posX, state.posY, state.posZ);
 
 	// 速度の計算（予測移動用）
+	// ここで rawVelocity を計算して補間・補正に使う
 	D3DXVECTOR3 rawVelocity = (newTargetPos - m_targetPosition) / max(0.001f, m_timeSinceLastUpdate);
 
 	// 速度のスムージング（急激な変化を抑制）
-	m_smoothedVelocity = m_smoothedVelocity * (1.0f - m_velocitySmoothingFactor) +
-		rawVelocity * m_velocitySmoothingFactor;
+	// 以前は m_smoothedVelocity のみを参照していたため、速度が急変した際に遅く見えることがあった
+	// ここでは rawVelocity に基づく判定を追加し、差が大きければ smoothed をリセットする
+	const float RESET_THRESHOLD = 3.0f; // しきい値（必要に応じて調整）
+	float rawSpeed = D3DXVec3Length(&rawVelocity);
+	float smoothSpeed = D3DXVec3Length(&m_smoothedVelocity);
 
-	// 新しいターゲット位置を設定
-	m_targetPosition = newTargetPos;
-	m_targetHAngle = state.hAngle;
-	m_targetVAngle = state.vAngle;
-
-	// 位置履歴に追加（ジッター対策）
-	AddPositionToHistory(m_targetPosition);
-
-	// 現在位置との距離を計算
-	D3DXVECTOR3 diff = m_targetPosition - m_position;
-	float dist = D3DXVec3Length(&diff);
-
-	// デバッグログ（頻度を下げる）
-	static std::map<uint32_t, DWORD> lastLogPerPlayer;
-	if (now - lastLogPerPlayer[state.clientId] > 2000)
+	// 急変を検知したら smoothed を raw に近づける（遅延を減らす）
+	if (fabs(rawSpeed - smoothSpeed) > RESET_THRESHOLD)
 	{
-		NET_LOG_F("[CharacterBase] UpdateFromNetwork: ID=%u Dist=%.2f Speed=%.2f",
-			m_clientId, dist, D3DXVec3Length(&m_smoothedVelocity));
-		lastLogPerPlayer[state.clientId] = now;
+		// 大きな差がある場合はスムージングをリセット気味にする
+		m_smoothedVelocity = rawVelocity;
+	}
+	else
+	{
+		// 通常は緩やかに更新
+		float alpha = max(0.2f, min(0.0f, 1.0f)); // スムージング係数（必要ならパラメータ化）
+		m_smoothedVelocity = m_smoothedVelocity * (1.0f - alpha) + rawVelocity * alpha;
 	}
 
 	// 適応的テレポート閾値（速度に応じて調整）
@@ -513,33 +507,26 @@ void CharacterBase::UpdateFromNetwork(const NetPlayerState& state, DirectionalLi
 	float teleportThreshold = 1.5f + speedFactor * 0.1f;
 	teleportThreshold = min(teleportThreshold, 5.0f);
 
-	if (dist > teleportThreshold)
+	if (D3DXVec3Length(&(m_position - newTargetPos)) > teleportThreshold)
 	{
 		// 距離が大きい場合は即座にテレポート
-		m_position = m_targetPosition;
+		m_position = newTargetPos;
 		m_velocity = m_smoothedVelocity;
-		NET_LOG_F("[CharacterBase] テレポート: ID=%u Dist=%.2f", m_clientId, dist);
-	}
-	else if (dist > 0.01f)
-	{
-		// 適応的補間速度（距離に応じて調整）
-		float distanceFactor = min(dist * 2.0f, 1.0f);
-		m_adaptiveInterpolationSpeed = m_interpolationSpeed * (1.0f + distanceFactor * 2.0f);
-
-		// 補間係数の計算
-		float t = min(1.0f, m_adaptiveInterpolationSpeed * deltaTime);
-
-		// 位置の補間
-		m_position += diff * t;
-
-		// 速度の更新
-		m_velocity = m_smoothedVelocity;
+		m_targetPosition = newTargetPos;
 	}
 	else
 	{
-		// ほぼ到達している場合
-		m_position = m_targetPosition;
-		m_velocity = D3DXVECTOR3(0, 0, 0);
+		// 補間で位置更新（従来ロジック）
+		D3DXVECTOR3 diff = newTargetPos - m_position;
+		float dist = D3DXVec3Length(&diff);
+		if (dist > 0.01f)
+		{
+			float distanceFactor = min(dist * 2.0f, 1.0f);
+			m_adaptiveInterpolationSpeed = m_interpolationSpeed * (1.0f + distanceFactor * 2.0f);
+			float t = min(1.0f, m_adaptiveInterpolationSpeed * deltaTime);
+			m_position += diff * t;
+			m_velocity = m_smoothedVelocity;
+		}
 	}
 
 	// 角度の補間（改善版）
