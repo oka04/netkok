@@ -1787,7 +1787,7 @@ void SceneGame::Draw()
 			NET_LOG_F("  Light[%d] Pos=(%.1f,%.1f,%.1f) Dir=(%.2f,%.2f,%.2f) ShadowMap=%s",
 				(int)i,
 				l.Position.x, l.Position.y, l.Position.z,
-				l.Direction.x, l.Direction.y, l.Direction.z,
+				l.Direction.x, l.Direction.y, l.Direction.z, 
 				shadowMaps[i] ? "有効" : "無効");
 		}
 		lastLog = now;
