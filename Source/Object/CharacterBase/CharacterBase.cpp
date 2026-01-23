@@ -228,15 +228,19 @@ void CharacterBase::Move(Map & map)
 
 		map.MoveCheck(m_position, vector, f_radius);
 
-		m_soundEvents |= SOUND_FOOTSTEP;
-
+		// ★★★ 修正: ローカルプレイヤーのみ足音フラグを設定 ★★★
+		if (m_bIsLocal)
+		{
+			m_soundEvents |= SOUND_FOOTSTEP;
+		}
 	}
 	else
 	{
-		// ★★★ 足音フラグをクリア ★★★
-		m_soundEvents &= ~SOUND_FOOTSTEP;
-
-		// ★★★ ローカルプレイヤーの足音停止も不要 ★★★
+		// ★★★ ローカルプレイヤーのみフラグをクリア ★★★
+		if (m_bIsLocal)
+		{
+			m_soundEvents &= ~SOUND_FOOTSTEP;
+		}
 	}
 
 	m_eyePosition = m_position + ((m_keyFlag & CROUCH_KEY) ? f_crouchEyePosition : f_standEyePosition);

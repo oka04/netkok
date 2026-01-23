@@ -730,18 +730,16 @@ void SceneGame::UpdateLocalPlayer()
 	}
 }
 
-// SceneGame::UpdateRemotePlayers - 差し替え用：全文
 void SceneGame::UpdateRemotePlayers()
 {
 	static DWORD lastLog = 0;
 	DWORD now = timeGetTime();
 	bool shouldLog = (now - lastLog > 2000);
 
-	// 再生中の PlayingID をプレイヤーごとに保持
 	static std::map<uint32_t, AkPlayingID> footSoundMap;
 	static std::map<uint32_t, AkPlayingID> breathSoundMap;
 	static std::map<uint32_t, AkPlayingID> remoteMeltSounds;
-	static std::map<uint32_t, uint32_t> lastMeltTarget; // 前回の melt target
+	static std::map<uint32_t, uint32_t> lastMeltTarget;
 	static std::map<uint32_t, bool> wasFrozenMap;
 
 	for (auto& kv : m_players)
@@ -751,7 +749,7 @@ void SceneGame::UpdateRemotePlayers()
 		uint32_t remoteId = kv.first;
 		CharacterBase* pRemote = kv.second;
 
-		// ★★ 重要: 自分のクライアントはここで更新しない（ホストやローカル二重適用の防止） ★★
+		// ★★★ 修正: ローカルプレイヤー（自分自身）は完全にスキップ ★★★
 		if (remoteId == m_localClientId) continue;
 		if (pRemote->IsLocal()) continue;
 
@@ -766,13 +764,11 @@ void SceneGame::UpdateRemotePlayers()
 		D3DXVECTOR3 remoteDir = pRemote->GetDepth();
 		SoundManager::SetPosition(remotePos, remoteDir, CharacterBase::UP_DIRECTION, remoteId);
 
-		// キーフラグから移動状態を判定
 		unsigned char keyFlag = pRemote->GetKeyFlag();
-		bool isMoving = (keyFlag & 0x0F) != 0; // W,A,S,D のいずれか
+		bool isMoving = (keyFlag & 0x0F) != 0;
 		bool isDashing = (keyFlag & 0x20) != 0;
 		bool isCrouching = (keyFlag & 0x10) != 0;
 
-		// ローカル／リモートの役割で足音を聞くか決める
 		PlayerRole localRole = m_localRole;
 		PlayerRole remoteRole = ROLE_NONE;
 		{
@@ -781,7 +777,6 @@ void SceneGame::UpdateRemotePlayers()
 		}
 		bool shouldPlayFootsteps = (localRole != remoteRole);
 
-		// 鬼のブレス中は足音を抑制する（既存仕様）
 		bool isBreathing = false;
 		if (remoteRole == ROLE_CHASER)
 		{
@@ -810,13 +805,13 @@ void SceneGame::UpdateRemotePlayers()
 		// ===== 足音処理 =====
 		if (isMoving && shouldPlayFootsteps && !isBreathing)
 		{
-			// 速度に応じた RTPC を設定（歩行・ダッシュ・しゃがみ）
 			float footspeedParam = 0.6f;
 			if (isDashing) footspeedParam = 1.0f;
 			else if (isCrouching) footspeedParam = 0.3f;
+
+			// ★★★ 修正: RTPC設定を再生前に1回だけ行う ★★★
 			AK::SoundEngine::SetRTPCValue(AK::GAME_PARAMETERS::FOOTSPEED, footspeedParam, remoteId);
 
-			// 再生されていなければ開始（再生中なら再生を重ねない）
 			if (footSoundMap[remoteId] == AK_INVALID_PLAYING_ID)
 			{
 				SoundManager::SetPosition(remotePos, remoteDir, CharacterBase::UP_DIRECTION, remoteId);
@@ -831,7 +826,6 @@ void SceneGame::UpdateRemotePlayers()
 		}
 		else
 		{
-			// 止まった／ブレス中／同役割 の場合は足音を停止（既に停止済みなら何もしない）
 			if (footSoundMap[remoteId] != AK_INVALID_PLAYING_ID)
 			{
 				SoundManager::StopEvent(footSoundMap[remoteId]);
@@ -874,14 +868,14 @@ void SceneGame::UpdateRemotePlayers()
 
 						if (shouldLog)
 						{
-							NET_LOG_F("[UpdateRemotePlayers] ★ブレス音停止★ Chaser[%u] PlayingID=%u", remoteId, breathSoundMap[remoteId]);
+							NET_LOG_F("[UpdateRemotePlayers] ★ブレス音停止★ Chaser[%u]", remoteId);
 						}
 					}
 				}
 			}
 		}
 
-		// ===== Runner（解凍/凍結）処理（音の開始/停止はここで一元管理） =====
+		// ===== Runner（解凍/凍結）処理 =====
 		if (remoteRole == ROLE_RUNNER)
 		{
 			Runner* runner = dynamic_cast<Runner*>(pRemote);
@@ -890,7 +884,6 @@ void SceneGame::UpdateRemotePlayers()
 				uint32_t meltTarget = runner->GetMeltTargetId();
 				bool isFrozen = runner->IsFrozen();
 
-				// 凍結開始検出（ログのみ。音は一括管理）
 				bool wasFrozen = wasFrozenMap[remoteId];
 				if (isFrozen && !wasFrozen)
 				{
@@ -900,7 +893,6 @@ void SceneGame::UpdateRemotePlayers()
 					if (shouldLog) NET_LOG_F("[UpdateRemotePlayers] ★凍結音再生★ Runner[%u]", remoteId);
 				}
 
-				// meltTarget 変化で既存の解凍音を停止
 				if (meltTarget != lastMeltTarget[remoteId])
 				{
 					if (remoteMeltSounds[remoteId] != AK_INVALID_PLAYING_ID)
@@ -912,8 +904,8 @@ void SceneGame::UpdateRemotePlayers()
 					lastMeltTarget[remoteId] = meltTarget;
 				}
 
-				// 解凍進行の開始：meltTarget が存在すれば解凍音を再生（重複防止）
-				if (meltTarget != 0)
+				// ★★★ 修正: 解凍音の再生条件を厳密化 ★★★
+				if (meltTarget != 0 && isFrozen)
 				{
 					if (remoteMeltSounds[remoteId] == AK_INVALID_PLAYING_ID)
 					{
@@ -936,7 +928,7 @@ void SceneGame::UpdateRemotePlayers()
 			}
 		}
 
-		// ===== 遮蔽・遮音の計算（リスナー = ローカルプレイヤー） =====
+		// ===== 遮蔽・遮音の計算 =====
 		if (m_pLocalPlayer)
 		{
 			D3DXVECTOR3 localPos = m_pLocalPlayer->GetPosition();
@@ -952,13 +944,11 @@ void SceneGame::UpdateRemotePlayers()
 
 			float distFactor = min(dist / maxDist, 1.0f) / 2.0f;
 
-			// 完全消音にならないように上限を下げる（壁越しでも小さい音は残す）
-			float obstruction = blocked ? (0.6f + distFactor * 0.4f) : distFactor;
-			float occlusion = blocked ? (0.4f + distFactor * 0.6f) : (distFactor * 0.3f);
-
-			// 上限を 1.0 ではなく安全な値にクリップ
 			const float MAX_OBSTRUCTION = 0.85f;
 			const float MAX_OCCLUSION = 0.80f;
+
+			float obstruction = blocked ? (0.6f + distFactor * 0.4f) : distFactor;
+			float occlusion = blocked ? (0.4f + distFactor * 0.6f) : (distFactor * 0.3f);
 
 			obstruction = min(obstruction, MAX_OBSTRUCTION);
 			occlusion = min(occlusion, MAX_OCCLUSION);
@@ -984,7 +974,6 @@ void SceneGame::UpdateRemotePlayers()
 		lastLog = now;
 	}
 }
-
 void SceneGame::CheckBreathHitPlayers()
 {
 	if (m_pLocalPlayer && m_localRole == ROLE_CHASER)

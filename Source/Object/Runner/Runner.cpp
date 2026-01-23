@@ -489,37 +489,37 @@ void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBas
 		}
 	}
 
-	// ターゲット変更時のみ停止（既に再生中の音があれば停止）
+	// ★★★ 修正: ターゲット変更時のみ音を停止して再生 ★★★
 	if (newTarget != m_targetMeltPlayer)
 	{
+		// 既存の音を停止
 		if (m_meltingSoundId != AK_INVALID_PLAYING_ID)
 		{
 			SoundManager::StopEvent(m_meltingSoundId);
 			m_meltingSoundId = AK_INVALID_PLAYING_ID;
+
+			NET_LOG_F("[Runner::UpdateMeltTarget] ID=%u 解凍音停止（ターゲット変更: %u -> %u）",
+				m_clientId, m_targetMeltPlayer, newTarget);
 		}
+
 		m_targetMeltPlayer = newTarget;
-	}
 
-	// ★ 解凍中は1回だけ再生（再生中であれば二重で再生しない）
-	if (m_targetMeltPlayer != 0 && m_meltingSoundId == AK_INVALID_PLAYING_ID)
-	{
-		// 再生前に位置をセット（3D音源）
-		SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, m_clientId);
-
-		// 自分（ローカル）が誰かを助けているときは m_meltingSoundId に保持
-		m_meltingSoundId = SoundManager::Play(AK::EVENTS::PLAY_SE_THAWING, m_clientId);
-
-		NET_LOG_F("[Runner::UpdateMeltTarget] ID=%u 解凍再生開始 PlayingID=%u Target=%u",
-			m_clientId, m_meltingSoundId, m_targetMeltPlayer);
-
-		// 再生に失敗したらログを残し ID を無効化
-		if (m_meltingSoundId == AK_INVALID_PLAYING_ID)
+		// ★★★ 新しいターゲットがある場合のみ再生 ★★★
+		if (m_targetMeltPlayer != 0)
 		{
-			NET_LOG_F("[Runner::UpdateMeltTarget] ★エラー★ 解凍音再生失敗 ID=%u", m_clientId);
+			SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, m_clientId);
+			m_meltingSoundId = SoundManager::Play(AK::EVENTS::PLAY_SE_THAWING, m_clientId);
+
+			NET_LOG_F("[Runner::UpdateMeltTarget] ID=%u 解凍音再生開始 PlayingID=%u Target=%u",
+				m_clientId, m_meltingSoundId, m_targetMeltPlayer);
+
+			if (m_meltingSoundId == AK_INVALID_PLAYING_ID)
+			{
+				NET_LOG_F("[Runner::UpdateMeltTarget] ★エラー★ 解凍音再生失敗 ID=%u", m_clientId);
+			}
 		}
 	}
 }
-
 NetPlayerState Runner::GetNetState() const
 {
 	NetPlayerState state = CharacterBase::GetNetState();
