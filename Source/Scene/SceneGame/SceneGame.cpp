@@ -703,18 +703,16 @@ void SceneGame::UpdateLocalPlayer()
 {
 	if (!m_pLocalPlayer) return;
 
+	// ★★★ 修正: m_deltaTimeを確実に渡す ★★★
 	m_pLocalPlayer->Update(m_pEngine, m_map, m_camera, m_light, m_deltaTime);
 
-	// ★★★ ローカルプレイヤーがRunnerの場合、解凍ターゲットを更新 ★★★
 	if (m_localRole == ROLE_RUNNER)
 	{
 		Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
 		if (localRunner && !localRunner->IsFrozen())
 		{
-			// プレイヤーリストを作成
 			std::vector<std::pair<uint32_t, CharacterBase*>> playerList;
-			
-			// リモートプレイヤーを追加
+
 			for (auto& kv : m_players)
 			{
 				if (kv.first != m_localClientId && kv.second)
@@ -723,7 +721,6 @@ void SceneGame::UpdateLocalPlayer()
 				}
 			}
 
-			// 解凍ターゲットを更新
 			localRunner->UpdateMeltTarget(playerList);
 		}
 	}
@@ -1974,6 +1971,7 @@ void SceneGame::Draw()
 		kv.second->DrawEffects(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light);
 	}
 
+	// ★★★ 壁越しバー描画（修正版：視線が遮られている場合のみ）★★★
 	if (m_pLocalPlayer)
 	{
 		D3DXVECTOR3 cameraPos = m_camera.m_vecEye;
@@ -1996,7 +1994,8 @@ void SceneGame::Draw()
 				D3DXVECTOR3 intersection;
 				bool isBlocked = m_map.RayToWallIntersection(cameraPos, targetPos, &intersection);
 
-				if (!isBlocked)	continue;
+				// ★★★ 修正: 視線が遮られている場合のみ壁越し描画 ★★★
+				if (!isBlocked) continue;
 
 				float alpha = f_wallAlphaNear;
 				if (distance > f_wallDistanceMid) alpha = f_wallAlphaMid;
@@ -2024,7 +2023,6 @@ void SceneGame::Draw()
 
 				D3DXVECTOR3 targetPos = runner->GetPosition();
 
-				// ★★★ 2Dで壁判定を行う ★★★
 				D3DXVECTOR2 cameraPos2D(cameraPos.x, cameraPos.z);
 				D3DXVECTOR2 targetPos2D(targetPos.x, targetPos.z);
 				D3DXVECTOR3 cameraPos3D_ForRay(cameraPos.x, cameraPos.y, cameraPos.z);
@@ -2036,32 +2034,24 @@ void SceneGame::Draw()
 				D3DXVECTOR3 diff = targetPos - cameraPos;
 				float distance = D3DXVec3Length(&diff);
 
+				// ★★★ 修正: 距離内かつ視線が遮られている場合のみ壁越し描画 ★★★
+				if (distance > f_chaserGaugeDistance || !isBlocked) continue;
+
 				float alpha = f_wallAlphaNear;
 				if (distance > 3.0f) alpha = f_wallAlphaMid;
 
 				IceBlock* iceBlock = runner->GetIceBlock();
 				if (iceBlock)
 				{
-					if (isBlocked)
-					{
-						// ★★★ 壁越しの場合は元の大きさで描画 ★★★
-						iceBlock->DrawThroughWallsFullSize(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light, alpha);
-					}
-					else
-					{
-						// ★★★ 壁がない場合は通常描画（既にDrawEffectsで描画済み）★★★
-					}
+					iceBlock->DrawThroughWallsFullSize(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light, alpha);
 				}
 
-				if (distance <= f_chaserGaugeDistance)
-				{
-					runner->DrawMeltGaugeThroughWalls(m_pEngine, &m_camera, &m_projection, distance, alpha);
-				}
+				runner->DrawMeltGaugeThroughWalls(m_pEngine, &m_camera, &m_projection, distance, alpha);
 			}
 		}
 	}
 
-	// ★★★ 解凍ゲージの描画（凍っているプレイヤー自身にも表示）★★★
+	// ★★★ 通常バー描画（壁がない場合のみ）★★★
 	if (m_pLocalPlayer)
 	{
 		D3DXVECTOR3 localPos = m_pLocalPlayer->GetPosition();
@@ -2070,13 +2060,11 @@ void SceneGame::Draw()
 		{
 			Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
 
-			// ★★★ 自分自身が凍っている場合もゲージを表示 ★★★
 			if (localRunner && localRunner->IsFrozen())
 			{
 				localRunner->DrawMeltGauge(m_pEngine, &m_camera, &m_projection, 0.0f);
 			}
 
-			// 他のRunnerのゲージを表示
 			for (auto& kv : m_players)
 			{
 				if (kv.first == m_localClientId) continue;
@@ -2090,6 +2078,11 @@ void SceneGame::Draw()
 				D3DXVECTOR3 targetPos = runner->GetPosition();
 				D3DXVECTOR3 diff = targetPos - localPos;
 				float distance = D3DXVec3Length(&diff);
+
+				// ★★★ 修正: 視線が通っている場合のみ通常描画 ★★★
+				D3DXVECTOR3 intersection;
+				bool isBlocked = m_map.RayToWallIntersection(m_camera.m_vecEye, targetPos, &intersection);
+				if (isBlocked) continue;
 
 				runner->DrawMeltGauge(m_pEngine, &m_camera, &m_projection, distance);
 			}
@@ -2110,10 +2103,14 @@ void SceneGame::Draw()
 				D3DXVECTOR3 diff = targetPos - localPos;
 				float distance = D3DXVec3Length(&diff);
 
-				if (distance <= f_chaserGaugeDistance)
-				{
-					runner->DrawMeltGauge(m_pEngine, &m_camera, &m_projection, distance);
-				}
+				if (distance > f_chaserGaugeDistance) continue;
+
+				// ★★★ 修正: 視線が通っている場合のみ通常描画 ★★★
+				D3DXVECTOR3 intersection;
+				bool isBlocked = m_map.RayToWallIntersection(m_camera.m_vecEye, targetPos, &intersection);
+				if (isBlocked) continue;
+
+				runner->DrawMeltGauge(m_pEngine, &m_camera, &m_projection, distance);
 			}
 		}
 	}
