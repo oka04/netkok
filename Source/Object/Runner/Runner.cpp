@@ -31,11 +31,8 @@ Runner::~Runner()
 		m_pIceBlock = nullptr;
 	}
 }
-
 void Runner::Initialize(Engine* pEngine, Map& map, Projection* projection, Camera& camera, DirectionalLight& light)
 {
-	if (m_bIsLocal)
-		SoundManager::RegisterGameObject(ID_PALYER, "Runner");
 
 	LoadParameter();
 	CharacterBase::Initialize(pEngine, MODEL_CHARACTER, projection, camera, light);
@@ -60,10 +57,12 @@ void Runner::Initialize(Engine* pEngine, Map& map, Projection* projection, Camer
 	UpdateMatrix(light);
 }
 
+
 void Runner::InitializeAtPosition(Engine* pEngine, const D3DXVECTOR3& startPos, Projection* projection, Camera& camera, DirectionalLight& light)
 {
-	if (m_bIsLocal)
-		SoundManager::RegisterGameObject(ID_PALYER, "Runner");
+	// 同上：ID_PALYER 登録を削除
+	// if (m_bIsLocal)
+	// 	SoundManager::RegisterGameObject(ID_PALYER, "Runner");
 
 	LoadParameter();
 	CharacterBase::Initialize(pEngine, MODEL_CHARACTER, projection, camera, light);
@@ -92,7 +91,8 @@ void Runner::Release(Engine* pEngine)
 {
 	pEngine->ReleaseTexture(TEXTURE_STAMINA_GAUGE);
 
-	// ★★★ 追加: 解凍音を停止 ★★★
+	// 解凍音停止は残す（再生中なら Stop する）が、
+	// Wwise のゲームオブジェクトの Unregister は SceneGame 側の clientId 管理に任せるため ID_PALYER の Unregister を削除します。
 	if (m_meltingSoundId != AK_INVALID_PLAYING_ID)
 	{
 		SoundManager::StopEvent(m_meltingSoundId);
@@ -106,10 +106,9 @@ void Runner::Release(Engine* pEngine)
 		m_pIceBlock = nullptr;
 	}
 
-	if (m_bIsLocal)
-		SoundManager::UnregisterGameObject(ID_PALYER);
+	// if (m_bIsLocal)
+	// 	SoundManager::UnregisterGameObject(ID_PALYER);
 }
-
 void Runner::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight& light, float deltaTime)
 {
 	m_deltaTime = deltaTime;

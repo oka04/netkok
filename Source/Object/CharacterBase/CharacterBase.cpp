@@ -230,7 +230,7 @@ void CharacterBase::Move(Map& map)
 
 		// 「ローカルかつホスト」の場合のみ hostSpeedMultiplier を適用
 		// m_isHostLocal は Spawn 時に SceneGame がセットします
-		if (m_bIsLocal && m_isHostLocal && m_hostSpeedMultiplier > 0.0f && m_hostSpeedMultiplier != 1.0f)
+		if (m_isHostLocal)
 		{
 			vector *= m_hostSpeedMultiplier;
 		}

@@ -38,8 +38,9 @@ Chaser::~Chaser()
 
 void Chaser::Initialize(Engine* pEngine, Map& map, Projection* projection, Camera& camera, DirectionalLight& light)
 {
-	if (m_bIsLocal)
-		SoundManager::RegisterGameObject(ID_PALYER, "Chaser");
+	// ローカル時に固定 ID で登録していた処理を削除
+	// if (m_bIsLocal)
+	// 	SoundManager::RegisterGameObject(ID_PALYER, "Chaser");
 
 	LoadParameter();
 	CharacterBase::Initialize(pEngine, MODEL_CHARACTER, projection, camera, light);
@@ -61,8 +62,9 @@ void Chaser::Initialize(Engine* pEngine, Map& map, Projection* projection, Camer
 
 void Chaser::InitializeAtPosition(Engine* pEngine, const D3DXVECTOR3& startPos, Projection* projection, Camera& camera, DirectionalLight& light)
 {
-	if (m_bIsLocal)
-		SoundManager::RegisterGameObject(ID_PALYER, "Chaser");
+	// 同上：ID_PALYER 登録を削除
+	// if (m_bIsLocal)
+	// 	SoundManager::RegisterGameObject(ID_PALYER, "Chaser");
 
 	LoadParameter();
 	CharacterBase::Initialize(pEngine, MODEL_CHARACTER, projection, camera, light);
@@ -92,10 +94,10 @@ void Chaser::Release(Engine* pEngine)
 		m_pIceBreath = nullptr;
 	}
 
-	if (m_bIsLocal)
-		SoundManager::UnregisterGameObject(ID_PALYER);
+	// ローカル側の Unregister を削除（SceneGame が clientId ごとに Unregister する）
+	// if (m_bIsLocal)
+	// 	SoundManager::UnregisterGameObject(ID_PALYER);
 }
-
 
 void Chaser::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight& light, float deltaTime)
 {
