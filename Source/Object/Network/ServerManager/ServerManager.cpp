@@ -567,7 +567,9 @@ void ServerManager::ProcessMeltingOnServer()
 	// ★★★ 各ターゲットの解凍処理 ★★★
 	bool stateChanged = false;
 	const float deltaTime = 0.016f; // 約60FPS想定
-	const float meltSpeed = 0.2f;   // Runner.cppのf_meltSpeedと同じ値
+
+									// ↓ ここを遅く変更（従来 0.2f → 新しい値 0.08f）
+	const float meltSpeed = 0.05f;   // ヘルパー1人あたりの解凍速度（調整可）
 
 	for (auto& pair : targetToHelpers)
 	{

@@ -1564,6 +1564,7 @@ void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name, 
 		pPlayer->SetIsLocal(true);
 		m_pLocalPlayer = pPlayer;
 		m_localRole = role;
+
 		// ローカルかつホストならホスト減速係数をセット
 		if (m_bIsHost)
 		{
@@ -1580,8 +1581,7 @@ void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name, 
 	m_players[clientId] = pPlayer;
 	m_playerRoles[clientId] = role;
 
-	// --- 重要: サウンド用に必ずゲームオブジェクトとして登録 ---
-	// Wwise 側で正しく 3D 音や停止/再生を扱うために RegisterGameObject を行う
+	// --- サウンド用に必ずゲームオブジェクトとして登録 ---
 	char gameObjName[64];
 	sprintf_s(gameObjName, "Player_%u", clientId);
 	SoundManager::RegisterGameObject(clientId, gameObjName);
@@ -1598,7 +1598,6 @@ void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name, 
 	NET_LOG_F("[SceneGame] プレイヤー生成: ID=%u Name=%s Role=%s Pos=(%.1f,%.1f,%.1f)",
 		clientId, name.c_str(), (role == ROLE_CHASER) ? "鬼" : "逃げる側", pos.x, pos.y, pos.z);
 }
-
 void SceneGame::DespawnPlayer(uint32_t clientId)
 {
 	auto it = m_players.find(clientId);
