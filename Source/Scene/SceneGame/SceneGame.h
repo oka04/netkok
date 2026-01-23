@@ -148,5 +148,5 @@ private:
 	DWORD f_resultDisplayDuration;
 	float m_resultImageAlpha;  // ★ リザルト画像のアルファ値
 	float f_resultFadeSpeed;   // ★ リザルト画像のフェード速度
-	float f_hostSpeedMultiplier = 0.8f;
+	float f_hostSpeedMultiplier = 1.0f;
 };
