@@ -227,12 +227,12 @@ void CharacterBase::Move(Map & map)
 
 	if (moveLength > 0.0f)
 	{
-		// ★★★ 修正: m_deltaTimeをここで乗算（1フレームあたりの移動距離） ★★★
-		D3DXVECTOR3 vector = m_direction * m_speed * m_deltaTime;
+		D3DXVECTOR3 vector = m_direction * m_speed;
 		vector.y = 0;
 
 		map.MoveCheck(m_position, vector, f_radius);
 
+		// ★★★ 修正: ローカルプレイヤーのみ足音フラグを設定 ★★★
 		if (m_bIsLocal)
 		{
 			m_soundEvents |= SOUND_FOOTSTEP;
@@ -240,6 +240,7 @@ void CharacterBase::Move(Map & map)
 	}
 	else
 	{
+		// ★★★ ローカルプレイヤーのみフラグをクリア ★★★
 		if (m_bIsLocal)
 		{
 			m_soundEvents &= ~SOUND_FOOTSTEP;

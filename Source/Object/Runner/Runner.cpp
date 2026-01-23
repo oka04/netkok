@@ -182,10 +182,7 @@ void Runner::DrawMeltGauge(Engine* pEngine, Camera* pCamera, Projection* pProj, 
 	D3DXVECTOR3 screenPos;
 	D3DXVec3Project(&screenPos, &headPos, &viewport, &matProj, &matView, &matIdentity);
 
-	// ★★★ 修正: カメラの後ろまたは画面外は描画しない ★★★
 	if (screenPos.z > 1.0f || screenPos.z < 0.0f) return;
-	if (screenPos.x < 0 || screenPos.x > viewport.Width ||
-		screenPos.y < 0 || screenPos.y > viewport.Height) return;
 
 	int gaugeWidth = 100;
 	int gaugeHeight = 10;
@@ -193,6 +190,7 @@ void Runner::DrawMeltGauge(Engine* pEngine, Camera* pCamera, Projection* pProj, 
 	int y = (int)screenPos.y - 20;
 	LPDIRECT3DDEVICE9 pDevice = pEngine->GetDevice();
 
+	// レンダーステートの保存
 	DWORD oldAlphaBlend, oldSrcBlend, oldDestBlend, oldZEnable, oldZWrite;
 	pDevice->GetRenderState(D3DRS_ALPHABLENDENABLE, &oldAlphaBlend);
 	pDevice->GetRenderState(D3DRS_SRCBLEND, &oldSrcBlend);
@@ -200,26 +198,33 @@ void Runner::DrawMeltGauge(Engine* pEngine, Camera* pCamera, Projection* pProj, 
 	pDevice->GetRenderState(D3DRS_ZENABLE, &oldZEnable);
 	pDevice->GetRenderState(D3DRS_ZWRITEENABLE, &oldZWrite);
 
+	// アルファブレンドを有効化
 	pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 	pDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
 	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 
+	//外枠（黒、半透明）
 	DrawGaugeRect(pDevice, x - 2, y - 2, gaugeWidth + 4, gaugeHeight + 4, D3DCOLOR_ARGB(200, 0, 0, 0));
+
+	//背景（暗いグレー）
 	DrawGaugeRect(pDevice, x, y, gaugeWidth, gaugeHeight, D3DCOLOR_ARGB(255, 50, 50, 50));
 
+	//進捗バー（水色→緑へのグラデーション）
 	float progress = m_frozenAmount;
 	int progressWidth = (int)(gaugeWidth * progress);
 
 	if (progressWidth > 0)
 	{
+		//解凍が進むにつれて色を変化させる
 		int r = 100;
 		int g = (int)(200 + 55 * progress);
 		int b = (int)(255 - 155 * progress);
 		DrawGaugeRect(pDevice, x, y, progressWidth, gaugeHeight, D3DCOLOR_ARGB(255, r, g, b));
 	}
 
+	//枠線（白）
 	DrawGaugeRect(pDevice, x, y, gaugeWidth, 1, D3DCOLOR_ARGB(255, 255, 255, 255));
 	DrawGaugeRect(pDevice, x, y + gaugeHeight - 1, gaugeWidth, 1, D3DCOLOR_ARGB(255, 255, 255, 255));
 	DrawGaugeRect(pDevice, x, y, 1, gaugeHeight, D3DCOLOR_ARGB(255, 255, 255, 255));
@@ -250,11 +255,11 @@ void Runner::DrawMeltGaugeThroughWalls(Engine* pEngine, Camera* pCamera, Project
 	D3DXVECTOR3 screenPos;
 	D3DXVec3Project(&screenPos, &headPos, &viewport, &matProj, &matView, &matIdentity);
 
-	// ★★★ 修正: カメラの後ろまたは画面外は描画しない ★★★
-	if (screenPos.z > 1.0f || screenPos.z < 0.0f) return;
 	if (screenPos.x < 0 || screenPos.x > viewport.Width ||
-		screenPos.y < 0 || screenPos.y > viewport.Height) return;
+		screenPos.y < 0 || screenPos.y > viewport.Height)
+		return;
 
+	// ゲージのサイズと位置
 	int gaugeWidth = 100;
 	int gaugeHeight = 10;
 	int x = (int)screenPos.x - gaugeWidth / 2;
@@ -262,6 +267,7 @@ void Runner::DrawMeltGaugeThroughWalls(Engine* pEngine, Camera* pCamera, Project
 
 	LPDIRECT3DDEVICE9 pDevice = pEngine->GetDevice();
 
+	// レンダーステートの保存
 	DWORD oldAlphaBlend, oldSrcBlend, oldDestBlend, oldZEnable, oldZWrite;
 	pDevice->GetRenderState(D3DRS_ALPHABLENDENABLE, &oldAlphaBlend);
 	pDevice->GetRenderState(D3DRS_SRCBLEND, &oldSrcBlend);
@@ -269,6 +275,7 @@ void Runner::DrawMeltGaugeThroughWalls(Engine* pEngine, Camera* pCamera, Project
 	pDevice->GetRenderState(D3DRS_ZENABLE, &oldZEnable);
 	pDevice->GetRenderState(D3DRS_ZWRITEENABLE, &oldZWrite);
 
+	//壁貫通設定（Z-test無効）
 	pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
@@ -277,10 +284,14 @@ void Runner::DrawMeltGaugeThroughWalls(Engine* pEngine, Camera* pCamera, Project
 
 	int alphaValue = (int)(alpha * 255);
 
+	//外枠（黒、半透明）
 	DrawGaugeRect(pDevice, x - 2, y - 2, gaugeWidth + 4, gaugeHeight + 4, D3DCOLOR_ARGB(alphaValue * 200 / 255, 0, 0, 0));
+
+	//背景（暗いグレー）
 	DrawGaugeRect(pDevice, x, y, gaugeWidth, gaugeHeight, D3DCOLOR_ARGB(alphaValue, 50, 50, 50));
 
-	float progress = m_frozenAmount;
+	//進捗バー（水色→緑へのグラデーション）
+	float progress = m_frozenAmount;  // 0.0 = 完全凍結, 1.0 = 完全解凍
 	int progressWidth = (int)(gaugeWidth * progress);
 
 	if (progressWidth > 0)
@@ -291,6 +302,7 @@ void Runner::DrawMeltGaugeThroughWalls(Engine* pEngine, Camera* pCamera, Project
 		DrawGaugeRect(pDevice, x, y, progressWidth, gaugeHeight, D3DCOLOR_ARGB(alphaValue, r, g, b));
 	}
 
+	//枠線（白、半透明）
 	DrawGaugeRect(pDevice, x, y, gaugeWidth, 1, D3DCOLOR_ARGB(alphaValue, 255, 255, 255));
 	DrawGaugeRect(pDevice, x, y + gaugeHeight - 1, gaugeWidth, 1, D3DCOLOR_ARGB(alphaValue, 255, 255, 255));
 	DrawGaugeRect(pDevice, x, y, 1, gaugeHeight, D3DCOLOR_ARGB(alphaValue, 255, 255, 255));
@@ -302,6 +314,7 @@ void Runner::DrawMeltGaugeThroughWalls(Engine* pEngine, Camera* pCamera, Project
 	pDevice->SetRenderState(D3DRS_ZENABLE, oldZEnable);
 	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, oldZWrite);
 }
+
 void Runner::DrawGaugeRect(LPDIRECT3DDEVICE9 pDevice, int x, int y, int width, int height, D3DCOLOR color)
 {
 	struct CUSTOMVERTEX
@@ -841,22 +854,23 @@ void Runner::LoadParameter()
 
 void Runner::ChangeSpeed()
 {
-	// ★★★ 修正: deltaTimeを乗算しない（秒速のまま保持）★★★
+	float oldSpeed = m_speed;
+
 	if (m_bFatigued)
 	{
-		m_speed = f_fatigueSpeed; // 3.0 m/s
+		m_speed = f_fatigueSpeed * m_deltaTime;
 	}
 	else if (m_keyFlag & CROUCH_KEY)
 	{
-		m_speed = f_crouchSpeed; // 1.5 m/s
+		m_speed = f_crouchSpeed * m_deltaTime;
 	}
 	else if (m_keyFlag & DASH_KEY)
 	{
-		m_speed = f_dashSpeed; // 6.0 m/s
+		m_speed = f_dashSpeed * m_deltaTime;
 	}
 	else
 	{
-		m_speed = f_walkSpeed; // 5.0 m/s
+		m_speed = f_walkSpeed * m_deltaTime;
 	}
 
 	// ★★★ デバッグログ（速度変化を追跡） ★★★
@@ -864,10 +878,11 @@ void Runner::ChangeSpeed()
 	DWORD now = timeGetTime();
 	if (now - lastSpeedLog[m_clientId] > 1000)
 	{
-		NET_LOG_F("[Runner::ChangeSpeed] ID=%u IsLocal=%s Speed=%.3f (秒速) Dash=%s Crouch=%s Fatigue=%s",
+		NET_LOG_F("[Runner::ChangeSpeed] ID=%u IsLocal=%s Speed=%.3f DeltaTime=%.4f Dash=%s Crouch=%s Fatigue=%s",
 			m_clientId,
 			m_bIsLocal ? "Yes" : "No",
 			m_speed,
+			m_deltaTime,
 			(m_keyFlag & DASH_KEY) ? "Yes" : "No",
 			(m_keyFlag & CROUCH_KEY) ? "Yes" : "No",
 			m_bFatigued ? "Yes" : "No");
