@@ -108,7 +108,7 @@ protected:
 	// ★★★ ネットワーク同期用の内部メソッド ★★★
 	void AddPositionToHistory(const D3DXVECTOR3& pos);
 	D3DXVECTOR3 GetAveragedPosition() const;
-	float m_hostSpeedMultiplier = 0.8;
+	float m_hostSpeedMultiplier = 1.0f;
 	bool m_isHostLocal = false;
 
 	//ファイルからの読み込み用
