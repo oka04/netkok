@@ -141,7 +141,7 @@ void IceBreath::Update()
 
 			D3DXVECTOR3 baseDirection = m_breathDirection * f_forwardSpeed;
 
-			baseDirection.y -= 0.05f;  // 下方向に少し傾ける
+			baseDirection.y -= 0.05f;  //下方向に少し傾ける
 
 			D3DXVECTOR3 rightVec;
 			D3DXVECTOR3 upVec(0.0f, 1.0f, 0.0f);

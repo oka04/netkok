@@ -1,5 +1,4 @@
-﻿// SceneGame.h
-#pragma once
+﻿#pragma once
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include "..\\..\\GameBase.h"
@@ -38,7 +37,6 @@ private:
 	void UpdateLocalPlayer();
 	void UpdateRemotePlayers();
 	void SyncToServer();
-	void ReceiveFromServer();
 	void SpawnPlayerWithRole(uint32_t clientId, const std::string& name, const D3DXVECTOR3& pos, PlayerRole role);
 	void DespawnPlayer(uint32_t clientId);
 
@@ -49,11 +47,11 @@ private:
 
 	void ProcessPlayerMelting();
 
-	// ★★★ 勝敗判定関連 ★★★
+	//勝敗判定関連
 	void UpdateGameTimer();
 	void CheckGameEnd();
 	bool AreAllRunnersFrozen();
-	void BroadcastGameResult(int winnerTeam);  // 0=逃げる側, 1=鬼側
+	void BroadcastGameResult(int winnerTeam);
 	void ProcessGameResult(int winnerTeam);
 
 	enum DEBUG_FLAG
@@ -146,7 +144,7 @@ private:
 	int m_winnerTeam;
 	DWORD m_resultDisplayStart;
 	DWORD f_resultDisplayDuration;
-	float m_resultImageAlpha;  // ★ リザルト画像のアルファ値
-	float f_resultFadeSpeed;   // ★ リザルト画像のフェード速度
+	float m_resultImageAlpha;
+	float f_resultFadeSpeed; 
 	float f_hostSpeedMultiplier = 0.7f;
 }; 

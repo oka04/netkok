@@ -12,7 +12,7 @@ void Map::Initialize(Engine * pEngine, Camera * pCamera, Projection * pProj, Amb
 {
 	LoadMap(pEngine, pCamera, pProj, pAmbient, pLight, mapNumber);
 	CreateWall(pEngine);
-	// マップのサイズに合わせて地面を生成
+	//マップのサイズに合わせて地面を生成
 	m_mapSize = D3DXVECTOR3(m_col * f_wallSize, f_wallHeight, m_row * f_wallSize);
 	m_ground.CreateBox(pEngine, m_mapSize.x, f_groundHeight, m_mapSize.z);
 	m_ground.SetMaterial(f_groundMaterial);
@@ -78,7 +78,7 @@ void Map::DrawMiniMap(Engine* pEngine, const D3DXVECTOR2& playerPosition, const 
 	int x = (int)(playerPosition.x * f_miniMapSaveScale);
 	int y = (int)(m_mapSaveSize.y - playerPosition.y * f_miniMapSaveScale);
 
-	// ミニマップの描画
+	//ミニマップの描画
 	RECT sour;
 	sour.left = x - (int)(f_miniMapSourHalfSize * f_miniMapSaveScale);
 	sour.top = y - (int)(f_miniMapSourHalfSize * f_miniMapSaveScale);
@@ -98,31 +98,15 @@ void Map::DrawMiniMap(Engine* pEngine, const D3DXVECTOR2& playerPosition, const 
 
 	SetRect(&sour, 0, 0, (int)f_pinSourSize.x, (int)f_pinSourSize.y);
 	float scale = f_miniMapScreenRadius / f_miniMapSourHalfSize;
-/*
-	// 敵の位置の描画
-	for (const auto& patrollerPos : patrollerPositions)
-	{
-		D3DXVECTOR2 relativePos = patrollerPos - playerPosition;
-		D3DXVECTOR2 drawPosition = miniMapCenter + D3DXVECTOR2(relativePos.x, -relativePos.y) * scale;
 
-		dest.left = (int)(drawPosition.x - f_enemyPinDestHalfSize.x);
-		dest.top = (int)(drawPosition.y - f_enemyPinDestHalfSize.y);
-		dest.right = (int)(drawPosition.x + f_enemyPinDestHalfSize.x);
-		dest.bottom = (int)(drawPosition.y + f_enemyPinDestHalfSize.y);
-
-		pEngine->Blt(&dest, TEXTURE_ENEMY_PIN, &sour, 255, 0.0f);
-	}
-
-*/
-
-	// プレイヤーの位置の描画
+	//プレイヤーの位置の描画
 	dest.left = (int)(miniMapCenter.x - f_playerPinDestHalfSize.x);
 	dest.top = (int)(miniMapCenter.y - f_playerPinDestHalfSize.y);
 	dest.right = (int)(miniMapCenter.x + f_playerPinDestHalfSize.x);
 	dest.bottom = (int)(miniMapCenter.y + f_playerPinDestHalfSize.y);
 	pEngine->Blt(&dest, TEXTURE_PLAYER_PIN, &sour, 255, arrowAngle);
 
-	// ミニマップを囲う円の描画
+	//ミニマップを囲う円の描画
 	SetRect(&sour, 0, 0, displaySize, displaySize);
 
 	dest.left = (int)f_miniMapPosition.x;
@@ -130,8 +114,7 @@ void Map::DrawMiniMap(Engine* pEngine, const D3DXVECTOR2& playerPosition, const 
 	dest.right = dest.left + displaySize;
 	dest.bottom = dest.top + displaySize;
 
-	/*if (patrollerManager.IsViewPlayer()) pEngine->Blt(&dest, TEXTURE_CHASE_CIRCLE, &sour, 255, 0.0f);
-	else*/ pEngine->Blt(&dest, TEXTURE_NORMAL_CIRCLE, &sour, 255, 0.0f);
+	pEngine->Blt(&dest, TEXTURE_NORMAL_CIRCLE, &sour, 255, 0.0f);
 
 	pEngine->SpriteEnd();
 	pEngine->EndMiniMap();
@@ -151,11 +134,9 @@ void Map::MoveCheck(D3DXVECTOR3& position, const D3DXVECTOR3& vector, const floa
 {
 	D3DXVECTOR2 pos2D(position.x, position.z);
 
-	// X方向の移動
 	pos2D.x += vector.x;
 	CheckWallsInNeighborhood(pos2D, radius);
-
-	// Z方向の移動
+	
 	pos2D.y += vector.z;
 	CheckWallsInNeighborhood(pos2D, radius);
 
@@ -172,11 +153,11 @@ bool Map::StickWallCheck(D3DXVECTOR3& position, float radius, float checkDist, D
 	float closestDistSq = checkDist * checkDist;
 	bool bFoundWall = false;
 
-	// プレイヤーがいるグリッドセル
+	//プレイヤーがいるグリッドセル
 	int cellX = (int)(position.x / f_wallSize);
 	int cellY = (int)((m_row * f_wallSize - position.z) / f_wallSize);
 	 
-	// 現在のセルとその周囲のセルをチェック
+	//現在のセルとその周囲のセルをチェック
 	for (int dy = -1; dy <= 1; dy++) 
 	{
 		for (int dx = -1; dx <= 1; dx++) 
@@ -184,11 +165,11 @@ bool Map::StickWallCheck(D3DXVECTOR3& position, float radius, float checkDist, D
 			int checkX = cellX + dx;
 			int checkY = cellY + dy;
 
-			// グリッドの境界チェック
+			//グリッドの境界チェック
 			if (checkX < 0 || checkX >= m_col || checkY < 0 || checkY >= m_row) continue;
-			// セル内のすべての壁をチェック
+			//セル内のすべての壁をチェック
 			for (const auto& rect : m_grid[checkY][checkX].wallRects) {
-				// 辺との衝突を確認
+				//辺との衝突を確認
 				D3DXVECTOR2 closestPointOnEdge;
 				float closestX = max(rect->min.x, min(playerPos2D.x, rect->max.x));
 				float closestY = max(rect->min.y, min(playerPos2D.y, rect->max.y));
@@ -233,7 +214,7 @@ bool Map::StickWallCheck(D3DXVECTOR3& position, float radius, float checkDist, D
 	return true;
 }
 
-// DDAアルゴリズムを使いrayと壁の判定を行う
+//DDAアルゴリズムを使いrayと壁の判定を行う
 bool Map::RayToWallIntersection(const D3DXVECTOR3& rayOrigin, const D3DXVECTOR3& rayEnd, D3DXVECTOR3* outIntersection)
 {
 	D3DXVECTOR3 rayDirection = rayEnd - rayOrigin;
@@ -243,7 +224,7 @@ bool Map::RayToWallIntersection(const D3DXVECTOR3& rayOrigin, const D3DXVECTOR3&
 
 	D3DXVec3Normalize(&rayDirection, &rayDirection);
 
-	// 始点と終点のグリッド座標を計算
+	//始点と終点のグリッド座標を計算
 	int startX = (int)(rayOrigin.x / f_wallSize);
 	int startY = (int)((m_row * f_wallSize - rayOrigin.z) / f_wallSize);
 
@@ -253,13 +234,13 @@ bool Map::RayToWallIntersection(const D3DXVECTOR3& rayOrigin, const D3DXVECTOR3&
 	int stepX = (rayDirection.x >= 0) ? 1 : -1;
 	int stepY = (rayDirection.z >= 0) ? -1 : 1; 
 
-	// 1グリッド分移動するのにかかる時間
+	//1グリッド分移動するのにかかる時間
 	float tDeltaX = f_wallSize / fabsf(rayDirection.x);
 	float tDeltaY = f_wallSize / fabsf(rayDirection.z);
 
 	float tMaxX, tMaxY;
 
-	// x軸の始点から次のグリッド境界までの距離を計算
+	//x軸の始点から次のグリッド境界までの距離を計算
 	if (rayDirection.x >= 0)
 	{
 		tMaxX = ((startX + 1) * f_wallSize - rayOrigin.x) / rayDirection.x;
@@ -269,7 +250,7 @@ bool Map::RayToWallIntersection(const D3DXVECTOR3& rayOrigin, const D3DXVECTOR3&
 		tMaxX = (startX * f_wallSize - rayOrigin.x) / rayDirection.x;
 	}
 
-	// y軸（z軸）の始点から次のグリッド境界までの距離を計算
+	//y軸（z軸）の始点から次のグリッド境界までの距離を計算
 	if (rayDirection.z >= 0) 
 	{
 		tMaxY = ((m_row * f_wallSize - startY * f_wallSize) - rayOrigin.z) / rayDirection.z;
@@ -284,7 +265,7 @@ bool Map::RayToWallIntersection(const D3DXVECTOR3& rayOrigin, const D3DXVECTOR3&
 	D3DXVECTOR3 rayVec = rayEnd - rayOrigin;
 	float maxDistSq = D3DXVec3LengthSq(&rayVec);
 
-	// グリッドをたどりながら壁をチェック
+	//グリッドをたどりながら壁をチェック
 	while (currentX >= 0 && currentX < m_col && currentY >= 0 && currentY < m_row)
 	{
 		for (const auto& wallRect : m_grid[currentY][currentX].wallRects)
@@ -292,7 +273,7 @@ bool Map::RayToWallIntersection(const D3DXVECTOR3& rayOrigin, const D3DXVECTOR3&
 			D3DXVECTOR3 intersection;
 			if (!RayToRectIntersection(rayOrigin, rayEnd, *wallRect, &intersection)) continue;
 
-			// 壁が始点と終点の間にあるか確認
+			//壁が始点と終点の間にあるか確認
 			D3DXVECTOR3 distToIntersection = intersection - rayOrigin;
 			if (D3DXVec3LengthSq(&distToIntersection) < maxDistSq)
 			{
@@ -301,7 +282,6 @@ bool Map::RayToWallIntersection(const D3DXVECTOR3& rayOrigin, const D3DXVECTOR3&
 			}
 		}
 
-		// 次のグリッドセルに移動
 		if (tMaxX < tMaxY)
 		{
 			t = tMaxX;
@@ -315,13 +295,13 @@ bool Map::RayToWallIntersection(const D3DXVECTOR3& rayOrigin, const D3DXVECTOR3&
 			currentY += stepY;
 		}
 
-		// レイの終点を超えたらループを抜ける
+		//レイの終点を超えたらループを抜ける
 		if (t > rayLength) break;
 	}
 	return false;
 }
 
-// 3人称視点にしたときのカメラの位置が壁の裏側に行かないようにする
+//3人称視点にしたときのカメラの位置が壁の裏側に行かないようにする
 const D3DXVECTOR3 Map::AdjustCameraPosition(const D3DXVECTOR3& playerPosition, const D3DXVECTOR3& desiredCameraPosition)
 {
 	D3DXVECTOR3 finalCameraPosition = desiredCameraPosition;
@@ -329,10 +309,10 @@ const D3DXVECTOR3 Map::AdjustCameraPosition(const D3DXVECTOR3& playerPosition, c
 	bool bFoundIntersection = false;
 	float closestDistSq = FLT_MAX;
 
-	// プレイヤーの位置からカメラの位置までのグリッドセルを効率的に探索
+	//プレイヤーの位置からカメラの位置までのグリッドセルを効率的に探索
 	if (RayToWallIntersection(playerPosition, desiredCameraPosition, &closestIntersectionPoint)) 
 	{
-		// 交差が見つかった場合
+		//交差が見つかった場合
 		D3DXVECTOR3 distVec = closestIntersectionPoint - playerPosition;
 		closestDistSq = D3DXVec3LengthSq(&distVec);
 		bFoundIntersection = true;
@@ -357,18 +337,18 @@ const D3DXVECTOR3 Map::AdjustCameraPosition(const D3DXVECTOR3& playerPosition, c
 	return finalCameraPosition;
 }
 
-// A*アルゴリズムで目的地までの最短経路を調べる
+//A*アルゴリズムで目的地までの最短経路を調べる
 const vector<D3DXVECTOR3> Map::FindPath(const D3DXVECTOR3& startPos, const D3DXVECTOR3& targetPos) 
 {
 
-	// D3DXVECTOR3の座標をグリッドのインデックスに変換
+	//D3DXVECTOR3の座標をグリッドのインデックスに変換
 	vector<D3DXVECTOR3> path;
 	int startX = (int)(startPos.x / f_wallSize);
 	int startY = (int)((m_row * f_wallSize - startPos.z) / f_wallSize);
 	int targetX = (int)(targetPos.x / f_wallSize);
 	int targetY = (int)((m_row * f_wallSize - targetPos.z) / f_wallSize);
 
-	// 開始点または目標点がマップの範囲外、または壁の場合は空のパスを返す
+	//開始点または目標点がマップの範囲外、または壁の場合は空のパスを返す
 	if (startX < 0 || startX >= m_col || startY < 0 || startY >= m_row ||
 		targetX < 0 || targetX >= m_col || targetY < 0 || targetY >= m_row ||
 		m_map[startY][startX] == WALL || m_map[targetY][targetX] == WALL) 
@@ -376,65 +356,65 @@ const vector<D3DXVECTOR3> Map::FindPath(const D3DXVECTOR3& startPos, const D3DXV
 		return path;
 	}
 
-	// グリッドセルを保持するコンテナ
+	//グリッドセルを保持するコンテナ
 	vector<Node> allNodes(m_row * m_col);
-	// 2次元座標を1次元インデックスに変換するラムダ関数
+	//2次元座標を1次元インデックスに変換するラムダ関数
 	auto getNodeIndex = [&](int x, int y) { return y * m_col + x; };
 
-	// 全ノードの初期化
+	//全ノードの初期化
 	for (size_t i = 0; i < allNodes.size(); ++i) 
 	{
-		allNodes[i].gCost = FLT_MAX; // 開始点からの距離
-		allNodes[i].parent = -1; // 親ノード
-		allNodes[i].x = i % m_col; // 1次元インデックスのx座標
-		allNodes[i].y = i / m_col; // 1次元インデックスのy座標
-		allNodes[i].hCost = GetDistance(allNodes[i].x, allNodes[i].y, targetX, targetY); // 目的地までの直線距離
+		allNodes[i].gCost = FLT_MAX; //開始点からの距離
+		allNodes[i].parent = -1; //親ノード
+		allNodes[i].x = i % m_col; //1次元インデックスのx座標
+		allNodes[i].y = i / m_col; //1次元インデックスのy座標
+		allNodes[i].hCost = GetDistance(allNodes[i].x, allNodes[i].y, targetX, targetY); //目的地までの直線距離
 	}
 
-	// 開始ノードの設定
+	//開始ノードの設定
 	int startIndex = getNodeIndex(startX, startY);
 	allNodes[startIndex].gCost = 0;
 	allNodes[startIndex].fCost = allNodes[startIndex].hCost; 
 
-	// 探索すべきノードを優先度付きキューで管理（fCostが最も低いノードを優先）
+	//探索すべきノードを優先度付きキューで管理（fCostが最も低いノードを優先）
 	priority_queue<pair<float, int>, vector<pair<float, int>>, greater<pair<float, int>>> openList;
 	openList.push({ allNodes[startIndex].fCost, startIndex });
 
-	// 探索済みノードを管理するリスト
+	//探索済みノードを管理するリスト
 	vector<bool> closedList(m_row * m_col, false);
 
-	int endNodeIndex = -1; // 目標ノードのインデックス
+	int endNodeIndex = -1; //目標ノードのインデックス
 
 	int dx[] = { 0, 0, 1, -1 };
 	int dy[] = { 1, -1, 0, 0 };
 
-	// オープンリストが空になるまで探索を続ける
+	//オープンリストが空になるまで探索を続ける
 	while (!openList.empty()) {
-		// fCostが最も低いノードを取得
+		//fCostが最も低いノードを取得
 		int currentIndex = openList.top().second;
 		openList.pop();
 
-		// 既に処理済みの場合はスキップ
+		//既に処理済みの場合はスキップ
 		if (closedList[currentIndex]) continue;
 
 		closedList[currentIndex] = true;
 
 		Node& currentNode = allNodes[currentIndex];
 
-		// 目標ノードに到達したら探索を終了
+		//目標ノードに到達したら探索を終了
 		if (currentNode.x == targetX && currentNode.y == targetY)
 		{
 			endNodeIndex = currentIndex;
 			break;
 		}
 
-		// 上下左右の4方向を探索
+		//上下左右の4方向を探索
 		for (int i = 0; i < 4; i++) 
 		{
 			int neighborX = currentNode.x + dx[i];
 			int neighborY = currentNode.y + dy[i];
 
-			// 隣接ノードがマップの範囲内で、かつ壁ではないかチェック
+			//隣接ノードがマップの範囲内で、かつ壁ではないかチェック
 			if (neighborX < 0 || neighborX >= m_col || neighborY < 0 || neighborY >= m_row || m_map[neighborY][neighborX] == WALL) continue;
 			
 			int neighborIndex = getNodeIndex(neighborX, neighborY);
@@ -442,7 +422,7 @@ const vector<D3DXVECTOR3> Map::FindPath(const D3DXVECTOR3& startPos, const D3DXV
 
 			float newGCost = currentNode.gCost + 1;
 
-			// 移動回数が少ない場合は更新する
+			//移動回数が少ない場合は更新する
 			if (newGCost < neighborNode.gCost) 
 			{
 				neighborNode.gCost = newGCost;
@@ -454,16 +434,16 @@ const vector<D3DXVECTOR3> Map::FindPath(const D3DXVECTOR3& startPos, const D3DXV
 		}
 	}
 
-	// 経路が見つかった場合、親をたどってパスを構築
+	//経路が見つかった場合、親をたどってパスを構築
 	if (endNodeIndex != -1) 
 	{
 		int index = endNodeIndex;
 		while (index != -1) 
 		{
 			Node& current = allNodes[index];
-			// グリッド座標をワールド座標に変換
+			//グリッド座標をワールド座標に変換
 			D3DXVECTOR3 waypoint = D3DXVECTOR3(current.x * f_wallSize + f_wallSize / 2.0f, 0.0f, (m_row - current.y) * f_wallSize - f_wallSize / 2.0f);
-			path.insert(path.begin(), waypoint); // パスを逆順に追加
+			path.insert(path.begin(), waypoint); //パスを逆順に追加
 			index = current.parent;
 		}
 	}
@@ -501,7 +481,7 @@ void Map::LoadParameter()
 		f_miniMapPosition[i] = config["miniMapPosition"][i];
 	}
 
-	// rgbaは[i]みたいに入れられないため1つずつ値を入れる
+	//rgbaは[i]みたいに入れられないため1つずつ値を入れる
 	f_groundMaterial.Diffuse.r = config["groundMaterial"][0];
 	f_groundMaterial.Diffuse.g = config["groundMaterial"][1];
 	f_groundMaterial.Diffuse.b = config["groundMaterial"][2];
@@ -542,17 +522,16 @@ void Map::LoadMap(Engine * pEngine, Camera * pCamera, Projection * pProj, Ambien
 	m_waypoints.resize(maxWaypoint);
 	m_map.resize(m_row, vector<int>(m_col, WALL));
 
-	// ★★★ 修正: プレイヤーと鬼のスタート位置を別々に管理 ★★★
-	m_runnerStartPosition = D3DXVECTOR3(0.0f, 0.0f, 0.0f);  // 逃げる側（2）
-	m_chaserStartPosition = D3DXVECTOR3(0.0f, 0.0f, 0.0f);  // 鬼（3）
+	//プレイヤーと鬼のスタート位置を別々に管理 
+	m_runnerStartPosition = D3DXVECTOR3(0.0f, 0.0f, 0.0f);  
+	m_chaserStartPosition = D3DXVECTOR3(0.0f, 0.0f, 0.0f);  
 
-															// マップ情報をいったん格納する
 	for (int i = 0; i < m_row; i++)
 	{
 		for (int j = 0; j < m_col; j++) {
 			ifsMap >> m_map[i][j];
 
-			// ★★★ 2 = 逃げる側のスタート位置 ★★★
+			//逃げる側のスタート位置
 			if (m_map[i][j] == RUNNER_START)
 			{
 				m_map[i][j] = GROUND;
@@ -560,7 +539,7 @@ void Map::LoadMap(Engine * pEngine, Camera * pCamera, Projection * pProj, Ambien
 				NET_LOG_F("[Map] 逃げる側スタート位置設定: (%.1f, %.1f, %.1f)",
 					m_runnerStartPosition.x, m_runnerStartPosition.y, m_runnerStartPosition.z);
 			}
-			// ★★★ 3 = 鬼のスタート位置 ★★★
+			//鬼のスタート位置
 			else if (m_map[i][j] == CHASER_START)
 			{
 				m_map[i][j] = GROUND;
@@ -568,7 +547,6 @@ void Map::LoadMap(Engine * pEngine, Camera * pCamera, Projection * pProj, Ambien
 				NET_LOG_F("[Map] 鬼スタート位置設定: (%.1f, %.1f, %.1f)",
 					m_chaserStartPosition.x, m_chaserStartPosition.y, m_chaserStartPosition.z);
 			}
-			// ★★★ ウェイポイント（10以上の値）★★★
 			else if (m_map[i][j] >= WAYPOINT_OFFSET)
 			{
 				m_waypoints[m_map[i][j] - WAYPOINT_OFFSET] = D3DXVECTOR3(j * f_wallSize + f_wallSize / 2, f_groundHeight / 2, (m_row - i) * f_wallSize - f_wallSize / 2);
@@ -582,7 +560,7 @@ void Map::LoadMap(Engine * pEngine, Camera * pCamera, Projection * pProj, Ambien
 
 	int waypointCount;
 	vector <D3DXVECTOR3*> waypoints;
-	// ウェイポイントの番号を取得してその番号のウェイポイントを格納し、敵に渡す
+	//ウェイポイントの番号を取得してその番号のウェイポイントを格納し、敵に渡す
 	for (int i = 0; i < enemyCount; i++)
 	{
 		ifsMap >> waypointCount;
@@ -598,13 +576,11 @@ void Map::LoadMap(Engine * pEngine, Camera * pCamera, Projection * pProj, Ambien
 	ifsMap.close();
 }
 
-// プレイヤーの開始位置の取得（逃げる側用）
 const D3DXVECTOR3& Map::GetRunnerStartPosition()
 {
 	return m_runnerStartPosition;
 }
 
-// ★★★ 新規追加: 鬼のスタート位置取得 ★★★
 const D3DXVECTOR3& Map::GetChaserStartPosition()
 {
 	return m_chaserStartPosition;
@@ -625,7 +601,7 @@ void Map::CreateWall(Engine* pEngine)
 		{
 			if (m_map[i][j] != WALL || bProcessed[i][j]) continue;
 			int width = 0;
-			// 連続して作れるブロックを探す
+			//連続して作れるブロックを探す
 			while (j + width < m_col && m_map[i][j + width] == WALL && !bProcessed[i][j + width]) 
 			{
 				width++;
@@ -646,7 +622,7 @@ void Map::CreateWall(Engine* pEngine)
 				depth++;
 			}
 
-			// 壁を作成
+			//壁を作成
 			auto wall = make_unique<Primitive>();
 			auto bb = make_unique<BoundingBox>();
 			auto pRect = make_unique<WallRect>();
@@ -666,7 +642,7 @@ void Map::CreateWall(Engine* pEngine)
 			bb->SetWorldTransform(&matTrans);
 			wall->SetMaterial(f_wallMaterial);
 
-			// 当たり判定用のWallRectを作成
+			//当たり判定用のWallRectを作成
 			pRect->min.x = j * f_wallSize;
 			pRect->max.x = (j + width) * f_wallSize;
 			pRect->min.y = (m_row * f_wallSize) - ((i + depth) * f_wallSize);
@@ -676,13 +652,13 @@ void Map::CreateWall(Engine* pEngine)
 			m_wallBB.push_back(move(bb));
 			m_wallRect.push_back(move(pRect));
 
-			// ボックスの生成に使用したセルにチェックを入れ、グリッドにポインタを登録
+			//ボックスの生成に使用したセルにチェックを入れ、グリッドにポインタを登録
 			for (int d = 0; d < depth; d++)
 			{
 				for (int w = 0; w < width; w++) 
 				{
 					bProcessed[i + d][j + w] = true;
-					// m_wallRectの最後の要素のポインタを登録
+					//m_wallRectの最後の要素のポインタを登録
 					m_grid[i + d][j + w].wallRects.push_back(m_wallRect.back().get());
 				}
 			}
@@ -690,7 +666,7 @@ void Map::CreateWall(Engine* pEngine)
 	}
 }
 
-// 壁に埋まっていたら押し戻す
+//壁に埋まっていたら押し戻す
 void Map::Resolve(const WallRect& rect, D3DXVECTOR2& position, float radius)
 {
 	float closestX = max(rect.min.x, min(position.x, rect.max.x));
@@ -771,13 +747,13 @@ void Map::SaveMiniMap(Engine * pEngine, Camera * pCamera, Projection * pProj, Am
 	pProj->SetDevice(pEngine);
 }
 
-// マンハッタン距離を計算 (ヒューリスティック関数)
+//マンハッタン距離を計算 (ヒューリスティック関数)
 float Map::GetDistance(int x1, int y1, int x2, int y2) 
 {
 	return (float)(abs(x1 - x2) + abs(y1 - y2));
 }
 
-// ボックスに対して当たっているか
+//ボックスに対して当たっているか
 bool Map::IsHit(const WallRect& rect, const D3DXVECTOR2& position, float radius)
 {
 	float closestX = max(rect.min.x, min(position.x, rect.max.x));
@@ -789,10 +765,10 @@ bool Map::IsHit(const WallRect& rect, const D3DXVECTOR2& position, float radius)
 	return (dx * dx + dy * dy) < (radius * radius);
 }
 
-// ボックスとレイが当たっているか
+//ボックスとレイが当たっているか
 bool Map::RayToRectIntersection(const D3DXVECTOR3& rayOrigin, const D3DXVECTOR3& rayEnd, const WallRect& rect, D3DXVECTOR3* outIntersection)
 {
-	// 今の状態だと２Dで判定するほうがいいが、今後のことを考え３Dにしておく
+	//今の状態だと２Dで判定するほうがいいが、今後のことを考え３Dにしておく
 	D3DXVECTOR3 rayDirection = rayEnd - rayOrigin;
 	float rayLength = D3DXVec3Length(&rayDirection);
 	if (rayLength < 1e-6f) return false;
@@ -846,7 +822,7 @@ void Map::DrawMapDepth(Engine* pEngine, const D3DXMATRIX* pMatLightVP)
 		return;
 	}
 
-	// デバッグログ
+	//デバッグログ
 	static DWORD lastLog = 0;
 	DWORD now = timeGetTime();
 	if (now - lastLog > 5000)
@@ -856,7 +832,7 @@ void Map::DrawMapDepth(Engine* pEngine, const D3DXMATRIX* pMatLightVP)
 		lastLog = now;
 	}
 
-	// 各壁の深度描画
+	//各壁の深度描画
 	for (const auto& wall : m_wall)
 	{
 		D3DXMATRIX matWorld = wall->GetWorldTransformMatrix();
@@ -864,7 +840,7 @@ void Map::DrawMapDepth(Engine* pEngine, const D3DXMATRIX* pMatLightVP)
 		wall->DrawForDepthPass(pEngine, &matWVP);
 	}
 
-	// 地面の深度描画
+	//地面の深度描画
 	D3DXMATRIX matGroundWorld = m_ground.GetWorldTransformMatrix();
 	D3DXMATRIX matGroundWVP = matGroundWorld * (*pMatLightVP);
 	m_ground.DrawForDepthPass(pEngine, &matGroundWVP);

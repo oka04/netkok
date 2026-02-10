@@ -1,6 +1,4 @@
-﻿// IceBlock.cpp - パラメータファイル対応版
-
-#define _USING_V110_SDK71_ 1
+﻿#define _USING_V110_SDK71_ 1
 
 #include "IceBlock.h"
 using namespace KeyString;
@@ -194,7 +192,7 @@ void IceBlock::DrawThroughWalls(Engine* pEngine, Camera* pCamera, Projection* pP
 	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
-	// ★★★ 溶け具合を反映したスケールを計算 ★★★
+	//溶け具合を反映したスケールを計算
 	float shrinkAmount = 1.0f - (1.0f - f_minScale) * m_meltAmount;
 
 	D3DXVECTOR3 currentScale = m_scale;
@@ -204,7 +202,7 @@ void IceBlock::DrawThroughWalls(Engine* pEngine, Camera* pCamera, Projection* pP
 
 	D3DXVECTOR3 adjustedPosition = m_position;
 
-	// ★★★ 溶け具合を反映したアルファ値を計算 ★★★
+	//溶け具合を反映したアルファ値を計算 
 	float currentAlpha = m_iceColor.w * alpha * f_throughWallAlphaMultiplier * (1.0f - m_meltAmount * f_alphaFadeRate);
 
 	D3DXMATRIX matScale, matRotX, matRotY, matRotZ, matTrans;
@@ -252,7 +250,7 @@ void IceBlock::DrawThroughWallsFullSize(Engine* pEngine, Camera* pCamera, Projec
 
 	LPDIRECT3DDEVICE9 pDevice = pEngine->GetDevice();
 
-	// レンダーステートの保存
+	//レンダーステートの保存
 	DWORD oldZEnable, oldZWriteEnable, oldAlphaBlend, oldSrcBlend, oldDestBlend, oldCullMode;
 	pDevice->GetRenderState(D3DRS_ZENABLE, &oldZEnable);
 	pDevice->GetRenderState(D3DRS_ZWRITEENABLE, &oldZWriteEnable);
@@ -261,7 +259,7 @@ void IceBlock::DrawThroughWallsFullSize(Engine* pEngine, Camera* pCamera, Projec
 	pDevice->GetRenderState(D3DRS_DESTBLEND, &oldDestBlend);
 	pDevice->GetRenderState(D3DRS_CULLMODE, &oldCullMode);
 
-	// 壁貫通設定
+	//壁貫通設定
 	pDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
 	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 	pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
@@ -269,14 +267,14 @@ void IceBlock::DrawThroughWallsFullSize(Engine* pEngine, Camera* pCamera, Projec
 	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
-	// ★★★ 常に最大サイズで描画（溶け具合を反映しない）★★★
+	//常に最大サイズで描画（溶け具合を反映しない）
 	D3DXVECTOR3 maxScale = m_scale;
 	D3DXVECTOR3 adjustedPosition = m_position;
 
-	// ★★★ アルファ値は通常通り（溶け具合は反映しない）★★★
+	//アルファ値は通常通り（溶け具合は反映しない）
 	float currentAlpha = m_iceColor.w * alpha * f_throughWallAlphaMultiplier;
 
-	// ワールド行列の計算
+	//ワールド行列の計算
 	D3DXMATRIX matScale, matRotX, matRotY, matRotZ, matTrans;
 	D3DXMatrixScaling(&matScale, maxScale.x, maxScale.y, maxScale.z);
 	D3DXMatrixRotationX(&matRotX, m_rotation.x);
@@ -286,7 +284,7 @@ void IceBlock::DrawThroughWallsFullSize(Engine* pEngine, Camera* pCamera, Projec
 
 	D3DXMATRIX matWorld = matScale * matRotX * matRotY * matRotZ * matTrans;
 
-	// マテリアル設定
+	//マテリアル設定
 	D3DMATERIAL9 material;
 	ZeroMemory(&material, sizeof(D3DMATERIAL9));
 	material.Diffuse.r = m_iceColor.x * f_throughWallDiffuseMultiplier;
@@ -304,11 +302,11 @@ void IceBlock::DrawThroughWallsFullSize(Engine* pEngine, Camera* pCamera, Projec
 	material.Power = f_specularPower;
 	m_primitiveSphere.SetMaterial(material);
 
-	// 描画
+	//描画
 	m_primitiveSphere.SetWorldTransform(&matWorld);
 	m_primitiveSphere.Draw(pEngine, pCamera, pProj, pAmbient, pLight);
 
-	// レンダーステートの復元
+	//レンダーステートの復元
 	pDevice->SetRenderState(D3DRS_ZENABLE, oldZEnable);
 	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, oldZWriteEnable);
 	pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, oldAlphaBlend);

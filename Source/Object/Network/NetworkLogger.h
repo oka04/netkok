@@ -17,13 +17,13 @@ public:
 		return instance;
 	}
 
-	// ログファイルを初期化
+	//ログファイルを初期化
 	void Initialize(const std::string& filename = "network_debug.txt")
 	{
 		std::lock_guard<std::mutex> lock(m_mutex);
 		m_filename = filename;
 
-		// ファイルを空にして開く
+		//ファイルを空にして開く
 		std::ofstream file(m_filename, std::ios::trunc);
 		if (file.is_open())
 		{
@@ -34,7 +34,7 @@ public:
 		}
 	}
 
-	// ログを書き込む
+	//ログを書き込む
 	void Log(const std::string& message)
 	{
 		std::lock_guard<std::mutex> lock(m_mutex);
@@ -42,7 +42,7 @@ public:
 		std::ofstream file(m_filename, std::ios::app);
 		if (file.is_open())
 		{
-			// タイムスタンプを追加
+			//タイムスタンプを追加
 			auto now = std::time(nullptr);
 			auto tm = *std::localtime(&now);
 
@@ -56,7 +56,7 @@ public:
 		}
 	}
 
-	// フォーマット付きログ（printfスタイル）
+	//フォーマット付きログ（printfスタイル）
 	template<typename... Args>
 	void LogFormat(const char* format, Args... args)
 	{
@@ -76,6 +76,6 @@ private:
 	std::mutex m_mutex;
 };
 
-// 便利なマクロ
+//便利なマクロ
 #define NET_LOG(msg) NetworkLogger::GetInstance().Log(msg)
 #define NET_LOG_F(...) NetworkLogger::GetInstance().LogFormat(__VA_ARGS__)

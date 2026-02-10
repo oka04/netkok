@@ -59,7 +59,6 @@ public:
 	virtual uint32_t GetMeltTargetId() const { return 0; }
 	unsigned char GetKeyFlag() const { return m_keyFlag; }
 	uint8_t m_soundEvents;
-	// ★★★ 音イベント管理 ★★★
 	uint8_t GetSoundEvents() const { return m_soundEvents; }
 	void SetSoundEvents(uint8_t events) { m_soundEvents = events; }
 
@@ -105,7 +104,7 @@ protected:
 	virtual void UpdateStamina(float deltaTime) {}
 	virtual void DrawStaminaGauge(Engine* pEngine) {}
 
-	// ★★★ ネットワーク同期用の内部メソッド ★★★
+	//ネットワーク同期用の内部メソッド
 	void AddPositionToHistory(const D3DXVECTOR3& pos);
 	D3DXVECTOR3 GetAveragedPosition() const;
 	float m_hostSpeedMultiplier = 1.0f;
@@ -155,31 +154,31 @@ protected:
 
 	bool m_bFirstPerson;
 
-	// ★★★ ネットワーク同期用メンバー変数 ★★★
+	//ネットワーク同期用メンバー変数
 	uint32_t m_clientId;
 	std::string m_characterName;
 	bool m_bIsLocal;
 
-	// ★★★ 補間用変数 ★★★
+	//補間用変数
 	D3DXVECTOR3 m_targetPosition;
 	float m_targetHAngle;
 	float m_targetVAngle;
 	float m_interpolationSpeed;
 	float m_adaptiveInterpolationSpeed;
 
-	// ★★★ 予測移動用変数 ★★★
+	//予測移動用変数
 	D3DXVECTOR3 m_velocity;
 	D3DXVECTOR3 m_predictedPosition;
 	D3DXVECTOR3 m_smoothedVelocity;
 	float m_velocitySmoothingFactor;
 
-	// ★★★ ジッター対策用変数 ★★★
+	//ジッター対策用変数
 	static const int MAX_POSITION_HISTORY = 5;
 	D3DXVECTOR3 m_positionHistory[MAX_POSITION_HISTORY];
 	int m_positionHistoryIndex;
 	int m_positionHistoryCount;
 
-	// ★★★ タイムスタンプ管理 ★★★
+	//タイムスタンプ管理
 	DWORD m_lastUpdateTime;
 	float m_timeSinceLastUpdate;
 };

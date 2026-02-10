@@ -83,7 +83,7 @@ private:
 	D3DXMATRIX m_matScaleBias;
 	static const int SHADOW_MAP_SIZE = 1024;
 
-	// ブレス攻撃関連メンバー変数
+	//ブレス攻撃関連メンバー変数
 	IceBreath* m_pIceBreath;
 	bool m_bBreathActive;
 	bool m_bBreathButtonPressed;

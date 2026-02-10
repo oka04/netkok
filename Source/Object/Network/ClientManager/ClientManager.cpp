@@ -127,7 +127,6 @@ void ClientManager::Reset()
 		m_lobbyPlayerNames.clear();
 	}
 
-	// ★★★ 重要: ゲーム開始フラグをリセット ★★★
 	m_bGameStarted = false;
 	m_bHost = false;
 	m_bConnected = false;
@@ -157,17 +156,11 @@ void ClientManager::ResetForLobbyReturn()
 {
 	NET_LOG("[ClientManager] ResetForLobbyReturn開始");
 
-	// ★★★ ゲーム開始フラグをクリア（最重要）★★★
 	m_bGameStarted = false;
 
-	// 役割情報のクリア
 	m_myRole = ROLE_NONE;
 	m_roleMap.clear();
 
-	// ★★★ 割り当てられたIDはそのまま維持（接続は維持する）★★★
-	// m_assignedClientId はクリアしない
-
-	// キュー系のクリア
 	{
 		std::lock_guard<std::mutex> lk(m_worldMutex);
 		m_worldStateReceived = false;
@@ -489,7 +482,7 @@ void ClientManager::OnReceive(const ENetEvent& event)
 		ProcessRoleAssignment(data + 1, len - 1);
 		break;
 
-	case MSG_GAME_RESULT:  // ★ 追加
+	case MSG_GAME_RESULT:  
 		ProcessGameResult(data + 1, len - 1);
 		break;
 	}
@@ -550,8 +543,6 @@ void ClientManager::ProcessServerInfo(const uint8_t* data, size_t len)
 	std::string serverName(reinterpret_cast<const char*>(data + idx), nameLen);
 	m_serverName = serverName;
 
-	// ★★★ サーバー情報受信時にゲーム開始フラグをリセット ★★★
-	// （サーバーに接続したばかりなので、まだゲームは始まっていない）
 	m_bGameStarted = false;
 
 	NET_LOG_F("[ClientManager] ★サーバー情報受信★: サーバー名='%s' GameStarted=%s",
@@ -614,21 +605,18 @@ void ClientManager::SendPlayerState(const NetPlayerState& state)
 
 	auto data = NetworkSerializer::SerializePlayerState(state);
 
-	// ★★★ デバッグ: 送信内容をログ出力 ★★★
 	static DWORD lastLogTime = 0;
 	DWORD now = timeGetTime();
-	if (now - lastLogTime > 1000) // 1秒ごとにログ
+	if (now - lastLogTime > 1000) 
 	{
 		NET_LOG_F("[ClientManager] 状態送信: ID=%u Pos=(%.1f,%.1f,%.1f) Size=%d bytes",
 			state.clientId, state.posX, state.posY, state.posZ, (int)data.size());
 		lastLogTime = now;
 	}
 
-	// ★★★ チャンネル1（信頼性なし・順序なし）で高速送信 ★★★
 	ENetPacket* packet = enet_packet_create(data.data(), data.size(), ENET_PACKET_FLAG_UNSEQUENCED);
 	enet_peer_send(m_pServerPeer, 1, packet);
 
-	// ★★★ 即座に送信 ★★★
 	enet_host_flush(m_pClientHost);
 }
 
@@ -713,13 +701,13 @@ void ClientManager::ProcessRoleAssignment(const uint8_t* data, size_t len)
 
 	std::lock_guard<std::mutex> lk(m_worldMutex);
 
-	// キューに追加
+	//キューに追加
 	m_roleQueue.push(assignment);
 
-	// 役割マップに登録
+	//役割マップに登録
 	m_roleMap[assignment.clientId] = assignment.role;
 
-	// 自分の役割なら記録
+	//自分の役割なら記録
 	if (assignment.clientId == m_assignedClientId)
 	{
 		m_myRole = assignment.role;

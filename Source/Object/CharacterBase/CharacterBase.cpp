@@ -8,9 +8,6 @@ using namespace WindowSetting;
 const D3DXVECTOR3 CharacterBase::UP_DIRECTION = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 const D3DXVECTOR3 CharacterBase::DEPTH_DIRECTION = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 
-//初期化
-// CharacterBase.cpp - 初期化順序を修正
-
 void CharacterBase::Initialize(Engine *pEngine, std::string filename, Projection* projection, Camera& camera, DirectionalLight &light)
 {
 	m_model.SetModel(pEngine->GetModel(filename));
@@ -28,16 +25,13 @@ void CharacterBase::Initialize(Engine *pEngine, std::string filename, Projection
 
 	m_keyFlag = 0x00;
 
-	// ★★★ 重要: ネットワーク関連の初期化時にIDをリセットしない ★★★
-	// m_clientId と m_characterName は SpawnPlayerWithRole() で既に設定済み
-	// ここでリセットすると Wwise 登録が無効になる
+	//ネットワーク関連の初期化時にIDをリセットしない
+	//m_clientId と m_characterName は SpawnPlayerWithRole() で既に設定済み
+	//ここでリセットすると Wwise 登録が無効になる
 
-	// m_clientId = 0;  // ★★★ コメントアウト！
-	// m_characterName = "";  // ★★★ コメントアウト！
 
-	// ★★★ m_bIsLocal だけは初期化時に設定されていない場合のみデフォルト値を設定 ★★★
+	//m_bIsLocalだけは初期化時に設定されていない場合のみデフォルト値を設定 
 	// （既に SetIsLocal() で設定済みの場合は上書きしない）
-	// m_bIsLocal = true;  // ★★★ コメントアウト！
 
 	m_targetPosition = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_targetHAngle = 0.0f;
@@ -64,7 +58,7 @@ void CharacterBase::Initialize(Engine *pEngine, std::string filename, Projection
 
 void CharacterBase::UpdateMatrix(DirectionalLight &light)
 {
-	// ★★★ ローカルプレイヤーのみフラグをクリア（リモートは保持） ★★★
+	//ローカルプレイヤーのみフラグをクリア（リモートは保持） 
 	if (m_bIsLocal)
 	{
 		m_soundEvents = 0;
@@ -91,14 +85,14 @@ void CharacterBase::UpdateMatrix(DirectionalLight &light)
 
 	light.SetDirection(m_depth);
 
-	// ★★★ ローカルプレイヤーのみサウンド位置を更新 ★★★
+	//ローカルプレイヤーのみサウンド位置を更新
 	if (m_bIsLocal)
 	{
 		SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, SoundManager::ID_LISTENER);
 	}
 	else
 	{
-		// ★★★ リモートプレイヤーは自分のIDで位置更新 ★★★
+		//リモートプレイヤーは自分のIDで位置更新
 		SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, m_clientId);
 	}
 
@@ -177,13 +171,11 @@ void CharacterBase::Input(Engine * pEngine)
 		m_keyFlag &= ~DASH_KEY;
 	}
 
-	// ★★★ 左クリック攻撃入力 - 修正版 ★★★
-	// 0 は左ボタンのインデックス（DIMOFS_BUTTON0）
+	//左クリック攻撃入力
 	if (pEngine->GetMouseButton(0))
 	{
 		m_keyFlag |= ATTACK_KEY;
 
-		// デバッグログ（頻度を下げる）
 		static DWORD lastLog = 0;
 		DWORD now = timeGetTime();
 		if (now - lastLog > 500)
@@ -225,65 +217,62 @@ void CharacterBase::Move(Map& map)
 
 	if (moveLength > 0.0f)
 	{
-		// ベースの移動ベクトル（元の実装）
+		//ベースの移動ベクトル
 		D3DXVECTOR3 vector = m_direction * m_speed;
 
-		// 「ローカルかつホスト」の場合のみ hostSpeedMultiplier を適用
-		// m_isHostLocal は Spawn 時に SceneGame がセットします
+		//「ローカルかつホスト」の場合のみ hostSpeedMultiplier を適用
+		//m_isHostLocal は Spawn 時に SceneGame がセットします
 		if (m_isHostLocal)
 		{
 			vector *= m_hostSpeedMultiplier;
 		}
 
-		// 垂直成分は0にする（従来通り）
 		vector.y = 0;
 
-		// マップ当たり判定と移動処理
+		//マップ当たり判定と移動処理
 		map.MoveCheck(m_position, vector, f_radius);
 
-		// ローカルプレイヤーのみ足音フラグを設定（送信はローカル担当）
+		//ローカルプレイヤーのみ足音フラグを設定（送信はローカル担当）
 		if (m_bIsLocal)
 		{
 			m_soundEvents |= SOUND_FOOTSTEP;
 		}
 
-		// 速度更新
 		m_velocity = vector;
 	}
 	else
 	{
-		// 止まっているとき
+		//止まっているとき
 		m_velocity = D3DXVECTOR3(0, 0, 0);
 	}
 }
 void CharacterBase::PlayFootstepSound()
 {
-	// 既に足音が再生中であれば二重再生を防ぐ
+	//既に足音が再生中であれば二重再生を防ぐ
 	if (m_seFootId != AK_INVALID_PLAYING_ID) return;
 
-	// フットスピードパラメータを決定
+	//フットスピードパラメータを決定
 	float footspeedParam = 0.0f;
 
 	if (m_keyFlag & DASH_KEY)
 	{
-		footspeedParam = 1.0f; // ダッシュ時は速く
+		footspeedParam = 1.0f; //ダッシュ時は速く
 	}
 	else if (m_keyFlag & CROUCH_KEY)
 	{
-		footspeedParam = 0.3f; // しゃがみ時は遅く
+		footspeedParam = 0.3f; //しゃがみ時は遅く
 	}
 	else
 	{
-		footspeedParam = 0.6f; // 歩行時は中間
+		footspeedParam = 0.6f; //歩行時は中間
 	}
 
-	// RTPC で足音の速度を設定
+	//RTPC で足音の速度を設定
 	AK::SoundEngine::SetRTPCValue(AK::GAME_PARAMETERS::FOOTSPEED, footspeedParam, m_clientId);
 
-	// 足音を再生
+	//足音を再生
 	SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, m_clientId);
 
-	// デバッグログ（頻度を下げる）
 	static std::map<uint32_t, DWORD> lastPlayLog;
 	DWORD now = timeGetTime();
 	if (now - lastPlayLog[m_clientId] > 2000)
@@ -407,7 +396,6 @@ const float & CharacterBase::GetRadius() const
 
 const float & CharacterBase::GetArrowAngle() const
 {
-	// staticにしてアドレスを安全に返せるようにする
 	static float rad = 0.0f;
 
 	D3DXVECTOR2 dirXZ(m_cameraFront.x, m_cameraFront.z);
@@ -438,10 +426,8 @@ NetPlayerState CharacterBase::GetNetState() const
 	state.flags = 0;
 	state.SetFirstPerson(m_bFirstPerson);
 
-	// ★★★ 追加: 音イベントフラグを送信 ★★★
 	state.soundEvents = m_soundEvents;
 
-	// ★★★ ライト情報を初期化（派生クラスで上書き）★★★
 	state.lightPosX = 0.0f;
 	state.lightPosY = 0.0f;
 	state.lightPosZ = 0.0f;
@@ -450,7 +436,6 @@ NetPlayerState CharacterBase::GetNetState() const
 	state.lightDirZ = -1.0f;
 	state.lightRange = 0.0f;
 
-	// ★★★ ブレス情報を初期化 ★★★
 	state.breathActive = 0;
 	state.breathPosX = 0.0f;
 	state.breathPosY = 0.0f;
@@ -459,11 +444,9 @@ NetPlayerState CharacterBase::GetNetState() const
 	state.breathDirY = 0.0f;
 	state.breathDirZ = -1.0f;
 
-	// ★★★ 氷状態を初期化（派生クラスで上書き）★★★
 	state.frozen = 0;
 	state.frozenAmount = 0.0f;
 
-	// ★★★ 解凍ターゲットを初期化（派生クラスで上書き）★★★
 	state.meltTargetId = GetMeltTargetId();
 
 	return state;
@@ -474,7 +457,7 @@ void CharacterBase::UpdateFromNetwork(const NetPlayerState& state, DirectionalLi
 {
 	DWORD now = timeGetTime();
 
-	// タイムスタンプ管理
+	//タイムスタンプ管理
 	if (m_lastUpdateTime != 0)
 	{
 		m_timeSinceLastUpdate = (now - m_lastUpdateTime) / 1000.0f;
@@ -485,29 +468,28 @@ void CharacterBase::UpdateFromNetwork(const NetPlayerState& state, DirectionalLi
 	}
 	m_lastUpdateTime = now;
 
-	// 新しいターゲット位置を設定
+	//新しいターゲット位置を設定
 	D3DXVECTOR3 newTargetPos = D3DXVECTOR3(state.posX, state.posY, state.posZ);
 
-	// 速度の計算（予測移動用）
+	//速度の計算（予測移動用）
 	D3DXVECTOR3 rawVelocity = (newTargetPos - m_targetPosition) / max(0.001f, m_timeSinceLastUpdate);
 
-	// 速度のスムージング（急激な変化を抑制） - 元のロジックに戻す
+	//速度のスムージング（急激な変化を抑制） - 元のロジックに戻す
 	m_smoothedVelocity = m_smoothedVelocity * (1.0f - m_velocitySmoothingFactor) +
 		rawVelocity * m_velocitySmoothingFactor;
 
-	// 新しいターゲット位置を設定
+	//新しいターゲット位置を設定
 	m_targetPosition = newTargetPos;
 	m_targetHAngle = state.hAngle;
 	m_targetVAngle = state.vAngle;
 
-	// 位置履歴に追加（ジッター対策）
+	//位置履歴に追加（ジッター対策）
 	AddPositionToHistory(m_targetPosition);
 
-	// 現在位置との距離を計算
+	//現在位置との距離を計算
 	D3DXVECTOR3 diff = m_targetPosition - m_position;
 	float dist = D3DXVec3Length(&diff);
 
-	// デバッグログ（頻度を下げる）
 	static std::map<uint32_t, DWORD> lastLogPerPlayer;
 	if (now - lastLogPerPlayer[state.clientId] > 2000)
 	{
@@ -516,84 +498,83 @@ void CharacterBase::UpdateFromNetwork(const NetPlayerState& state, DirectionalLi
 		lastLogPerPlayer[state.clientId] = now;
 	}
 
-	// 適応的テレポート閾値（速度に応じて調整）
+	//適応的テレポート閾値（速度に応じて調整）
 	float speedFactor = D3DXVec3Length(&m_smoothedVelocity);
 	float teleportThreshold = 1.5f + speedFactor * 0.1f;
 	teleportThreshold = min(teleportThreshold, 5.0f);
 
 	if (dist > teleportThreshold)
 	{
-		// 距離が大きい場合は即座にテレポート
+		//距離が大きい場合は即座にテレポート
 		m_position = m_targetPosition;
 		m_velocity = m_smoothedVelocity;
 		NET_LOG_F("[CharacterBase] テレポート: ID=%u Dist=%.2f", m_clientId, dist);
 	}
 	else if (dist > 0.01f)
 	{
-		// 適応的補間速度（距離に応じて調整）
+		//適応的補間速度（距離に応じて調整）
 		float distanceFactor = min(dist * 2.0f, 1.0f);
 		m_adaptiveInterpolationSpeed = m_interpolationSpeed * (1.0f + distanceFactor * 2.0f);
 
-		// 補間係数の計算
+		//補間係数の計算
 		float t = min(1.0f, m_adaptiveInterpolationSpeed * deltaTime);
 
-		// 位置の補間
+		//位置の補間
 		m_position += diff * t;
 
-		// 速度の更新
+		//速度の更新
 		m_velocity = m_smoothedVelocity;
 	}
 	else
 	{
-		// ほぼ到達している場合
+		//ほぼ到達している場合
 		m_position = m_targetPosition;
 		m_velocity = D3DXVECTOR3(0, 0, 0);
 	}
 
-	// 角度の補間（改善版）
+	//角度の補間（改善版）
 	float hDiff = m_targetHAngle - m_hAngle;
 	while (hDiff > 180.0f) hDiff -= 360.0f;
 	while (hDiff < -180.0f) hDiff += 360.0f;
 
-	// 角度も適応的に補間
+	//角度も適応的に補間
 	float angleLerpSpeed = m_interpolationSpeed * 1.5f;
 	m_hAngle += hDiff * min(1.0f, angleLerpSpeed * deltaTime);
 
 	float vDiff = m_targetVAngle - m_vAngle;
 	m_vAngle += vDiff * min(1.0f, angleLerpSpeed * deltaTime);
 
-	// 向きベクトルとその他の状態を更新
+	//向きベクトルとその他の状態を更新
 	m_depth = D3DXVECTOR3(state.depthX, state.depthY, state.depthZ);
 	m_keyFlag = state.keyFlag;
 	m_bFirstPerson = state.IsFirstPerson();
 
-	// 音イベントフラグを受信して設定
+	//音イベントフラグを受信して設定
 	m_soundEvents = state.soundEvents;
 
-	// 目の位置を更新
+	//目の位置を更新
 	m_eyePosition = m_position + ((m_keyFlag & CROUCH_KEY) ? f_crouchEyePosition : f_standEyePosition);
 
-	// 行列を更新
+	//行列を更新
 	UpdateMatrix(light);
 }
 
 void CharacterBase::PredictMovement(float deltaTime)
 {
-	if (m_bIsLocal) return;  // ローカルキャラクターは予測不要
+	if (m_bIsLocal) return;  //ローカルキャラクターは予測不要
 
-							 // 速度ベースの予測
+	//速度ベースの予測
 	if (D3DXVec3Length(&m_velocity) > 0.01f)
 	{
 		D3DXVECTOR3 prediction = m_velocity * deltaTime;
 		m_predictedPosition = m_position + prediction;
 
-		// 予測位置とターゲット位置の間で補間
-		float blend = 0.3f;  // 30%予測、70%現在位置
+		//予測位置とターゲット位置の間で補間
+		float blend = 0.3f;  //30%予測、70%現在位置
 		m_position = m_position * (1.0f - blend) + m_predictedPosition * blend;
 	}
 }
 
-// ★★★ 位置履歴の追加 ★★★
 void CharacterBase::AddPositionToHistory(const D3DXVECTOR3& pos)
 {
 	m_positionHistory[m_positionHistoryIndex] = pos;
@@ -605,7 +586,6 @@ void CharacterBase::AddPositionToHistory(const D3DXVECTOR3& pos)
 	}
 }
 
-// ★★★ 平均位置の取得（ジッター対策）★★★
 D3DXVECTOR3 CharacterBase::GetAveragedPosition() const
 {
 	if (m_positionHistoryCount == 0)

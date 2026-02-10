@@ -370,18 +370,17 @@ void MenuManager::UpdateAlpha()
 	m_buttonAlpha += m_changeAlpha;
 
 }
-// ボタン押下処理（HOST/FIND 追加対応）
 void MenuManager::Pressed(Common::CommonData& gameData)
 {
 	switch (m_buttons[m_selectNumber])
 	{
 	case HOST_BUTTON:
-		// タイトル → ロビーへ遷移。Scene 側で実際に Server/Client を起動する想定
+		//タイトル → ロビーへ遷移。Scene 側で実際に Server/Client を起動する想定
 		m_bQuickChangeScene = true;
 		gameData.m_nextSceneNumber = Common::SCENE_LOBBY;
 		break;
 	case FIND_BUTTON:
-		// Find（サーバーを探す）→ ロビー（ブラウザ）へ遷移
+		//Find（サーバーを探す）→ ロビー（ブラウザ）へ遷移
 		m_bQuickChangeScene = true;
 		gameData.m_nextSceneNumber = Common::SCENE_LOBBY;
 		break;

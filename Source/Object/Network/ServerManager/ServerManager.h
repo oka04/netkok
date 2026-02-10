@@ -56,12 +56,10 @@ public:
 	void SetHostRole(PlayerRole role) { m_hostRole = role; }
 	PlayerRole GetHostRole() const { return m_hostRole; }
 
-	// ★★★ ゲーム状態管理 ★★★
 	void SetGameState(uint8_t state);  // 0 = 待機中, 1 = ゲーム中
 	uint8_t GetGameState() const { return m_gameState; }
 	void BroadcastGameResult(int winnerTeam);
 
-	// ★ ENetHostのゲッター（BroadcastGameResult用）
 	ENetHost* GetServerHost() { return m_pServerHost; }
 
 private:
@@ -91,7 +89,7 @@ private:
 	PlayerRole m_hostRole;
 	mutable std::mutex m_stateMutex;
 
-	uint8_t m_gameState;  // ★ 追加：0 = 待機中, 1 = ゲーム中
+	uint8_t m_gameState;  //0 = 待機中, 1 = ゲーム中
 
 	static ServerManager* s_instance;
 };

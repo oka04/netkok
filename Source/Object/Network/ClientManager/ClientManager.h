@@ -49,7 +49,7 @@ public:
 
 	void RefreshAvailableServers();
 	void Reset();
-	void ResetForLobbyReturn();  // ★★★ 新規追加: ロビー復帰用リセット ★★★
+	void ResetForLobbyReturn();
 
 	void SendPlayerState(const NetPlayerState& state);
 	bool GetWorldState(NetWorldState& out);
@@ -62,7 +62,6 @@ public:
 	PlayerRole GetMyRole() const { return m_myRole; }
 	const std::map<uint32_t, PlayerRole>& GetAllRoles() const { return m_roleMap; }
 
-	// ★★★ ゲーム結果受信 ★★★
 	bool PopGameResult(NetGameResult& out);
 
 private:

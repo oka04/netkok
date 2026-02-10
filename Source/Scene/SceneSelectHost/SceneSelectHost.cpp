@@ -50,7 +50,7 @@ void SceneSelectHost::Start()
 
 	m_serverName = "";
 
-	// タイトル画面から入力されたプレイヤー名を取得
+	//タイトル画面から入力されたプレイヤー名を取得
 	ClientManager* client = ClientManager::GetInstance();
 	m_playerName = client->GetPlayerName();
 
@@ -293,7 +293,6 @@ bool SceneSelectHost::CreateServer()
 	ServerManager* server = ServerManager::GetInstance();
 	ClientManager* client = ClientManager::GetInstance();
 
-	// ★★★ 既存の接続をクリーンアップ ★★★
 	client->Disconnect();
 	server->StopServer();
 
@@ -329,12 +328,12 @@ bool SceneSelectHost::CreateServer()
 		return false;
 	}
 
-	// ★★★ 少し待ってからクライアント接続 ★★★
+	//少し待ってからクライアント接続
 	Sleep(100);
 
 	SceneLobby::SetRequestedMode(REQUEST_MODE::HOST);
 
-	// クライアントとして自分のサーバーに接続
+	//クライアントとして自分のサーバーに接続
 	if (!client->ConnectToServer("127.0.0.1", port))
 	{
 		NET_LOG("[SceneSelectHost] クライアント接続失敗");

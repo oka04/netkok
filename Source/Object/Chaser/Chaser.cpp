@@ -38,10 +38,6 @@ Chaser::~Chaser()
 
 void Chaser::Initialize(Engine* pEngine, Map& map, Projection* projection, Camera& camera, DirectionalLight& light)
 {
-	// ローカル時の固定 ID_PALYER 登録を削除（SceneGame が clientId 単位で登録しているため重複）
-	// if (m_bIsLocal)
-	//     SoundManager::RegisterGameObject(ID_PALYER, "Chaser");
-
 	LoadParameter();
 	CharacterBase::Initialize(pEngine, MODEL_CHARACTER, projection, camera, light);
 	m_position = map.GetChaserStartPosition();
@@ -62,10 +58,6 @@ void Chaser::Initialize(Engine* pEngine, Map& map, Projection* projection, Camer
 
 void Chaser::InitializeAtPosition(Engine* pEngine, const D3DXVECTOR3& startPos, Projection* projection, Camera& camera, DirectionalLight& light)
 {
-	// 同上：ID_PALYER 登録を削除
-	// if (m_bIsLocal)
-	//     SoundManager::RegisterGameObject(ID_PALYER, "Chaser");
-
 	LoadParameter();
 	CharacterBase::Initialize(pEngine, MODEL_CHARACTER, projection, camera, light);
 	m_position = startPos;
@@ -93,10 +85,6 @@ void Chaser::Release(Engine* pEngine)
 		delete m_pIceBreath;
 		m_pIceBreath = nullptr;
 	}
-
-	// ローカル専用の固定 ID_PALYER Unregister は削除（SceneGame が clientId 単位で Unregister する）
-	// if (m_bIsLocal)
-	//     SoundManager::UnregisterGameObject(ID_PALYER);
 }
 void Chaser::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight& light, float deltaTime)
 {
@@ -136,7 +124,6 @@ void Chaser::UpdateBreathAttack(Engine* pEngine)
 		return;
 	}
 
-	// ★★★ 修正1: 常に現在のボタン状態を取得 ★★★
 	bool isAttackPressed = pEngine->GetMouseButton(0);
 	DWORD now = timeGetTime();
 
@@ -152,7 +139,7 @@ void Chaser::UpdateBreathAttack(Engine* pEngine)
 		lastInputLog = now;
 	}
 
-	// ★★★ ケース1: ブレス発動中 ★★★
+	//ブレス発動中
 	if (m_bBreathActive)
 	{
 		D3DXVECTOR3 adjustedDirection = m_depth;
@@ -174,29 +161,26 @@ void Chaser::UpdateBreathAttack(Engine* pEngine)
 		m_pIceBreath->SetDirection(adjustedDirection);
 		m_pIceBreath->Update();
 
-		// ★★★ 修正2: ブレス終了判定を先に行う ★★★
+		//ブレス終了判定を先に行う
 		if (!m_pIceBreath->IsActive())
 		{
-			// ブレス終了
 			m_bBreathActive = false;
 
-			// ★★★ 修正3: クールダウンタイマーを設定 ★★★
 			m_lastBreathTime = now;
 
-			NET_LOG_F("[Chaser] ★★★ブレス終了★★★ ID=%u クールダウン開始 CurrentBtn=%s",
+			NET_LOG_F("[Chaser]ブレス終了ID=%u クールダウン開始 CurrentBtn=%s",
 				m_clientId, isAttackPressed ? "Down" : "Up");
 		}
 
-		// ★★★ 修正4: ブレス中でも常にボタン状態を更新 ★★★
 		m_bBreathButtonPressed = isAttackPressed;
 
 		return;
 	}
 
-	// ★★★ ケース2: クールダウン中 ★★★
+	//クールダウン中
 	if (!CanUseBreath())
 	{
-		// ★★★ 修正5: クールダウン中もボタン状態を更新（重要！）★★★
+		//クールダウン中もボタン状態を更新
 		m_bBreathButtonPressed = isAttackPressed;
 
 		static DWORD lastCooldownLog = 0;
@@ -210,11 +194,9 @@ void Chaser::UpdateBreathAttack(Engine* pEngine)
 		return;
 	}
 
-	// ★★★ ケース3: ブレス発動可能状態 ★★★
-	// ボタンが「押された瞬間」を検出（エッジ検出）
+	//ブレス発動可能状態 
 	bool isButtonJustPressed = isAttackPressed && !m_bBreathButtonPressed;
 
-	// ★★★ 修正6: ボタン状態を即座に更新 ★★★
 	m_bBreathButtonPressed = isAttackPressed;
 
 	if (isButtonJustPressed)
@@ -238,8 +220,7 @@ void Chaser::UpdateBreathAttack(Engine* pEngine)
 		m_pIceBreath->Activate(m_eyePosition, adjustedDirection);
 		m_bBreathActive = true;
 
-		// ★★★ 修正7: 発動時点ではクールダウンタイマーを設定しない ★★★
-		// （ブレス終了時に設定する）
+		//発動時点ではクールダウンタイマーを設定しない
 
 		SoundManager::SetPosition(m_eyePosition, m_depth, UP_DIRECTION, m_clientId);
 		SoundManager::Play(AK::EVENTS::PLAY_SE_BRACELET, m_clientId);
@@ -312,7 +293,7 @@ void Chaser::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 {
 	CharacterBase::UpdateFromNetwork(state, light, deltaTime);
 
-	// ★★★ ライト情報は常に更新（ローカル・リモート共通） ★★★
+	//ライト情報は常に更新（ローカル・リモート共通）
 	D3DXVECTOR3 lightPos(state.lightPosX, state.lightPosY, state.lightPosZ);
 	D3DXVECTOR3 lightDir(state.lightDirX, state.lightDirY, state.lightDirZ);
 
@@ -338,11 +319,11 @@ void Chaser::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 
 	UpdateLightMatrices();
 
-	// ★★★ 重要！ローカルプレイヤーの場合はブレス状態を同期しない ★★★
+	//ローカルプレイヤーの場合はブレス状態を同期しない 
 	if (m_bIsLocal)
 	{
-		// ローカルプレイヤーのブレスは UpdateBreathAttack() で完全に管理
-		// ネットワークからの状態で上書きすると、終了判定が無効化されてしまう
+		//ローカルプレイヤーのブレスは UpdateBreathAttack() で完全に管理
+		//ネットワークからの状態で上書きすると、終了判定が無効化されてしまう
 		static DWORD lastLog = 0;
 		DWORD now = timeGetTime();
 		if (now - lastLog > 5000)
@@ -354,14 +335,14 @@ void Chaser::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 		return;
 	}
 
-	// ★★★ 以下はリモートプレイヤーのみ実行 ★★★
+	//以下はリモートプレイヤーのみ実行
 	if (m_pIceBreath)
 	{
 		bool shouldBeActive = (state.breathActive != 0);
 
 		if (shouldBeActive && !m_bBreathActive)
 		{
-			// ブレス開始
+			//ブレス開始
 			D3DXVECTOR3 breathPos(state.breathPosX, state.breathPosY, state.breathPosZ);
 			D3DXVECTOR3 breathDir(state.breathDirX, state.breathDirY, state.breathDirZ);
 
@@ -384,7 +365,7 @@ void Chaser::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 		}
 		else if (!shouldBeActive && m_bBreathActive)
 		{
-			// ブレス終了
+			//ブレス終了
 			m_pIceBreath->Deactivate();
 			m_bBreathActive = false;
 
@@ -392,7 +373,7 @@ void Chaser::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 		}
 		else if (shouldBeActive && m_bBreathActive)
 		{
-			// ブレス継続中
+			//ブレス継続中
 			D3DXVECTOR3 breathPos(state.breathPosX, state.breathPosY, state.breathPosZ);
 			D3DXVECTOR3 breathDir(state.breathDirX, state.breathDirY, state.breathDirZ);
 

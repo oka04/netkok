@@ -125,13 +125,13 @@ bool Discovery::StartListener(uint16_t discoveryPort)
 			if (recvLen > 0) {
 				NET_LOG_F("[Discovery/Listener] パケット受信! サイズ:%d bytes", recvLen);
 
-				// 最小サイズチェック
+				//最小サイズチェック
 				if (recvLen < 18) {
 					NET_LOG("[Discovery/Listener] パケットサイズ不足");
 					continue;
 				}
 
-				// マジック確認
+				//マジック確認
 				const char magic[] = "SILENT_DISC";
 				if (memcmp(buf, magic, 10) != 0) {
 					NET_LOG("[Discovery/Listener] マジック不一致");
@@ -141,7 +141,7 @@ bool Discovery::StartListener(uint16_t discoveryPort)
 
 				int idx = 10;
 
-				// プロトコルバージョン
+				//プロトコルバージョン
 				if (idx + 2 > recvLen) continue;
 				uint16_t protoVer;
 				memcpy(&protoVer, buf + idx, sizeof(uint16_t));
@@ -156,13 +156,13 @@ bool Discovery::StartListener(uint16_t discoveryPort)
 				idx += 2;
 				NET_LOG_F("[Discovery/Listener] ポート（変換後）: %d", (int)enetPort);
 
-				// プレイヤー数
+				//プレイヤー数
 				if (idx + 1 > recvLen) continue;
 				uint8_t playerCount = *(uint8_t*)(buf + idx);
 				idx += 1;
 				NET_LOG_F("[Discovery/Listener] プレイヤー数: %d", (int)playerCount);
 
-				// 最大プレイヤー数
+				//最大プレイヤー数
 				if (idx + 1 > recvLen) continue;
 				uint8_t maxPlayers = *(uint8_t*)(buf + idx);
 				idx += 1;
@@ -174,13 +174,13 @@ bool Discovery::StartListener(uint16_t discoveryPort)
 				idx += 1;
 				NET_LOG_F("[Discovery/Listener] ステート: %d", (int)state);
 
-				// サーバー名の長さ
+				//サーバー名の長さ
 				if (idx + 1 > recvLen) continue;
 				uint8_t nameLen = *(uint8_t*)(buf + idx);
 				idx += 1;
 				NET_LOG_F("[Discovery/Listener] 名前の長さ: %d", (int)nameLen);
 
-				// サーバー名
+				//サーバー名
 				if (idx + (int)nameLen > recvLen) {
 					NET_LOG_F("[Discovery/Listener] 名前長さ不正: 期待=%d 残り=%d", (int)nameLen, recvLen - idx);
 					continue;
@@ -325,7 +325,6 @@ bool Discovery::StartAdvertise(uint16_t discoveryPort, uint16_t enetPort, const 
 				name = impl->advName;
 			}
 
-			// デバッグ：送信前の値を確認
 			NET_LOG_F("[Discovery/Advertiser] 送信データ: port=%d player=%d/%d state=%d name='%s'",
 				enetPort, (int)playerCount, (int)maxPlayers, (int)state, name.c_str());
 
@@ -333,7 +332,7 @@ bool Discovery::StartAdvertise(uint16_t discoveryPort, uint16_t enetPort, const 
 			const char magic[] = "SILENT_DISC";
 			payload.insert(payload.end(), magic, magic + 10);
 
-			// プロトコルバージョン（ネットワークバイトオーダー）
+			//プロトコルバージョン（ネットワークバイトオーダー）
 			uint16_t protoVer = htons(1);
 			payload.push_back((char)((protoVer >> 8) & 0xFF));
 			payload.push_back((char)(protoVer & 0xFF));
@@ -344,12 +343,12 @@ bool Discovery::StartAdvertise(uint16_t discoveryPort, uint16_t enetPort, const 
 			payload.push_back(portBytes[0]);
 			payload.push_back(portBytes[1]);
 
-			// プレイヤー数関連（1バイトずつ）
+			//プレイヤー数関連（1バイトずつ）
 			payload.push_back((char)playerCount);
 			payload.push_back((char)maxPlayers);
 			payload.push_back((char)state);
 
-			// サーバー名
+			//サーバー名
 			size_t nameLen = std::min<size_t>(255, name.size());
 			payload.push_back((char)nameLen);
 			payload.insert(payload.end(), name.begin(), name.begin() + nameLen);

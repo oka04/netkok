@@ -31,7 +31,6 @@ public:
 	static REQUEST_MODE GetRequestMode();
 
 private:
-	// ★★★ ロビー状態（フェードなし）★★★
 	enum LOBBY_STATE
 	{
 		IN_LOBBY,

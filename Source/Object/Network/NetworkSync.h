@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <cstring>
 
-// プレイヤーの役割
+//プレイヤーの役割
 enum PlayerRole : uint8_t
 {
 	ROLE_NONE = 0,
@@ -13,7 +13,7 @@ enum PlayerRole : uint8_t
 	ROLE_CHASER = 2
 };
 
-// ★★★ 音イベントフラグ ★★★
+//音イベントフラグ
 enum SoundEventFlags : uint8_t
 {
 	SOUND_NONE = 0,
@@ -24,7 +24,7 @@ enum SoundEventFlags : uint8_t
 	SOUND_BREATH = 1 << 4,        
 };
 
-// ★★★ ネットワークメッセージタイプ ★★★
+//ネットワークメッセージタイプ
 enum NetMessageType : uint8_t
 {
 	NET_MSG_PLAYER_STATE = 1,
@@ -47,9 +47,9 @@ enum NetworkMessageType : uint8_t
 	MSG_PLAYER_SPAWN = 12,
 	MSG_PLAYER_DESPAWN = 13,
 	MSG_ROLE_ASSIGNMENT = 14,
-	MSG_GAME_RESULT = 15,  // ★ 追加：ゲーム結果
+	MSG_GAME_RESULT = 15, 
 };
-// ★★★ プレイヤー状態（120バイト）★★★
+//プレイヤー状態（120バイト）
 #pragma pack(push, 1)
 struct NetPlayerState
 {
@@ -73,7 +73,7 @@ struct NetPlayerState
 
 	uint32_t meltTargetId;
 
-	// ★★★ 追加: 音イベントフラグ ★★★
+	//音イベントフラグ
 	uint8_t soundEvents;
 
 	void SetFirstPerson(bool fp)
@@ -121,11 +121,11 @@ struct NetClientIdAssignment
 };
 #pragma pack(pop)
 
-// ★★★ ゲーム結果構造体 ★★★
+//ゲーム結果構造体 
 #pragma pack(push, 1)
 struct NetGameResult
 {
-	uint8_t winnerTeam;  // 0 = 逃げる側, 1 = 鬼側
+	uint8_t winnerTeam; 
 };
 #pragma pack(pop)
 
@@ -181,7 +181,7 @@ public:
 		return buf;
 	}
 
-	// ★★★ ゲーム結果シリアライズ ★★★
+	//ゲーム結果シリアライズ
 	static std::vector<uint8_t> SerializeGameResult(const NetGameResult& result)
 	{
 		std::vector<uint8_t> buf;
@@ -218,7 +218,7 @@ public:
 		return true;
 	}
 
-	// ★★★ ゲーム結果デシリアライズ ★★★
+	//ゲーム結果デシリアライズ 
 	static bool DeserializeGameResult(const uint8_t* data, size_t len, NetGameResult& out)
 	{
 		if (len < 1) return false;

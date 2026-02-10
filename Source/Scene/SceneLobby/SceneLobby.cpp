@@ -49,7 +49,7 @@ void SceneLobby::Start()
 	m_client = ClientManager::GetInstance();
 	m_server = ServerManager::GetInstance();
 	
-	// ★★★ 最重要: ゲーム終了後のロビー復帰時、ゲーム開始フラグをリセット ★★★
+	//ゲーム終了後のロビー復帰時、ゲーム開始フラグをリセット
 	if (m_client)
 	{
 		m_client->ResetForLobbyReturn();
@@ -64,26 +64,25 @@ void SceneLobby::Start()
 	m_lastConnectionCheck = timeGetTime();
 	m_bWasConnected = false;
 
-	// ★★★ ホスト判定を正しく行う ★★★
 	bool isHost = m_client->IsHost();
 
 	if (isHost && m_server)
 	{
-		// ホストの場合：ServerManagerから取得
+		//ホストの場合：ServerManagerから取得
 		m_serverName = m_server->GetServerName();
 		NET_LOG_F("[SceneLobby] ホストとしてロビー開始: サーバー名='%s'", m_serverName.c_str());
 
-		// ★★★ サーバー状態を待機中に設定 ★★★
+		//サーバー状態を待機中に設定
 		m_server->SetGameState(0);
 		NET_LOG("[SceneLobby] サーバー状態を待機中(0)に設定");
 
-		// ★★★ ロビー更新をブロードキャスト ★★★
+		//ロビー更新をブロードキャスト
 		m_server->BroadcastLobbyUpdate();
 		NET_LOG("[SceneLobby] 初回ロビー更新をブロードキャスト");
 	}
 	else if (m_client)
 	{
-		// クライアントの場合：ClientManagerから取得
+		//クライアントの場合：ClientManagerから取得
 		m_serverName = m_client->GetServerName();
 
 		if (m_serverName.empty() || m_serverName == "Unknown Server")
@@ -112,7 +111,6 @@ void SceneLobby::Update()
 	if (m_server) m_server->Update();
 	if (m_client) m_client->Update();
 
-	// ★★★ デバッグ: ゲーム開始フラグの状態を定期的にログ出力 ★★★
 	static DWORD lastDebugLog = 0;
 	if (now - lastDebugLog > 2000 && m_client)
 	{
@@ -122,7 +120,7 @@ void SceneLobby::Update()
 		lastDebugLog = now;
 	}
 
-	// ★★★ 接続チェック ★★★
+	//接続チェック
 	if (now - m_lastConnectionCheck > f_connectionCheckInterval)
 	{
 		m_lastConnectionCheck = now;
@@ -147,13 +145,13 @@ void SceneLobby::Update()
 		}
 	}
 
-	// ★★★ マウス入力処理 ★★★
+	//マウス入力処理
 	POINT mp = m_pEngine->GetMousePosition();
 	bool mouseDown = (m_pEngine->GetMouseButtonSync(DIK_LBUTTON) != 0);
 	bool clicked = mouseDown && !m_pressedMouseLast;
 	m_pressedMouseLast = mouseDown;
 
-	// 戻るボタン
+	//戻るボタン
 	if (clicked && PointInRect(f_backButtonPosition, f_buttonSize))
 	{
 		NET_LOG("[SceneLobby] 戻るボタン押下");
@@ -163,7 +161,7 @@ void SceneLobby::Update()
 		return;
 	}
 
-	// ゲーム開始ボタン（ホストのみ）
+	//ゲーム開始ボタン（ホストのみ）
 	if (m_server)
 	{
 		if (clicked && PointInRect(f_startButtonPosition, f_buttonSize))
@@ -173,7 +171,7 @@ void SceneLobby::Update()
 		}
 	}
 
-	// ★★★ ゲーム開始チェック ★★★
+	//ゲーム開始チェック
 	if (m_client && m_client->IsGameStarted())
 	{
 		NET_LOG("[SceneLobby] ゲーム開始通知受信 - ゲームシーンへ遷移");
@@ -188,24 +186,24 @@ void SceneLobby::Draw()
 	RECT src, dst;
 	SetRect(&src, 0, 0, f_buttonSize.x, f_buttonSize.y);
 
-	// 戻るボタン
+	//戻るボタン
 	SetRect(&dst, f_backButtonPosition.x, f_backButtonPosition.y,
 		f_backButtonPosition.x + f_buttonSize.x, f_backButtonPosition.y + f_buttonSize.y);
 	m_pEngine->Blt(&dst, TEXTURE_BUTTON, &src);
 	m_pEngine->DrawPrintf(f_backButtonPosition.x, f_backButtonPosition.y + f_textOffsetY,
 		FONT_GOTHIC60, Color::BLACK, f_backButtonText);
 
-	// サーバー名の表示
+	//サーバー名の表示
 	std::string displayServerName = "接続中...";
 
 	if (m_client && m_client->IsHost() && m_server)
 	{
-		// ホストの場合：ServerManagerから取得
+		//ホストの場合：ServerManagerから取得
 		displayServerName = m_server->GetServerName();
 	}
 	else if (m_client)
 	{
-		// クライアントの場合：ClientManagerから取得
+		//クライアントの場合：ClientManagerから取得
 		std::string clientServerName = m_client->GetServerName();
 		if (!clientServerName.empty() &&
 			clientServerName != "Unknown Server" &&
@@ -220,7 +218,7 @@ void SceneLobby::Draw()
 	m_pEngine->DrawPrintfCenter(f_serverNamePosition.x, f_serverNamePosition.y,
 		FONT_GOTHIC60, Color::WHITE, displayServerName.c_str());
 
-	// メンバー一覧
+	//メンバー一覧
 	std::vector<std::string> members;
 	if (m_client)
 		members = m_client->GetLobbyPlayerNames();
@@ -246,7 +244,7 @@ void SceneLobby::Draw()
 	}
 
 	if (m_client->IsHost()) {
-		// ゲーム開始ボタン
+		//ゲーム開始ボタン
 		SetRect(&dst, f_startButtonPosition.x, f_startButtonPosition.y,
 			f_startButtonPosition.x + f_buttonSize.x, f_startButtonPosition.y + f_buttonSize.y);
 		m_pEngine->Blt(&dst, TEXTURE_BUTTON, &src);

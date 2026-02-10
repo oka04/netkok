@@ -87,7 +87,7 @@ void ServerManager::Reset()
 	m_hostName = "";
 	m_lastAdvertiseTime = 0;
 	m_hostStateSet = false;
-	m_gameState = 0;  // ★ 待機中に戻す
+	m_gameState = 0;  
 
 	NET_LOG("[ServerManager] Reset完了");
 }
@@ -132,7 +132,7 @@ void ServerManager::SetGameState(uint8_t state)
 {
 	m_gameState = state;
 
-	// Discoveryの状態も更新
+	//Discoveryの状態も更新
 	if (m_advertiser)
 	{
 		m_advertiser->SetAdvertiseState(state);
@@ -156,11 +156,11 @@ void ServerManager::BroadcastGameResult(int winnerTeam)
 
 	NET_LOG_F("[ServerManager] ゲーム結果をブロードキャスト: winner=%d", winnerTeam);
 
-	// ★★★ ゲーム状態を「待機中」に戻す ★★★
+	//ゲーム状態を「待機中」に戻す
 	SetGameState(0);
 	NET_LOG("[ServerManager] サーバー状態を待機中(0)に変更");
 
-	// ★★★ 修正: 役割情報を完全にクリア（次回ゲーム時に再割り当て）★★★
+	//役割情報を完全にクリア（次回ゲーム時に再割り当て）
 	m_hostRole = ROLE_NONE;
 	for (auto& kv : m_clients)
 	{
@@ -171,7 +171,7 @@ void ServerManager::BroadcastGameResult(int winnerTeam)
 	}
 	NET_LOG("[ServerManager] 全プレイヤーの役割をクリア");
 
-	// ★★★ Discovery の状態も更新 ★★★
+	//Discovery の状態も更新
 	if (m_advertiser)
 	{
 		m_advertiser->SetAdvertiseState(0);
@@ -400,7 +400,7 @@ void ServerManager::ProcessJoin(ENetPeer* peer, const uint8_t* data, size_t len)
 				NET_LOG_F("[ServerManager] クライアントのJOIN受信: %s (ID=%d)", ci->name.c_str(), ci->id);
 			}
 
-			// クライアントIDを送信
+			//クライアントIDを送信
 			SendJoinAck(peer, ci->id);
 
 			//既存の全プレイヤー情報を新規参加者に送信
@@ -510,7 +510,6 @@ void ServerManager::ProcessPlayerState(ENetPeer* peer, const uint8_t* data, size
 		it->second->lastState.clientId = it->second->id;
 		it->second->stateReceived = true;
 
-		// ★★★ デバッグ: meltTargetIdの受信確認 ★★★
 		static std::map<uint32_t, uint32_t> lastTargets;
 		if (state.meltTargetId != lastTargets[it->second->id])
 		{
@@ -528,7 +527,6 @@ void ServerManager::SetHostState(const NetPlayerState& state)
 	m_hostState.clientId = 1;
 	m_hostStateSet = true;
 
-	// ★★★ デバッグ: ホストのmeltTargetId確認 ★★★
 	static uint32_t lastHostTarget = 0;
 	if (state.meltTargetId != lastHostTarget)
 	{
@@ -542,17 +540,17 @@ void ServerManager::ProcessMeltingOnServer()
 {
 	std::lock_guard<std::mutex> lk(m_stateMutex);
 
-	// ★★★ 解凍対象とヘルパーのマップを作成 ★★★
+	//解凍対象とヘルパーのマップを作成
 	std::map<uint32_t, std::vector<uint32_t>> targetToHelpers;
 
 	// ホストの情報を収集
 	if (m_hostStateSet && m_hostState.meltTargetId != 0)
 	{
-		targetToHelpers[m_hostState.meltTargetId].push_back(1); // ホストのID=1
+		targetToHelpers[m_hostState.meltTargetId].push_back(1); //ホストのID=1
 		NET_LOG_F("[ServerManager::ProcessMelting] ホスト[1] -> ターゲット[%u]", m_hostState.meltTargetId);
 	}
 
-	// 各クライアントの情報を収集
+	//各クライアントの情報を収集
 	for (auto& kv : m_clients)
 	{
 		if (kv.second->stateReceived && kv.second->lastState.meltTargetId != 0)
@@ -564,12 +562,12 @@ void ServerManager::ProcessMeltingOnServer()
 		}
 	}
 
-	// ★★★ 各ターゲットの解凍処理 ★★★
+	//各ターゲットの解凍処理
 	bool stateChanged = false;
-	const float deltaTime = 0.016f; // 約60FPS想定
+	const float deltaTime = 0.016f;
 
-									// ↓ ここを遅く変更（従来 0.2f → 新しい値 0.08f）
-	const float meltSpeed = 0.08f;   // ヘルパー1人あたりの解凍速度（調整可）
+									
+	const float meltSpeed = 0.08f;  
 
 	for (auto& pair : targetToHelpers)
 	{
@@ -578,7 +576,7 @@ void ServerManager::ProcessMeltingOnServer()
 
 		NetPlayerState* targetState = nullptr;
 
-		// ターゲットの状態を取得
+		//ターゲットの状態を取得
 		if (targetId == 1 && m_hostStateSet)
 		{
 			targetState = &m_hostState;
@@ -595,14 +593,14 @@ void ServerManager::ProcessMeltingOnServer()
 			}
 		}
 
-		// ターゲットが存在しない、または凍結していない場合はスキップ
+		//ターゲットが存在しない、または凍結していない場合はスキップ
 		if (!targetState || targetState->frozen == 0)
 		{
 			NET_LOG_F("[ServerManager::ProcessMelting] ターゲット[%u] は凍結していない", targetId);
 			continue;
 		}
 
-		// ★★★ 解凍速度を計算（ヘルパーの数 × meltSpeed） ★★★
+		//解凍速度を計算（ヘルパーの数 × meltSpeed）
 		float totalSpeed = (float)helpers.size() * meltSpeed;
 		float oldAmount = targetState->frozenAmount;
 		float newAmount = oldAmount + totalSpeed * deltaTime;
@@ -614,14 +612,14 @@ void ServerManager::ProcessMeltingOnServer()
 		{
 			if (newAmount >= 1.0f)
 			{
-				// 完全解凍
+				//完全解凍
 				targetState->frozenAmount = 1.0f;
 				targetState->frozen = 0;
 				NET_LOG_F("[ServerManager::ProcessMelting] ターゲット[%u] 完全解凍！", targetId);
 			}
 			else
 			{
-				// 解凍進行
+				//解凍進行
 				targetState->frozenAmount = newAmount;
 			}
 
@@ -660,7 +658,7 @@ void ServerManager::BroadcastWorldState()
 {
 	if (!m_pServerHost) return;
 
-	// ★★★ 修正: 解凍処理をサーバー側で実行 ★★★
+	//解凍処理をサーバー側で実行
 	ProcessMeltingOnServer();
 
 	NetWorldState world;
@@ -738,20 +736,20 @@ void ServerManager::AssignRoles()
 {
 	NET_LOG("[ServerManager] 役割割り当て開始");
 
-	// ★★★ 修正: 全プレイヤーIDを正しく収集 ★★★
+	//全プレイヤーIDを正しく収集 
 	std::vector<uint32_t> allClientIds;
 
-	// ホストがいる場合（m_hostNameが空でない = ホストが存在）
+	//ホストがいる場合（m_hostNameが空でない = ホストが存在）
 	if (!m_hostName.empty())
 	{
-		allClientIds.push_back(1); // ホストのIDは常に1
+		allClientIds.push_back(1);
 		NET_LOG("[ServerManager] ホストをリストに追加: ID=1");
 	}
 
-	// 他のクライアントを追加（ホスト以外）
+	//他のクライアントを追加（ホスト以外）
 	for (auto& kv : m_clients)
 	{
-		// ホストは既に追加済みなので、名前が異なるクライアントのみ追加
+		//ホストは既に追加済みなので、名前が異なるクライアントのみ追加
 		if (kv.second->name != m_hostName)
 		{
 			allClientIds.push_back(kv.second->id);
@@ -769,14 +767,14 @@ void ServerManager::AssignRoles()
 		return;
 	}
 
-	// 鬼の数を計算（最低1人、最大でも総人数-1）
+	//鬼の数を計算（最低1人、最大でも総人数-1）
 	int chaserCount = max(1, totalPlayers / 3);
 	int runnerCount = totalPlayers - chaserCount;
 
 	NET_LOG_F("[ServerManager] 総人数=%d 鬼=%d 逃げる側=%d",
 		totalPlayers, chaserCount, runnerCount);
 
-	// ランダムにシャッフル
+	//ランダムにシャッフル
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::shuffle(allClientIds.begin(), allClientIds.end(), gen);
@@ -787,13 +785,13 @@ void ServerManager::AssignRoles()
 		NET_LOG_F("  位置%d: ID=%u", (int)i, allClientIds[i]);
 	}
 
-	// 最初のchaserCount人を鬼に、残りを逃げる側に
+	//最初のchaserCount人を鬼に、残りを逃げる側に
 	for (size_t i = 0; i < allClientIds.size(); ++i)
 	{
 		uint32_t clientId = allClientIds[i];
 		PlayerRole role = (i < (size_t)chaserCount) ? ROLE_CHASER : ROLE_RUNNER;
 
-		// ホストの役割を設定
+		//ホストの役割を設定
 		if (clientId == 1 && !m_hostName.empty())
 		{
 			m_hostRole = role;
@@ -802,7 +800,7 @@ void ServerManager::AssignRoles()
 				(role == ROLE_CHASER) ? "鬼" : "逃げる側");
 		}
 
-		// クライアントの役割を設定（ホストも含む）
+		//クライアントの役割を設定（ホストも含む）
 		for (auto& kv : m_clients)
 		{
 			if (kv.second->id == clientId)
@@ -818,7 +816,6 @@ void ServerManager::AssignRoles()
 
 	NET_LOG("[ServerManager] 役割割り当て完了");
 
-	// ★★★ デバッグ: 割り当て結果を確認 ★★★
 	int actualChasers = 0;
 	int actualRunners = 0;
 
@@ -830,7 +827,7 @@ void ServerManager::AssignRoles()
 
 	for (auto& kv : m_clients)
 	{
-		if (kv.second->name == m_hostName) continue; // ホストは既にカウント済み
+		if (kv.second->name == m_hostName) continue; //ホストは既にカウント済み
 		if (kv.second->role == ROLE_CHASER) actualChasers++;
 		else actualRunners++;
 	}
@@ -838,21 +835,21 @@ void ServerManager::AssignRoles()
 	NET_LOG_F("[ServerManager] 割り当て結果確認: 鬼=%d 逃げる側=%d",
 		actualChasers, actualRunners);
 
-	// ★★★ 鬼が0人の場合は警告 ★★★
+	//鬼が0人の場合は警告
 	if (actualChasers == 0)
 	{
 		NET_LOG("[ServerManager] 警告: 鬼が0人です！");
 	}
 }
 
-// ★ 役割をクライアントにブロードキャスト
+//役割をクライアントにブロードキャスト
 void ServerManager::BroadcastRoleAssignments()
 {
 	if (!m_pServerHost) return;
 
 	NET_LOG("[ServerManager] 役割割り当てをブロードキャスト");
 
-	// ホストの役割を送信
+	//ホストの役割を送信
 	if (!m_hostName.empty())
 	{
 		NetRoleAssignment assignment;
@@ -868,7 +865,7 @@ void ServerManager::BroadcastRoleAssignments()
 			(m_hostRole == ROLE_CHASER) ? "鬼" : "逃げる側");
 	}
 
-	// 各クライアントの役割を送信
+	//各クライアントの役割を送信
 	for (auto& kv : m_clients)
 	{
 		NetRoleAssignment assignment;
@@ -902,10 +899,10 @@ void ServerManager::StartGame()
 		return;
 	}
 
-	// ★★★ 役割割り当て ★★★
+	//役割割り当て
 	AssignRoles();
 
-	// ★★★ 役割情報を送信（3回） ★★★
+	//役割情報を送信（3回）
 	for (int retry = 0; retry < 3; retry++)
 	{
 		BroadcastRoleAssignments();
@@ -919,19 +916,19 @@ void ServerManager::StartGame()
 
 	Sleep(100);
 
-	// ★★★ ゲーム状態を「ゲーム中」に設定 ★★★
+	//ゲーム状態を「ゲーム中」に設定
 	SetGameState(1);
 
-	// ★★★ 追加: 全プレイヤーの生成通知をブロードキャスト ★★★
+	//全プレイヤーの生成通知をブロードキャスト
 	NET_LOG("[ServerManager] 全プレイヤーの生成通知をブロードキャスト開始");
 
-	// ホストの生成通知
+	//ホストの生成通知
 	if (!m_hostName.empty())
 	{
 		NetPlayerSpawn hostSpawn;
 		hostSpawn.clientId = 1;
 
-		// ホストの現在位置を取得
+		//ホストの現在位置を取得
 		if (m_hostStateSet)
 		{
 			hostSpawn.startX = m_hostState.posX;
@@ -953,7 +950,7 @@ void ServerManager::StartGame()
 			hostSpawn.clientId, hostSpawn.name);
 	}
 
-	// 各クライアントの生成通知
+	//各クライアントの生成通知
 	for (auto& kv : m_clients)
 	{
 		if (kv.second && !kv.second->name.empty())
@@ -961,7 +958,7 @@ void ServerManager::StartGame()
 			NetPlayerSpawn spawn;
 			spawn.clientId = kv.second->id;
 
-			// 既存クライアントの現在位置を取得
+			//既存クライアントの現在位置を取得
 			if (kv.second->stateReceived)
 			{
 				spawn.startX = kv.second->lastState.posX;
@@ -989,7 +986,7 @@ void ServerManager::StartGame()
 
 	Sleep(100);
 
-	// ゲーム開始通知
+	//ゲーム開始通知
 	std::vector<uint8_t> payload;
 	payload.push_back((uint8_t)MSG_START_GAME);
 	ENetPacket* packet = enet_packet_create(payload.data(), payload.size(),

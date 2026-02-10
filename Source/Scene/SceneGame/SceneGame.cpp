@@ -130,7 +130,6 @@ void SceneGame::Initialize()
 	m_bInitialSyncDone = false;
 	m_bFirstPerson = true;
 
-	// ★★★ 修正: BGMをリスナーID (ID_LISTENER = 1) で再生 ★★★
 	AkPlayingID bgmId = SoundManager::Play(AK::EVENTS::PLAY_BGM_GAME, SoundManager::ID_LISTENER);
 
 	NET_LOG_F("[SceneGame] BGM再生: PlayingID=%u", bgmId);
@@ -159,20 +158,19 @@ void SceneGame::Update()
 	case IN_GAME:
 		m_gameData.m_gameTime += m_deltaTime;
 
-		// ★★★ 修正: 処理順序を整理 ★★★
-		// 1. ネットワーク受信（他プレイヤーの状態を取得）
+		//ネットワーク受信（他プレイヤーの状態を取得）
 		UpdateNetwork();
 
-		// 2. ローカルプレイヤーの更新（入力→移動→カメラ）
+		//ローカルプレイヤーの更新（入力→移動→カメラ）
 		UpdateLocalPlayer();
 
-		// 3. リモートプレイヤーの更新（補間・予測のみ、Update()は呼ばない）
+		//リモートプレイヤーの更新（補間・予測のみ）
 		UpdateRemotePlayers();
 
-		// 4. 鬼のライト更新
+		//鬼のライト更新
 		UpdateChaserLights();
 
-		// 5. ブレスの当たり判定
+		//ブレスの当たり判定
 		CheckBreathHitPlayers();
 
 		if (!m_bGameEnded)
@@ -194,18 +192,18 @@ void SceneGame::Update()
 		}
 		break;
 	case RESULT_DISPLAY:
-		// ★★★ リザルト表示中はゲーム結果の受信のみ処理 ★★★
+		//リザルト表示中はゲーム結果の受信のみ処理
 		if (m_pClient) m_pClient->Update();
 		if (m_bIsHost && m_pServer) m_pServer->Update();
 
-		// ★★★ リザルト画像のフェードイン処理 ★★★
+		//リザルト画像のフェードイン処理
 		if (m_resultImageAlpha < 255.0f)
 		{
 			m_resultImageAlpha += f_resultFadeSpeed * m_deltaTime;
 			if (m_resultImageAlpha > 255.0f) m_resultImageAlpha = 255.0f;
 		}
 
-		// ★★★ ゲーム結果の受信処理（クライアントの場合） ★★★
+		//ゲーム結果の受信処理（クライアントの場合）
 		NetGameResult result;
 		if (m_pClient && m_pClient->PopGameResult(result))
 		{
@@ -216,15 +214,12 @@ void SceneGame::Update()
 			}
 		}
 
-		// ★★★ リザルト表示時間終了チェック ★★★
+		//リザルト表示時間終了チェック
 		if (timeGetTime() - m_resultDisplayStart > f_resultDisplayDuration)
 		{
 			NET_LOG("[SceneGame] リザルト表示終了 - フェードアウト開始");
 
-			// ★★★ 修正: プレイヤー情報のクリアはフェードアウト完了後に延期 ★★★
-			// （m_winnerTeam や m_localRole はここではリセットしない）
-
-			// ★★★ フェードアウト開始 ★★★
+			//m_winnerTeam や m_localRole はここではリセットしない
 			m_fade.SetFadeOut();
 			m_gameState = FADE_OUT;
 			m_gameData.m_nextSceneNumber = Common::SCENE_LOBBY;
@@ -266,11 +261,11 @@ void SceneGame::Update()
 		break;
 
 	case FADE_OUT:
-		// ★★★ フェード中もネットワーク更新を継続 ★★★
+		//フェード中もネットワーク更新を継続
 		if (m_pClient) m_pClient->Update();
 		if (m_bIsHost && m_pServer) m_pServer->Update();
 
-		// ★★★ リザルト画像のアルファ値を維持（フェード中も表示し続ける）★★★
+		//リザルト画像のアルファ値を維持（フェード中も表示し続ける)
 		if (m_resultImageAlpha < 255.0f)
 		{
 			m_resultImageAlpha += f_resultFadeSpeed * m_deltaTime;
@@ -281,7 +276,7 @@ void SceneGame::Update()
 		{
 			NET_LOG("[SceneGame] フェードアウト完了 - クリーンアップ開始");
 
-			// ★★★ 修正: フェードアウト完了後にプレイヤー情報をクリア ★★★
+			//フェードアウト完了後にプレイヤー情報をクリア
 			for (auto& kv : m_players)
 			{
 				if (kv.second)
@@ -302,7 +297,6 @@ void SceneGame::Update()
 			m_pLocalPlayer = nullptr;
 			NET_LOG("[SceneGame] 全プレイヤー情報をクリア");
 
-			// ★★★ ゲーム終了フラグのリセット ★★★
 			m_bGameEnded = false;
 			m_gameTime = 0.0f;
 			m_winnerTeam = -1;
@@ -311,7 +305,7 @@ void SceneGame::Update()
 			m_bInitialSyncDone = false;
 			NET_LOG("[SceneGame] ゲーム関連フラグをリセット");
 
-			// ★★★ サーバーの状態を「待機中」に戻す（ホストのみ）★★★
+			//サーバーの状態を「待機中」に戻す（ホストのみ）
 			if (m_bIsHost && m_pServer)
 			{
 				m_pServer->SetGameState(0);
@@ -330,7 +324,7 @@ void SceneGame::UpdateGameTimer()
 
 	static DWORD lastLog = 0;
 	DWORD now = timeGetTime();
-	if (now - lastLog > 10000)  // 10秒ごとにログ
+	if (now - lastLog > 10000) 
 	{
 		float remaining = f_gameDuration - m_gameTime;
 		NET_LOG_F("[SceneGame] 残り時間: %.1f秒", remaining);
@@ -342,23 +336,23 @@ void SceneGame::CheckGameEnd()
 {
 	if (m_bGameEnded) return;
 
-	// ★★★ 条件1: 制限時間終了 → 逃げる側の勝利 ★★★
+	//制限時間終了 → 逃げる側の勝利 
 	if (m_gameTime >= f_gameDuration)
 	{
 		NET_LOG("[SceneGame] 制限時間終了 - 逃げる側の勝利");
 		m_bGameEnded = true;
-		m_winnerTeam = 0;  // 0 = 逃げる側
+		m_winnerTeam = RUNNNER; 
 		BroadcastGameResult(m_winnerTeam);
 		ProcessGameResult(m_winnerTeam);
 		return;
 	}
 
-	// ★★★ 条件2: 全Runner凍結 → 鬼側の勝利 ★★★
+	//全Runner凍結 → 鬼側の勝利
 	if (AreAllRunnersFrozen())
 	{
 		NET_LOG("[SceneGame] 全員凍結 - 鬼側の勝利");
 		m_bGameEnded = true;
-		m_winnerTeam = 1;  // 1 = 鬼側
+		m_winnerTeam = CHASER;  
 		BroadcastGameResult(m_winnerTeam);
 		ProcessGameResult(m_winnerTeam);
 		return;
@@ -385,17 +379,17 @@ void SceneGame::SyncToServer()
 			localId, state.clientId);
 	}
 
-	// ホストの場合はサーバーに直接状態を設定し、即時ワールドブロードキャストを行う
+	//ホストの場合はサーバーに直接状態を設定し、即時ワールドブロードキャストを行う
 	if (m_bIsHost && m_pServer)
 	{
 		m_pServer->SetHostState(state);
 
-		// ホストで状態が変わった場合、すぐにワールド状態を配信してクライアント側の遅延を減らす
+		//ホストで状態が変わった場合、すぐにワールド状態を配信してクライアント側の遅延を減らす
 		m_pServer->BroadcastWorldState();
 	}
 	else
 	{
-		// クライアントの場合はサーバーへ送信（従来通り）
+		//クライアントの場合はサーバーへ送信
 		m_pClient->SendPlayerState(state);
 	}
 }
@@ -404,7 +398,7 @@ bool SceneGame::AreAllRunnersFrozen()
 	int totalRunners = 0;
 	int frozenRunners = 0;
 
-	// ローカルプレイヤー
+	//ローカルプレイヤー
 	if (m_pLocalPlayer && m_localRole == ROLE_RUNNER)
 	{
 		totalRunners++;
@@ -415,7 +409,7 @@ bool SceneGame::AreAllRunnersFrozen()
 		}
 	}
 
-	// リモートプレイヤー
+	//リモートプレイヤー
 	for (auto& kv : m_players)
 	{
 		if (m_playerRoles[kv.first] == ROLE_RUNNER && kv.second)
@@ -429,7 +423,7 @@ bool SceneGame::AreAllRunnersFrozen()
 		}
 	}
 
-	// Runnerが0人の場合はfalse（ゲーム成立しない）
+	//Runnerが0人の場合はfalse（ゲーム成立しない）
 	if (totalRunners == 0) return false;
 
 	bool allFrozen = (frozenRunners == totalRunners);
@@ -457,7 +451,7 @@ void SceneGame::ProcessGameResult(int winnerTeam)
 	m_winnerTeam = winnerTeam;
 	m_gameState = RESULT_DISPLAY;
 	m_resultDisplayStart = timeGetTime();
-	m_resultImageAlpha = 0.0f;  // ★ フェードイン用にアルファ値を0から開始
+	m_resultImageAlpha = 0.0f;
 
 	NET_LOG_F("[SceneGame] リザルト画面表示開始: 勝者=%s",
 		(winnerTeam == 0) ? "逃げる側" : "鬼側");
@@ -467,16 +461,16 @@ void SceneGame::UpdateNetwork()
 	if (m_pClient) m_pClient->Update();
 	if (m_bIsHost && m_pServer) m_pServer->Update();
 
-	// ★★★ ゲーム結果の受信処理 ★★★
+	//ゲーム結果の受信処理
 	NetGameResult result;
 	if (m_pClient && m_pClient->PopGameResult(result))
 	{
 		NET_LOG_F("[SceneGame] ゲーム結果受信: winner=%d", (int)result.winnerTeam);
 		ProcessGameResult(result.winnerTeam);
-		return;  // すぐにリザルト表示に移行
+		return; 
 	}
 
-	// 接続チェック（クライアントのみ）
+	//接続チェック（クライアントのみ）
 	if (!m_bIsHost && m_pClient)
 	{
 		static bool wasConnected = true;
@@ -494,7 +488,7 @@ void SceneGame::UpdateNetwork()
 
 	DWORD now = timeGetTime();
 
-	// 役割割り当て受信
+	//役割割り当て受信
 	NetRoleAssignment roleAssign;
 	bool roleReceived = false;
 
@@ -541,7 +535,7 @@ void SceneGame::UpdateNetwork()
 		UpdateChaserLights();
 	}
 
-	// 初期同期処理
+	//初期同期処理
 	if (!m_bInitialSyncDone)
 	{
 		if (m_bIsHost)
@@ -558,21 +552,21 @@ void SceneGame::UpdateNetwork()
 
 	if (m_bInitialSyncDone)
 	{
-		// プレイヤー生成通知
+		//プレイヤー生成通知
 		NetPlayerSpawn spawn;
 		while (m_pClient->PopPlayerSpawn(spawn))
 		{
 			NET_LOG_F("[SceneGame::UpdateNetwork] プレイヤー生成通知受信: ID=%u, Name=%s",
 				spawn.clientId, spawn.name);
 
-			// ★★★ 修正: ローカルプレイヤーも含めて処理 ★★★
+			//ローカルプレイヤーも含めて処理
 			if (m_players.find(spawn.clientId) != m_players.end())
 			{
 				NET_LOG_F("[SceneGame] プレイヤー ID=%u は既に存在 - スキップ", spawn.clientId);
 				continue;
 			}
 
-			// ★★★ 修正: ローカルプレイヤーの場合も既に生成済みならスキップ ★★★
+			//ローカルプレイヤーの場合も既に生成済みならスキップ
 			if (spawn.clientId == m_localClientId)
 			{
 				if (m_pLocalPlayer)
@@ -581,10 +575,10 @@ void SceneGame::UpdateNetwork()
 						spawn.clientId);
 					continue;
 				}
-				// まだ生成していない場合は処理を続行
+				//まだ生成していない場合は処理を続行
 			}
 
-			// 役割を取得
+			//役割を取得
 			PlayerRole role = ROLE_RUNNER;
 			auto roleIt = m_playerRoles.find(spawn.clientId);
 			if (roleIt != m_playerRoles.end())
@@ -597,16 +591,16 @@ void SceneGame::UpdateNetwork()
 					spawn.clientId);
 			}
 
-			// プレイヤー生成
+			//プレイヤー生成
 			if (spawn.clientId == m_localClientId)
 			{
-				// ローカルプレイヤー（通常は役割受信時に生成済み）
+				//ローカルプレイヤー（通常は役割受信時に生成済み）
 				NET_LOG_F("[SceneGame] ローカルプレイヤー遅延生成: ID=%u Role=%s",
 					spawn.clientId, (role == ROLE_CHASER) ? "鬼" : "逃げる側");
 			}
 			else
 			{
-				// リモートプレイヤー
+				//リモートプレイヤー
 				NET_LOG_F("[SceneGame] リモートプレイヤー生成: ID=%u, Name=%s Role=%s",
 					spawn.clientId, spawn.name,
 					(role == ROLE_CHASER) ? "鬼" : "逃げる側");
@@ -623,7 +617,7 @@ void SceneGame::UpdateNetwork()
 		}
 
 
-		// プレイヤー削除通知
+		//プレイヤー削除通知
 		uint32_t despawnId;
 		while (m_pClient->PopPlayerDespawn(despawnId))
 		{
@@ -643,7 +637,7 @@ void SceneGame::UpdateNetwork()
 		}
 	}
 
-	// ローカルプレイヤーの状態送信
+	//ローカルプレイヤーの状態送信
 	if (m_bInitialSyncDone && m_pLocalPlayer && m_pLocalPlayer->GetClientId() != 0)
 	{
 		if (now - m_lastNetworkSend >= f_networkSendInterval)
@@ -662,14 +656,14 @@ void SceneGame::UpdateNetwork()
 		}
 	}
 
-	// ホストのワールド状態ブロードキャスト
+	//ホストのワールド状態ブロードキャスト
 	if (m_bIsHost && m_pServer && now - m_lastWorldBroadcast >= f_worldBroadcastInterval)
 	{
 		m_pServer->BroadcastWorldState();
 		m_lastWorldBroadcast = now;
 	}
 
-	// ワールド状態受信
+	//ワールド状態受信
 	if (m_bInitialSyncDone)
 	{
 		ReceiveWorldState();
@@ -681,7 +675,7 @@ void SceneGame::UpdateLocalPlayer()
 {
 	if (!m_pLocalPlayer) return;
 
-	// ★★★ 修正: m_deltaTimeを確実に渡す ★★★
+	//m_deltaTimeを確実に渡す
 	m_pLocalPlayer->Update(m_pEngine, m_map, m_camera, m_light, m_deltaTime);
 
 	if (m_localRole == ROLE_RUNNER)
@@ -773,7 +767,7 @@ void SceneGame::UpdateRemotePlayers()
 				(remoteRole == ROLE_CHASER) ? "鬼" : "逃げる側");
 		}
 
-		// ===== 足音処理（役割が異なる場合のみ） =====
+		//足音処理
 		if (isMoving && shouldPlayFootsteps && !isBreathing)
 		{
 			float footspeedParam = 0.6f;
@@ -789,7 +783,7 @@ void SceneGame::UpdateRemotePlayers()
 
 				if (shouldLog)
 				{
-					NET_LOG_F("[UpdateRemotePlayers] ★足音再生開始★ Player[%u] PlayingID=%u Speed=%.2f",
+					NET_LOG_F("[UpdateRemotePlayers] 足音再生開始 Player[%u] PlayingID=%u Speed=%.2f",
 						remoteId, footSoundMap[remoteId], footspeedParam);
 				}
 			}
@@ -803,12 +797,12 @@ void SceneGame::UpdateRemotePlayers()
 
 				if (shouldLog)
 				{
-					NET_LOG_F("[UpdateRemotePlayers] ★足音停止★ Player[%u]", remoteId);
+					NET_LOG_F("[UpdateRemotePlayers] 足音停止 Player[%u]", remoteId);
 				}
 			}
 		}
 
-		// ===== ブレス（鬼）処理 =====
+		//ブレス（鬼）
 		if (remoteRole == ROLE_CHASER)
 		{
 			Chaser* chaser = dynamic_cast<Chaser*>(pRemote);
@@ -823,7 +817,7 @@ void SceneGame::UpdateRemotePlayers()
 
 						if (shouldLog)
 						{
-							NET_LOG_F("[UpdateRemotePlayers] ★ブレス音再生開始★ Chaser[%u] PlayingID=%u",
+							NET_LOG_F("[UpdateRemotePlayers] ブレス音再生開始 Chaser[%u] PlayingID=%u",
 								remoteId, breathSoundMap[remoteId]);
 						}
 					}
@@ -837,14 +831,14 @@ void SceneGame::UpdateRemotePlayers()
 
 						if (shouldLog)
 						{
-							NET_LOG_F("[UpdateRemotePlayers] ★ブレス音停止★ Chaser[%u]", remoteId);
+							NET_LOG_F("[UpdateRemotePlayers] ブレス音停止 Chaser[%u]", remoteId);
 						}
 					}
 				}
 			}
 		}
 
-		// ===== Runner（解凍/凍結）処理 ★★★ 役割に関係なく全員が聞く ★★★ =====
+		//解凍/凍結
 		if (remoteRole == ROLE_RUNNER)
 		{
 			Runner* runner = dynamic_cast<Runner*>(pRemote);
@@ -855,16 +849,16 @@ void SceneGame::UpdateRemotePlayers()
 
 				bool wasFrozen = wasFrozenMap[remoteId];
 
-				// ★★★ 凍結音は全員が聞く ★★★
+				//凍結音は全員が聞く
 				if (isFrozen && !wasFrozen)
 				{
 					SoundManager::SetPosition(remotePos, remoteDir, CharacterBase::UP_DIRECTION, remoteId);
 					SoundManager::Play(AK::EVENTS::PLAY_SE_FREEZE, remoteId);
 
-					if (shouldLog) NET_LOG_F("[UpdateRemotePlayers] ★凍結音再生★ Runner[%u]", remoteId);
+					if (shouldLog) NET_LOG_F("[UpdateRemotePlayers] 凍結音再生 Runner[%u]", remoteId);
 				}
 
-				// ★★★ ターゲット変更時は音を停止 ★★★
+				//ターゲット変更時は音を停止
 				if (meltTarget != lastMeltTarget[remoteId])
 				{
 					if (remoteMeltSounds[remoteId] != AK_INVALID_PLAYING_ID)
@@ -876,7 +870,7 @@ void SceneGame::UpdateRemotePlayers()
 					lastMeltTarget[remoteId] = meltTarget;
 				}
 
-				// ★★★ 修正: 解凍音は全員が聞く（役割判定を完全に削除）★★★
+				//解凍音は全員が聞く（役割判定を完全に削除)
 				if (meltTarget != 0 && isFrozen)
 				{
 					if (remoteMeltSounds[remoteId] == AK_INVALID_PLAYING_ID)
@@ -884,7 +878,6 @@ void SceneGame::UpdateRemotePlayers()
 						SoundManager::SetPosition(remotePos, remoteDir, CharacterBase::UP_DIRECTION, remoteId);
 						remoteMeltSounds[remoteId] = SoundManager::Play(AK::EVENTS::PLAY_SE_THAWING, remoteId);
 
-						// ★★★ ログを常に出力して確認 ★★★
 						NET_LOG_F("[UpdateRemotePlayers] ★★★解凍音再生開始★★★ Runner[%u] PlayingID=%u Target=%u LocalRole=%s",
 							remoteId, remoteMeltSounds[remoteId], meltTarget,
 							(localRole == ROLE_CHASER) ? "鬼" : "逃げる側");
@@ -909,7 +902,7 @@ void SceneGame::UpdateRemotePlayers()
 			}
 		}
 
-		// ===== 遮蔽・遮音の計算 =====
+		//遮蔽・遮音の計算
 		if (m_pLocalPlayer)
 		{
 			D3DXVECTOR3 localPos = m_pLocalPlayer->GetPosition();
@@ -1041,7 +1034,7 @@ void SceneGame::CheckBreathHitPlayers()
 				continue;
 
 			localRunner->SetFrozen(true);
-			NET_LOG_F("[SceneGame] ★★★ローカルプレイヤー[%u]が鬼[%u]のブレスに当たった！★★★",
+			NET_LOG_F("[SceneGame] ローカルプレイヤー[%u]が鬼[%u]のブレスに当たった！",
 				m_localClientId, kv.first);
 
 			SyncToServer();
@@ -1055,7 +1048,7 @@ void SceneGame::ProcessPlayerMelting()
 
 	std::map<uint32_t, std::vector<uint32_t>> targetToHelpers;
 
-	// ホスト自身（ローカルプレイヤー）も含めて収集
+	//ホスト自身（ローカルプレイヤー）も含めて収集
 	auto collectRunner = [&](uint32_t id, CharacterBase* base)
 	{
 		if (!base) return;
@@ -1071,13 +1064,13 @@ void SceneGame::ProcessPlayerMelting()
 		}
 	};
 
-	// ローカル（ホスト自身）
+	//ローカル（ホスト自身）
 	if (m_pLocalPlayer)
 	{
 		collectRunner(m_localClientId, m_pLocalPlayer);
 	}
 
-	// リモート
+	//リモート
 	for (auto& kv : m_players)
 	{
 		collectRunner(kv.first, kv.second);
@@ -1092,7 +1085,7 @@ void SceneGame::ProcessPlayerMelting()
 
 		Runner* target = nullptr;
 
-		// ターゲットがローカル（ホスト自身）の場合
+		//ターゲットがローカル（ホスト自身）の場合
 		if (targetId == m_localClientId)
 		{
 			target = dynamic_cast<Runner*>(m_pLocalPlayer);
@@ -1148,15 +1141,15 @@ void SceneGame::ProcessPlayerMelting()
 				target->SetFrozenAmount(newAmount);
 			}
 
-			// ここでサーバーに必ず最新状態を反映する（これが欠けるとクライアントは古い凍結状態を受け取る）
+			//ここでサーバーに必ず最新状態を反映する（これが欠けるとクライアントは古い凍結状態を受け取る）
 			if (m_pServer)
 			{
 				NetPlayerState state = target->GetNetState();
-				// state.clientId は GetNetState 内で正しくセットされている想定だが、安全のため clientId を上書き
+				//state.clientId は GetNetState 内で正しくセットされている想定だが、安全のため clientId を上書き
 				state.clientId = targetId;
 				if (targetId == m_localClientId)
 				{
-					// ホスト自身の状態は SetHostState で更新
+					//ホスト自身の状態は SetHostState で更新
 					m_pServer->SetHostState(state);
 				}
 				else
@@ -1176,7 +1169,6 @@ void SceneGame::ProcessPlayerMelting()
 		m_pServer->BroadcastWorldState();
 	}
 }
-// SceneGame::ReceiveWorldState - 差し替え用：全文
 void SceneGame::ReceiveWorldState()
 {
 	if (!m_pClient) return;
@@ -1190,12 +1182,12 @@ void SceneGame::ReceiveWorldState()
 	{
 		const NetPlayerState& ps = world.players[i];
 
-		// ===== ローカルプレイヤー（自分自身）処理 =====
+		//ローカルプレイヤー
 		if (ps.clientId == m_localClientId)
 		{
 			if (!m_pLocalPlayer) continue;
 
-			// Runner の凍結状態だけはサーバーの情報で反映させる（ホストでも）
+			//Runnerの凍結状態だけはサーバーの情報で反映させる（ホストでも）
 			if (m_localRole == ROLE_RUNNER)
 			{
 				Runner* localRunner = dynamic_cast<Runner*>(m_pLocalPlayer);
@@ -1207,18 +1199,18 @@ void SceneGame::ReceiveWorldState()
 				bool wasFrozen = localRunner->IsFrozen();
 				float oldAmount = localRunner->GetFrozenAmount();
 
-				// 新規凍結開始
+				//新規凍結開始
 				if (!wasFrozen && newFrozen)
 				{
 					localRunner->SetFrozen(true);
 					localRunner->SetFrozenAmount(netAmount);
 				}
-				// 解凍進行（増加分のみ反映）
+				//解凍進行（増加分のみ反映）
 				else if (wasFrozen && newFrozen && netAmount > oldAmount + 0.001f)
 				{
 					localRunner->SetFrozenAmount(netAmount);
 				}
-				// 完全解凍
+				//完全解凍
 				else if (wasFrozen && !newFrozen)
 				{
 					localRunner->SetFrozen(false);
@@ -1226,26 +1218,25 @@ void SceneGame::ReceiveWorldState()
 				}
 			}
 
-			// ★ ホストは自分の位置／向き等のネットワーク適用を行わない（ローカルで処理済み）
-			//    また、クライアント側でも自分には UpdateFromNetwork を通常適用しないこと
+			//ホストは自分の位置／向き等のネットワーク適用を行わない（ローカルで処理済み）
+			//また、クライアント側でも自分には UpdateFromNetwork を通常適用しないこと
 			if (m_bIsHost)
 			{
 				continue;
 			}
 
-			// クライアントの場合はローカルプレイヤーに対しても UpdateFromNetwork を適用する
+			//クライアントの場合はローカルプレイヤーに対しても UpdateFromNetwork を適用する
 			m_pLocalPlayer->UpdateFromNetwork(ps, m_light, m_deltaTime);
 			continue;
 		}
 
-		// ===== リモートプレイヤー =====
+		//リモートプレイヤー
 		auto it = m_players.find(ps.clientId);
 		if (it == m_players.end() || !it->second) continue;
 
-		// 追加ガード：対象オブジェクトがローカルフラグを持っていれば適用しない（上書きを避ける）
 		if (it->second->IsLocal()) continue;
 
-		// リモートプレイヤーへネットワーク状態を適用
+		//リモートプレイヤーへネットワーク状態を適用
 		it->second->UpdateFromNetwork(ps, m_light, m_deltaTime);
 	}
 }
@@ -1543,11 +1534,8 @@ void SceneGame::UpdateChaserLights()
 		}
 	}
 
-// SceneGame.cpp - SpawnPlayerWithRole() の修正版
-
 void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name, const D3DXVECTOR3& pos, PlayerRole role)
 {
-	// 既存のプレイヤー生成ロジックを踏襲してプレイヤーインスタンスを作成します
 	CharacterBase* pPlayer = nullptr;
 
 	if (role == ROLE_RUNNER)
@@ -1564,7 +1552,7 @@ void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name, 
 	}
 	else
 	{
-		// 役割不明ならデフォルト Runner を割り当て（保険）
+		//役割不明ならデフォルト Runner を割り当て（保険）
 		Runner* runner = new Runner();
 		runner->InitializeAtPosition(m_pEngine, pos, &m_projection, m_camera, m_light);
 		pPlayer = runner;
@@ -1576,14 +1564,14 @@ void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name, 
 	pPlayer->SetCharacterName(name);
 	pPlayer->SetPosition(pos);
 
-	// ローカルプレイヤーかどうかを判定してフラグを設定
+	//ローカルプレイヤーかどうかを判定してフラグを設定
 	if (clientId == m_localClientId)
 	{
 		pPlayer->SetIsLocal(true);
 		m_pLocalPlayer = pPlayer;
 		m_localRole = role;
 
-		// ローカルかつホストならホスト減速係数をセット
+		//ローカルかつホストならホスト減速係数をセット
 		if (m_bIsHost)
 		{
 			pPlayer->SetHostLocalFlag(true);
@@ -1595,16 +1583,16 @@ void SceneGame::SpawnPlayerWithRole(uint32_t clientId, const std::string& name, 
 		pPlayer->SetIsLocal(false);
 	}
 
-	// プレイヤーリストに登録
+	//プレイヤーリストに登録
 	m_players[clientId] = pPlayer;
 	m_playerRoles[clientId] = role;
 
-	// --- サウンド用に必ずゲームオブジェクトとして登録 ---
+	//サウンド用に必ずゲームオブジェクトとして登録
 	char gameObjName[64];
 	sprintf_s(gameObjName, "Player_%u", clientId);
 	SoundManager::RegisterGameObject(clientId, gameObjName);
 
-	// ローカルで自分が生成されたらカメラ設定や Update を即時実行
+	//ローカルで自分が生成されたらカメラ設定や Update を即時実行
 	if (clientId == m_localClientId)
 	{
 		NET_LOG_F("[SceneGame] ローカルプレイヤー生成完了: m_clientId=%u, GetClientId()=%u",
@@ -1623,8 +1611,8 @@ void SceneGame::DespawnPlayer(uint32_t clientId)
 
 	CharacterBase* p = it->second;
 
-	// まずサウンド停止・Unregister（Wwise 側をクリーンにする）
-	// そのプレイヤーに紐づく全ての音を停止
+	//まずサウンド停止・Unregister（Wwise 側をクリーンにする）
+	//そのプレイヤーに紐づく全ての音を停止
 	SoundManager::StopAll(clientId);
 	SoundManager::UnregisterGameObject(clientId);
 
@@ -1646,7 +1634,7 @@ void SceneGame::DespawnPlayer(uint32_t clientId)
 
 	NET_LOG_F("[SceneGame] プレイヤー削除: ID=%u", clientId);
 
-	// ローカルプレイヤーだったらポインタをクリア
+	//ローカルプレイヤーだったらポインタをクリア
 	if (clientId == m_localClientId)
 	{
 		m_pLocalPlayer = nullptr;
@@ -1877,7 +1865,7 @@ void SceneGame::Draw()
 		kv.second->DrawEffects(m_pEngine, &m_camera, &m_projection, &m_ambient, &m_light);
 	}
 
-	// ★★★ 壁越しバー描画（修正版：視線が遮られている場合のみ）★★★
+	//壁越しバー描画
 	if (m_pLocalPlayer)
 	{
 		D3DXVECTOR3 cameraPos = m_camera.m_vecEye;
@@ -1900,7 +1888,7 @@ void SceneGame::Draw()
 				D3DXVECTOR3 intersection;
 				bool isBlocked = m_map.RayToWallIntersection(cameraPos, targetPos, &intersection);
 
-				// ★★★ 修正: 視線が遮られている場合のみ壁越し描画 ★★★
+				//視線が遮られている場合のみ壁越し描画
 				if (!isBlocked) continue;
 
 				float alpha = f_wallAlphaNear;
@@ -1940,7 +1928,7 @@ void SceneGame::Draw()
 				D3DXVECTOR3 diff = targetPos - cameraPos;
 				float distance = D3DXVec3Length(&diff);
 
-				// ★★★ 修正: 距離内かつ視線が遮られている場合のみ壁越し描画 ★★★
+				//距離内かつ視線が遮られている場合のみ壁越し描画 
 				if (distance > f_chaserGaugeDistance || !isBlocked) continue;
 
 				float alpha = f_wallAlphaNear;
@@ -1957,7 +1945,7 @@ void SceneGame::Draw()
 		}
 	}
 
-	// ★★★ 通常バー描画（壁がない場合のみ）★★★
+	//通常バー描画（壁がない場合のみ）
 	if (m_pLocalPlayer)
 	{
 		D3DXVECTOR3 localPos = m_pLocalPlayer->GetPosition();
@@ -1985,7 +1973,7 @@ void SceneGame::Draw()
 				D3DXVECTOR3 diff = targetPos - localPos;
 				float distance = D3DXVec3Length(&diff);
 
-				// ★★★ 修正: 視線が通っている場合のみ通常描画 ★★★
+				//視線が通っている場合のみ通常描画 
 				D3DXVECTOR3 intersection;
 				bool isBlocked = m_map.RayToWallIntersection(m_camera.m_vecEye, targetPos, &intersection);
 				if (isBlocked) continue;
@@ -2011,7 +1999,7 @@ void SceneGame::Draw()
 
 				if (distance > f_chaserGaugeDistance) continue;
 
-				// ★★★ 修正: 視線が通っている場合のみ通常描画 ★★★
+				//視線が通っている場合のみ通常描画
 				D3DXVECTOR3 intersection;
 				bool isBlocked = m_map.RayToWallIntersection(m_camera.m_vecEye, targetPos, &intersection);
 				if (isBlocked) continue;
@@ -2136,16 +2124,16 @@ void SceneGame::Draw()
 			"残り時間: %02d:%02d", minutes, seconds);
 	}
 
-	// ★★★ 修正: リザルト画像表示（RESULT_DISPLAY と FADE_OUT 両方で表示）★★★
+	//リザルト画像表示（RESULT_DISPLAY と FADE_OUT 両方で表示）
 	if ((m_gameState == RESULT_DISPLAY || m_gameState == FADE_OUT) && m_winnerTeam != -1)
 	{
 		RECT sour, dest;
 
-		// ★★★ 背景暗転用の画像（リザルト画面の後ろ）★★★
+		//背景暗転用の画像（リザルト画面の後ろ）
 		SetRect(&sour, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 		m_pEngine->Blt(&sour, TEXTURE_FADE, &sour, 150, 0.0f);
 
-		// ★★★ ローカルプレイヤーの勝敗判定 ★★★
+		//ローカルプレイヤーの勝敗判定
 		bool isLocalWinner = false;
 		if (m_localRole == ROLE_RUNNER)
 		{
@@ -2156,7 +2144,7 @@ void SceneGame::Draw()
 			isLocalWinner = (m_winnerTeam == 1);
 		}
 
-		// ★★★ リザルト画像の描画 ★★★
+		//リザルト画像の描画
 		SetRect(&sour, 0, 0, (int)f_resultSize.x, (int)f_resultSize.y);
 
 		D3DXVECTOR2 center = { (float)WINDOW_WIDTH / 2.0f, (float)(WINDOW_HEIGHT / 2.0f) };
@@ -2178,8 +2166,7 @@ void SceneGame::Draw()
 		}
 	}
 
-	// ★★★ フェードは最後に描画（リザルト画像の上に重ねる）★★★
-	// FADE_OUT状態の時のみフェード画像を描画
+	//フェードは最後に描画（リザルト画像の上に重ねる）
 	if (m_gameState == FADE_OUT || m_gameState == FADE_IN)
 	{
 		m_fade.Draw(m_pEngine);
@@ -2195,32 +2182,28 @@ void SceneGame::Exit()
 {
 	NET_LOG("[SceneGame] Exit開始");
 
-	// ★★★ 1. BGM停止 ★★★
+	//BGMの停止
 	SoundManager::StopAll(SoundManager::ID_LISTENER);
 	NET_LOG("[SceneGame] BGM停止完了");
 
-	// ★★★ 2. 全リモートプレイヤーの音を停止 ★★★
 	for (auto& kv : m_players)
 	{
 		if (kv.second)
 		{
-			// そのプレイヤーIDに紐づく全音を停止
 			SoundManager::StopAll(kv.first);
 			NET_LOG_F("[SceneGame] Player[%u]の全音停止完了", kv.first);
 		}
 	}
 
-	// ★★★ 3. ローカルプレイヤーの音を停止 ★★★
 	if (m_pLocalPlayer)
 	{
-		// ローカルプレイヤーIDに紐づく全音を停止
 		SoundManager::StopAll(m_localClientId);
 		NET_LOG_F("[SceneGame] LocalPlayer[%u]の全音停止完了", m_localClientId);
 	}
 
 	NET_LOG("[SceneGame] 全音停止完了");
 
-	// ★★★ 4. プレイヤーの削除（既存処理） ★★★
+	//プレイヤーの削除
 	for (auto& kv : m_players)
 	{
 		if (kv.second)
@@ -2273,7 +2256,7 @@ void SceneGame::LoadGameParameter()
 	f_networkSendInterval = config.value("networkSendInterval", 16);
 	f_worldBroadcastInterval = config.value("worldBroadcastInterval", 8);
 
-	// ★★★ ゲーム時間設定（デフォルト5分）★★★
+	//ゲーム時間設定
 	f_gameDuration = config.value("gameDuration", 300.0f);
 	f_resultDisplayDuration = config.value("resultDisplayDuration", 5000);
 	f_resultFadeSpeed = config.value("resultFadeSpeed", 200.0f);

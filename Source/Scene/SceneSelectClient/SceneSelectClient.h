@@ -19,8 +19,8 @@ public:
 	void Exit();
 
 private:
-	std::vector<ServerInfoNet> m_waitingServers;  // 待機中のサーバー
-	std::vector<ServerInfoNet> m_ingameServers;   // ゲーム中のサーバー
+	std::vector<ServerInfoNet> m_waitingServers;  //待機中のサーバー
+	std::vector<ServerInfoNet> m_ingameServers;   //ゲーム中のサーバー
 
 	int selectedIndex;
 	IntVector2 f_serverNamePosition;
@@ -37,8 +37,8 @@ private:
 	DWORD m_refreshInterval;
 	bool m_bMouseDownLast;
 
-	int m_scrollOffset;        // スクロール位置
-	int m_maxVisibleServers;   // 一度に表示できる最大サーバー数
+	int m_scrollOffset;        //スクロール位置
+	int m_maxVisibleServers;   //一度に表示できる最大サーバー数
 	bool PointInRect(int x, int y, int w, int h, POINT pt);
-	void RefreshServerList();  // サーバーリストを待機中とゲーム中に分ける
+	void RefreshServerList();  //サーバーリストを待機中とゲーム中に分ける
 };

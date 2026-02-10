@@ -15,7 +15,7 @@ SceneSelectClient::SceneSelectClient(Engine* pEngine)
 	m_refreshInterval = 1000;
 	m_bMouseDownLast = false;
 	m_scrollOffset = 0;
-	m_maxVisibleServers = 10; // 一度に表示できる最大サーバー数
+	m_maxVisibleServers = 10; //一度に表示できる最大サーバー数
 }
 
 SceneSelectClient::~SceneSelectClient()
@@ -55,16 +55,16 @@ void SceneSelectClient::Update()
 	bool clicked = mouseDown && !m_bMouseDownLast;
 	m_bMouseDownLast = mouseDown;
 
-	// スクロール処理（マウスホイール）
+	//スクロール処理（マウスホイール）
 	int totalServers = (int)m_waitingServers.size() + (int)m_ingameServers.size();
 	if (totalServers > m_maxVisibleServers)
 	{
-		// 上スクロール
+		//上スクロール
 		if (m_pEngine->GetKeyStateSync(DIK_UP) || m_pEngine->GetKeyStateSync(DIK_W))
 		{
 			if (m_scrollOffset > 0) m_scrollOffset--;
 		}
-		// 下スクロール
+		//下スクロール
 		if (m_pEngine->GetKeyStateSync(DIK_DOWN) || m_pEngine->GetKeyStateSync(DIK_S))
 		{
 			int maxScroll = totalServers - m_maxVisibleServers;
@@ -72,13 +72,13 @@ void SceneSelectClient::Update()
 		}
 	}
 
-	// サーバー選択処理
+	//サーバー選択処理
 	int startY = 200;
 	int serverHeight = 60;
 	int displayIndex = 0;
 
-	// 待機中のサーバーをチェック
-	// サーバー選択処理（元のコードのまま）
+	//待機中のサーバーをチェック
+	//サーバー選択処理
 	for (int i = 0; i < (int)m_waitingServers.size(); ++i)
 	{
 		int actualIndex = displayIndex - m_scrollOffset;
@@ -108,7 +108,7 @@ void SceneSelectClient::Update()
 		displayIndex++;
 	}
 
-	// ゲーム中のサーバーをチェック（クリックは無効）
+	//ゲーム中のサーバーをチェック（クリックは無効）
 	for (int i = 0; i < (int)m_ingameServers.size(); ++i)
 	{
 		int actualIndex = displayIndex - m_scrollOffset;
@@ -117,7 +117,7 @@ void SceneSelectClient::Update()
 			int y = startY + actualIndex * serverHeight;
 			if (clicked && PointInRect(200, y, 800, 50, mp))
 			{
-				selectedIndex = displayIndex; // 選択はできるが接続はしない
+				selectedIndex = displayIndex; //選択はできるが接続はしない
 				NET_LOG("[SceneSelectClient] ゲーム中のサーバーは選択できません");
 			}
 		}
@@ -128,7 +128,7 @@ void SceneSelectClient::Update()
 	{
 		NET_LOG("[SceneSelectClient] ESCでタイトルに戻る");
 
-		// ★★★ クライアントをリセット ★★★
+		//クライアントをリセット 
 		ClientManager::GetInstance()->Reset();
 
 		m_nowSceneData.Set(Common::SCENE_TITLE, false, nullptr);
@@ -157,7 +157,7 @@ void SceneSelectClient::Draw()
 		int displayIndex = 0;
 		RECT src, dst;
 
-		// 待機中のサーバーを描画
+		//待機中のサーバーを描画
 		for (int i = 0; i < (int)m_waitingServers.size(); ++i)
 		{
 			int actualIndex = displayIndex - m_scrollOffset;
@@ -165,7 +165,7 @@ void SceneSelectClient::Draw()
 			{
 				int y = startY + actualIndex * serverHeight;
 
-				// 選択中の背景
+				//選択中の背景
 				if (selectedIndex == displayIndex)
 				{
 					SetRect(&src, 0, 0, 800, 50);
@@ -184,7 +184,7 @@ void SceneSelectClient::Draw()
 			displayIndex++;
 		}
 
-		// ゲーム中のサーバーを描画
+		//ゲーム中のサーバーを描画
 		for (int i = 0; i < (int)m_ingameServers.size(); ++i)
 		{
 			int actualIndex = displayIndex - m_scrollOffset;
@@ -192,7 +192,7 @@ void SceneSelectClient::Draw()
 			{
 				int y = startY + actualIndex * serverHeight;
 
-				// 選択中の背景（薄く）
+				//選択中の背景（薄く）
 				if (selectedIndex == displayIndex)
 				{
 					SetRect(&src, 0, 0, 800, 50);
@@ -200,20 +200,20 @@ void SceneSelectClient::Draw()
 					m_pEngine->Blt(&dst, TEXTURE_BUTTON, &src, 80, 0);
 				}
 
-				// サーバー名（灰色）
+				//サーバー名（灰色）
 				m_pEngine->DrawPrintf(220, y, FONT_GOTHIC60, Color::GRAY,
 					"%s (%d/%d)",
 					m_ingameServers[i].name.c_str(),
 					m_ingameServers[i].playerCount,
 					m_ingameServers[i].maxPlayers);
 
-				// 「ゲーム中」表示（赤色）
+				//「ゲーム中」表示（赤色）
 				m_pEngine->DrawPrintf(700, y, FONT_GOTHIC60, Color::RED, "ゲーム中");
 			}
 			displayIndex++;
 		}
 
-		// スクロールインジケーター
+		//スクロールインジケーター
 		if (totalServers > m_maxVisibleServers)
 		{
 			m_pEngine->DrawPrintf(1100, 200, FONT_GOTHIC60, Color::WHITE,
@@ -256,7 +256,7 @@ void SceneSelectClient::RefreshServerList()
 {
 	ClientManager::GetInstance()->RefreshAvailableServers();
 
-	// 全サーバーを取得（state関係なく）
+	//全サーバーを取得（state関係なく）
 	auto allServers = ClientManager::GetInstance()->GetAllServers();
 
 	m_waitingServers.clear();

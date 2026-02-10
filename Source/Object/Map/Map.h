@@ -37,7 +37,7 @@ public:
 	const D3DXVECTOR3& GetChaserStartPosition();
 	const D3DXVECTOR3& GetRunnerStartPosition();
 
-	// A*アルゴリズムで目的地までの最短経路を調べる
+	//A*アルゴリズムで目的地までの最短経路を調べる
 	const std::vector<D3DXVECTOR3> FindPath(const D3DXVECTOR3& startPos, const D3DXVECTOR3& targetPos);
 private:
 	struct Node
@@ -57,15 +57,12 @@ private:
 	void LoadParameter();
 	void LoadMap(Engine * pEngine, Camera * pCamera, Projection * pProj, AmbientLight * pAmbient, DirectionalLight * pLight, const int mapNumber);
 	void CreateWall(Engine * pEngine);
-	// 壁に埋まっていたら押し戻す
 	void Resolve(const WallRect& rect, D3DXVECTOR2& position, float radius);
-	//進めるかチェックする
 	void CheckWallsInNeighborhood(D3DXVECTOR2& position, float radius);
 	void SaveMiniMap(Engine* pEngine, Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight);
 	float GetDistance(int x1, int y1, int x2, int y2);
 	bool IsHit(const WallRect& rect, const D3DXVECTOR2& position, float radius);
 
-	// ボックスとレイが当たっているか
 	bool RayToRectIntersection(const D3DXVECTOR3& rayOrigin, const D3DXVECTOR3& rayEnd, const WallRect& rect, D3DXVECTOR3* outIntersection);
 
 	//ここからファイルデータ(変更不可)

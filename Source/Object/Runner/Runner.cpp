@@ -1,5 +1,4 @@
-﻿// Runner.cpp - 解凍同期の改善版
-#define _USING_V110_SDK71_ 1
+﻿#define _USING_V110_SDK71_ 1
 
 #include "Runner.h"
 
@@ -33,10 +32,6 @@ Runner::~Runner()
 }
 void Runner::Initialize(Engine* pEngine, Map& map, Projection* projection, Camera& camera, DirectionalLight& light)
 {
-	// ローカル時の固定 ID_PALYER 登録を削除（SceneGame が clientId 単位で登録しているため重複）
-	// if (m_bIsLocal)
-	//     SoundManager::RegisterGameObject(ID_PALYER, "Runner");
-
 	LoadParameter();
 	CharacterBase::Initialize(pEngine, MODEL_CHARACTER, projection, camera, light);
 	m_position = map.GetRunnerStartPosition();
@@ -62,10 +57,6 @@ void Runner::Initialize(Engine* pEngine, Map& map, Projection* projection, Camer
 
 void Runner::InitializeAtPosition(Engine* pEngine, const D3DXVECTOR3& startPos, Projection* projection, Camera& camera, DirectionalLight& light)
 {
-	// 同上：ID_PALYER 登録を削除
-	// if (m_bIsLocal)
-	//     SoundManager::RegisterGameObject(ID_PALYER, "Runner");
-
 	LoadParameter();
 	CharacterBase::Initialize(pEngine, MODEL_CHARACTER, projection, camera, light);
 	m_position = startPos;
@@ -93,7 +84,7 @@ void Runner::Release(Engine* pEngine)
 {
 	pEngine->ReleaseTexture(TEXTURE_STAMINA_GAUGE);
 
-	// 解凍音停止は残すが、固定 ID による Unregister は削除（SceneGame が clientId 単位で管理するため）
+	//解凍音停止は残すが、固定 ID による Unregister は削除（SceneGame が clientId 単位で管理するため）
 	if (m_meltingSoundId != AK_INVALID_PLAYING_ID)
 	{
 		SoundManager::StopEvent(m_meltingSoundId);
@@ -106,9 +97,6 @@ void Runner::Release(Engine* pEngine)
 		delete m_pIceBlock;
 		m_pIceBlock = nullptr;
 	}
-
-	// if (m_bIsLocal)
-	//     SoundManager::UnregisterGameObject(ID_PALYER);
 }
 void Runner::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight& light, float deltaTime)
 {
@@ -125,7 +113,7 @@ void Runner::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 		ChangeSpeed();
 		Move(map);
 
-		// ★★★ ローカルプレイヤーの凍結状態を音に反映 ★★★
+		//ローカルプレイヤーの凍結状態を音に反映
 		if (m_bIsLocal)
 		{
 			SoundManager::UpdatePlayerState(false);
@@ -133,16 +121,16 @@ void Runner::Update(Engine* pEngine, Map& map, Camera& camera, DirectionalLight&
 	}
 	else
 	{
-		// 凍結中は完全に動けない
+		//凍結中は完全に動けない
 		m_speed = 0.0f;
 
-		// ★★★ ローカルプレイヤーの凍結状態を音に反映 ★★★
+		//ローカルプレイヤーの凍結状態を音に反映
 		if (m_bIsLocal)
 		{
 			SoundManager::UpdatePlayerState(true);
 		}
 
-		// 氷ブロックの位置を毎フレーム更新
+		//氷ブロックの位置を毎フレーム更新
 		if (m_pIceBlock)
 		{
 			m_pIceBlock->SetMeltAmount(m_frozenAmount);
@@ -250,7 +238,7 @@ void Runner::DrawMeltGaugeThroughWalls(Engine* pEngine, Camera* pCamera, Project
 	D3DXVECTOR3 screenPos;
 	D3DXVec3Project(&screenPos, &headPos, &viewport, &matProj, &matView, &matIdentity);
 
-	// ★★★ 修正: カメラの後ろまたは画面外は描画しない ★★★
+	//修正: カメラの後ろまたは画面外は描画しない
 	if (screenPos.z > 1.0f || screenPos.z < 0.0f) return;
 	if (screenPos.x < 0 || screenPos.x > viewport.Width ||
 		screenPos.y < 0 || screenPos.y > viewport.Height) return;
@@ -333,9 +321,9 @@ void Runner::SetFrozen(bool frozen)
 
 	if (frozen && !wasFrozen)
 	{
-		// ★★★ 新規凍結 ★★★
+		//新規凍結
 		m_frozenAmount = 0.0f;
-		m_bFullyMelted = false;  // ★★★ 重要: 完全解凍フラグをリセット ★★★
+		m_bFullyMelted = false; 
 		m_targetMeltPlayer = 0;
 
 		if (m_pIceBlock)
@@ -347,7 +335,7 @@ void Runner::SetFrozen(bool frozen)
 	}
 	else if (!frozen && wasFrozen)
 	{
-		// ★★★ 凍結解除 ★★★
+		//凍結解除
 		m_frozenAmount = 1.0f;
 		m_bFullyMelted = true;
 		m_targetMeltPlayer = 0;
@@ -361,7 +349,7 @@ void Runner::SetFrozen(bool frozen)
 	}
 	else if (!frozen && !wasFrozen)
 	{
-		// ★★★ 解凍完了状態を維持 ★★★
+		//解凍完了状態を維持
 		if (m_frozenAmount < 1.0f)
 		{
 			m_frozenAmount = 1.0f;
@@ -381,7 +369,7 @@ void Runner::SetFrozenAmount(float amount)
 	float oldAmount = m_frozenAmount;
 	m_frozenAmount = amount;
 
-	// ★★★ 完全解凍の判定 ★★★
+	//完全解凍の判定
 	if (m_frozenAmount >= 1.0f && m_bFrozen)
 	{
 		m_frozenAmount = 1.0f;
@@ -391,20 +379,19 @@ void Runner::SetFrozenAmount(float amount)
 
 		NET_LOG_F("[Runner::SetFrozenAmount] ID=%u 完全解凍 amount=1.0維持", m_clientId);
 	}
-	// ★★★ 解凍完了後は1.0を維持 ★★★
+	//解凍完了後は1.0を維持 
 	else if (m_frozenAmount >= 1.0f && !m_bFrozen)
 	{
 		m_frozenAmount = 1.0f;
 		m_bFullyMelted = true;
 	}
 
-	// ★★★ 氷ブロックの更新 ★★★
+	//氷ブロックの更新
 	if (m_pIceBlock)
 	{
 		m_pIceBlock->SetMeltAmount(m_frozenAmount);
 	}
 
-	// ★★★ デバッグログ（変化があった場合のみ）★★★
 	static std::map<uint32_t, DWORD> lastLog;
 	DWORD now = timeGetTime();
 	if (abs(oldAmount - m_frozenAmount) > 0.01f && now - lastLog[m_clientId] > 500)
@@ -432,7 +419,7 @@ void Runner::UpdateFrozenState(float deltaTime)
 }
 void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBase*>>& players)
 {
-	// ローカル以外 or 自分が凍っている → 必ず停止
+	//ローカル以外 or 自分が凍っている → 必ず停止
 	if (!m_bIsLocal || m_bFrozen)
 	{
 		if (m_meltingSoundId != AK_INVALID_PLAYING_ID)
@@ -477,7 +464,7 @@ void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBas
 		}
 	}
 
-	// ★★★ 修正: ターゲット変更時のみ音を停止して再生 ★★★
+	//ターゲット変更時のみ音を停止して再生
 	if (newTarget != m_targetMeltPlayer)
 	{
 		// 既存の音を停止
@@ -492,7 +479,7 @@ void Runner::UpdateMeltTarget(const std::vector<std::pair<uint32_t, CharacterBas
 
 		m_targetMeltPlayer = newTarget;
 
-		// ★★★ 新しいターゲットがある場合のみ再生 ★★★
+		//新しいターゲットがある場合のみ再生
 		if (m_targetMeltPlayer != 0)
 		{
 			SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, m_clientId);
@@ -611,7 +598,7 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 					m_pIceBlock->SetMeltAmount(m_frozenAmount);
 				}
 
-				// ★★★ 追加: 完全解凍音を再生 ★★★
+				//完全解凍音を再生
 				SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, m_clientId);
 				SoundManager::Play(AK::EVENTS::PLAY_SE_THAW_COMPLETE, m_clientId);
 
@@ -635,7 +622,7 @@ void Runner::UpdateFromNetwork(const NetPlayerState& state, DirectionalLight& li
 			m_pIceBlock->SetMeltAmount(m_frozenAmount);
 		}
 
-		// ★★★ 追加: 完全解凍音を再生 ★★★
+		//完全解凍音を再生
 		SoundManager::SetPosition(m_position, m_depth, UP_DIRECTION, m_clientId);
 		SoundManager::Play(AK::EVENTS::PLAY_SE_THAW_COMPLETE, m_clientId);
 
@@ -861,7 +848,6 @@ void Runner::ChangeSpeed()
 		m_speed = f_walkSpeed * m_deltaTime;
 	}
 
-	// ★★★ デバッグログ（速度変化を追跡） ★★★
 	static std::map<uint32_t, DWORD> lastSpeedLog;
 	DWORD now = timeGetTime();
 	if (now - lastSpeedLog[m_clientId] > 1000)

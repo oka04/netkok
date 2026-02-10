@@ -49,6 +49,11 @@ static constexpr AkGameObjectID ID_UI = 13;
 static constexpr AkGameObjectID ID_PALYER = 4;
 static constexpr AkGameObjectID ID_PATROLLER_START = 100;
 
+enum KIND {
+	RUNNNER,
+	CHASER,
+};
+
 //-----------------------------------------------------------------------------
 //ゲーム中で使用するテクスチャ、BGM、SE、フォントのパス付ファイル名を書きます。
 //-----------------------------------------------------------------------------

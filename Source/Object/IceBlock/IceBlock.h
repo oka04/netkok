@@ -25,10 +25,8 @@ public:
 
 	void SetPosition(const D3DXVECTOR3& position);
 
-	// ★★★ 既存メソッド: 溶け具合を反映 ★★★
 	void DrawThroughWalls(Engine* pEngine, Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight, float alpha = 0.5f);
 
-	// ★★★ 新規追加: 常に元の大きさで描画 ★★★
 	void DrawThroughWallsFullSize(Engine* pEngine, Camera* pCamera, Projection* pProj, AmbientLight* pAmbient, DirectionalLight* pLight, float alpha = 0.5f);
 
 	const D3DXVECTOR3& GetPosition() const { return m_position; }
